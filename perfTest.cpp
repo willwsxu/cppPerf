@@ -7,12 +7,16 @@
 #include <algorithm>
 using namespace std;
 
+#include "tests.h"
+
 bool test()
 {
 	return true;
 }
 int _tmain(int argc, _TCHAR* argv[])
 {
+	testString();
+
 	int test1[9000] = { 1 };
 	std::fill(begin(test1), end(test1), 1);
 	vector<int> test2(9000);

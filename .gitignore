@@ -36,3 +36,5 @@ Debug/
 #database files
 *.sdf
 *.pdb
+perfTest.v12.suo
+perfTest.opensdf
