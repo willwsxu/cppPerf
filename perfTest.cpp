@@ -13,10 +13,9 @@ bool test()
 {
 	return true;
 }
-int _tmain(int argc, _TCHAR* argv[])
-{
-	testString();
 
+void testArrayVector(__int64 loops)
+{
 	int test1[9000] = { 1 };
 	std::fill(begin(test1), end(test1), 1);
 	vector<int> test2(9000);
@@ -24,7 +23,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	test2.assign(9000, 1);
 	DWORD start = GetTickCount();
 	int temp = 0;
-	__int64 loops = 1000000000;
 	for (__int64 i = 0; i < loops; i++)
 	{
 		if (test1[8999])
@@ -79,6 +77,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	end = GetTickCount();
 	fprintf(stdout, "loop take %d msec temp=%d\n", end - start, temp);  //0
+}
+int _tmain(int argc, _TCHAR* argv[])
+{
+	testList1();
+	testSlist();
+	//testString();
+	//testArrayVector(1000000000);
 	return 0;
 }
 
