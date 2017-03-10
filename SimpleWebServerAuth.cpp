@@ -213,7 +213,8 @@ void HttpListener::listening()
 					{
 						char szResponse[80000] = { 0 };
 						UINT iLen = sizeof(szResponse);
-						
+						pConnection->pcBuf[cbRead] = 0;
+						printf("RECV: %s\n", pConnection->pcBuf);
 						if (!strncmp(pConnection->pcBuf, "GET", 3))
 							GetResponse(szResponse, iLen, pConnection->pcBuf + 4);
 						else if (!strncmp(pConnection->pcBuf, "POST", 4))
@@ -320,14 +321,15 @@ static long counter = 0;
 void HttpListener::GetResponse(char * szBuf, UINT &iLen, const char * data)
 {
 	counter++;
-	sprintf_s(szBuf, iLen, "HTTP/1.1 200 OK\r\n"
+	sprintf_s(szBuf, iLen, "HTTP/1.1 401 Unauthorized\r\n"
 		"Server: minimal http server\r\n"
 		"Cache-control: private\r\n"
 		"Index: no-cache\r\n"
 		"Connection: Keep-Alive\r\n"
 		"Content-Length: %d\r\n"
-		"Set - Cookie: fake = fake_value\n"
-		"Www - Authenticate : Digest realm = \"me@ezesoft.com\"\n"
+//		"Set - Cookie: fake = fake_value\n"
+//		"Www - Authenticate : Digest realm = \"me@realtick.com\"\n"
+		"WWW-Authenticate: Basic realm=\"User Visible Realm\"\n"
 		"Content-Type: text/html\r\n\r\n", 200
 		);
 
