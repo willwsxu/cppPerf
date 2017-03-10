@@ -9,6 +9,8 @@ using namespace std;
 
 #include "tests.h"
 
+#include "SimpleWebServerAuth.h"
+
 bool test()
 {
 	return true;
@@ -78,12 +80,15 @@ void testArrayVector(__int64 loops)
 	end = GetTickCount();
 	fprintf(stdout, "loop take %d msec temp=%d\n", end - start, temp);  //0
 }
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-	testList1();
-	testSlist();
+	//testList1();
+	//testSlist();
 	//testString();
 	//testArrayVector(1000000000);
+
+	HttpListener www;
 	return 0;
 }
 
