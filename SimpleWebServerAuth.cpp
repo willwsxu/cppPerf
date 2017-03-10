@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <thread>
+#include <string>
 
 #define MAX_CONNECTIONS 100
 
@@ -325,16 +326,16 @@ void HttpListener::GetResponse(char * szBuf, UINT &iLen, const char * data)
 		"Index: no-cache\r\n"
 		"Connection: Keep-Alive\r\n"
 		"Content-Length: %d\r\n"
-//		"Set - Cookie: fake = fake_value\n"
-//		"Www - Authenticate : Digest realm = \"me@ezesoft.com\"\n"
+		"Set - Cookie: fake = fake_value\n"
+		"Www - Authenticate : Digest realm = \"me@ezesoft.com\"\n"
 		"Content-Type: text/html\r\n\r\n", 200
 		);
 
 	strcat_s(szBuf, iLen, "<HTML><HEAD><TITLE>HELLO WORD</TITLE></HEAD><BODY>"
 		"<h2>TEST Authentication</h2>");
-//	sprintf_s(szBuf+strlen(szBuf), iLen, "<h3>Counter %lu</h3>", counter);
 //	strcat_s(szBuf, iLen, "<A HREF=\"index.htm\">auto-refresh this web page</A>");
-	strcat_s(szBuf, iLen, "\n<PRE>");
+	strcat_s(szBuf, iLen, "\n<PRE>test count ");
+	strcat_s(szBuf, iLen, std::to_string(counter).c_str());
 
 	strcat_s(szBuf, iLen, "</PRE>");
 //	strcat_s(szBuf, iLen, "<meta http-equiv=\"Refresh\" content=\"10; URL=index.htm\">");
