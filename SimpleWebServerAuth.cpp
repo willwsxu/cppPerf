@@ -318,32 +318,51 @@ void HttpListener::DoAccept()
 
 }
 static long counter = 0;
+static const char *OKheader =	"HTTP/1.1 200 OK\r\n"
+								"Server: minimal http server\r\n"
+								"Cache-control: private\r\n"
+								"Index: no-cache\r\n"
+								"Connection: Keep-Alive\r\n";
+static const char *basicAuthHeader =	"HTTP/1.1 401 Unauthorized\r\n"
+										"Server: minimal http server\r\n"
+										"Cache-control: private\r\n"
+										"Index: no-cache\r\n"
+										"Connection: Keep-Alive\r\n"
+										"WWW-Authenticate: Basic realm=\"User Visible Realm\"\n";
+// digest header
+/*		"Set-Cookie: fake = fake_value\n"
+"Www-Authenticate : Digest realm = \"ezesoft@realtick.com\",\n"
+" qop = \"auth,auth-int\",\n"
+" nonce = \"dcd98b7102dd2f0e8b11d0f600bfb0c093\",\n"
+" opaque = \"5ccc069c403ebaf9f0171e9517f40e41\"\n"
+*/
+static const char *bodyTemplate =	"<HTML><HEAD><TITLE>HELLO WORD</TITLE></HEAD><BODY>"
+									"<h2>TEST Authentication</h2>";
+//	strcat_s(szBuf, iLen, "<A HREF=\"index.htm\">auto-refresh this web page</A>");
+//	strcat_s(szBuf, iLen, "<meta http-equiv=\"Refresh\" content=\"10; URL=index.htm\">");
+// "<FORM method=""POST"">"
+// "<INPUT type=""submit"" name=""Reconfigure"" value=""Reconfigure""></FORM>
 void HttpListener::GetResponse(char * szBuf, UINT &iLen, const char * data)
 {
 	counter++;
-	sprintf_s(szBuf, iLen, "HTTP/1.1 401 Unauthorized\r\n"
-		"Server: minimal http server\r\n"
-		"Cache-control: private\r\n"
-		"Index: no-cache\r\n"
-		"Connection: Keep-Alive\r\n"
-		"Content-Length: %d\r\n"
-//		"Set - Cookie: fake = fake_value\n"
-//		"Www - Authenticate : Digest realm = \"me@realtick.com\"\n"
-		"WWW-Authenticate: Basic realm=\"User Visible Realm\"\n"
-		"Content-Type: text/html\r\n\r\n", 200
-		);
+	const char *auth = strstr(data, "Authorization: Basic");
+	if (auth) {
+		std::string body = bodyTemplate;
+		body += "\n<PRE>test count " + std::to_string(counter);
+		body += "</PRE></BODY></HTML>\r\n";
 
-	strcat_s(szBuf, iLen, "<HTML><HEAD><TITLE>HELLO WORD</TITLE></HEAD><BODY>"
-		"<h2>TEST Authentication</h2>");
-//	strcat_s(szBuf, iLen, "<A HREF=\"index.htm\">auto-refresh this web page</A>");
-	strcat_s(szBuf, iLen, "\n<PRE>test count ");
-	strcat_s(szBuf, iLen, std::to_string(counter).c_str());
-
-	strcat_s(szBuf, iLen, "</PRE>");
-//	strcat_s(szBuf, iLen, "<meta http-equiv=\"Refresh\" content=\"10; URL=index.htm\">");
-	strcat_s(szBuf, iLen, "<FORM method=""POST"">"
-		"<INPUT type=""submit"" name=""Reconfigure"" value=""Reconfigure""></FORM></BODY></HTML>\r\n");
-
+		sprintf_s(szBuf, iLen, "%s"
+			"Content-Length: %d\r\n"
+			"Content-Type: text/html\r\n\r\n%s", OKheader, body.length(), body.c_str()
+			);
+	}
+	else {
+		std::string body = bodyTemplate;
+		body += "</BODY></HTML>\r\n";
+		sprintf_s(szBuf, iLen, "%sContent-Length: %d\r\n"
+			"Content-Type: text/html\r\n\r\n%s", basicAuthHeader, body.length(), body.c_str()
+			);
+	}
 	iLen = static_cast<UINT>(strlen(szBuf));
 }
 
