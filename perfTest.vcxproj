@@ -87,6 +87,10 @@
     <ClInclude Include="tests.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="base64.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="listvslist-gc.cpp" />
     <ClCompile Include="perfTest.cpp" />
     <ClCompile Include="SimpleWebServerAuth.cpp">

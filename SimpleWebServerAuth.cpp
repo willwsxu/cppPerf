@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <thread>
 #include <string>
+#include <iostream>
+#include "base64.h"
 
 #define MAX_CONNECTIONS 100
 
@@ -345,8 +347,16 @@ static const char *bodyTemplate =	"<HTML><HEAD><TITLE>HELLO WORD</TITLE></HEAD><
 void HttpListener::GetResponse(char * szBuf, UINT &iLen, const char * data)
 {
 	counter++;
-	const char *auth = strstr(data, "Authorization: Basic");
+	static const char *basic = "Authorization: Basic";
+	const char *auth = strstr(data, basic);
 	if (auth) {
+		const char *base64 = auth + strlen(basic) + 1;
+		char *LF = (char*)strchr(base64, '\r');
+		if (LF)
+			*LF = 0;
+		std::string upass = base64_decode(base64);
+		std::cout << "base64 " << base64 << std::endl;
+		std::cout << "upass "  << upass << std::endl;
 		std::string body = bodyTemplate;
 		body += "\n<PRE>test count " + std::to_string(counter);
 		body += "</PRE></BODY></HTML>\r\n";
