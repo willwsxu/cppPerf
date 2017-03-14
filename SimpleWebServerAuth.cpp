@@ -349,6 +349,13 @@ void HttpListener::GetResponse(char * szBuf, UINT &iLen, const char * data)
 	counter++;
 	static const char *basic = "Authorization: Basic";
 	const char *auth = strstr(data, basic);
+	const char *host = strstr(data, "Host");
+	if (host) {
+		char *LF = (char*)strchr(host, '\r');
+		if (LF)
+			*LF = 0;
+		std::cout << "Host: " << host << std::endl;
+	}
 	if (auth) {
 		const char *base64 = auth + strlen(basic) + 1;
 		char *LF = (char*)strchr(base64, '\r');
