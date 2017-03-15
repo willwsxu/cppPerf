@@ -88,7 +88,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//testString();
 	//testArrayVector(1000000000);
 
-	HttpListener www;
+	//HttpListener www;
+	testStringConcat();
 	return 0;
 }
 
