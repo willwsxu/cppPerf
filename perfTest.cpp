@@ -63,7 +63,7 @@ void testArrayVector(__int64 loops)
 	start = GetTickCount();
 	for (__int64 i = 0; i < loops; i++)
 	{
-		if (test)
+		if (test())
 			temp = 1;
 		else
 			temp = 2;

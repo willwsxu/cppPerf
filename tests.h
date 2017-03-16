@@ -4,3 +4,4 @@ void testList1();
 void testSlist();
 void testStringConcat();
 void testNewDelete();
+void testLocks();
