@@ -8,15 +8,17 @@ using namespace std;
 
 char cstr[200];
 string str;
+int res=0;
 /*
-string nano seconds:		 67000000
-strcpy nano seconds:		 69000000
-sprintf_s nano seconds:		307000000
-stringstream nano seconds:	910000000
-strcpy_s10 nano seconds:	  9450000
-memcpy10 nano seconds:		   820000
-strncmp10 nano seconds:		  7670000
-memcmp10 nano seconds:		        0
+string nano seconds: 54000000
+strcpy nano seconds: 58000000
+sprintf_s nano seconds: 290000000
+stringstream nano seconds: 810000000
+strcpy_s10 nano seconds: 8880000
+memcpy10 nano seconds: 840000
+strncmp10 nano seconds: 7330000
+memcmp10 nano seconds: 0
+string==10 nano seconds: 2310000
 */
 void testStringConcat()
 {
@@ -86,7 +88,7 @@ void testStringConcat()
 
 	start = chrono::high_resolution_clock::now();
 	for (int i = 0; i < loops * 100; i++) {
-		strncmp(cstr, "name=value", 10); // compare 10 bytes
+		res = strncmp(cstr, "name=value", 10); // compare 10 bytes
 	}
 	end = chrono::high_resolution_clock::now();
 	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
@@ -94,10 +96,57 @@ void testStringConcat()
 
 	start = chrono::high_resolution_clock::now();
 	for (int i = 0; i < loops * 100; i++) {
-		memcmp(cstr, "name=value", 10); // compare 10 bytes
+		res = memcmp(cstr, "name=value", 10); // compare 10 bytes
 	}
 	end = chrono::high_resolution_clock::now();
 	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
 	cout << "memcmp10 nano seconds: " << nanos.count() / 100 << endl;
+	
+	start = chrono::high_resolution_clock::now();
+	for (int i = 0; i < loops * 100; i++) {
+		res = (str == "name=value"); // compare 10 bytes
+	}
+	end = chrono::high_resolution_clock::now();
+	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+	cout << "string==10 nano seconds: " << nanos.count() / 100 << endl;
+}
 
+/*
+new string nano seconds:    53000000
+new char[] nano seconds:    50000000
+memset char[] nano seconds: 0
+*/
+string *newStr;
+char *newCstr;
+void testNewDelete()
+{
+	int loops = 1000000;
+	auto start = chrono::high_resolution_clock::now();
+	for (int i = 0; i < loops; i++) {
+		newStr = new string(10, 'x');
+		delete newStr;
+	}
+	auto end = chrono::high_resolution_clock::now();
+	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+	cout << "new string nano seconds: " << nanos.count() << endl;
+
+	start = chrono::high_resolution_clock::now();
+	for (int i = 0; i < loops; i++) {
+		newCstr = new char[11];
+		memset(newCstr, 0, 11);
+		delete newCstr;
+	}
+	end = chrono::high_resolution_clock::now();
+	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+	cout << "new char[] nano seconds: " << nanos.count() << endl;
+
+	newCstr = new char[11];
+	start = chrono::high_resolution_clock::now();
+	for (int i = 0; i < loops; i++) {
+		memset(newCstr, 0, 11);
+	}
+	delete newCstr;
+	end = chrono::high_resolution_clock::now();
+	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+	cout << "memset char[] nano seconds: " << nanos.count() << endl;
 }
