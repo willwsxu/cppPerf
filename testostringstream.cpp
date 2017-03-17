@@ -10,15 +10,15 @@ char cstr[200];
 string str;
 int res=0;
 /*
-string nano seconds: 54000000
-strcpy nano seconds: 58000000
-sprintf_s nano seconds: 290000000
-stringstream nano seconds: 810000000
-strcpy_s10 nano seconds: 8880000
-memcpy10 nano seconds: 840000
-strncmp10 nano seconds: 7330000
-memcmp10 nano seconds: 0
-string==10 nano seconds: 2310000
+string nano seconds:        53000000
+strcpy nano seconds:        55000000
+sprintf_s nano seconds:    284000000
+stringstream nano seconds: 740000000
+strcpy_s10 nano seconds:     9760000
+memcpy10 nano seconds:        820000
+strncmp10 nano seconds:      7570000
+memcmp10 nano seconds:             0
+string==10 nano seconds:     2270000
 */
 void testStringConcat()
 {
@@ -63,7 +63,7 @@ void testStringConcat()
 	for (int i = 0; i < loops / 10; i++) {
 		ostringstream ostr;
 		ostr << '"' << "name" << "\"" << "=" << "\"" << "value" << "\"";
-		str = ostr.str();
+		//str = ostr.str();
 	}
 	end = chrono::high_resolution_clock::now();
 	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
