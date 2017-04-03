@@ -5,3 +5,4 @@ void testSlist();
 void testStringConcat();
 void testNewDelete();
 void testLocks();
+void testLamda();
