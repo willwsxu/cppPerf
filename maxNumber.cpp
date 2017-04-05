@@ -2,16 +2,17 @@
 using namespace std;
 
 //http://codeforces.com/contest/795/submission/26154916
+//http://codeforces.com/contest/795/problem/C
 
 char section[] = { 6, 2, 5, 5, 4, 5, 6, 3, 7, 6 };
-__int64 maxNum(int sections)
+void maxNum(int sections)
 {
 	int digits = sections / 2; // max digits
 	int rem = sections % 2;
-	__int64 x = rem > 0 ? 7 : 1;
+	cout << (rem > 0 ? 7 : 1);
 	while (--digits > 0)
-		x = x * 10 + 1;
-	return x;
+		cout << 1;;
+	cout << endl;;
 }
 
 //int main()
@@ -27,8 +28,8 @@ int testNum()
 	cout << sections << endl;
 	*/
 	int s = 85651;
-	//cin >> s;
-	cout << maxNum(s) << endl;
+	cin >> s;
+	maxNum(s);
 
 	return 0;
 }
