@@ -81,6 +81,7 @@ void testArrayVector(__int64 loops)
 	fprintf(stdout, "loop take %d msec temp=%d\n", end - start, temp);  //0
 }
 
+extern int testNum();
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//testList1();
@@ -91,7 +92,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//HttpListener www;
 	//testStringConcat();
 	//testNewDelete();
-	testLamda();
+	//testLamda();
+	(void)testNum();
 	return 0;
 }
 
