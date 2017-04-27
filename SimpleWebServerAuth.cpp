@@ -347,6 +347,9 @@ static const char *bodyTemplate =	"<HTML><HEAD><TITLE>HELLO WORD</TITLE></HEAD><
 void HttpListener::GetResponse(char * szBuf, UINT &iLen, const char * data)
 {
 	counter++;
+	std::string login = "Dash:TOPsecrete";
+	std::string encoded = base64_encode((const unsigned char*)login.c_str(), login.length());
+	std::cout << encoded << std::endl;
 	static const char *basic = "Authorization: Basic";
 	const char *auth = strstr(data, basic);
 	const char *host = strstr(data, "Host");
@@ -356,6 +359,7 @@ void HttpListener::GetResponse(char * szBuf, UINT &iLen, const char * data)
 			*LF = 0;
 		std::cout << "Host: " << host << std::endl;
 	}
+	bool requstAuth = true;
 	if (auth) {
 		const char *base64 = auth + strlen(basic) + 1;
 		char *LF = (char*)strchr(base64, '\r');
@@ -364,16 +368,20 @@ void HttpListener::GetResponse(char * szBuf, UINT &iLen, const char * data)
 		std::string upass = base64_decode(base64);
 		std::cout << "base64 " << base64 << std::endl;
 		std::cout << "upass "  << upass << std::endl;
-		std::string body = bodyTemplate;
-		body += "\n<PRE>test count " + std::to_string(counter);
-		body += "</PRE></BODY></HTML>\r\n";
+		static std::string dashlogin = "RGFzaDpUT1BTZWNyZXRl";// //RGFzaDpUT1BzZWNyZXRl
+		if (dashlogin == base64) {
+			requstAuth = false;
+			std::string body = bodyTemplate;
+			body += "\n<PRE>test count " + std::to_string(counter);
+			body += "</PRE></BODY></HTML>\r\n";
 
-		sprintf_s(szBuf, iLen, "%s"
-			"Content-Length: %d\r\n"
-			"Content-Type: text/html\r\n\r\n%s", OKheader, body.length(), body.c_str()
-			);
+			sprintf_s(szBuf, iLen, "%s"
+				"Content-Length: %d\r\n"
+				"Content-Type: text/html\r\n\r\n%s", OKheader, body.length(), body.c_str()
+				);
+		}
 	}
-	else {
+	if (requstAuth) {
 		std::string body = bodyTemplate;
 		body += "</BODY></HTML>\r\n";
 		sprintf_s(szBuf, iLen, "%sContent-Length: %d\r\n"

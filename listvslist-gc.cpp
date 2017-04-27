@@ -115,5 +115,3 @@ void testSlist()
 	prod.join();
 	cons.join();
 }
-
-void testLocks(){}

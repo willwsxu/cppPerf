@@ -93,7 +93,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//testStringConcat();
 	//testNewDelete();
 	//testLamda();
-	(void)testNum();
+	//(void)testNum();
+	testLocks();
 	return 0;
 }
 
