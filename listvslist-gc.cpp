@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <chrono>
 #include <iostream>
+#include <numeric>
 
 using namespace std;
 list<string>  queue;
@@ -114,4 +115,37 @@ void testSlist()
 
 	prod.join();
 	cons.join();
+}
+int millisec[32] = { 0 };
+void worker(int id, int loops)
+{
+	auto start = chrono::high_resolution_clock::now();
+	long ans = 0;
+	for (int i = 1; i <= loops; i++) {
+		long *t = new long;
+		*t = i*i;
+		ans ^= *t;
+	}
+	auto end = chrono::high_resolution_clock::now();
+	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+	millisec[id] = nanos.count() / 1000000;
+	cout << "worker thread count milli seconds: " << nanos.count()/1000000 << " loops " << loops << " ans " << ans << endl;
+}
+
+// On a machine with 8 cores, no difference to
+// 32 thread 1406 msec
+// 16 threads 1472 msec
+// 8  threads 1381
+void testThreads()
+{
+	unsigned long loops = 200000000;
+	int cpu = 8;
+	thread *t[32];
+	for (int i = 0; i < cpu; i++) {
+		t[i] = new thread(worker, i, loops / cpu);
+	}
+	for (int i = 0; i < cpu; i++)
+		t[i]->join();
+	int total = std::accumulate(millisec, millisec + cpu, 0);
+	cout << " total msec " << total << endl;
 }

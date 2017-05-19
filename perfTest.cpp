@@ -82,6 +82,7 @@ void testArrayVector(__int64 loops)
 }
 
 extern int testNum();
+//extern void testmain();
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//testList1();
@@ -94,7 +95,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	//testNewDelete();
 	//testLamda();
 	//(void)testNum();
-	testLocks();
+	//testLocks();
+	//testmain();
+	testThreads();
 	return 0;
 }
 
