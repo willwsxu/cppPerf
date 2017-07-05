@@ -83,6 +83,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BlockedWeb.cpp" />
     <ClCompile Include="codechef.cpp" />
     <ClCompile Include="SubArrayDeque.cpp" />
     <ClCompile Include="stdafx.cpp" />

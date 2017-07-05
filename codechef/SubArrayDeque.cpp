@@ -104,7 +104,7 @@ public:
 	}
 };
 
-void solve()
+void solve_SUBA()
 {
 	int N, K, P;
 	cin >> N;
