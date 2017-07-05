@@ -131,16 +131,14 @@ void solve()
 	vector<string> blocked;
 	int n = 0;
 	cin >> n;
-	for (int i = 0; i < n; i++){
+	while (n-->0) {
 		string p;
-		getline(cin, p);
-		if (p.size() < 2) {
-			getline(cin, p);
-		}
-		if (p[0] == '+')
-			tr.put(p.substr(2));
+		char cmd;
+		cin >> cmd >> p;
+		if (cmd == '+')
+			tr.put(p);
 		else
-			blocked.push_back(p.substr(2));
+			blocked.push_back(p);
 	}
 	solve(tr, blocked);
 }
