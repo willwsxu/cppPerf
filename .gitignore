@@ -38,4 +38,5 @@ Debug/
 *.pdb
 perfTest.v12.suo
 perfTest.opensdf
+sspiExample.h
 perfTest.VC.db
