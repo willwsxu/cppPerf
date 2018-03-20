@@ -2,6 +2,7 @@
 //
 
 #include <stdlib.h>
+#include <stdio.h>
 
 int findMaxForm(char** strs, int strsSize, int m, int n) {
 	int **memo = (int**)malloc((m + 1)*sizeof(int*));
