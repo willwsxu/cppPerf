@@ -83,8 +83,34 @@ public:
 	}
 };
 
-void testTrianglePath()
+// 416. Partition Equal Subset Sum
+bool canPartition(vector<int>& nums) {
+	int sum = 0;
+	for (int n : nums)
+		sum += n;
+	if ((sum & 1) > 0)  // odd sum
+		return false;
+	sum /= 2;
+	vector<bool> dp(sum + 1, false);
+	dp[0] = true;
+	for (int n : nums) {
+		if (sum >= n) {
+			dp[sum] = dp[sum] || dp[sum - n];
+			if (dp[sum])
+				return true;
+		}
+		for (int j = sum - 1; j > 0; j--) {
+			if (j>=n)
+				dp[j] = dp[j] || dp[j - n];
+		}
+	}
+	return dp[sum];
+}
+
+#include <iostream>
+void test()
 {
-	TrianglePath test;
-	test.test();
+	std::cout << canPartition(vector<int>{}) << endl;
+	std::cout << canPartition(vector<int>{1, 5, 11, 5}) << endl;  // true
+	std::cout << canPartition(vector<int>{1, 2, 3, 5}) << endl;   // false
 }
