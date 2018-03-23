@@ -107,6 +107,33 @@ bool canPartition(vector<int>& nums) {
 	return dp[sum];
 }
 
+
+int findPaths(int m, int n, int N, int i, int j) {
+	vector < vector<vector<int>>> dp3(2, vector<vector<int>>(m, vector<int>(n, 0)));
+	const int MOD = 1000000007;
+	int prev = 0;
+	int current = 0;
+	for (int x = 1; x <= N; x++)
+	{
+		current = 1 - prev;
+		for (int r = 0; r<m; r++)
+		{
+			for (int c = 0; c<n; c++)
+			{
+				dp3[current][r][ c] = (r == 0 ? 1 : dp3[prev][r - 1][c]) % MOD;  // up !ERROR don't use i-- etc
+				dp3[current][r][c] += r == m - 1 ? 1 : dp3[prev][r + 1][c];  // down
+				dp3[current][r][c] %= MOD;
+				dp3[current][r][c] += c == 0 ? 1 : dp3[prev][r][c - 1];  // left
+				dp3[current][r][c] %= MOD;
+				dp3[current][r][c] += c == n - 1 ? 1 : dp3[prev][r][c + 1];  // left
+				dp3[current][r][c] %= MOD;
+			}
+		}
+		prev = current; // swap
+	}
+	return dp3[current][i][j];
+}
+
 #include <iostream>
 void test()
 {
