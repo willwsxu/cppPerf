@@ -163,7 +163,6 @@ bool dfs(vector<int>& nums, int k, vector<bool>& visited, int subsetSum, int tar
 // 698. Partition to K Equal Sum Subsets
 bool canPartitionKSubsets(vector<int>& nums, int k) {
 	vector<bool> visited(nums.size(), false);
-	vector<int>  subset(k, 0);
 	int sum = 0;
 	for (int n : nums)
 		sum += n;
