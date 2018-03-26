@@ -179,4 +179,4 @@ void test()
 	std::cout << canPartitionKSubsets(vector<int>{-1,1,-1,1,-1,1, -1, 1, -1, 1}, 5) << endl;  // true
 	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 6) << endl;  // false
 	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 7) << endl;  // false
-}
+} 
