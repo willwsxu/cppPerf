@@ -135,9 +135,49 @@ int findPaths(int m, int n, int N, int i, int j) {
 }
 
 #include <iostream>
-void test()
+void testEqualSumPartition()
 {
 	std::cout << canPartition(vector<int>{}) << endl;
 	std::cout << canPartition(vector<int>{1, 5, 11, 5}) << endl;  // true
 	std::cout << canPartition(vector<int>{1, 2, 3, 5}) << endl;   // false
+}
+
+// support negative num[i], even though current requirement is 
+// 1 <= k <= len(nums) <= 16.
+// 0 < nums[i] < 10000
+bool dfs(vector<int>& nums, int k, vector<bool>& visited, int subsetSum, int target, int setIdx, int numIdx) {
+	if (k == 1 && target !=0 || k==0)
+		return true;
+	if (subsetSum == target && setIdx>0)  // setIdx>0 is used to support target=0
+		return dfs(nums, k - 1, visited, 0, target, 0, 0);
+	for (int i = numIdx; i < nums.size(); i++) {
+		if (visited[i] || subsetSum + nums[i] > target)
+			continue;
+		visited[i] = true;
+		if (dfs(nums, k, visited, subsetSum + nums[i], target, setIdx+1, i + 1))
+			return true;
+		visited[i] = false;
+	}
+	return false;
+}
+// 698. Partition to K Equal Sum Subsets
+bool canPartitionKSubsets(vector<int>& nums, int k) {
+	vector<bool> visited(nums.size(), false);
+	vector<int>  subset(k, 0);
+	int sum = 0;
+	for (int n : nums)
+		sum += n;
+	if ((sum %k) > 0)  // not divisible
+		return false;
+	if (k < 1)
+		return false;
+	return dfs(nums, k, visited, 0, sum / k, 0, 0);
+}
+
+void test()
+{
+	std::cout << canPartitionKSubsets(vector<int>{4, 3, 2, 3, 5, 2, 1}, 4) << endl;  // true
+	std::cout << canPartitionKSubsets(vector<int>{-1,1,-1,1,-1,1, -1, 1, -1, 1}, 5) << endl;  // true
+	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 6) << endl;  // false
+	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 7) << endl;  // false
 }
