@@ -201,7 +201,7 @@ int minSteps(int n) {
 }
 
 
-void test()
+void testKey2()
 {
 	std::cout << ((minSteps(1)==0)?"true":"false") << endl;
 	std::cout << (minSteps(2)==2) << endl;
@@ -210,4 +210,26 @@ void test()
 	std::cout << (minSteps(8)==6) << endl;
 	std::cout << (minSteps(9)==6) << endl;
 	std::cout << (minSteps(12)==7) << endl;
+}
+
+// previous action, 1 - buy, 2 - sell, 4 - cooldown
+int maxProfit(vector<int>& prices, int pos, int prevBuy) {
+	if (pos == prices.size()) {
+		return 0;
+	}
+	int ans = maxProfit(prices, pos + 1, prevBuy);  // no action
+	if (prevBuy >= 0) {  // sell
+		ans = (prices[pos]-prices[prevBuy])+std::max(ans, maxProfit(prices, pos+2, -1));
+	}
+	else
+		ans= maxProfit(prices, pos + 1, pos);  // buy
+	return ans;
+}
+int maxProfit(vector<int>& prices) {
+	return maxProfit(prices, 0, -1);
+}
+
+void test()
+{
+	std::cout << maxProfit(vector<int> { 1, 2, 3, 0, 2 }) << endl;
 }
