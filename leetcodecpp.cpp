@@ -173,10 +173,41 @@ bool canPartitionKSubsets(vector<int>& nums, int k) {
 	return dfs(nums, k, visited, 0, sum / k, 0, 0);
 }
 
-void test()
+void testKpartition()
 {
 	std::cout << canPartitionKSubsets(vector<int>{4, 3, 2, 3, 5, 2, 1}, 4) << endl;  // true
 	std::cout << canPartitionKSubsets(vector<int>{-1,1,-1,1,-1,1, -1, 1, -1, 1}, 5) << endl;  // true
 	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 6) << endl;  // false
 	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 7) << endl;  // false
 } 
+
+/* 650. 2 Keys Keyboard
+Initially on a notepad only one character 'A' is present.You can perform two operations on this notepad for each step:
+	Copy All : You can copy all the characters present on the notepad(partial copy is not allowed).
+	Paste : You can paste the characters which are copied last time.
+	The n will be in the range [1, 1000]
+*/
+// greedy methods, find the largest the factor, steps = s[factor]+n/factor
+int minSteps(int n) {
+	int s = 0;
+	for (int factor = n / 2; factor >= 1; factor--) {
+		if (n%factor > 0)
+			continue;
+		s += n / factor;
+		n = factor;
+		factor = factor / 2 + 1;
+	}
+	return s;
+}
+
+
+void test()
+{
+	std::cout << ((minSteps(1)==0)?"true":"false") << endl;
+	std::cout << (minSteps(2)==2) << endl;
+	std::cout << (minSteps(3)==3) << endl;
+	std::cout << (minSteps(4)==4) << endl;
+	std::cout << (minSteps(8)==6) << endl;
+	std::cout << (minSteps(9)==6) << endl;
+	std::cout << (minSteps(12)==7) << endl;
+}
