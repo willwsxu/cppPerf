@@ -212,24 +212,31 @@ void testKey2()
 	std::cout << (minSteps(12)==7) << endl;
 }
 
-// previous action, 1 - buy, 2 - sell, 4 - cooldown
-int maxProfit(vector<int>& prices, int pos, int prevBuy) {
-	if (pos == prices.size()) {
+// prevBuy, last postion of buy, -1 means no
+int maxProfit(vector<int>& prices, int pos, int prevBuy, vector<vector<int>>& dp) {
+	if (pos >= prices.size()) {
 		return 0;
 	}
-	int ans = maxProfit(prices, pos + 1, prevBuy);  // no action
-	if (prevBuy >= 0) {  // sell
-		ans = (prices[pos]-prices[prevBuy])+std::max(ans, maxProfit(prices, pos+2, -1));
+	if (dp[pos][prevBuy + 1] >= 0)
+		return dp[pos][prevBuy + 1];
+	int ans = maxProfit(prices, pos + 1, prevBuy, dp);  // no action
+	if (prevBuy >= 0) {
+		if (prices[pos] > prices[prevBuy])   // sell if there is profit
+			ans = std::max(ans, (prices[pos] - prices[prevBuy])+maxProfit(prices, pos+2, -1, dp));
 	}
 	else
-		ans= maxProfit(prices, pos + 1, pos);  // buy
+		ans= std::max(ans, maxProfit(prices, pos + 1, pos, dp));  // buy
+	dp[pos][prevBuy + 1] = ans;
 	return ans;
 }
 int maxProfit(vector<int>& prices) {
-	return maxProfit(prices, 0, -1);
+	int n = prices.size();
+	vector<vector<int>> dp(n, vector<int>(n + 1, -1));
+	return maxProfit(prices, 0, -1, dp);
 }
 
 void test()
 {
-	std::cout << maxProfit(vector<int> { 1, 2, 3, 0, 2 }) << endl;
+	std::cout << (maxProfit(vector<int> { 1, 2, 3, 0, 2 })==3) << endl;
+	std::cout << (maxProfit(vector<int> { 2, 1})==0) << endl;
 }
