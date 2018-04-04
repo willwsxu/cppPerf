@@ -235,8 +235,76 @@ int maxProfit(vector<int>& prices) {
 	return maxProfit(prices, 0, -1, dp);
 }
 
-void test()
+void testStockBuySell()
 {
 	std::cout << (maxProfit(vector<int> { 1, 2, 3, 0, 2 })==3) << endl;
 	std::cout << (maxProfit(vector<int> { 2, 1})==0) << endl;
+}
+
+#include <queue>
+class DirectGraph {
+	vector<vector<vector<int>>>	adjList;
+	vector<bool> visited;
+	vector<int>			distTo;
+	vector<int>			stopsTo;
+	int dfsMin(int s, int dest, int K) {
+		if (stopsTo[s] > K)
+			return INT_MAX/2;
+		if (stopsTo[s] == K) {
+			if (s == dest)
+				return distTo[s];
+			return INT_MAX / 2;
+		}
+		if (visited[s])
+			return distTo[s];
+		int ans = INT_MAX / 2;
+		for (auto item : adjList[s]) {
+			int next = item[1];
+			if (distTo[s] + item[2] < distTo[next]) {
+				distTo[next] = distTo[s] + item[2];
+				stopsTo[next] = stopsTo[s] + 1;
+				dfsMin(next, dest, K);
+			}
+		}
+		visited[s] = true;
+		return ans;
+	}
+
+public:
+	int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) {
+		adjList.resize(n);
+		visited.resize(n, false);
+		for (auto item : flights) {
+			adjList[item[0]].push_back(item);
+		}
+		distTo.resize(n, INT_MAX / 2);
+		stopsTo.resize(n, 0);
+		distTo[src] = 0;
+		int ans= dfsMin(src, dst, K+1);
+		//for (int d : distTo)
+		//	cout << d << " ";
+		//cout << endl;
+		return distTo[dst] >= INT_MAX / 2 ? -1 : distTo[dst];
+	}
+};
+
+void test()
+{
+	DirectGraph t[4];
+	int ans = 0;
+	ans= t[0].findCheapestPrice(3, vector < vector<int>>{ {0, 1, 100}, { 1,2,100 }, { 0,2,500 }}, 0, 2, 0);  // 500
+	cout << ans << endl;
+
+	ans = t[1].findCheapestPrice(3, vector < vector<int>>{ {0, 1, 100}, { 1,2,100 }, { 0,2,500 }}, 0, 2, 1); // 200
+	cout << ans << endl;
+
+	ans = t[2].findCheapestPrice(3, vector < vector<int>>{ {0, 1, 100}, { 1,2,100 }, { 0,2,500 }}, 1, 0, 1); // -1
+	cout << ans << endl;
+	
+	ans = t[3].findCheapestPrice(4, vector < vector<int>>{ {0, 1, 100}, { 0,2,500 }}, 0, 3, 0); // -1
+	cout << ans << endl;
+
+	vector < vector<int>> flights{ { 3,4,4 },{ 2,5,6 },{ 4,7,10 },{ 9,6,5 },{ 7,4,4 },{ 6,2,10 },{ 6,8,6 },{ 7,9,4 },{ 1,5,4 },{ 1,0,4 },{ 9,7,3 },{ 7,0,5 },{ 6,5,8 },{ 1,7,6 },{ 4,0,9 },{ 5,9,1 },{ 8,7,3 },{ 1,2,6 },{ 4,1,5 },{ 5,2,4 },{ 1,9,1 },{ 7,8,10 },{ 0,4,2 },{ 7,2,8 } };
+	ans = t[3].findCheapestPrice(10, flights, 6, 0, 7); // 14
+	cout << ans << endl;
 }
