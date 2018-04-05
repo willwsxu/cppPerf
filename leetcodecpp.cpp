@@ -12,10 +12,10 @@ int findMaxForm(vector<string>& strs, int m, int n) {
 			memo[i][j] = 0;
 		}
 	}
-	for (auto i = 0; i<strs.size(); i++) {
+	for (auto i = 0; i < strs.size(); i++) {
 		int ones = 0;
 		int zero = 0;
-		for (auto j = 0; j<strs[i].size(); j++) {
+		for (auto j = 0; j < strs[i].size(); j++) {
 			if (strs[i][j] == '1')
 				ones++;
 			else
@@ -100,7 +100,7 @@ bool canPartition(vector<int>& nums) {
 				return true;
 		}
 		for (int j = sum - 1; j > 0; j--) {
-			if (j>=n)
+			if (j >= n)
 				dp[j] = dp[j] || dp[j - n];
 		}
 	}
@@ -116,11 +116,11 @@ int findPaths(int m, int n, int N, int i, int j) {
 	for (int x = 1; x <= N; x++)
 	{
 		current = 1 - prev;
-		for (int r = 0; r<m; r++)
+		for (int r = 0; r < m; r++)
 		{
-			for (int c = 0; c<n; c++)
+			for (int c = 0; c < n; c++)
 			{
-				dp3[current][r][ c] = (r == 0 ? 1 : dp3[prev][r - 1][c]) % MOD;  // up !ERROR don't use i-- etc
+				dp3[current][r][c] = (r == 0 ? 1 : dp3[prev][r - 1][c]) % MOD;  // up !ERROR don't use i-- etc
 				dp3[current][r][c] += r == m - 1 ? 1 : dp3[prev][r + 1][c];  // down
 				dp3[current][r][c] %= MOD;
 				dp3[current][r][c] += c == 0 ? 1 : dp3[prev][r][c - 1];  // left
@@ -146,15 +146,15 @@ void testEqualSumPartition()
 // 1 <= k <= len(nums) <= 16.
 // 0 < nums[i] < 10000
 bool dfs(vector<int>& nums, int k, vector<bool>& visited, int subsetSum, int target, int setIdx, int numIdx) {
-	if (k == 1 && target !=0 || k==0)
+	if (k == 1 && target != 0 || k == 0)
 		return true;
-	if (subsetSum == target && setIdx>0)  // setIdx>0 is used to support target=0
+	if (subsetSum == target && setIdx > 0)  // setIdx>0 is used to support target=0
 		return dfs(nums, k - 1, visited, 0, target, 0, 0);
 	for (int i = numIdx; i < nums.size(); i++) {
 		if (visited[i] || subsetSum + nums[i] > target)
 			continue;
 		visited[i] = true;
-		if (dfs(nums, k, visited, subsetSum + nums[i], target, setIdx+1, i + 1))
+		if (dfs(nums, k, visited, subsetSum + nums[i], target, setIdx + 1, i + 1))
 			return true;
 		visited[i] = false;
 	}
@@ -176,10 +176,10 @@ bool canPartitionKSubsets(vector<int>& nums, int k) {
 void testKpartition()
 {
 	std::cout << canPartitionKSubsets(vector<int>{4, 3, 2, 3, 5, 2, 1}, 4) << endl;  // true
-	std::cout << canPartitionKSubsets(vector<int>{-1,1,-1,1,-1,1, -1, 1, -1, 1}, 5) << endl;  // true
+	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 5) << endl;  // true
 	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 6) << endl;  // false
 	std::cout << canPartitionKSubsets(vector<int>{-1, 1, -1, 1, -1, 1, -1, 1, -1, 1}, 7) << endl;  // false
-} 
+}
 
 /* 650. 2 Keys Keyboard
 Initially on a notepad only one character 'A' is present.You can perform two operations on this notepad for each step:
@@ -203,13 +203,13 @@ int minSteps(int n) {
 
 void testKey2()
 {
-	std::cout << ((minSteps(1)==0)?"true":"false") << endl;
-	std::cout << (minSteps(2)==2) << endl;
-	std::cout << (minSteps(3)==3) << endl;
-	std::cout << (minSteps(4)==4) << endl;
-	std::cout << (minSteps(8)==6) << endl;
-	std::cout << (minSteps(9)==6) << endl;
-	std::cout << (minSteps(12)==7) << endl;
+	std::cout << ((minSteps(1) == 0) ? "true" : "false") << endl;
+	std::cout << (minSteps(2) == 2) << endl;
+	std::cout << (minSteps(3) == 3) << endl;
+	std::cout << (minSteps(4) == 4) << endl;
+	std::cout << (minSteps(8) == 6) << endl;
+	std::cout << (minSteps(9) == 6) << endl;
+	std::cout << (minSteps(12) == 7) << endl;
 }
 
 // prevBuy, last postion of buy, -1 means no
@@ -222,10 +222,10 @@ int maxProfit(vector<int>& prices, int pos, int prevBuy, vector<vector<int>>& dp
 	int ans = maxProfit(prices, pos + 1, prevBuy, dp);  // no action
 	if (prevBuy >= 0) {
 		if (prices[pos] > prices[prevBuy])   // sell if there is profit
-			ans = std::max(ans, (prices[pos] - prices[prevBuy])+maxProfit(prices, pos+2, -1, dp));
+			ans = std::max(ans, (prices[pos] - prices[prevBuy]) + maxProfit(prices, pos + 2, -1, dp));
 	}
 	else
-		ans= std::max(ans, maxProfit(prices, pos + 1, pos, dp));  // buy
+		ans = std::max(ans, maxProfit(prices, pos + 1, pos, dp));  // buy
 	dp[pos][prevBuy + 1] = ans;
 	return ans;
 }
@@ -237,30 +237,38 @@ int maxProfit(vector<int>& prices) {
 
 void testStockBuySell()
 {
-	std::cout << (maxProfit(vector<int> { 1, 2, 3, 0, 2 })==3) << endl;
-	std::cout << (maxProfit(vector<int> { 2, 1})==0) << endl;
+	std::cout << (maxProfit(vector<int> { 1, 2, 3, 0, 2 }) == 3) << endl;
+	std::cout << (maxProfit(vector<int> { 2, 1}) == 0) << endl;
 }
 
 #include <queue>
+#include <unordered_set>
 class DirectGraph {
 	vector<vector<vector<int>>>	adjList;
 	vector<int>			distTo;  // dist from dest back to src
 	int dfsMin(int s, int dest, int level, int K) {
 		if (level > K)
-			return INT_MAX/2;
+			return INT_MAX / 2;
 		if (s == dest)
 			return 0;
 		if (level == K) {
 			return INT_MAX / 2;
 		}
-		if (distTo[s] < INT_MAX / 2)
-			return distTo[s];
+		//if (distTo[s] < INT_MAX / 2)  // dfs works but too slow because of these two lines are not working
+		//	return distTo[s];
 		int ans = INT_MAX / 2;
 		for (auto item : adjList[s]) {
 			ans = std::min(ans, item[2] + dfsMin(item[1], dest, level + 1, K));
 		}
 		distTo[s] = ans;
 		return ans;
+	}
+
+	void print(vector<int>& v)
+	{
+		for (int d : v)
+			cout << d << " ";
+		cout << endl;
 	}
 
 public:
@@ -270,24 +278,42 @@ public:
 			adjList[item[0]].push_back(item);
 		}
 		distTo.resize(n, INT_MAX / 2);
-		distTo[dst] = 0;
-		int ans= dfsMin(src, dst, 0, K+1);
-		//for (int d : distTo)
-		//	cout << d << " ";
-		//cout << endl;
-		return ans >= INT_MAX / 2 ? -1 : ans;
+		//distTo[dst] = 0;
+		//int ans= dfsMin(src, dst, 0, K+1);  // fails some cases
+		//return ans >= INT_MAX / 2 ? -1 : ans;
+		
+		// modified bfs, or bellman-ford, loop K+1 times
+		distTo[src] = 0;  // distance from src to current node
+		unordered_set<int> q{ src };
+		for (int i = 0; i <= K && !q.empty(); i++) {
+			vector<int> oldAns(distTo);   // make a copy of last values, or it won't work
+			vector<int> last_q(begin(q), end(q));
+			q.clear();
+			for (int s : last_q) {
+				for (auto f : adjList[s]) {
+					distTo[f[1]] = std::min(distTo[f[1]], oldAns[s]+f[2]);
+					if (f[1] != dst)
+						q.insert(f[1]);
+				}
+			}
+			//print(distTo);
+		}
+		return distTo[dst] >= INT_MAX / 2 ? -1 : distTo[dst];
 	}
 };
 
 void test()
 {
-	DirectGraph t[6];
+	DirectGraph t[7];
 	int ans = 0;
+
+	ans = t[6].findCheapestPrice(5, vector < vector<int>>{ {0, 1, 5}, { 1,2,5 }, { 0,3,2 }, { 3,1,2 }, { 1,4,1 }, { 4,2,1 }}, 0, 2, 2); // 7
+	cout << ans << endl;
 
 	ans = t[5].findCheapestPrice(4, vector < vector<int>>{ {0, 1, 1}, { 0,2,5 }, { 1,2,1 }, { 2,3,1 }}, 0, 3, 1); // 6
 	cout << ans << endl;
 
-	ans= t[0].findCheapestPrice(3, vector < vector<int>>{ {0, 1, 100}, { 1,2,100 }, { 0,2,500 }}, 0, 2, 0);  // 500
+	ans = t[0].findCheapestPrice(3, vector < vector<int>>{ {0, 1, 100}, { 1,2,100 }, { 0,2,500 }}, 0, 2, 0);  // 500
 	cout << ans << endl;
 
 	ans = t[1].findCheapestPrice(3, vector < vector<int>>{ {0, 1, 100}, { 1,2,100 }, { 0,2,500 }}, 0, 2, 1); // 200
@@ -295,7 +321,7 @@ void test()
 
 	ans = t[2].findCheapestPrice(3, vector < vector<int>>{ {0, 1, 100}, { 1,2,100 }, { 0,2,500 }}, 1, 0, 1); // -1
 	cout << ans << endl;
-	
+
 	ans = t[3].findCheapestPrice(4, vector < vector<int>>{ {0, 1, 100}, { 0,2,500 }}, 0, 3, 0); // -1
 	cout << ans << endl;
 
