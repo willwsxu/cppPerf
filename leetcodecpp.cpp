@@ -376,5 +376,5 @@ void test()
 	tn->right->right = new TreeNode(9);
 	Tree t;
 	vector<int> ans= t.largestValues(tn);
-	for_each(begin(ans), end(ans), [](auto i) { cout << i;});
+	for_each(begin(ans), end(ans), [](auto i) { cout << i << " ";});
 }
