@@ -302,7 +302,7 @@ public:
 	}
 };
 
-void test()
+void testCheapestTicket()
 {
 	DirectGraph t[7];
 	int ans = 0;
@@ -328,4 +328,53 @@ void test()
 	vector < vector<int>> flights{ { 3,4,4 },{ 2,5,6 },{ 4,7,10 },{ 9,6,5 },{ 7,4,4 },{ 6,2,10 },{ 6,8,6 },{ 7,9,4 },{ 1,5,4 },{ 1,0,4 },{ 9,7,3 },{ 7,0,5 },{ 6,5,8 },{ 1,7,6 },{ 4,0,9 },{ 5,9,1 },{ 8,7,3 },{ 1,2,6 },{ 4,1,5 },{ 5,2,4 },{ 1,9,1 },{ 7,8,10 },{ 0,4,2 },{ 7,2,8 } };
 	ans = t[4].findCheapestPrice(10, flights, 6, 0, 7); // 14
 	cout << ans << endl;
+}
+
+
+struct TreeNode {
+	int val;
+	TreeNode *left;
+	TreeNode *right;
+	TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+// 515. Find Largest Value in Each Tree Row of a binary tree.
+// BFS, similar to 
+class Tree {
+public:
+	vector<int> largestValues(TreeNode* root) {
+		vector<int> ans;
+		queue<TreeNode*> q;
+		if (root == nullptr)
+			return ans;
+		q.push(root);
+		while (!q.empty()) {
+			int oldSize = q.size();
+			int large = INT_MIN;
+			for (int i = 0; i < oldSize; i++) {
+				TreeNode *tn = q.front();
+				q.pop();
+				if (large < tn->val)
+					large = tn->val;
+				if (tn->left)
+					q.push(tn->left);
+				if (tn->right)
+					q.push(tn->right);
+			}
+			ans.push_back(large);
+		}
+		return ans;
+	}
+};
+
+void test()
+{
+	TreeNode *tn = new TreeNode(1);
+	tn->left = new TreeNode(3);
+	tn->right = new TreeNode(2);
+	tn->left->left = new TreeNode(5);
+	tn->left->right = new TreeNode(3);
+	tn->right->right = new TreeNode(9);
+	Tree t;
+	vector<int> ans= t.largestValues(tn);
+	for_each(begin(ans), end(ans), [](auto i) { cout << i;});
 }
