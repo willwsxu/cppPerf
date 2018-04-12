@@ -338,7 +338,7 @@ struct TreeNode {
 	TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 // 515. Find Largest Value in Each Tree Row of a binary tree.
-// BFS, similar to 
+// BFS, similar to 102. Binary Tree Level Order Traversal, 199. Binary Tree Right Side View, 103.Binary Tree Zigzag Level Order Traversal,513.Find Bottom Left Tree Value
 class Tree {
 public:
 	vector<int> largestValues(TreeNode* root) {
@@ -366,7 +366,7 @@ public:
 	}
 };
 
-void test()
+void testTree()
 {
 	TreeNode *tn = new TreeNode(1);
 	tn->left = new TreeNode(3);
@@ -377,4 +377,60 @@ void test()
 	Tree t;
 	vector<int> ans= t.largestValues(tn);
 	for_each(begin(ans), end(ans), [](auto i) { cout << i << " ";});
+}
+
+//542. 01 Matrix
+// Given a matrix consists of 0 and 1, find the distance of the nearest 0 for each cell
+// The number of elements of the given matrix will not exceed 10,000.
+// There are at least one 0 in the given matrix.
+// The cells are adjacent in only four directions : up, down, left and right.
+class Matrix {
+public:
+	vector<vector<int>> updateMatrix(vector<vector<int>>& matrix) {
+		int m = matrix.size();
+		if (m == 0)
+			return matrix;
+		int n = matrix[0].size();
+		queue<vector<int>> q;
+		for (int i = 0; i < m; i++) {			
+			for (int j = 0; j < n; j++) {
+				if (matrix[i][j] == 0)
+					q.push(vector<int>{i, j});
+				else
+					matrix[i][j] = INT_MAX;
+			}
+		}
+		vector<vector<int>> direction{ { -1,0 },{ 1,0 },{ 0,-1 },{ 0,1 } };
+		int dist = 0;
+		while (!q.empty()) {
+			dist++;
+			int oldSize = q.size();
+			for (int i = 0; i < oldSize; i++) {
+				vector<int>& cell = q.front();
+				for (auto& d : direction) {
+					int r = cell[0] + d[0];
+					int c = cell[1] + d[1];
+					if (r < 0 || c < 0 || r >= m || c >= n)
+						continue;
+					if (matrix[r][c] != INT_MAX)
+						continue;
+					matrix[r][c] = dist;
+					q.push(vector<int>{r, c});
+				}
+				q.pop();
+			}
+		}
+		return matrix;
+	}
+};
+
+void test()
+{
+	Matrix m;
+
+	vector<vector<int>>& ans = m.updateMatrix(vector<vector<int>>{ {0, 0, 0}, { 0,1,0 }, { 1,1,1 }});
+	for (auto& v : ans) {
+		for_each(begin(v), end(v), [](auto i) { cout << i << " ";});
+		cout << endl;
+	}
 }
