@@ -386,7 +386,7 @@ void testTree()
 // The cells are adjacent in only four directions : up, down, left and right.
 class Matrix {
 public:
-	vector<vector<int>> updateMatrix(vector<vector<int>>& matrix) {
+	vector<vector<int>> updateMatrix(vector<vector<int>>& matrix) { // bfs is slow, beat 42%
 		int m = matrix.size();
 		if (m == 0)
 			return matrix;
@@ -423,7 +423,7 @@ public:
 		return matrix;
 	}
 
-	vector<vector<int>> updateMatrix2(vector<vector<int>>& matrix) { // 2 sweep
+	vector<vector<int>> updateMatrix2(vector<vector<int>>& matrix) { // 2 sweep, beat93%
 		int m = matrix.size();
 		if (m == 0)
 			return matrix;
@@ -437,18 +437,18 @@ public:
 				else {
 					ans[i][j] = MY_MAX;
 					if (i>0)
-						ans[i][j] = std::min(ans[i][j], matrix[i-1][j]+1);  // check top cell
+						ans[i][j] = std::min(ans[i][j], ans[i-1][j]+1);  // check top cell
 					if (j>0)
-						ans[i][j] = std::min(ans[i][j], matrix[i][j-1]+1);  // check left cell
+						ans[i][j] = std::min(ans[i][j], ans[i][j-1]+1);  // check left cell
 				}
 			}
 		}
 		for (int i = m-1; i >=0; i--) {
 			for (int j = n-1; j >=0; j--) {
 				if (i<m-1)
-					ans[i][j] = std::min(ans[i][j], matrix[i + 1][j]+1);  // check bottom cell
+					ans[i][j] = std::min(ans[i][j], ans[i + 1][j]+1);  // check bottom cell
 				if (j<n-1)
-					ans[i][j] = std::min(ans[i][j], matrix[i][j + 1]+1);  // check right cell
+					ans[i][j] = std::min(ans[i][j], ans[i][j + 1]+1);  // check right cell
 			}
 		}
 		return ans;
@@ -470,4 +470,8 @@ void test()
 
 	vector<vector<int>>& ans2 = m.updateMatrix2(vector<vector<int>>{ {0, 0, 0}, { 0,1,0 }, { 1,1,1 }});
 	print(ans2);
+
+	vector<vector<int>> matrix{ {1, 0, 1, 1, 0, 0, 1, 0, 0, 1}, { 0,1,1,0,1,0,1,0,1,1 }, { 0,0,1,0,1,0,0,1,0,0 }, { 1,0,1,0,1,1,1,1,1,1 }, { 0,1,0,1,1,0,0,0,0,1 }, { 0,0,1,0,1,1,1,0,1,0 }, { 0,1,0,1,0,1,0,0,1,1 }, { 1,0,0,0,1,2,1,1,0,1 }, { 2,1,1,1,1,2,1,0,1,0 }, { 2,2,2,1,0,1,0,0,1,1 } };
+	vector<vector<int>>& ans3 = m.updateMatrix2(matrix);
+	print(ans3);
 }
