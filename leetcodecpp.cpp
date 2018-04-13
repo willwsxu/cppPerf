@@ -422,6 +422,37 @@ public:
 		}
 		return matrix;
 	}
+
+	vector<vector<int>> updateMatrix2(vector<vector<int>>& matrix) { // 2 sweep
+		int m = matrix.size();
+		if (m == 0)
+			return matrix;
+		int n = matrix[0].size();
+		int MY_MAX = INT_MAX / 2;
+		vector<vector<int>> ans(m, vector<int>(n, MY_MAX));
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				if (matrix[i][j] == 0)
+					ans[i][j] = 0;
+				else {
+					ans[i][j] = MY_MAX;
+					if (i>0)
+						ans[i][j] = std::min(ans[i][j], matrix[i-1][j]+1);  // check top cell
+					if (j>0)
+						ans[i][j] = std::min(ans[i][j], matrix[i][j-1]+1);  // check left cell
+				}
+			}
+		}
+		for (int i = m-1; i >=0; i--) {
+			for (int j = n-1; j >=0; j--) {
+				if (i<m-1)
+					ans[i][j] = std::min(ans[i][j], matrix[i + 1][j]+1);  // check bottom cell
+				if (j<n-1)
+					ans[i][j] = std::min(ans[i][j], matrix[i][j + 1]+1);  // check right cell
+			}
+		}
+		return ans;
+	}
 };
 
 void test()
@@ -429,8 +460,14 @@ void test()
 	Matrix m;
 
 	vector<vector<int>>& ans = m.updateMatrix(vector<vector<int>>{ {0, 0, 0}, { 0,1,0 }, { 1,1,1 }});
-	for (auto& v : ans) {
-		for_each(begin(v), end(v), [](auto i) { cout << i << " ";});
-		cout << endl;
-	}
+	auto print = [](vector<vector<int>>& ans) {
+		for (auto& v : ans) {
+			for_each(begin(v), end(v), [](auto i) { cout << i << " ";});
+			cout << endl;
+		}
+	};
+	print(ans);
+
+	vector<vector<int>>& ans2 = m.updateMatrix2(vector<vector<int>>{ {0, 0, 0}, { 0,1,0 }, { 1,1,1 }});
+	print(ans2);
 }
