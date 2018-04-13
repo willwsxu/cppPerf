@@ -455,17 +455,19 @@ public:
 	}
 };
 
-void test()
+auto print = [](vector<vector<int>>& ans) {
+	for (auto& v : ans) {
+		for_each(begin(v), end(v), [](auto i) { cout << i << " ";});
+		cout << endl;
+	}
+	cout << endl;
+};
+void testMatrix()
 {
 	Matrix m;
 
 	vector<vector<int>>& ans = m.updateMatrix(vector<vector<int>>{ {0, 0, 0}, { 0,1,0 }, { 1,1,1 }});
-	auto print = [](vector<vector<int>>& ans) {
-		for (auto& v : ans) {
-			for_each(begin(v), end(v), [](auto i) { cout << i << " ";});
-			cout << endl;
-		}
-	};
+
 	print(ans);
 
 	vector<vector<int>>& ans2 = m.updateMatrix2(vector<vector<int>>{ {0, 0, 0}, { 0,1,0 }, { 1,1,1 }});
@@ -474,4 +476,77 @@ void test()
 	vector<vector<int>> matrix{ {1, 0, 1, 1, 0, 0, 1, 0, 0, 1}, { 0,1,1,0,1,0,1,0,1,1 }, { 0,0,1,0,1,0,0,1,0,0 }, { 1,0,1,0,1,1,1,1,1,1 }, { 0,1,0,1,1,0,0,0,0,1 }, { 0,0,1,0,1,1,1,0,1,0 }, { 0,1,0,1,0,1,0,0,1,1 }, { 1,0,0,0,1,2,1,1,0,1 }, { 2,1,1,1,1,2,1,0,1,0 }, { 2,2,2,1,0,1,0,0,1,1 } };
 	vector<vector<int>>& ans3 = m.updateMatrix2(matrix);
 	print(ans3);
+}
+
+/* Given an m x n matrix of non - negative integers representing the height of each unit cell in a continent, 
+ * the "Pacific ocean" touches the left and top edges of the matrix and the "Atlantic ocean" touches the right and bottom edges.
+ * Water can only flow in four directions(up, down, left, or right) from a cell to another one with height equal or lower.
+ * Find the list of grid coordinates where water can flow to both the Pacific and Atlantic ocean.
+*/
+// 417. Pacific Atlantic Water Flow
+// Both m and n are less than 150
+class WaterFlow { // borrow 2 sweep ideas from matrix above.
+public:
+	vector<pair<int, int>> pacificAtlantic(vector<vector<int>>& matrix) {
+		vector<pair<int, int>> ans;
+		int m = matrix.size();
+		if (m == 0)
+			return ans;
+		int n = matrix[0].size();
+		vector<vector<bool>> pacific(m, vector<bool>(n, false));  // find all cells flow to pacific
+		for (int i = 0; i < n; i++)
+			pacific[0][i] = true; // first row
+		for (int i = 1; i < m; i++)
+			pacific[i][0] = true; // first column
+		for (int i = 1; i < m; i++) {
+			for (int j = 1; j < n; j++) {
+				if (pacific[i-1][j] && matrix[i][j] >= matrix[i - 1][j] || pacific[i][j - 1] && matrix[i][j] >= matrix[i][j - 1])
+					pacific[i][j] = true;
+			}
+		}
+
+		auto print2 = [](vector<vector<bool>>& ans) {
+			for (auto& v : ans) {
+				for_each(begin(v), end(v), [](auto i) { cout << (i?"Y":"N") << " ";});
+				cout << endl;
+			}
+			cout << endl;
+		};
+		print2(pacific);
+		vector<vector<bool>> atlantic(m, vector<bool>(n, false)); // find all cells flow to atlantic
+		for (int i = 0; i < n; i++) {
+			atlantic[m - 1][i] = true; // last row
+			if (pacific[m - 1][i])
+				ans.push_back(pair<int, int>{m-1, i});
+		}
+		for (int i = 0; i < m-1; i++) {
+			atlantic[i][n - 1] = true; // last column
+			if (pacific[i][n - 1])
+				ans.push_back(pair<int, int>{i, n-1});
+		}
+		for (int i = m-2; i >=0; i--) {
+			for (int j = n-2; j >=0; j--) {
+				if (atlantic[i + 1][j] && matrix[i][j] >= matrix[i + 1][j] || atlantic[i][j + 1] && matrix[i][j] >= matrix[i][j + 1]) {
+					atlantic[i][j] = true;
+					if (pacific[i][j])
+						ans.push_back(pair<int, int>{i, j});
+				}
+			}
+		}
+		print2(atlantic);
+		return ans;
+	}
+};
+
+void test()
+{
+	WaterFlow w;
+	vector<pair<int, int>> ans=w.pacificAtlantic(vector<vector<int>>{ {1,2,2,3,5}, {3,2,3,4,4}, {2,4,5,3,1}, {6,7,1,4,5}, {5,1,1,2,4}});
+	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";});
+	cout << endl;
+	ans = w.pacificAtlantic(vector<vector<int>>{ {1}});
+	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";});
+	cout << endl;
+	ans = w.pacificAtlantic(vector<vector<int>>{ {1, 2, 3}, {8,9,4}, {7,6,5}});
+	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";});
 }
