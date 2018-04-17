@@ -487,6 +487,20 @@ void testMatrix()
 // Both m and n are less than 150
 class WaterFlow { // borrow 2 sweep ideas from matrix above.
 public:
+	void dfs(vector<vector<int>>& matrix, int r, int c, int m, int n, vector<vector<bool>>& vis) {
+		static vector<vector<int>> direction{ { -1,0 },{ 1,0 },{ 0,-1 },{ 0,1 } };
+		vis[r][c] = true;
+		for (vector<int> d : direction) {
+			int y = r + d[0];
+			int x = c + d[1];
+			if (y < 0 || x < 0 || y >= m || x >= n)
+				continue;
+			if (vis[y][x])
+				continue;
+			if(matrix[y][x]>=matrix[r][c])
+				dfs(matrix, y, x, m, n, vis);
+		}
+	}
 	vector<pair<int, int>> pacificAtlantic(vector<vector<int>>& matrix) {
 		vector<pair<int, int>> ans;
 		int m = matrix.size();
@@ -494,17 +508,22 @@ public:
 			return ans;
 		int n = matrix[0].size();
 		vector<vector<bool>> pacific(m, vector<bool>(n, false));  // find all cells flow to pacific
-		for (int i = 0; i < n; i++)
-			pacific[0][i] = true; // first row
-		for (int i = 1; i < m; i++)
-			pacific[i][0] = true; // first column
-		for (int i = 1; i < m; i++) {
-			for (int j = 1; j < n; j++) {
-				if (pacific[i-1][j] && matrix[i][j] >= matrix[i - 1][j] || pacific[i][j - 1] && matrix[i][j] >= matrix[i][j - 1])  // check left and top
-					pacific[i][j] = true;
+		vector<vector<bool>> atlantic(m, vector<bool>(n, false)); // find all cells flow to atlantic
+		for (int i = 0; i < n; i++) {
+			dfs(matrix, 0, i, m, n, pacific);    // first row
+			dfs(matrix, m-1, i, m, n, atlantic); // last row
+		}
+		for (int i = 0; i < m; i++) {
+			dfs(matrix, i, 0, m, n, pacific);   // first column
+			dfs(matrix, i, n-1, m, n, atlantic);   // last column
+		}
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				if (pacific[i][j] && atlantic[i][j])
+					ans.push_back(pair<int, int>{i, j});
 			}
 		}
-
+		/*
 		auto print2 = [](vector<vector<bool>>& ans) {
 			for (auto& v : ans) {
 				for_each(begin(v), end(v), [](auto i) { cout << (i?"Y":"N") << " ";});
@@ -513,27 +532,7 @@ public:
 			cout << endl;
 		};
 		print2(pacific);
-		vector<vector<bool>> atlantic(m, vector<bool>(n, false)); // find all cells flow to atlantic
-		for (int i = 0; i < n; i++) {
-			atlantic[m - 1][i] = true; // last row
-			if (pacific[m - 1][i])
-				ans.push_back(pair<int, int>{m-1, i});
-		}
-		for (int i = 0; i < m-1; i++) {
-			atlantic[i][n - 1] = true; // last column
-			if (pacific[i][n - 1])
-				ans.push_back(pair<int, int>{i, n-1});
-		}
-		for (int i = m-2; i >=0; i--) {
-			for (int j = n-2; j >=0; j--) {
-				if (atlantic[i + 1][j] && matrix[i][j] >= matrix[i + 1][j] || atlantic[i][j + 1] && matrix[i][j] >= matrix[i][j + 1]) {
-					atlantic[i][j] = true;
-					if (pacific[i][j])
-						ans.push_back(pair<int, int>{i, j});
-				}
-			}
-		}
-		print2(atlantic);
+		print2(atlantic);*/
 		return ans;
 	}
 };
@@ -547,6 +546,6 @@ void test()
 	ans = w.pacificAtlantic(vector<vector<int>>{ {1}});
 	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";});
 	cout << endl;  // [0,0]
-	ans = w.pacificAtlantic(vector<vector<int>>{ {1, 2, 3}, {8,9,4}, {7,6,5}});  // can move right then up
-	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";});
-}
+	ans = w.pacificAtlantic(vector<vector<int>>{ {1, 2, 3}, {8,9,4}, {7,6,5}});  // can move right then up, 2 sweep method fail this case
+	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";}); //[[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]]
+ }
