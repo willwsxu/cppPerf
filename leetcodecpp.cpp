@@ -500,7 +500,7 @@ public:
 			pacific[i][0] = true; // first column
 		for (int i = 1; i < m; i++) {
 			for (int j = 1; j < n; j++) {
-				if (pacific[i-1][j] && matrix[i][j] >= matrix[i - 1][j] || pacific[i][j - 1] && matrix[i][j] >= matrix[i][j - 1])
+				if (pacific[i-1][j] && matrix[i][j] >= matrix[i - 1][j] || pacific[i][j - 1] && matrix[i][j] >= matrix[i][j - 1])  // check left and top
 					pacific[i][j] = true;
 			}
 		}
@@ -543,10 +543,10 @@ void test()
 	WaterFlow w;
 	vector<pair<int, int>> ans=w.pacificAtlantic(vector<vector<int>>{ {1,2,2,3,5}, {3,2,3,4,4}, {2,4,5,3,1}, {6,7,1,4,5}, {5,1,1,2,4}});
 	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";});
-	cout << endl;
+	cout << endl;  // [[0, 4], [1, 3], [1, 4], [2, 2], [3, 0], [3, 1], [4, 0]]
 	ans = w.pacificAtlantic(vector<vector<int>>{ {1}});
 	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";});
-	cout << endl;
-	ans = w.pacificAtlantic(vector<vector<int>>{ {1, 2, 3}, {8,9,4}, {7,6,5}});
+	cout << endl;  // [0,0]
+	ans = w.pacificAtlantic(vector<vector<int>>{ {1, 2, 3}, {8,9,4}, {7,6,5}});  // can move right then up
 	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";});
 }
