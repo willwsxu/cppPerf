@@ -561,14 +561,13 @@ class SortRandom {
 	int partition(vector<int>& nums, int low, int hi)
 	{
 		int pivot = low;
+		int& pV = nums[low];
 		while (++low < hi) {
-			if (nums[low] >= nums[pivot]) { // find number larger or equal
-				while (hi > low) {
-					if (nums[hi] >= nums[pivot])
-						hi--;
-					else
+			if (nums[low] >= pV) { // find number larger or equal
+				do {
+					if (nums[hi] < pV)
 						break;  // find a number smaller
-				}
+				} while (--hi > low);
 				if (low < hi)
 					std::swap(nums[low], nums[hi]);
 				else {
@@ -577,10 +576,10 @@ class SortRandom {
 				}
 			}
 		}
-		if (nums[low] < nums[pivot])
-			std::swap(nums[low], nums[pivot]);
+		if (nums[low] < pV)
+			std::swap(nums[low], pV);
 		else if (low > pivot + 1)
-			std::swap(nums[--low], nums[pivot]); //move low 1 back
+			std::swap(nums[--low], pV); //move low 1 back
 		else if (low>pivot)
 			low--;
 		return low;
@@ -613,6 +612,7 @@ public:
 void test()
 {
 	SortRandom s;
+	cout << s.findKthLargest(vector<int>{7, 6, 5, 4, 3, 2, 1}, 5) << endl;
 	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 2) << endl;
 	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 1) << endl;
 	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 6) << endl;
