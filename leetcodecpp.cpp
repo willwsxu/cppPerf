@@ -555,50 +555,51 @@ void testWaterFlow()
 // 215. Kth Largest Element in an Array, unsorted
 // 1 ≤ k ≤ array's length
 class SortRandom {
-	int partition(vector<int>& nums, int i, int j)
+	int partition(vector<int>& nums, int low, int hi)
 	{
-		int pivot = i;
-		while (++i < j) {
-			if (nums[i] >= nums[pivot]) { // find number larger or equal
-				while (j > i) {
-					if (nums[j] >= nums[pivot])
-						j--;
+		int pivot = low;
+		while (++low < hi) {
+			if (nums[low] >= nums[pivot]) { // find number larger or equal
+				while (hi > low) {
+					if (nums[hi] >= nums[pivot])
+						hi--;
 					else
 						break;  // find a number smaller
 				}
-				if (i < j)
-					std::swap(nums[i], nums[j]);
+				if (low < hi)
+					std::swap(nums[low], nums[hi]);
 				else {
-					i--;
+					low--;
 					break;
 				}
 			}
 		}
-		if (nums[i] < nums[pivot])
-			std::swap(nums[i], nums[pivot]);
-		else if (i > pivot + 1)
-			std::swap(nums[--i], nums[pivot]); //move i 1 back
-		else if (i>pivot)
-			i--;
-		return i;
+		if (nums[low] < nums[pivot])
+			std::swap(nums[low], nums[pivot]);
+		else if (low > pivot + 1)
+			std::swap(nums[--low], nums[pivot]); //move i 1 back
+		else if (low>pivot)
+			low--;
+		return low;
 	}
 public:
 	int findKthLargest(vector<int>& nums, int k) {
 		std::random_device rd;  //Will be used to obtain a seed for the random number engine
 		std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 		//std::uniform_int_distribution<> dis(0, nums.size()-1);
-		shuffle(begin(nums), end(nums), gen);
+		shuffle(begin(nums), end(nums), gen);   // add shuffling improve perforamnce from 23 ms to 12ms
 		// pivot on value on low
 		int low = 0; int high = nums.size()-1;
+		int target = nums.size() - k;
 		while (low < high) {
-			int i = partition(nums, low, high);	// i is the low bound of value nums[i]
-			if (nums.size() - i == k)
-				return nums[i];
-			else if (nums.size() - i > k) {  // answer lies to right
-				low = i + 1;
+			int pivot = partition(nums, low, high);	// lower bound value at pivot
+			if (pivot == target)
+				return nums[pivot];
+			else if (pivot < target) {  // answer lies to right
+				low = pivot + 1;
 			}
 			else {
-				high = i - 1;
+				high = pivot - 1;
 			}
 		}
 		return nums[low];
