@@ -555,45 +555,43 @@ void testWaterFlow()
 // 215. Kth Largest Element in an Array, unsorted
 // 1 ≤ k ≤ array's length
 class SortRandom {
+	int partition(vector<int>& nums, int i, int j)
+	{
+		int pivot = i;
+		while (++i < j) {
+			if (nums[i] >= nums[pivot]) { // find number larger or equal
+				while (j > i) {
+					if (nums[j] >= nums[pivot])
+						j--;
+					else
+						break;  // find a number smaller
+				}
+				if (i < j)
+					std::swap(nums[i], nums[j]);
+				else {
+					i--;
+					break;
+				}
+			}
+		}
+		if (nums[i] < nums[pivot])
+			std::swap(nums[i], nums[pivot]);
+		else if (i > pivot + 1)
+			std::swap(nums[--i], nums[pivot]); //move i 1 back
+		else if (i>pivot)
+			i--;
+		return i;
+	}
 public:
 	int findKthLargest(vector<int>& nums, int k) {
 		std::random_device rd;  //Will be used to obtain a seed for the random number engine
 		std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 		//std::uniform_int_distribution<> dis(0, nums.size()-1);
-		//auto myrandom = [&dis, &gen](int i) { return dis(gen);};
-		//for (int i = 0; i < nums.size(); i++)
-		//	cout << myrandom(i) << ",";
-		//cout << endl;
 		shuffle(begin(nums), end(nums), gen);
-		//for_each(begin(nums), end(nums), [](auto n) { cout << n << " ";});
 		// pivot on value on low
 		int low = 0; int high = nums.size()-1;
 		while (low < high) {
-			int i = low;
-			int j = high;
-			while (++i < j) {
-				if (nums[i] >= nums[low]) { // find number larger or equal
-					while (j > i) {
-						if (nums[j] >= nums[low])
-							j--;
-						else
-							break;  // find a number smaller
-					}
-					if (i < j)
-						std::swap(nums[i], nums[j]);
-					else {
-						i--;
-						break;
-					}
-				}
-			}
-			if (nums[i] < nums[low])
-				std::swap(nums[i], nums[low]);
-			else if (i > low + 1)
-				std::swap(nums[--i], nums[low]); //move i 1 back
-			else if (i>low)
-				i--;
-												 // i is the low bound of value nums[i]
+			int i = partition(nums, low, high);	// i is the low bound of value nums[i]
 			if (nums.size() - i == k)
 				return nums[i];
 			else if (nums.size() - i > k) {  // answer lies to right
