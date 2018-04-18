@@ -243,6 +243,15 @@ void testStockBuySell()
 
 #include <queue>
 #include <unordered_set>
+#include <iterator>
+#include <iostream>
+
+void print(vector<int>& v)
+{
+	std::copy(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, " "));
+	cout << endl;
+}
+
 class DirectGraph {
 	vector<vector<vector<int>>>	adjList;
 	vector<int>			distTo;  // dist from dest back to src
@@ -262,13 +271,6 @@ class DirectGraph {
 		}
 		distTo[s] = ans;
 		return ans;
-	}
-
-	void print(vector<int>& v)
-	{
-		for (int d : v)
-			cout << d << " ";
-		cout << endl;
 	}
 
 public:
@@ -376,7 +378,7 @@ void testTree()
 	tn->right->right = new TreeNode(9);
 	Tree t;
 	vector<int> ans= t.largestValues(tn);
-	for_each(begin(ans), end(ans), [](auto i) { cout << i << " ";});
+	print(ans);
 }
 
 //542. 01 Matrix
@@ -455,9 +457,10 @@ public:
 	}
 };
 
-auto print = [](vector<vector<int>>& ans) {
+auto printvv = [](vector<vector<int>>& ans) {
 	for (auto& v : ans) {
-		for_each(begin(v), end(v), [](auto i) { cout << i << " ";});
+		//for_each(begin(v), end(v), [](auto i) { cout << i << " ";});
+		std::copy(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, " "));
 		cout << endl;
 	}
 	cout << endl;
@@ -468,14 +471,14 @@ void testMatrix()
 
 	vector<vector<int>>& ans = m.updateMatrix(vector<vector<int>>{ {0, 0, 0}, { 0,1,0 }, { 1,1,1 }});
 
-	print(ans);
+	printvv(ans);
 
 	vector<vector<int>>& ans2 = m.updateMatrix2(vector<vector<int>>{ {0, 0, 0}, { 0,1,0 }, { 1,1,1 }});
-	print(ans2);
+	printvv(ans2);
 
 	vector<vector<int>> matrix{ {1, 0, 1, 1, 0, 0, 1, 0, 0, 1}, { 0,1,1,0,1,0,1,0,1,1 }, { 0,0,1,0,1,0,0,1,0,0 }, { 1,0,1,0,1,1,1,1,1,1 }, { 0,1,0,1,1,0,0,0,0,1 }, { 0,0,1,0,1,1,1,0,1,0 }, { 0,1,0,1,0,1,0,0,1,1 }, { 1,0,0,0,1,2,1,1,0,1 }, { 2,1,1,1,1,2,1,0,1,0 }, { 2,2,2,1,0,1,0,0,1,1 } };
 	vector<vector<int>>& ans3 = m.updateMatrix2(matrix);
-	print(ans3);
+	printvv(ans3);
 }
 
 /* Given an m x n matrix of non - negative integers representing the height of each unit cell in a continent, 
@@ -577,7 +580,7 @@ class SortRandom {
 		if (nums[low] < nums[pivot])
 			std::swap(nums[low], nums[pivot]);
 		else if (low > pivot + 1)
-			std::swap(nums[--low], nums[pivot]); //move i 1 back
+			std::swap(nums[--low], nums[pivot]); //move low 1 back
 		else if (low>pivot)
 			low--;
 		return low;
