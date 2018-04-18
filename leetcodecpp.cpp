@@ -1,4 +1,4 @@
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -537,7 +537,7 @@ public:
 	}
 };
 
-void test()
+void testWaterFlow()
 {
 	WaterFlow w;
 	vector<pair<int, int>> ans=w.pacificAtlantic(vector<vector<int>>{ {1,2,2,3,5}, {3,2,3,4,4}, {2,4,5,3,1}, {6,7,1,4,5}, {5,1,1,2,4}});
@@ -549,3 +549,70 @@ void test()
 	ans = w.pacificAtlantic(vector<vector<int>>{ {1, 2, 3}, {8,9,4}, {7,6,5}});  // can move right then up, 2 sweep method fail this case
 	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";}); //[[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]]
  }
+
+#include <random>
+#include <cmath>
+// 215. Kth Largest Element in an Array, unsorted
+// 1 ≤ k ≤ array's length
+class SortRandom {
+public:
+	int findKthLargest(vector<int>& nums, int k) {
+		std::random_device rd;  //Will be used to obtain a seed for the random number engine
+		std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+		//std::uniform_int_distribution<> dis(0, nums.size()-1);
+		//auto myrandom = [&dis, &gen](int i) { return dis(gen);};
+		//for (int i = 0; i < nums.size(); i++)
+		//	cout << myrandom(i) << ",";
+		//cout << endl;
+		shuffle(begin(nums), end(nums), gen);
+		//for_each(begin(nums), end(nums), [](auto n) { cout << n << " ";});
+		// pivot on value on low
+		int low = 0; int high = nums.size()-1;
+		while (low < high) {
+			int i = low;
+			int j = high;
+			while (++i < j) {
+				if (nums[i] >= nums[low]) { // find number larger or equal
+					while (j > i) {
+						if (nums[j] >= nums[low])
+							j--;
+						else
+							break;  // find a number smaller
+					}
+					if (i < j)
+						std::swap(nums[i], nums[j]);
+					else {
+						i--;
+						break;
+					}
+				}
+			}
+			if (nums[i] < nums[low])
+				std::swap(nums[i], nums[low]);
+			else if (i > low + 1)
+				std::swap(nums[--i], nums[low]); //move i 1 back
+			else if (i>low)
+				i--;
+												 // i is the low bound of value nums[i]
+			if (nums.size() - i == k)
+				return nums[i];
+			else if (nums.size() - i > k) {  // answer lies to right
+				low = i + 1;
+			}
+			else {
+				high = i - 1;
+			}
+		}
+		return nums[low];
+	}
+};
+
+
+void test()
+{
+	SortRandom s;
+	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 2) << endl;
+	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 1) << endl;
+	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 6) << endl;
+	cout << s.findKthLargest(vector<int>{3}, 1) << endl;
+}
