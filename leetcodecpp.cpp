@@ -557,7 +557,7 @@ void testWaterFlow()
 #include <cmath>
 // 215. Kth Largest Element in an Array, unsorted
 // 1 ≤ k ≤ array's length
-class SortRandom {
+class SortRandom {  // randomized selection sort
 	int partition(vector<int>& nums, int low, int hi)
 	{
 		int pivot = low;
@@ -609,7 +609,7 @@ public:
 };
 
 
-void test()
+void testKthLargest()
 {
 	SortRandom s;
 	cout << s.findKthLargest(vector<int>{7, 6, 5, 4, 3, 2, 1}, 5) << endl;
@@ -617,4 +617,112 @@ void test()
 	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 1) << endl;
 	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 6) << endl;
 	cout << s.findKthLargest(vector<int>{3}, 1) << endl;
+}
+
+#include <sstream>
+#include <iterator>
+#include <iostream>
+class NQueens {
+	class DiagMask
+	{
+	protected:
+		vector<bool> mask;
+		DiagMask(int n):mask(2*n-1,false)
+		{
+
+		}
+		bool get(int idx) {
+			if (idx < mask.size())
+				return mask[idx];
+			return false;
+		}
+		void set(int idx, bool v)
+		{
+			if (idx < mask.size())
+				mask[idx] = v;
+		}
+	};
+	class ForwardDiagMask : public DiagMask
+	{
+	public:
+		ForwardDiagMask(int n) :DiagMask(n)
+		{
+		}
+		void set(int r, int c) {
+			DiagMask::set(r + c, true);
+		}
+		void reset(int r, int c) {
+			DiagMask::set(r + c, false);
+		}
+		bool get(int r, int c)	{
+			return DiagMask::get(r + c);
+		}
+	};
+	class BackwardDiagMask : public DiagMask
+	{
+		int offset;
+	public:
+		BackwardDiagMask(int n) :DiagMask(n), offset(n - 1)
+		{
+		}
+		void set(int r, int c) {
+			DiagMask::set(offset+r - c, true);
+		}
+		void reset(int r, int c) {
+			DiagMask::set(offset + r - c, false);
+		}
+		bool get(int r, int c) {
+			return DiagMask::get(offset + r - c);
+		}
+	};
+	void backtracking(vector<vector<string>>& ans, int n, vector<int>& rows, vector<bool>& mCol, ForwardDiagMask& fwd, BackwardDiagMask& bwd)
+	{
+		if (rows.size() == n) {
+			vector<string> board;
+			for (int c : rows) {
+				vector<char> r(n, '.');     // default row config
+				r[c] = 'Q';					// set Q position
+				std::ostringstream oss;
+				copy(begin(r), end(r), std::ostream_iterator<char>(oss, ""));  // convert vector to string
+				board.push_back(oss.str());
+			}
+			ans.push_back(board);
+			return;
+		}
+		int r = rows.size();
+		for (int c = 0; c < n; c++) {  // try each col
+			if (mCol[c] || fwd.get(r, c) || bwd.get(r, c))  // invalid
+				continue;
+			mCol[c] = true;  // set masks for row, and 2 diagonals
+			fwd.set(r, c);
+			bwd.set(r, c);
+			rows.push_back(c); // add col value for this row
+			backtracking(ans, n, rows, mCol, fwd, bwd);
+			mCol[c] = false;   // reset all states
+			fwd.reset(r, c);
+			bwd.reset(r, c);
+			rows.pop_back();
+		}
+	}
+public:
+	vector<vector<string>> solveNQueens(int n) {
+		vector<int> rows;  // rows of the board, its value would the column at each row
+		vector<bool> mCol(n, false);
+		ForwardDiagMask fwd(n);
+		BackwardDiagMask bwd(n);
+		vector<vector<string>> ans;
+		backtracking(ans, n, rows, mCol, fwd, bwd);
+		return ans;
+	}
+};
+
+
+void test()
+{
+	NQueens nq;
+	vector<vector<string>> ans=nq.solveNQueens(8);
+	for (auto v : ans) {
+		copy(begin(v), end(v), std::ostream_iterator<string>(cout, "\n"));
+		cout << endl;
+	}
 }
