@@ -741,7 +741,7 @@ public:
 };
 
 
-void test()
+void testNQueens()
 {
 	NQueens nq;
 	vector<vector<string>> ans=nq.solveNQueens(4);
@@ -750,4 +750,9 @@ void test()
 		cout << endl;
 	}
 	cout << nq.totalNQueens(8) << endl;  // 92
+}
+
+#include <cctype>
+void test()
+{
 }
