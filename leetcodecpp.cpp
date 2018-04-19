@@ -682,7 +682,7 @@ class NQueens {
 			for (int c : rows) {
 				string r(n, '.');     // default row config
 				r[c] = 'Q';					// set Q position
-				board.push_back(r);  // speed up to 6 ms from 10ms after switch to use string, instead of vector to otream 
+				board.push_back(r);  // speed up to 6ms from 10ms after switch to use string, instead of vector to ostream 
 			}
 			ans.push_back(board);
 			return;
