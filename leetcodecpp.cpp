@@ -680,11 +680,9 @@ class NQueens {
 		if (rows.size() == n) {
 			vector<string> board;
 			for (int c : rows) {
-				vector<char> r(n, '.');     // default row config
+				string r(n, '.');     // default row config
 				r[c] = 'Q';					// set Q position
-				std::ostringstream oss;
-				copy(begin(r), end(r), std::ostream_iterator<char>(oss, ""));  // convert vector to string
-				board.push_back(oss.str());
+				board.push_back(r);  // speed up to 6 ms from 10ms after switch to use string, instead of vector to otream 
 			}
 			ans.push_back(board);
 			return;
@@ -706,7 +704,7 @@ class NQueens {
 	}
 public:
 	vector<vector<string>> solveNQueens(int n) {
-		vector<int> rows;  // rows of the board, its value would the column at each row
+		vector<int> rows;  // rows of the board, its value is the column at each row
 		vector<bool> mCol(n, false);
 		ForwardDiagMask fwd(n);
 		BackwardDiagMask bwd(n);
@@ -720,7 +718,7 @@ public:
 void test()
 {
 	NQueens nq;
-	vector<vector<string>> ans=nq.solveNQueens(8);
+	vector<vector<string>> ans=nq.solveNQueens(4);
 	for (auto v : ans) {
 		copy(begin(v), end(v), std::ostream_iterator<string>(cout, "\n"));
 		cout << endl;
