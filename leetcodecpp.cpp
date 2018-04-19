@@ -702,8 +702,28 @@ class NQueens {
 			rows.pop_back();
 		}
 	}
+
+	int backtrackingCount(int r, vector<bool>& mCol, ForwardDiagMask& fwd, BackwardDiagMask& bwd)
+	{
+		if (r<0) {
+			return 1;
+		}
+		int ans = 0;
+		for (int c = 0; c < mCol.size(); c++) {  // try each col
+			if (mCol[c] || fwd.get(r, c) || bwd.get(r, c))  // invalid
+				continue;
+			mCol[c] = true;  // set masks for row, and 2 diagonals
+			fwd.set(r, c);
+			bwd.set(r, c);
+			ans += backtrackingCount(r-1, mCol, fwd, bwd);
+			mCol[c] = false;   // reset all states
+			fwd.reset(r, c);
+			bwd.reset(r, c);
+		}
+		return ans;
+	}
 public:
-	vector<vector<string>> solveNQueens(int n) {
+	vector<vector<string>> solveNQueens(int n) {  // beat 74%
 		vector<int> rows;  // rows of the board, its value is the column at each row
 		vector<bool> mCol(n, false);
 		ForwardDiagMask fwd(n);
@@ -711,6 +731,12 @@ public:
 		vector<vector<string>> ans;
 		backtracking(ans, n, rows, mCol, fwd, bwd);
 		return ans;
+	}
+	int totalNQueens(int n) {  // beat 88%
+		vector<bool> mCol(n, false);
+		ForwardDiagMask fwd(n);
+		BackwardDiagMask bwd(n);
+		return  backtrackingCount(n-1, mCol, fwd, bwd);
 	}
 };
 
@@ -723,4 +749,5 @@ void test()
 		copy(begin(v), end(v), std::ostream_iterator<string>(cout, "\n"));
 		cout << endl;
 	}
+	cout << nq.totalNQueens(8) << endl;  // 92
 }
