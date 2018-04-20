@@ -858,6 +858,8 @@ void testWordSearch()
 	cout << (d.search(".")==false) << endl;
 }
 
+#include <numeric>
+
 // 526. Beautiful Arrangement
 // Give array of integers 1 to N, arrange with either of following is true, for each position i, 1 <= i <= N
 // 1. The number at the ith position is divisible by i
@@ -881,9 +883,31 @@ class Solution {
 		}
 		return count;
 	}
+	int backtracking2(int N, vector<int>& arr, int pos) // use vector and swap to store remaining #s is faster, 7ms vs 16s, beat 92%
+	{
+		if (pos < 1)
+			return 1;
+		int count = 0;
+		for (int v = pos-1; v >= 0; v--) {
+			if (arr[v]%pos > 0 &&    // break rule 1
+				pos%arr[v] > 0)   // break rule 2
+				continue;
+			if (v!=pos-1)
+				std::swap(arr[v],arr[pos-1]);
+			count += backtracking2(N, arr, pos - 1);
+			if (v != pos - 1)
+				std::swap(arr[v], arr[pos - 1]);
+		}
+		return count;
+	}
 public:
 	int countArrangement(int N) {
-		return backtracking(N, 0, N);  // big performance boost after reverse position, from 93 to 16ms
+		//return backtracking(N, 0, N);  // big performance boost after reverse position, from 93 to 16ms
+		vector<int> arr(N, 0);
+		std::iota(arr.begin(), arr.end(), 1);
+		//vector<int> arr;
+		//generate_n(back_inserter(arr), N, [&n = 1](){return n++;});
+		return backtracking2(N, arr, N);
 	}
 };
 
@@ -891,4 +915,5 @@ void test()
 {
 	Solution s;
 	cout << s.countArrangement(2) << endl; // 2
+	cout << s.countArrangement(10) << endl; // 700
 }
