@@ -844,7 +844,7 @@ public:
 * bool param_2 = obj.search(word);
 */
 #include <cctype>
-void test()
+void testWordSearch()
 {
 	WordDictionary d;
 	d.addWord("bad");
@@ -856,4 +856,39 @@ void test()
 	cout << d.search("b..") << endl;
 	cout << (d.search("ba")==false) << endl;
 	cout << (d.search(".")==false) << endl;
+}
+
+// 526. Beautiful Arrangement
+// Give array of integers 1 to N, arrange with either of following is true, for each position i, 1 <= i <= N
+// 1. The number at the ith position is divisible by i
+// 2. i is divisible by the number at the ith position
+// N is a positive integer and will not exceed 15
+class Solution {
+	int backtracking(int N, int mask, int pos)
+	{
+		if (pos < 1)
+			return 1;
+		int count = 0;
+		//for (int v = 1; v <= N; v++) {
+		for (int v = N; v >= 1; v--) {
+			int m = 1 << (v - 1);
+			if ((m&mask) > 0)  // number is already used
+				continue;
+			if (v%pos > 0 &&    // break rule 1
+				pos%v > 0)   // break rule 2
+				continue;
+			count += backtracking(N, mask|m, pos - 1);
+		}
+		return count;
+	}
+public:
+	int countArrangement(int N) {
+		return backtracking(N, 0, N);  // big performance boost after reverse position, from 93 to 16ms
+	}
+};
+
+void test()
+{
+	Solution s;
+	cout << s.countArrangement(2) << endl; // 2
 }
