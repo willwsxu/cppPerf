@@ -745,7 +745,7 @@ void testNQueens()
 {
 	NQueens nq;
 	vector<vector<string>> ans=nq.solveNQueens(4);
-	for (auto v : ans) {
+	for (auto& v : ans) {
 		copy(begin(v), end(v), std::ostream_iterator<string>(cout, "\n"));
 		cout << endl;
 	}
@@ -865,7 +865,7 @@ void testWordSearch()
 // 1. The number at the ith position is divisible by i
 // 2. i is divisible by the number at the ith position
 // N is a positive integer and will not exceed 15
-class Solution {
+class Arrangement {
 	int backtracking(int N, int mask, int pos)
 	{
 		if (pos < 1)
@@ -905,15 +905,61 @@ public:
 		//return backtracking(N, 0, N);  // big performance boost after reverse position, from 93 to 16ms
 		vector<int> arr(N, 0);
 		std::iota(arr.begin(), arr.end(), 1);
-		//vector<int> arr;
-		//generate_n(back_inserter(arr), N, [&n = 1](){return n++;});
 		return backtracking2(N, arr, N);
 	}
 };
 
-void test()
+void testArrangement()
 {
-	Solution s;
+	Arrangement s;
 	cout << s.countArrangement(2) << endl; // 2
 	cout << s.countArrangement(10) << endl; // 700
+}
+
+// 131. Palindrome Partitioning
+// Given a string s, partition s such that every substring of the partition is a palindrome.
+// Return all possible palindrome partitioning of s.
+class Palindrome {
+	bool palindrome(const string& s, int start, int end)  // inclusive
+	{
+		while (start < end) {
+			if (s[start] != s[end])
+				return false;
+			start++;
+			end--;
+		}
+		return true;
+	}
+	void backtracking(vector<vector<string>> &ans, vector<string>& palin, const string& s, int idx)
+	{
+		if (idx == s.length()) {
+			ans.push_back(palin);
+			return;
+		}
+		for (int i = idx; i < s.length(); i++) {
+			if (palindrome(s, idx, i)) {
+				palin.push_back(s.substr(idx, i-idx+1));
+				backtracking(ans, palin, s, i + 1);
+				palin.pop_back();
+			}
+		}
+	}
+public:
+	vector<vector<string>> partition(string s) {
+		vector<vector<string>> ans{};
+		vector<string> palin{};
+		backtracking(ans, palin, s, 0);
+		return ans;
+	}
+};
+
+
+void test()
+{
+	Palindrome p;
+	vector<vector<string>> ans=p.partition("aab");
+	for (vector<string>& v : ans) {
+		copy(begin(v), end(v), std::ostream_iterator<string>(cout, " "));
+		cout << endl;
+	}
 }
