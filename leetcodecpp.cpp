@@ -752,7 +752,108 @@ void testNQueens()
 	cout << nq.totalNQueens(8) << endl;  // 92
 }
 
+class WordDictionary {
+	struct Node
+	{
+		char letter;	// lower case only
+		bool complete;  // mark work is complete
+		vector<Node *> next;
+		Node(char c) : next(26, nullptr), letter(c), complete(false){}
+		Node *& operator [](int idx) {
+			return next[idx];
+		}
+		void put(const string& word, int pos) {
+			int idx = word[pos] - 'a';
+			if ( next[idx]==nullptr )
+				next[idx] = new Node(word[pos]);
+			if (pos == word.length() - 1)
+				next[idx]->complete = true;
+			else
+				next[idx]->put(word, pos + 1);
+		}
+		bool find(const string& word, int pos)
+		{
+			if (word[pos] == '.') {  // wild char matching
+				for (Node* c : next) {
+					if (c == nullptr)
+						continue;
+					if (pos == word.length() - 1) {
+						if (c->complete)
+							return true;
+					}
+					else if (c->find(word, pos + 1))
+						return true;
+				}
+				return false;
+			}
+			int idx = word[pos] - 'a';
+			if (next[idx] == nullptr)
+				return false;
+			if (pos == word.length() - 1)
+				return next[idx]->complete;
+			return next[idx]->find(word, pos + 1);
+		}
+	};
+	class DictTrie
+	{
+		Node root;
+	public :
+		DictTrie() :root(0) {}
+		void put(const string& word)
+		{
+			if (!word.empty())
+				root.put(word, 0);
+		}
+		bool find(const string& word)
+		{
+			if (word.empty())
+				return true;
+			return root.find(word,0);
+		}
+	};
+	//unordered_set<string> dict;
+	DictTrie	dict;
+public:
+	/** Initialize your data structure here. */
+	WordDictionary(){
+
+	}
+
+	/** Adds a word into the data structure. */
+	void addWord(string word) {
+		//dict.insert(word);
+		dict.put(word);
+	}
+
+	/** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+	bool search(string word) {
+		return dict.find(word);/*
+		auto pred = [&word](auto item) {
+			if (item.length() != word.length())
+				return false;
+			return equal(begin(item), end(item), begin(word), [](auto a, auto b) {return (b == '.' || a == b);});
+		};
+		return find_if(begin(dict), end(dict), pred) !=end(dict);*/
+	}
+};
+
+/**
+* Your WordDictionary object will be instantiated and called as such:
+* WordDictionary obj = new WordDictionary();
+* obj.addWord(word);
+* bool param_2 = obj.search(word);
+*/
 #include <cctype>
 void test()
 {
+	WordDictionary d;
+	d.addWord("bad");
+	d.addWord("dad");
+	d.addWord("mad");
+	cout << (d.search("pad")==false) << endl;
+	cout << d.search("bad") << endl;
+	cout << d.search(".ad") << endl;
+	cout << d.search("b..") << endl;
+	cout << (d.search("ba")==false) << endl;
+	cout << (d.search(".")==false) << endl;
 }
