@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <functional>
 using namespace std;
 
 int findMaxForm(vector<string>& strs, int m, int n) {
@@ -607,7 +608,7 @@ public:
 		return nums[low];
 	}
 
-	int findKthLargest(vector<int>& nums, int k) {  // use stl partition, not working yet
+	int findKthLargest_bad(vector<int>& nums, int k) {  // use stl partition, not working yet
 		std::random_device rd;  //Will be used to obtain a seed for the random number engine
 		std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 		shuffle(begin(nums), end(nums), gen);   // add shuffling improve perforamnce from 23 ms to 12ms
@@ -627,6 +628,10 @@ public:
 				high = pivot - 1;
 		}
 		return *low;
+	}
+	int findKthLargest(vector<int>& nums, int k) {
+		nth_element(begin(nums), begin(nums) + k-1, end(nums), greater<int>());  // stl method works great, beat 98%, don't add shuffle
+		return *(begin(nums) + k-1);
 	}
 };
 
@@ -1079,5 +1084,5 @@ void testDigits()
 
 void test()
 {
-	testDigits();
+	testKthLargest();
 }
