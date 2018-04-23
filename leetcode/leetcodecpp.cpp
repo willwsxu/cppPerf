@@ -986,11 +986,11 @@ void testPalindromePart()
 	}
 }
 
-//452. Minimum Number of Arrows to Burst Balloons, NOT same as scheduling problem
-//ty to maximize overlapping
+//452. Minimum Number of Arrows to Burst Balloons, similar to scheduling problem
+// similar to 435. Non-overlapping Intervals
 class Balloons {
 public:
-	int findMinArrowShots(vector<pair<int, int>>& points) {
+	int findMinArrowShots_old(vector<pair<int, int>>& points) {
 		if (points.size() < 2)
 			return points.size();
 		std::sort(begin(points), end(points), [](auto p1, auto p2) {return p1.first < p2.first;}); // sort by start interval
@@ -1002,7 +1002,21 @@ public:
 				rigthEnd = it->second;
 			}
 			else if (it->second < rigthEnd) {
-				rigthEnd = it->second;  // adjust overlapping range
+				rigthEnd = it->second;  // adjust overlapping range (critical step)
+			}
+		}
+		return arrows;
+	}
+	int findMinArrowShots(vector<pair<int, int>>& points) {// same as scheduling except does not allow edge case when end meets next start, beat 98%
+		if (points.size() < 2)
+			return points.size();
+		std::sort(begin(points), end(points), [](auto p1, auto p2) {return p1.second < p2.second;}); // sort by end interval
+		int arrows = 1;
+		int rigthEnd = points[0].second;
+		for (auto it = begin(points) + 1; it < end(points); it++) {
+			if (it->first > rigthEnd) { // no overlapping
+				arrows++;
+				rigthEnd = it->second;
 			}
 		}
 		return arrows;
