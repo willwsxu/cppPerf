@@ -585,7 +585,7 @@ class SortRandom {  // randomized selection sort
 		return low;
 	}
 public:
-	int findKthLargest(vector<int>& nums, int k) {
+	int findKthLargest_old(vector<int>& nums, int k) {
 		std::random_device rd;  //Will be used to obtain a seed for the random number engine
 		std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 		//std::uniform_int_distribution<> dis(0, nums.size()-1);
@@ -606,17 +606,39 @@ public:
 		}
 		return nums[low];
 	}
+
+	int findKthLargest(vector<int>& nums, int k) {  // use stl partition, not working yet
+		std::random_device rd;  //Will be used to obtain a seed for the random number engine
+		std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+		shuffle(begin(nums), end(nums), gen);   // add shuffling improve perforamnce from 23 ms to 12ms
+		auto low = begin(nums);
+		auto high = end(nums)-1;
+		//auto target = end(nums) - k;
+		while (low < high) {
+			int val = *low;
+			auto pred = [val](auto& item) {return item < val; };
+			std::partition(low, high+1, pred);
+			auto pivot = partition_point(low, high + 1, pred);
+			if (pivot == end(nums) - k)
+				low=pivot;
+			else if (pivot < end(nums) - k)
+				low = pivot + 1;
+			else
+				high = pivot - 1;
+		}
+		return *low;
+	}
 };
 
 
 void testKthLargest()
 {
 	SortRandom s;
-	cout << s.findKthLargest(vector<int>{7, 6, 5, 4, 3, 2, 1}, 5) << endl;
-	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 2) << endl;
-	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 1) << endl;
-	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 6) << endl;
-	cout << s.findKthLargest(vector<int>{3}, 1) << endl;
+	cout << s.findKthLargest(vector<int>{7, 6, 5, 4, 3, 2, 1}, 5) << " exp " << 3 << endl;
+	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 2) << " exp " << 5 << endl;
+	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 1) << " exp " << 6 << endl;
+	cout << s.findKthLargest(vector<int>{3, 2, 1, 5, 6, 4}, 6) << " exp " << 1 << endl;
+	cout << s.findKthLargest(vector<int>{3}, 1) << " exp " << 3 << endl;
 }
 
 #include <sstream>
@@ -954,7 +976,7 @@ public:
 };
 
 
-void test()
+void testPalindromePart()
 {
 	Palindrome p;
 	vector<vector<string>> ans=p.partition("aab");
@@ -962,4 +984,9 @@ void test()
 		copy(begin(v), end(v), std::ostream_iterator<string>(cout, " "));
 		cout << endl;
 	}
+}
+
+void test()
+{
+	testKthLargest();
 }
