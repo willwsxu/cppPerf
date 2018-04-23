@@ -608,28 +608,33 @@ public:
 		return nums[low];
 	}
 
-	int findKthLargest_bad(vector<int>& nums, int k) {  // use stl partition, not working yet
+	int findKthLargest(vector<int>& nums, int k) {  // use stl partition, same speed as my own partition, shuffling helps
 		std::random_device rd;  //Will be used to obtain a seed for the random number engine
 		std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 		shuffle(begin(nums), end(nums), gen);   // add shuffling improve perforamnce from 23 ms to 12ms
 		auto low = begin(nums);
 		auto high = end(nums)-1;
-		//auto target = end(nums) - k;
+		auto target = end(nums) - k;
 		while (low < high) {
 			int val = *low;
 			auto pred = [val](auto& item) {return item < val; };
 			std::partition(low, high+1, pred);
-			auto pivot = partition_point(low, high + 1, pred);
-			if (pivot == end(nums) - k)
-				low=pivot;
-			else if (pivot < end(nums) - k)
-				low = pivot + 1;
+			auto pivot = partition_point(low, high + 1, pred);  // pivot value is not same as val
+			if (pivot == target) {
+				return val;
+			}
+			else if (pivot < target) {
+				if (*pivot == val)  // trick cdoe, stop infinite loop
+					low = pivot + 1;
+				else
+					low = pivot;
+			}
 			else
-				high = pivot - 1;
+				high = pivot;  // don't use pivot -1 as the desired value can on on this point
 		}
 		return *low;
 	}
-	int findKthLargest(vector<int>& nums, int k) {
+	int findKthLargest_stl(vector<int>& nums, int k) {
 		nth_element(begin(nums), begin(nums) + k-1, end(nums), greater<int>());  // stl method works great, beat 98%, don't add shuffle
 		return *(begin(nums) + k-1);
 	}
@@ -1081,6 +1086,15 @@ void testDigits()
 	cout << t.monotoneIncreasingDigits(100) << endl;
 	cout << t.monotoneIncreasingDigits(3311322) << endl;
 }
+
+// 659. Split Array into Consecutive Subsequences
+// each subsequences consist of at least 3 consecutive integers
+class Consecutive {
+public:
+	bool isPossible(vector<int>& nums) {
+
+	}
+};
 
 void test()
 {
