@@ -1031,7 +1031,53 @@ void testBaloons()
 	cout << t.findMinArrowShots(vector<pair<int, int>>{ {3, 9}, { 7,12 }, { 3,8 }, { 6,8 }, { 9,10 }, { 2,9 }, { 0,9 }, { 3,9 }, { 0,6 }, { 2,8 }}) << endl;  // 2
 }
 
+// check digit from left to right, find first place where next digit is smaller
+// travel back to find digit of same value
+// set it to one less, set rest of digits to 9
+class Monotone {
+public:
+	int monotoneIncreasingDigits(int N) {
+		if (N < 10)
+			return N;
+		vector<int> digits{};
+		digits.reserve(10);
+		while (N > 0) {
+			digits.emplace_back(N % 10);  // insert digits backwards
+			N /= 10;
+		}
+		for (auto d = rbegin(digits); d < rend(digits)-1; d++) {
+			if (*d > *(d + 1)) {
+				while (d > rbegin(digits)) {  // move back to find digit of same value
+					if (*(d - 1) == *d)
+						d--;
+					else
+						break;
+				}
+				(*d)--;  // borrow 1, and set the rest as 9
+				while (++d < rend(digits))
+					*d = 9;
+				break;
+			}
+		}
+		auto b = rbegin(digits);
+		if (*b == 0)  // skip leading 0
+			b++;
+		return accumulate(b, rend(digits), 0, [](auto last, auto cur) { return last * 10 + cur;});
+	}
+};
+
+void testDigits()
+{
+	Monotone t;
+	cout << t.monotoneIncreasingDigits(120) << endl;
+	cout << t.monotoneIncreasingDigits(10) << endl;
+	cout << t.monotoneIncreasingDigits(1234) << endl;
+	cout << t.monotoneIncreasingDigits(332) << endl;
+	cout << t.monotoneIncreasingDigits(100) << endl;
+	cout << t.monotoneIncreasingDigits(3311322) << endl;
+}
+
 void test()
 {
-	testBaloons();
+	testDigits();
 }
