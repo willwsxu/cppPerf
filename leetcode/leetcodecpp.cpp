@@ -1096,7 +1096,84 @@ public:
 	}
 };
 
+class Greedy {
+public:
+	//Given a string S, check if the letters can be rearranged so that two characters that are adjacent to each other are not the same.
+	string reorganizeString(string S) { // beat 94%
+		vector<int> count(26);
+		for_each(begin(S), end(S), [&count](char x) {count[x - 'a']++;});
+		auto _max=max_element(begin(count), end(count));
+		int total = accumulate(begin(count), end(count), 0);
+		if (total<*_max*2-1)
+			return "";
+		string ans(*_max, _max - begin(count) + 'a');  // construct the longest char
+		int fill = 0;
+		int dist = 2;  // of same char
+		for (auto it = begin(count); it != end(count); it++) {
+			if (*it == 0 || it == _max)
+				continue;
+			char ch = it - begin(count) + 'a';
+			for (int j = 0; j < *it; j++) {
+				ans.insert((++fill)* dist-1, 1, ch);  // formular to get insert position
+				if (fill == *_max) {  // next line
+					fill = 0;
+					dist++;
+				}
+			}
+		}
+		return ans;
+	}
+
+	// Given a non - negative integer num represented as a string, remove k digits from the number so that the new number is the smallest possible.
+	string removeKdigits(string num, int k) {
+		int pos = 0; // position to remove
+		for (int i = 0; i < k; i++) {
+			while (num[pos] == '0')  // find next none 0
+				num.erase(pos,1);
+			int newK = k - i;
+			if (pos + newK >= num.size())  // remove all
+				return "0";
+			while (pos<num.size()) {
+				if (pos >= num.size() - newK)
+					return num.substr(0, pos); // remove all char from pos
+				auto min = min_element(begin(num) + pos + 1, begin(num) + pos + 1 + newK);
+				if (*min < num[pos]) {  // find a small char, so we can remove current char
+					num.erase(pos, 1);
+					break;
+				}
+				else  // current char is small, move to next
+					pos++;
+			}
+		}
+		auto trim = find_if_not(begin(num), end(num), [](char c) {return c == '0';});
+		if (trim != begin(num))
+			num.erase(begin(num), trim);
+		return num.empty()?"0":num;
+	}
+};
+
+void testReorg()
+{
+	Greedy g;
+	cout << g.reorganizeString("aabbcd") << endl;
+	cout << g.reorganizeString("aabbccdde") << endl;
+	cout << g.reorganizeString("aaab") << endl;
+	cout << g.reorganizeString("aab") << endl;
+	cout << g.reorganizeString("a") << endl;
+	cout << g.reorganizeString("") << endl;
+}
+void testGreedy()
+{
+	Greedy g;
+	cout << g.removeKdigits("10200", 1) << endl;  //200
+	cout << g.removeKdigits("1432219", 3) << endl;  // 1219
+	cout << g.removeKdigits("10", 2) << endl;  //0
+	cout << g.removeKdigits("10200", 2) << endl;
+	cout << g.removeKdigits("102", 2) << endl;
+	cout << g.removeKdigits("1012", 2) << endl;
+}
+
 void test()
 {
-	testKthLargest();
+	testGreedy();
 }
