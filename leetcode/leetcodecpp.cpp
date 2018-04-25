@@ -1153,24 +1153,27 @@ public:
 
 	// Given N gas station, gas[i] is amount of gas you can fill, cost[i] is amount needed to drive from i to i+1
 	// Return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1
+	// idea: compute prefix sum from left to right, when it is negative, start from next stattion
+	// if prefix sum ended negative, no answer. else add up last total with previous negative cumulative sum, it is good if it is not negative
 	int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
-		transform(begin(gas), end(gas), begin(cost), begin(gas), minus<int>());
+		transform(begin(gas), end(gas), begin(cost), begin(gas), minus<int>());  // gas-cost, net gain on each station
 		int n = gas.size();
 		if (n == 1)
 			return gas[0] >= 0 ? 0 : -1;
+		int start = 0;
+		int total = 0;
+		int cumul = 0;
 		for (int i = 0; i < n; i++) {
-			if (gas[i] > 0) {
-				int total = 0;
-				for (int j = 0; j < n;j++) {
-					total += gas[(j + i) % n];
-					if (total < 0)
-						break;
-				}
-				if (total >= 0)
-					return i;
+			total += gas[i];
+			if (total < 0) {     // negative will not help, start from next station
+				cumul += total;  // optimization, save values calculated so far, beat 98%
+				total = 0;
+				start = i+1;  // bug fix start++;
 			}
 		}
-		return -1;
+		if (start == n)
+			return -1;
+		return cumul +total<0?-1:start;
 	}
 };
 
@@ -1194,6 +1197,9 @@ void testGreedy()
 	cout << g.removeKdigits("102", 2) << endl;
 	cout << g.removeKdigits("1012", 2) << endl;
 
+	cout << g.canCompleteCircuit(vector<int>{1,2,3,4,5,5,70}, vector<int>{2,3,4,3,9,6,2}) << endl;  // 6
+	cout << g.canCompleteCircuit(vector<int>{3,3,4}, vector<int>{3,4,4}) << endl;  // -1
+	cout << g.canCompleteCircuit(vector<int>{1,2, 3, 4,5}, vector<int>{3, 4, 5,1,2}) << endl;  // 3
 	cout << g.canCompleteCircuit(vector<int>{2,3,4}, vector<int>{3,4,3}) << endl;  // -1
 	cout << g.canCompleteCircuit(vector<int>{2}, vector<int>{2}) << endl;  // 0
 }
