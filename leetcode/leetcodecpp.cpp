@@ -1102,9 +1102,9 @@ public:
 	string reorganizeString(string S) { // beat 94%
 		vector<int> count(26);
 		for_each(begin(S), end(S), [&count](char x) {count[x - 'a']++;});
-		auto _max=max_element(begin(count), end(count));
+		auto _max = max_element(begin(count), end(count));
 		int total = accumulate(begin(count), end(count), 0);
-		if (total<*_max*2-1)
+		if (total < *_max * 2 - 1)
 			return "";
 		string ans(*_max, _max - begin(count) + 'a');  // construct the longest char
 		int fill = 0;
@@ -1114,7 +1114,7 @@ public:
 				continue;
 			char ch = it - begin(count) + 'a';
 			for (int j = 0; j < *it; j++) {
-				ans.insert((++fill)* dist-1, 1, ch);  // formular to get insert position
+				ans.insert((++fill)* dist - 1, 1, ch);  // formular to get insert position
 				if (fill == *_max) {  // next line
 					fill = 0;
 					dist++;
@@ -1129,11 +1129,11 @@ public:
 		int pos = 0; // position to remove
 		for (int i = 0; i < k; i++) {
 			while (num[pos] == '0')  // find next none 0
-				num.erase(pos,1);
+				num.erase(pos, 1);
 			int newK = k - i;
 			if (pos + newK >= num.size())  // remove all
 				return "0";
-			while (pos<num.size()) {
+			while (pos < num.size()) {
 				if (pos >= num.size() - newK)
 					return num.substr(0, pos); // remove all char from pos
 				auto min = min_element(begin(num) + pos + 1, begin(num) + pos + 1 + newK);
@@ -1148,7 +1148,29 @@ public:
 		auto trim = find_if_not(begin(num), end(num), [](char c) {return c == '0';});
 		if (trim != begin(num))
 			num.erase(begin(num), trim);
-		return num.empty()?"0":num;
+		return num.empty() ? "0" : num;
+	}
+
+	// Given N gas station, gas[i] is amount of gas you can fill, cost[i] is amount needed to drive from i to i+1
+	// Return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1
+	int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+		transform(begin(gas), end(gas), begin(cost), begin(gas), minus<int>());
+		int n = gas.size();
+		if (n == 1)
+			return gas[0] >= 0 ? 0 : -1;
+		for (int i = 0; i < n; i++) {
+			if (gas[i] > 0) {
+				int total = 0;
+				for (int j = 0; j < n;j++) {
+					total += gas[(j + i) % n];
+					if (total < 0)
+						break;
+				}
+				if (total >= 0)
+					return i;
+			}
+		}
+		return -1;
 	}
 };
 
@@ -1171,6 +1193,9 @@ void testGreedy()
 	cout << g.removeKdigits("10200", 2) << endl;
 	cout << g.removeKdigits("102", 2) << endl;
 	cout << g.removeKdigits("1012", 2) << endl;
+
+	cout << g.canCompleteCircuit(vector<int>{2,3,4}, vector<int>{3,4,3}) << endl;  // -1
+	cout << g.canCompleteCircuit(vector<int>{2}, vector<int>{2}) << endl;  // 0
 }
 
 void test()
