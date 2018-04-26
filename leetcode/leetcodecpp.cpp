@@ -1204,7 +1204,40 @@ void testGreedy()
 	cout << g.canCompleteCircuit(vector<int>{2}, vector<int>{2}) << endl;  // 0
 }
 
+class Sort {
+public:
+	void sortColors(vector<int>& nums) {  // 3 pointers, beat 100%
+		int p0 = 0, p1 = nums.size() - 1, p2 = nums.size();
+		while (p0 <= p1) {  // edge case , = is needed here
+			while (nums[p0] == 0)  // scan 0 forward
+				p0++;
+			while (nums[p1] == 1)  // scan for 1 backward
+				p1--;
+			if (p0 > p1)
+				break;
+			if (nums[p1] == 0)      // find 0 at p1, swap with p0
+				std::swap(nums[p1], nums[p0++]);
+			if (nums[p1] == 2) {    // find 2 at p1 (could be from old p0)
+				std::swap(nums[--p2], nums[p1]);
+			}
+			p1--;
+		}
+		//cout << p0 << " " << p1 << " " << p2 << endl;
+	}
+};
+
+void testColor()
+{
+	Sort s;
+	auto test = [&s](vector<int> nums) {
+		s.sortColors(nums);
+		print(nums);
+	};
+	test(vector<int>{ 1, 2, 0 });
+	test(vector<int>{ 2, 0, 2, 1, 1, 0 });
+}
+
 void test()
 {
-	testGreedy();
+	testColor();
 }
