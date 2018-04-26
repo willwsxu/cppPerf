@@ -1224,6 +1224,42 @@ public:
 		}
 		//cout << p0 << " " << p1 << " " << p2 << endl;
 	}
+
+	// Given a string and a string dictionary, find the longest in dictionary that can be formed by deleting some characters of the given string
+	// If there are more than one possible results, return the longest word with the smallest lexicographical order
+	template<class ForwardIterator1, class ForwardIterator2>
+	bool subsequence(ForwardIterator1 first1, ForwardIterator1 last1,
+		ForwardIterator2 first2, ForwardIterator2 last2)
+	{
+		while (first1 != last1 && first2 != last2) {
+			if (*first1 == *first2) {
+				first1++;
+				first2++;
+			}
+			else
+				first1++;
+		}
+		return first2 == last2;
+	}
+
+	string findLongestWord(string s, vector<string>& d) {  // beat 96%
+		string *ans = nullptr;
+		for (string& word : d) {
+			if (ans) {
+				int size = ans->size() - word.size();
+				if (size>0)
+					continue;
+				else if (size == 0 && lexicographical_compare(begin(*ans), end(*ans), begin(word), end(word))) {
+					continue;
+				}
+			}
+			auto found = subsequence(begin(s), end(s), begin(word), end(word));
+			if (found ) {
+				ans = &word;
+			}
+		}
+		return ans == nullptr ? "" : *ans;
+	}
 };
 
 void testColor()
@@ -1237,7 +1273,14 @@ void testColor()
 	test(vector<int>{ 2, 0, 2, 1, 1, 0 });
 }
 
+void testLongestWord()
+{
+	Sort s;
+	cout << s.findLongestWord("abpcplea", vector<string>{"ale", "apple", "monkey", "plea"}) << endl;
+
+}
+
 void test()
 {
-	testColor();
+	testLongestWord();
 }
