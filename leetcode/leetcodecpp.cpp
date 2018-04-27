@@ -1087,15 +1087,6 @@ void testDigits()
 	cout << t.monotoneIncreasingDigits(3311322) << endl;
 }
 
-// 659. Split Array into Consecutive Subsequences
-// each subsequences consist of at least 3 consecutive integers
-class Consecutive {
-public:
-	bool isPossible(vector<int>& nums) {
-
-	}
-};
-
 class Greedy {
 public:
 	//Given a string S, check if the letters can be rearranged so that two characters that are adjacent to each other are not the same.
@@ -1280,7 +1271,63 @@ void testLongestWord()
 
 }
 
+
+// 659. Split Array into Consecutive Subsequences
+// each subsequences consist of at least 3 consecutive integers
+// borrowed idea: keep state 3 sequence at current and previous element, 1, 2, 3+
+class Consecutive {  // Greedy
+public:
+	bool isPossible(vector<int>& nums) {  // beat86%
+		int N = nums.size();
+		if (N < 3)
+			return false;
+		int pre = INT_MIN;        // previous element
+		int p1 = 0, p2 = 0, p3 = 0; // count of seq ends at pre with len 1, 2, or 3+
+		int cur = nums[0];        // current element
+		int cnt = 1;    // count of current element
+						//int c1, c2, c3; // count of seq ends at cur with len 1, 2, or 3+
+		for (int i = 1; i <= N; i++)  // include exra to take care of processing of last sequence
+		{
+			if (i != N && nums[i] == cur) { // count number of same value
+				cnt++;
+				continue;
+			} // num[i] is now different from cur
+			if (cur != pre + 1) {  // number is not consecitive, start new sequence
+				if (p1 + p2 != 0)   // some sequence of len 1 or 2 is stopped
+					return false;
+				p1 = cnt;  // start new sequence
+				p3 = 0;
+				pre = cur;
+				cur = nums[i];
+				cnt = 1;
+				continue;
+			}
+			if (cnt < p1 + p2)
+				return false;  // not enough current to extend sequence with len 1 or 2
+			int c2 = p1;  // len 1 seq will increment 1
+			int c3 = p2 + std::min(cnt - p1 - p2, p3);  // all p2 will become len3, some or all p3 will extend to more
+			p1 = std::max(cnt - p1 - p2 - p3,0);        // extra cnt will start from seq len=1
+			p2 = c2;
+			p3 = c3;
+			pre = cur;
+			if (i == N)
+				break;
+			cur = nums[i];
+			cnt = 1;
+		}
+		return p1+p2==0;
+	}
+};
+
+void testSplitSubSeq()
+{
+	Consecutive g;
+	cout << g.isPossible(vector<int>{1, 2, 3, 3, 4, 5}) << endl;
+	cout << g.isPossible(vector<int>{1, 2, 3, 3, 4, 4, 5, 5}) << endl;
+	cout << g.isPossible(vector<int>{1, 2, 3, 4, 4, 5}) << endl;
+}
+
 void test()
 {
-	testLongestWord();
+	testSplitSubSeq();
 }
