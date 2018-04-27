@@ -13,10 +13,10 @@ int findMaxForm(vector<string>& strs, int m, int n) {
 			memo[i][j] = 0;
 		}
 	}
-	for (auto i = 0; i < strs.size(); i++) {
+	for (size_t i = 0; i < strs.size(); i++) {
 		int ones = 0;
 		int zero = 0;
-		for (auto j = 0; j < strs[i].size(); j++) {
+		for (size_t j = 0; j < strs[i].size(); j++) {
 			if (strs[i][j] == '1')
 				ones++;
 			else
@@ -151,7 +151,7 @@ bool dfs(vector<int>& nums, int k, vector<bool>& visited, int subsetSum, int tar
 		return true;
 	if (subsetSum == target && setIdx > 0)  // setIdx>0 is used to support target=0
 		return dfs(nums, k - 1, visited, 0, target, 0, 0);
-	for (int i = numIdx; i < nums.size(); i++) {
+	for (size_t i = numIdx; i < nums.size(); i++) {
 		if (visited[i] || subsetSum + nums[i] > target)
 			continue;
 		visited[i] = true;
@@ -741,7 +741,7 @@ class NQueens {
 			return 1;
 		}
 		int ans = 0;
-		for (int c = 0; c < mCol.size(); c++) {  // try each col
+		for (size_t c = 0; c < mCol.size(); c++) {  // try each col
 			if (mCol[c] || fwd.get(r, c) || bwd.get(r, c))  // invalid
 				continue;
 			mCol[c] = true;  // set masks for row, and 2 diagonals
@@ -968,7 +968,7 @@ class Palindrome {
 			ans.push_back(palin);
 			return;
 		}
-		for (int i = idx; i < s.length(); i++) {
+		for (size_t i = idx; i < s.length(); i++) {
 			if (palindrome(s, idx, i)) {
 				palin.push_back(s.substr(idx, i-idx+1));
 				backtracking(ans, palin, s, i + 1);
@@ -1251,6 +1251,20 @@ public:
 		}
 		return ans == nullptr ? "" : *ans;
 	}
+
+	// A scientist has index h if h of his / her N papers have at least h citations each, and the other N − h papers have no more than h citations each
+	// idea 1: sort by citation in reverse order, find the first index where c[i]>=i+1, c[i+1]<=i+1
+	int hIndex(vector<int>& citations) {  // beat 97%
+		if (citations.empty())
+			return 0;
+		int n = citations.size();
+		sort(begin(citations), end(citations), greater<int>());
+		for (int i = 0; i < n-1; i++) {
+			if (citations[i] >= i + 1 && citations[i + 1] <= i + 1)
+				return i + 1;
+		}
+		return citations[n - 1] >= n ?n:0;
+	}
 };
 
 void testColor()
@@ -1327,7 +1341,18 @@ void testSplitSubSeq()
 	cout << g.isPossible(vector<int>{1, 2, 3, 4, 4, 5}) << endl;
 }
 
+void testHIndex()
+{
+	Sort s;
+	cout << s.hIndex(vector<int>{3,0,6,1,5}) << endl;    // 3
+	cout << s.hIndex(vector<int>{4, 0, 6, 1, 5}) << endl;// 3
+	cout << s.hIndex(vector<int>{2, 0, 6, 1, 5}) << endl;// 2
+	cout << s.hIndex(vector<int>{5, 5, 6, 5, 5}) << endl;// 5
+	cout << s.hIndex(vector<int>{0}) << endl;            // 0
+	cout << s.hIndex(vector<int>{11, 15}) << endl;       // 2
+}
+
 void test()
 {
-	testSplitSubSeq();
+	testHIndex();
 }
