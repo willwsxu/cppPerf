@@ -1383,6 +1383,27 @@ void testSplitSubSeq()
 	cout << g.isPossible(vector<int>{1, 2, 3, 4, 4, 5}) << endl;
 }
 
+// 162. Find Peak Element
+// A peak element is an element that is greater than its neighbors
+// The array may contain multiple peaks, in that case return the index to any one of the peaks is fine.
+// You may imagine that num[-1] = num[n] = -∞ (Important clue)
+class Peak {
+	int bs(vector<int>& nums, int start, int end)
+	{
+		if (start >= end)
+			return start;
+		int mid = (start + end) / 2;
+		int mid2 = mid + 1;
+		if (nums[mid] > nums[mid2])  //
+			return bs(nums, start, mid);
+		return bs(nums, mid2, end);
+	}
+public:
+	int findPeakElement(vector<int>& nums) {
+		return bs(nums, 0, nums.size()-1);
+	}
+};
+
 ////////////////////////////////////////////////
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"
@@ -1419,5 +1440,21 @@ TEST_CASE("H-Index", "HINDEX")
 	SECTION("edge case") {
 		CHECK(s.hIndex(vector<int>{0}) == 0);
 		REQUIRE(s.hIndex(vector<int>{1,2}) == 1);
+	}
+}
+
+
+TEST_CASE("Find Peak", "peak")
+{
+	Peak t;
+	SECTION("middle case") {
+		REQUIRE(t.findPeakElement(vector<int>{2,6,6,8,5}) == 3);
+	}
+	SECTION("edge case") {
+		CHECK(t.findPeakElement(vector<int>{3, 4, 5}) == 2);
+		REQUIRE(t.findPeakElement(vector<int>{3, 2, 1}) == 0);
+	}
+	SECTION("edge case 2") {
+		REQUIRE(t.findPeakElement(vector<int>{0}) == 0);
 	}
 }
