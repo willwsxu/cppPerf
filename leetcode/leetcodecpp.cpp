@@ -1394,9 +1394,9 @@ class Peak {
 			return start;
 		int mid = (start + end) / 2;
 		int mid2 = mid + 1;
-		if (nums[mid] > nums[mid2])  //
+		if (nums[mid] > nums[mid2])  //exist local maximum as left end id -∞
 			return bs(nums, start, mid);
-		return bs(nums, mid2, end);
+		return bs(nums, mid2, end); //exist local maximum as right end id -∞
 	}
 public:
 	int findPeakElement(vector<int>& nums) {
