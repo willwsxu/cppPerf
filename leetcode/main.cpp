@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+/*
 extern void test();
 
 int main()
@@ -7,3 +7,4 @@ int main()
 	test();
 	return 0;
 }
+*/

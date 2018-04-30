@@ -1265,6 +1265,20 @@ public:
 		}
 		return citations[n - 1] >= n ?n:0;
 	}
+	// sorted in ascending orders
+	int hIndex2(vector<int>& citations) {  // beat 24%
+		if (citations.empty())
+			return 0;
+		int n = citations.size();
+		if (citations[0] >= n)
+			return n;
+		for (int i = n-1; i >0 ; i--) {
+			int h = n - i;
+			if (citations[i] >= h && citations[i - 1] <= h)
+				return h;
+		}
+		return  0;
+	}
 };
 
 void testColor()
@@ -1352,7 +1366,22 @@ void testHIndex()
 	cout << s.hIndex(vector<int>{11, 15}) << endl;       // 2
 }
 
-void test()
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "..\catch.hpp"
+
+TEST_CASE("H-Index", "HINDEX2")
 {
-	testHIndex();
+	Sort s;
+	SECTION("middle case") {
+		REQUIRE_NOTHROW(s.hIndex2(vector<int>{0, 1, 3, 5, 6}) == 3);
+		REQUIRE_NOTHROW(s.hIndex2(vector<int>{0, 1, 4, 5, 6}) == 3);
+		REQUIRE_NOTHROW(s.hIndex2(vector<int>{0, 1, 2, 5, 6}) == 2);
+	}
+	SECTION("right edge case") {
+		REQUIRE_NOTHROW(s.hIndex2(vector<int>{5, 5, 5, 5, 6}) == 5);
+		REQUIRE_NOTHROW(s.hIndex2(vector<int>{11,15}) == 2);
+	}
+	SECTION("edge case") {
+		REQUIRE_NOTHROW(s.hIndex2(vector<int>{0}) == 0);
+	}
 }
