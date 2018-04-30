@@ -1254,7 +1254,7 @@ public:
 
 	// A scientist has index h if h of his / her N papers have at least h citations each, and the other N − h papers have no more than h citations each
 	// idea 1: sort by citation in reverse order, find the first index where c[i]>=i+1, c[i+1]<=i+1
-	int hIndex(vector<int>& citations) {  // beat 97%
+	int hIndex_sort(vector<int>& citations) {  // beat 97%, sorting
 		if (citations.empty())
 			return 0;
 		int n = citations.size();
@@ -1265,6 +1265,27 @@ public:
 		}
 		return citations[n - 1] >= n ?n:0;
 	}
+	int hIndex(vector<int>& citations) { // fastest, beat 99%
+		if (citations.empty())
+			return 0;
+		int n = citations.size();
+		vector<int> count(n+1, 0); // count papers of a certain citation,  bound all to last bucket if citation>=n
+		for (int c : citations) {
+			if (c >= n)
+				count[n]++;
+			else
+				count[c]++;
+		}
+		int papers = 0;
+		for (auto ri = rbegin(count); ri != rend(count); ri++) {
+			papers += *ri;
+			if (papers >= n)  // n papaers has at least n citation
+				break;
+			n--;
+		}
+		return n;
+	}
+
 	// sorted in ascending orders
 	int bs(vector<int>& citations, int start, int end)
 	{
@@ -1362,33 +1383,41 @@ void testSplitSubSeq()
 	cout << g.isPossible(vector<int>{1, 2, 3, 4, 4, 5}) << endl;
 }
 
-void testHIndex()
-{
-	Sort s;
-	cout << s.hIndex(vector<int>{3,0,6,1,5}) << endl;    // 3
-	cout << s.hIndex(vector<int>{4, 0, 6, 1, 5}) << endl;// 3
-	cout << s.hIndex(vector<int>{2, 0, 6, 1, 5}) << endl;// 2
-	cout << s.hIndex(vector<int>{5, 5, 6, 5, 5}) << endl;// 5
-	cout << s.hIndex(vector<int>{0}) << endl;            // 0
-	cout << s.hIndex(vector<int>{11, 15}) << endl;       // 2
-}
-
+////////////////////////////////////////////////
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"
 
-TEST_CASE("H-Index", "HINDEX2")
+TEST_CASE("H-Index2", "HINDEX2")
 {
 	Sort s;
 	SECTION("middle case") {
-		REQUIRE_NOTHROW(s.hIndex2(vector<int>{0, 1, 3, 5, 6}) == 3);
-		REQUIRE_NOTHROW(s.hIndex2(vector<int>{0, 1, 4, 5, 6}) == 3);
-		REQUIRE_NOTHROW(s.hIndex2(vector<int>{0, 1, 2, 5, 6}) == 2);
+		CHECK(s.hIndex2(vector<int>{0, 1, 3, 5, 6}) == 3);
+		CHECK(s.hIndex2(vector<int>{0, 1, 4, 5, 6}) == 3);
+		REQUIRE(s.hIndex2(vector<int>{0, 1, 2, 5, 6}) == 2);
 	}
 	SECTION("right edge case") {
-		REQUIRE_NOTHROW(s.hIndex2(vector<int>{5, 5, 5, 5, 6}) == 5);
-		REQUIRE_NOTHROW(s.hIndex2(vector<int>{11,15}) == 2);
+		CHECK(s.hIndex2(vector<int>{5, 5, 5, 5, 6}) == 5);
+		REQUIRE(s.hIndex2(vector<int>{11,15}) == 2);
 	}
 	SECTION("edge case") {
-		REQUIRE_NOTHROW(s.hIndex2(vector<int>{0}) == 0);
+		REQUIRE(s.hIndex2(vector<int>{0}) == 0);
+	}
+}
+
+TEST_CASE("H-Index", "HINDEX")
+{
+	Sort s;
+	SECTION("middle case") {
+		CHECK(s.hIndex(vector<int>{3, 0, 6, 1, 5}) == 3);
+		CHECK(s.hIndex(vector<int>{4, 0, 6, 1, 5}) == 3);
+		REQUIRE(s.hIndex(vector<int>{2, 0, 6, 1, 5}) == 2);
+	}
+	SECTION("right edge case") {
+		CHECK(s.hIndex(vector<int>{5, 5, 6, 5, 5}) == 5);
+		REQUIRE(s.hIndex(vector<int>{11, 15}) == 2);
+	}
+	SECTION("edge case") {
+		CHECK(s.hIndex(vector<int>{0}) == 0);
+		REQUIRE(s.hIndex(vector<int>{1,2}) == 1);
 	}
 }
