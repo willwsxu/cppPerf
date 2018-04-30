@@ -1266,18 +1266,25 @@ public:
 		return citations[n - 1] >= n ?n:0;
 	}
 	// sorted in ascending orders
-	int hIndex2(vector<int>& citations) {  // beat 24%
+	int bs(vector<int>& citations, int start, int end)
+	{
+		if (start>=end)
+			return citations.size() - start;
+		int mid = (start + end) / 2;
+		int h = citations.size() - mid;
+		if (citations[mid] >= h && (mid==0 || citations[mid - 1] <= h))
+			return h;
+		if (citations[mid] < h)
+			return bs(citations, mid + 1, end);
+		return bs(citations, start, mid-1);
+	}
+	int hIndex2(vector<int>& citations) {  // beat 24% without binary search
 		if (citations.empty())
 			return 0;
 		int n = citations.size();
 		if (citations[0] >= n)
 			return n;
-		for (int i = n-1; i >0 ; i--) {
-			int h = n - i;
-			if (citations[i] >= h && citations[i - 1] <= h)
-				return h;
-		}
-		return  0;
+		return bs(citations, 0, n);  // binary search improve performance 9ms vs 31ms, beat 80%
 	}
 };
 
