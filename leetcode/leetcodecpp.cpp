@@ -1383,6 +1383,13 @@ void testSplitSubSeq()
 	cout << g.isPossible(vector<int>{1, 2, 3, 4, 4, 5}) << endl;
 }
 
+struct Interval {
+	int start;
+	int end;
+	Interval() : start(0), end(0) {}
+	Interval(int s, int e) : start(s), end(e) {}
+	
+};
 class BinarySearch {
 	int bsPeak(vector<int>& nums, int start, int end)
 	{
@@ -1414,8 +1421,38 @@ public:
 	}
 
 	// 153. Find Minimum in Rotated Sorted Array
+	// array is sorted ascending, then torated
 	int findMin(vector<int>& nums) {  // beat 99%
 		return bsRotated(nums, 0, nums.size() - 1);
+	}
+
+	//436. Find Right Interval
+	// for each of the interval i, check if there exists an interval j whose start point is bigger than or equal to 
+	//   the end point of the interval i, which can be called that j is on the "right" of i
+	// store minimal interval j's index, -1 if not found
+	vector<int> findRightInterval(vector<Interval>& intervals) {
+		const int n = intervals.size();
+		vector<vector<int>> starter(n, vector<int>(2, 0)); // save starting point of each interval and its index
+		for (int i = 0; i < n; i++) {
+			starter[i][0] = intervals[i].start;
+			starter[i][1] = i;
+		}
+		auto cmp = [](vector<int>& s1, vector<int>&s2) { 
+			return s1[0] < s2[0];
+		};
+		sort(begin(starter), end(starter), cmp);
+		vector<int> ans(n, -1);
+		vector<int> val(2, 0);
+		auto cmp2 = [](vector<int>& s1, vector<int> s2) { 
+			return s1[0] < s2[0];
+		};
+		for (int i = 0; i < n; i++) {
+			val[0] = intervals[i].end;
+			auto found = lower_bound(begin(starter), end(starter), val, cmp2);
+			if (found != end(starter))
+				ans[i] = (*found)[1];
+		}
+		return ans;
 	}
 };
 
@@ -1476,7 +1513,7 @@ TEST_CASE("Find Peak", "[BS]")
 	}
 }
 
-TEST_CASE("Rotated Array", "[NEW]")
+TEST_CASE("Rotated Array", "[Rotate]")
 {
 	BinarySearch t;
 	SECTION("no rotate") {
@@ -1490,5 +1527,18 @@ TEST_CASE("Rotated Array", "[NEW]")
 		CHECK(t.findMin(vector<int>{0}) == 0);
 		CHECK(t.findMin(vector<int>{1,0}) == 0);
 		REQUIRE(t.findMin(vector<int>{0,1}) == 0);
+	}
+}
+
+
+TEST_CASE("Right Interval", "[NEW]")
+{
+	BinarySearch t;
+	SECTION("basic") {
+		REQUIRE(t.findRightInterval(vector<Interval>{ {1, 2}}) == vector<int>{-1});
+	}
+	SECTION("normal") {
+		CHECK(t.findRightInterval(vector<Interval>{ {3, 4}, { 2,3 }, {1, 2}}) == vector<int>{-1,0,1});
+		REQUIRE(t.findRightInterval(vector<Interval>{ {1, 4}, { 2,3 }, { 3, 4 }}) == vector<int>{-1, 2, -1});
 	}
 }
