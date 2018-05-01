@@ -1383,26 +1383,33 @@ void testSplitSubSeq()
 	cout << g.isPossible(vector<int>{1, 2, 3, 4, 4, 5}) << endl;
 }
 
-// 162. Find Peak Element
-// A peak element is an element that is greater than its neighbors
-// The array may contain multiple peaks, in that case return the index to any one of the peaks is fine.
-// You may imagine that num[-1] = num[n] = -∞ (Important clue)
-class Peak {
-	int bs(vector<int>& nums, int start, int end)
+class BinarySearch {
+	int bsPeak(vector<int>& nums, int start, int end)
 	{
 		if (start >= end)
 			return start;
 		int mid = (start + end) / 2;
 		int mid2 = mid + 1;
 		if (nums[mid] > nums[mid2])  //exist local maximum as left end id -∞
-			return bs(nums, start, mid);
-		return bs(nums, mid2, end); //exist local maximum as right end id -∞
+			return bsPeak(nums, start, mid);
+		return bsPeak(nums, mid2, end); //exist local maximum as right end id -∞
 	}
 public:
+	// 162. Find Peak Element
+	// A peak element is an element that is greater than its neighbors
+	// The array may contain multiple peaks, in that case return the index to any one of the peaks is fine.
+	// You may imagine that num[-1] = num[n] = -∞ (Important clue)
 	int findPeakElement(vector<int>& nums) {
-		return bs(nums, 0, nums.size()-1);
+		return bsPeak(nums, 0, nums.size()-1);
+	}
+
+	// 153. Find Minimum in Rotated Sorted Array
+	int findMin(vector<int>& nums) {
+
 	}
 };
+
+
 
 ////////////////////////////////////////////////
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
@@ -1444,7 +1451,7 @@ TEST_CASE("H-Index", "HINDEX")
 }
 
 
-TEST_CASE("Find Peak", "peak")
+TEST_CASE("Find Peak", "[NEW]")
 {
 	Peak t;
 	SECTION("middle case") {

@@ -43,3 +43,4 @@ temp.cpp
 *.opendb
 *.vc.db*
 *.suo
+leetcode/leetcode2015.vcxproj.user
