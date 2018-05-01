@@ -1394,18 +1394,28 @@ class BinarySearch {
 			return bsPeak(nums, start, mid);
 		return bsPeak(nums, mid2, end); //exist local maximum as right end id -∞
 	}
+
+	int bsRotated(vector<int>& nums, int start,  int end)
+	{
+		if (start >= end)
+			return nums[start];
+		int mid = (start + end) / 2;
+		if (nums[mid] > nums[end])
+			return bsRotated(nums, mid + 1, end);
+		return bsRotated(nums,start, mid);
+	}
 public:
 	// 162. Find Peak Element
 	// A peak element is an element that is greater than its neighbors
 	// The array may contain multiple peaks, in that case return the index to any one of the peaks is fine.
 	// You may imagine that num[-1] = num[n] = -∞ (Important clue)
-	int findPeakElement(vector<int>& nums) {
+	int findPeakElement(vector<int>& nums) { // beat 98%
 		return bsPeak(nums, 0, nums.size()-1);
 	}
 
 	// 153. Find Minimum in Rotated Sorted Array
-	int findMin(vector<int>& nums) {
-
+	int findMin(vector<int>& nums) {  // beat 99%
+		return bsRotated(nums, 0, nums.size() - 1);
 	}
 };
 
@@ -1451,9 +1461,9 @@ TEST_CASE("H-Index", "HINDEX")
 }
 
 
-TEST_CASE("Find Peak", "[NEW]")
+TEST_CASE("Find Peak", "[BS]")
 {
-	Peak t;
+	BinarySearch t;
 	SECTION("middle case") {
 		REQUIRE(t.findPeakElement(vector<int>{2,6,6,8,5}) == 3);
 	}
@@ -1463,5 +1473,22 @@ TEST_CASE("Find Peak", "[NEW]")
 	}
 	SECTION("edge case 2") {
 		REQUIRE(t.findPeakElement(vector<int>{0}) == 0);
+	}
+}
+
+TEST_CASE("Rotated Array", "[NEW]")
+{
+	BinarySearch t;
+	SECTION("no rotate") {
+		REQUIRE(t.findMin(vector<int>{0, 1, 2, 4, 5, 6, 7}) == 0);
+	}
+	SECTION("rotate case") {
+		CHECK(t.findMin(vector<int>{4, 5, 6, 7, 0, 1, 2}) ==0);
+		REQUIRE(t.findMin(vector<int>{7, 0, 1, 2, 4, 5, 6}) == 0);
+	}
+	SECTION("edge case") {
+		CHECK(t.findMin(vector<int>{0}) == 0);
+		CHECK(t.findMin(vector<int>{1,0}) == 0);
+		REQUIRE(t.findMin(vector<int>{0,1}) == 0);
 	}
 }
