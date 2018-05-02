@@ -1,6 +1,7 @@
 ﻿#include <stdlib.h>
 #include <vector>
 #include <string>
+#include <map>
 #include <algorithm>
 #include <functional>
 using namespace std;
@@ -1430,27 +1431,17 @@ public:
 	// for each of the interval i, check if there exists an interval j whose start point is bigger than or equal to 
 	//   the end point of the interval i, which can be called that j is on the "right" of i
 	// store minimal interval j's index, -1 if not found
-	vector<int> findRightInterval(vector<Interval>& intervals) {
+	vector<int> findRightInterval(vector<Interval>& intervals) {  // use map is faster than sorted vector
 		const int n = intervals.size();
-		vector<vector<int>> starter(n, vector<int>(2, 0)); // save starting point of each interval and its index
+		std::map<int,int> starter; // save starting point of each interval and its index
 		for (int i = 0; i < n; i++) {
-			starter[i][0] = intervals[i].start;
-			starter[i][1] = i;
+			starter[intervals[i].start]= i;
 		}
-		auto cmp = [](vector<int>& s1, vector<int>&s2) { 
-			return s1[0] < s2[0];
-		};
-		sort(begin(starter), end(starter), cmp);
 		vector<int> ans(n, -1);
-		vector<int> val(2, 0);
-		auto cmp2 = [](vector<int>& s1, vector<int> s2) { 
-			return s1[0] < s2[0];
-		};
 		for (int i = 0; i < n; i++) {
-			val[0] = intervals[i].end;
-			auto found = lower_bound(begin(starter), end(starter), val, cmp2);
+			auto found = starter.lower_bound(intervals[i].end);
 			if (found != end(starter))
-				ans[i] = (*found)[1];
+				ans[i] = found->second;
 		}
 		return ans;
 	}
