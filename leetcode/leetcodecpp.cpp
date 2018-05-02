@@ -1454,6 +1454,14 @@ public:
 		return bsRotated(nums, 0, nums.size() - 1, target);
 	}
 
+	//34. Search for a Range
+	vector<int> searchRange(vector<int>& nums, int target) {
+		auto found = equal_range(begin(nums), end(nums), target);
+		if (found.first == found.second)
+			return vector<int>{-1, -1};
+		return vector<int>{found.first-begin(nums), found.second- begin(nums)-1};
+	}
+
 	//436. Find Right Interval
 	// for each of the interval i, check if there exists an interval j whose start point is bigger than or equal to 
 	//   the end point of the interval i, which can be called that j is on the "right" of i
@@ -1623,7 +1631,7 @@ TEST_CASE("Search Rotated Array II", "[SearchRotate]")
 }
 
 
-TEST_CASE("Search Rotated Array", "[NEW]")
+TEST_CASE("Search Rotated Array", "[SearchRotate]")
 {
 	BinarySearch t;
 	SECTION("edge case") {
@@ -1648,5 +1656,22 @@ TEST_CASE("Search Rotated Array", "[NEW]")
 	SECTION("right") {
 		CHECK(t.search(vector<int>{6, 7, 0, 1, 2, 3, 4}, 0) == 2);
 		REQUIRE(t.search(vector<int>{6, 7, 0, 1, 2, 3, 4}, 3) == 5);
+	}
+}
+
+
+TEST_CASE("Search Range", "[NEW]")
+{
+	BinarySearch t;
+	SECTION("edge case") {
+		CHECK(t.searchRange(vector<int>{}, 3) == vector<int>{-1, -1});				// check empty
+		CHECK(t.searchRange(vector<int>{1}, 3) == vector<int>{-1, -1});
+		CHECK(t.searchRange(vector<int>{3}, 3) == vector<int>{0, 0});
+		CHECK(t.searchRange(vector<int>{1, 3}, 3) == vector<int>{1, 1});
+		REQUIRE(t.searchRange(vector<int>{1, 3}, 1) == vector<int>{0, 0});
+	}
+	SECTION("edge case") {
+		CHECK(t.searchRange(vector<int>{5, 7, 7, 8, 8, 10}, 8) == vector<int>{3, 4});
+		REQUIRE(t.searchRange(vector<int>{5, 7, 7, 8, 8, 10}, 6) == vector<int>{-1, -1});
 	}
 }
