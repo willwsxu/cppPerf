@@ -1403,14 +1403,36 @@ class BinarySearch {
 		return bsPeak(nums, mid2, end); //exist local maximum as right end id -∞
 	}
 
-	int bsRotated(vector<int>& nums, int start,  int end)
+	int bsRotated(vector<int>& nums, int start,  int end)  // find minimum
 	{
 		if (start >= end)
 			return nums[start];
 		int mid = (start + end) / 2;
-		if (nums[mid] > nums[end])
+		if (nums[mid] > nums[end])  // pivot point is to the right
 			return bsRotated(nums, mid + 1, end);
 		return bsRotated(nums,start, mid);
+	}
+	bool bsRotated(vector<int>& nums, int start, int end, int target)
+	{
+		if (start >= end)
+			return nums[start]==target;
+		int mid = (start + end) / 2;
+		if (nums[mid] == target)
+			return true;
+		if (nums[mid] < nums[end])  // right side is sorted
+		{
+			if (target > nums[mid] && target <= nums[end])
+				return bsRotated(nums, mid + 1, end, target);
+			return bsRotated(nums, start, mid-1, target);
+		}
+		else if (nums[mid] == nums[end]) {  // try both sides
+			if (bsRotated(nums, start, mid - 1, target))
+				return true;
+			return bsRotated(nums, mid + 1, end, target);
+		}
+		if (target >= nums[start] && target < nums[mid])  // left side is sorted, and target is within
+			return bsRotated(nums, start, mid -1, target);
+		return bsRotated(nums, mid+1, end, target);
 	}
 public:
 	// 162. Find Peak Element
@@ -1425,6 +1447,14 @@ public:
 	// array is sorted ascending, then torated
 	int findMin(vector<int>& nums) {  // beat 99%
 		return bsRotated(nums, 0, nums.size() - 1);
+	}
+
+	// 81. Search in Rotated Sorted Array II
+	// Search a target value. array was in ascending order
+	bool search(vector<int>& nums, int target) { // lots of edge cases, beat 95%
+		if (nums.empty())
+			return false;
+		return bsRotated(nums, 0, nums.size() - 1, target);
 	}
 
 	//436. Find Right Interval
@@ -1521,8 +1551,7 @@ TEST_CASE("Rotated Array", "[Rotate]")
 	}
 }
 
-
-TEST_CASE("Right Interval", "[NEW]")
+TEST_CASE("Right Interval", "[RINT]")
 {
 	BinarySearch t;
 	SECTION("basic") {
@@ -1531,5 +1560,34 @@ TEST_CASE("Right Interval", "[NEW]")
 	SECTION("normal") {
 		CHECK(t.findRightInterval(vector<Interval>{ {3, 4}, { 2,3 }, {1, 2}}) == vector<int>{-1,0,1});
 		REQUIRE(t.findRightInterval(vector<Interval>{ {1, 4}, { 2,3 }, { 3, 4 }}) == vector<int>{-1, 2, -1});
+	}
+}
+
+TEST_CASE("Search Rotated Array II", "[NEW]")
+{
+	BinarySearch t;
+	SECTION("edge case") {
+		CHECK(t.search(vector<int>{1, 1, 3, 1}, 3) == true);	// try both sides if mid is same as one end
+		CHECK(t.search(vector<int>{3, 1, 1}, 3) == true);     
+		CHECK(t.search(vector<int>{1, 1}, 0) == false);			// need to increment or decrement mid to avoid infinite loop
+		CHECK(t.search(vector<int>{}, 3) == false);				// check empty
+		CHECK(t.search(vector<int>{1}, 3) == false);
+		CHECK(t.search(vector<int>{3}, 3) == true);
+		REQUIRE(t.search(vector<int>{1,3}, 3) == true);
+		CHECK(t.search(vector<int>{1,1}, 3) == false);
+	}
+	SECTION("left") {
+		CHECK(t.search(vector<int>{2, 5, 6, 0, 0, 1, 2}, 5) == true);
+		REQUIRE(t.search(vector<int>{2, 2, 5, 6, 0, 0, 1}, 5) == true);
+	}
+	SECTION("easy case, mid is target") {
+		REQUIRE(t.search(vector<int>{2, 5, 6, 0, 0, 1, 2}, 0) == true);
+	}
+	SECTION("not found") {
+		REQUIRE(t.search(vector<int>{2, 5, 6, 0, 0, 1, 2}, 3) == false);
+	}
+	SECTION("right") {
+		CHECK(t.search(vector<int>{2, 5, 6, 0, 0, 1, 2}, 1) == true);
+		REQUIRE(t.search(vector<int>{2, 2, 5, 6, 0, 0, 1}, 1) == true);
 	}
 }
