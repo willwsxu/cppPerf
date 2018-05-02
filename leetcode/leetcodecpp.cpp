@@ -1412,27 +1412,25 @@ class BinarySearch {
 			return bsRotated(nums, mid + 1, end);
 		return bsRotated(nums,start, mid);
 	}
-	bool bsRotated(vector<int>& nums, int start, int end, int target)
+	int bsRotated(vector<int>& nums, int start, int end, int target)
 	{
-		if (start >= end)
-			return nums[start]==target;
+		if (start >= end) {
+			if ( nums[start] == target)
+				return start;
+			return -1;
+		}
 		int mid = (start + end) / 2;
 		if (nums[mid] == target)
-			return true;
+			return mid;
 		if (nums[mid] < nums[end])  // right side is sorted
 		{
 			if (target > nums[mid] && target <= nums[end])
 				return bsRotated(nums, mid + 1, end, target);
-			return bsRotated(nums, start, mid-1, target);
-		}
-		else if (nums[mid] == nums[end]) {  // try both sides
-			if (bsRotated(nums, start, mid - 1, target))
-				return true;
-			return bsRotated(nums, mid + 1, end, target);
+			return bsRotated(nums, start, mid - 1, target);
 		}
 		if (target >= nums[start] && target < nums[mid])  // left side is sorted, and target is within
-			return bsRotated(nums, start, mid -1, target);
-		return bsRotated(nums, mid+1, end, target);
+			return bsRotated(nums, start, mid - 1, target);
+		return bsRotated(nums, mid + 1, end, target);
 	}
 public:
 	// 162. Find Peak Element
@@ -1449,11 +1447,10 @@ public:
 		return bsRotated(nums, 0, nums.size() - 1);
 	}
 
-	// 81. Search in Rotated Sorted Array II
-	// Search a target value. array was in ascending order
-	bool search(vector<int>& nums, int target) { // lots of edge cases, beat 95%
+	// 33. Search in Rotated Sorted Array, no duplicates
+	int search(vector<int>& nums, int target) {
 		if (nums.empty())
-			return false;
+			return -1;
 		return bsRotated(nums, 0, nums.size() - 1, target);
 	}
 
@@ -1477,6 +1474,39 @@ public:
 	}
 };
 
+class BinarySearch2
+{
+	bool bsRotated(vector<int>& nums, int start, int end, int target)
+	{
+		if (start >= end)
+			return nums[start] == target;
+		int mid = (start + end) / 2;
+		if (nums[mid] == target)
+			return true;
+		if (nums[mid] < nums[end])  // right side is sorted
+		{
+			if (target > nums[mid] && target <= nums[end])
+				return bsRotated(nums, mid + 1, end, target);
+			return bsRotated(nums, start, mid - 1, target);
+		}
+		else if (nums[mid] == nums[end]) {  // try both sides
+			if (bsRotated(nums, start, mid - 1, target))
+				return true;
+			return bsRotated(nums, mid + 1, end, target);
+		}
+		if (target >= nums[start] && target < nums[mid])  // left side is sorted, and target is within
+			return bsRotated(nums, start, mid - 1, target);
+		return bsRotated(nums, mid + 1, end, target);
+	}
+public:
+	// 81. Search in Rotated Sorted Array II
+	// Search a target value. array was in ascending order
+	bool search(vector<int>& nums, int target) { // lots of edge cases, beat 95%
+		if (nums.empty())
+			return false;
+		return bsRotated(nums, 0, nums.size() - 1, target);
+	}
+};
 
 
 ////////////////////////////////////////////////
@@ -1563,9 +1593,9 @@ TEST_CASE("Right Interval", "[RINT]")
 	}
 }
 
-TEST_CASE("Search Rotated Array II", "[NEW]")
+TEST_CASE("Search Rotated Array II", "[SearchRotate]")
 {
-	BinarySearch t;
+	BinarySearch2 t;
 	SECTION("edge case") {
 		CHECK(t.search(vector<int>{1, 1, 3, 1}, 3) == true);	// try both sides if mid is same as one end
 		CHECK(t.search(vector<int>{3, 1, 1}, 3) == true);     
@@ -1589,5 +1619,34 @@ TEST_CASE("Search Rotated Array II", "[NEW]")
 	SECTION("right") {
 		CHECK(t.search(vector<int>{2, 5, 6, 0, 0, 1, 2}, 1) == true);
 		REQUIRE(t.search(vector<int>{2, 2, 5, 6, 0, 0, 1}, 1) == true);
+	}
+}
+
+
+TEST_CASE("Search Rotated Array", "[NEW]")
+{
+	BinarySearch t;
+	SECTION("edge case") {
+		CHECK(t.search(vector<int>{2, 3, 1}, 3) == 1);	// try both sides if mid is same as one end
+		CHECK(t.search(vector<int>{3, 1, 2}, 3) == 0);
+		CHECK(t.search(vector<int>{}, 3) == -1);				// check empty
+		CHECK(t.search(vector<int>{1}, 3) == -1);
+		CHECK(t.search(vector<int>{3}, 3) == 0);
+		REQUIRE(t.search(vector<int>{1, 3}, 3) == 1);
+	}
+	SECTION("left") {
+		CHECK(t.search(vector<int>{4, 5, 6, 7, 0, 1, 2}, 5) == 1);
+		REQUIRE(t.search(vector<int>{4, 5, 6, 7, 0, 1, 2}, 1) == 5);
+	}
+	SECTION("easy case, mid is target") {
+		REQUIRE(t.search(vector<int>{4, 5, 6, 7, 0, 1, 2}, 7) == 3);
+	}
+	SECTION("not found") {
+		REQUIRE(t.search(vector<int>{4, 5, 6, 7, 0, 1, 2}, 3) == -1);
+		REQUIRE(t.search(vector<int>{6, 7, 0, 1, 2}, 3) == -1);
+	}
+	SECTION("right") {
+		CHECK(t.search(vector<int>{6, 7, 0, 1, 2, 3, 4}, 0) == 2);
+		REQUIRE(t.search(vector<int>{6, 7, 0, 1, 2, 3, 4}, 3) == 5);
 	}
 }
