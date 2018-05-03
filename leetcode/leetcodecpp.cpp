@@ -1432,6 +1432,18 @@ class BinarySearch {
 			return bsRotated(nums, start, mid - 1, target);
 		return bsRotated(nums, mid + 1, end, target);
 	}
+	int lower_bound_closest(vector<int>& arr, int k, int x, int low, int hi)
+	{
+		if (low >= hi)
+			return low;
+		int mid = (low + hi) / 2;
+		if (hi - low == 1)
+			mid = low;
+		int hiVal = mid + k<arr.size()? arr[mid + k]: INT_MAX;  // right most elem+k will be out of bound
+		if (x - arr[mid] > arr[mid + k] - x)
+			return lower_bound_closest(arr, k, x, mid + 1, hi);
+		return lower_bound_closest(arr, k, x, low, mid);
+	}
 public:
 	// 162. Find Peak Element
 	// A peak element is an element that is greater than its neighbors
@@ -1478,6 +1490,17 @@ public:
 			if (found != end(starter))
 				ans[i] = found->second;
 		}
+		return ans;
+	}
+
+	// 658. Find K Closest Elements
+	// 
+	vector<int> findClosestElements(vector<int>& arr, int k, int x) {
+		if (arr.size() <= k)
+			return arr;
+		int i = lower_bound_closest(arr, k ,x, 0, arr.size()-k);
+		vector<int> ans;
+		copy_n(begin(arr) + i, k, back_inserter(ans));
 		return ans;
 	}
 };
@@ -1659,8 +1682,7 @@ TEST_CASE("Search Rotated Array", "[SearchRotate]")
 	}
 }
 
-
-TEST_CASE("Search Range", "[NEW]")
+TEST_CASE("Search Range", "[RANGE]")
 {
 	BinarySearch t;
 	SECTION("edge case") {
@@ -1670,8 +1692,22 @@ TEST_CASE("Search Range", "[NEW]")
 		CHECK(t.searchRange(vector<int>{1, 3}, 3) == vector<int>{1, 1});
 		REQUIRE(t.searchRange(vector<int>{1, 3}, 1) == vector<int>{0, 0});
 	}
-	SECTION("edge case") {
+	SECTION("normal case") {
 		CHECK(t.searchRange(vector<int>{5, 7, 7, 8, 8, 10}, 8) == vector<int>{3, 4});
 		REQUIRE(t.searchRange(vector<int>{5, 7, 7, 8, 8, 10}, 6) == vector<int>{-1, -1});
+	}
+}
+
+TEST_CASE("Find K Closest", "[NEW]")
+{
+	BinarySearch t;
+	SECTION("normal case") {
+		REQUIRE(t.findClosestElements(vector<int>{0, 1, 2, 3, 8, 9}, 4, 3) == vector<int>{0, 1, 2, 3});
+	}
+	SECTION("edge case") {
+		REQUIRE(t.findClosestElements(vector<int>{1, 2, 3, 4, 5}, 4, 4) == vector<int>{2, 3, 4, 5});
+	}
+	SECTION("tie case") {
+		REQUIRE(t.findClosestElements(vector<int>{1, 2, 3, 4, 5}, 4, 3) == vector<int>{1, 2, 3, 4});
 	}
 }
