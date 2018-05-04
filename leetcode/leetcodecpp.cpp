@@ -1503,6 +1503,31 @@ public:
 		copy_n(begin(arr) + i, k, back_inserter(ans));
 		return ans;
 	}
+
+	// 209. Minimum Size Subarray Sum
+	// minimal length of a contiguous subarray of which the sum ≥ s. If there isn't one, return 0 instead
+	int minSubArrayLen(int s, vector<int>& nums) {
+		if (nums.empty())
+			return 0;
+		int n = nums.size();
+		for (int i = 1; i < n; i++)  // prefix sum
+			nums[i] += nums[i - 1];
+		if (nums[n - 1] < s)  // nums[n - 1] is max sum
+			return 0;
+		//print(nums);
+		int ans = lower_bound(begin(nums), end(nums), s)-begin(nums)+1;  // from the very first element
+		//cout << " initial ans " << ans << endl;
+		for (int i = 1; i < n; i++) {
+			auto found = lower_bound(begin(nums), end(nums), s + nums[i - 1]);
+			if (found == end(nums))  // total is smaller <s, from i
+				break;
+			int dist = found - begin(nums) - i +1;
+			//cout << " dist " << dist << " from " << i << endl;
+			if (dist < ans)
+				ans = dist;
+		}
+		return ans;
+	}
 };
 
 class BinarySearch2
@@ -1698,7 +1723,7 @@ TEST_CASE("Search Range", "[RANGE]")
 	}
 }
 
-TEST_CASE("Find K Closest", "[NEW]")
+TEST_CASE("Find K Closest", "[KClosest]")
 {
 	BinarySearch t;
 	SECTION("normal case") {
@@ -1709,5 +1734,18 @@ TEST_CASE("Find K Closest", "[NEW]")
 	}
 	SECTION("tie case") {
 		REQUIRE(t.findClosestElements(vector<int>{1, 2, 3, 4, 5}, 4, 3) == vector<int>{1, 2, 3, 4});
+	}
+}
+
+
+TEST_CASE("Minimum Size Subarray Sum", "[NEW]")
+{
+	BinarySearch t;
+	SECTION("normal case") {
+		REQUIRE(t.minSubArrayLen(7, vector<int>{2, 3, 1, 2, 4, 3}) == 2);
+	}
+	SECTION("edge case") {
+		REQUIRE(t.minSubArrayLen(15, vector<int>{1, 2, 3, 4, 5}) == 5);
+		REQUIRE(t.minSubArrayLen(16, vector<int>{1, 2, 3, 4, 5}) == 0);
 	}
 }
