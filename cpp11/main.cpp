@@ -6,7 +6,7 @@ using namespace std;
 #include "..\catch.hpp"
 
 void tprintf(const char *fmt) {
-	cout << fmt;
+	cout << fmt << endl;
 }
 template <typename T, typename ... Targs>
 void tprintf(const char *fmt, T val, Targs ...Fargs)
@@ -37,10 +37,26 @@ public:
 	}
 };
 
+template<typename ... Targs,typename=void, typename U>
+void testPattern(U fmt, Targs...targs)
+{
+	tprintf(fmt, targs ...);
+}
+template<typename ... Targs, typename = void, typename U>
+void testPattern2(U fmt, Targs...targs)
+{
+	testPattern(fmt, &targs ...);
+}
+
 TEST_CASE("DynBuffer", "BUF")
 {
 	Console c;
 	c(1, "[%p] DynBuffer (from [%p]) resize to max allowed %d", &c, 10, 20);
+
+	int i = 1;
+	float f = 2.0f;
+	testPattern("%f %f", i, f);
+	testPattern2("%f %f", i, f);
 
 	CDynBuffer<Console,char> buf;
 	buf.AppendData("Hello");
