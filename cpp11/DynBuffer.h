@@ -30,11 +30,11 @@ class CDynBuffer
 {
 protected:
 	Logger			logger;
-	std::unique_ptr<char[]>			m_pBuffer;
+	std::unique_ptr<T[]>			m_pBuffer;
 	unsigned long	m_lSize;		// size of the current buffer
 	unsigned long	m_lMaxSize;		// max allowed
 	unsigned long	m_lLen;
-	char *			m_pCur;
+	T *				m_pCur;
 	int				resizeCount;
 	int				resizeMove;
 	int				resizeFailedCount;
@@ -52,7 +52,7 @@ public:
 		m_lSize = initSize;
 		m_lMaxSize = maxSize;
 		m_lLen = 0;
-		m_pBuffer = make_unique<char[]>(m_lSize);
+		m_pBuffer = make_unique<T[]>(m_lSize);
 		m_pCur = m_pBuffer.get();
 		ClearStats();
 	}
@@ -64,7 +64,7 @@ public:
 			return false;
 		}
 		if (m_lLen + len > m_lSize) {	// time to expand buffer
-			std::unique_ptr<char[]> pOld = std::move(m_pBuffer);
+			std::unique_ptr<T[]> pOld = std::move(m_pBuffer);
 			unsigned long newSize = m_lSize / 2 * 3 + 2;
 			resizeAttempted++;
 			if (newSize < m_lLen + len) {
@@ -81,7 +81,7 @@ public:
 				}
 			}
 			try {
-				m_pBuffer = make_unique<char[]>(newSize);
+				m_pBuffer = make_unique<T[]>(newSize);
 			}
 			catch (std::bad_alloc())
 			{
@@ -143,9 +143,9 @@ public:
 		assert(pair.m_pBuffer.get() == pair.m_pCur);
 		if (pair.m_lSize > m_lSize)
 		{
-			std::unique_ptr<char[]> pOld = std::move(m_pBuffer);
+			std::unique_ptr<T[]> pOld = std::move(m_pBuffer);
 			try {
-				m_pBuffer = make_unique<char[](pair.m_lSize);
+				m_pBuffer = make_unique<T[](pair.m_lSize);
 			}
 			catch (std::bad_alloc())
 			{

@@ -44,4 +44,5 @@ TEST_CASE("DynBuffer", "BUF")
 
 	CDynBuffer<Console,char> buf;
 	buf.AppendData("Hello");
+	REQUIRE(buf.GetBufferLen() == 5);
 }
