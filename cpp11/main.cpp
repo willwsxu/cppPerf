@@ -67,9 +67,12 @@ TEST_CASE("DynBuffer", "BUF")
 TEST_CASE("DynMsg", "DMSG")
 {
 	CDynMsg<Console, char> buf;
-	buf.AppendData("Hello");
-	REQUIRE(buf.GetBufferLen() == 5);
-
-	CDynMsg<Console, char> buf2=buf;
-	REQUIRE(buf2.GetBufferLen() == 5);
+	SECTION("basic") {
+		buf.AppendData("Hello");
+		REQUIRE(buf.GetBufferLen() == 5);
+	}
+	SECTION("copy") {
+		CDynMsg<Console, char> buf2 = buf;
+		REQUIRE(buf2.GetBufferLen() == 5);
+	}
 }
