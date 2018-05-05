@@ -1,4 +1,5 @@
 #include "dynBuffer.h"
+#include "DynMsg.h"
 #include <iostream>
 using namespace std;
 
@@ -61,4 +62,14 @@ TEST_CASE("DynBuffer", "BUF")
 	CDynBuffer<Console,char> buf;
 	buf.AppendData("Hello");
 	REQUIRE(buf.GetBufferLen() == 5);
+}
+
+TEST_CASE("DynMsg", "DMSG")
+{
+	CDynMsg<Console, char> buf;
+	buf.AppendData("Hello");
+	REQUIRE(buf.GetBufferLen() == 5);
+
+	CDynMsg<Console, char> buf2=buf;
+	REQUIRE(buf2.GetBufferLen() == 5);
 }

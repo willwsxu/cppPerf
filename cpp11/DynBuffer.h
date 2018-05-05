@@ -46,6 +46,23 @@ protected:
 	long			totalDiscardMsg;
 	__int64			totalDiscardBytes;
 
+	void checkPeak()
+	{
+		if (m_lLen>m_peakLen)
+		{
+			m_peakLen = m_lLen;
+			szCurTime(szBufPeakTime, sizeof(szBufPeakTime));
+		}
+	}
+
+	void copyFrom(const CDynBuffer& copy_) {
+		if (m_lSize<copy_.m_lLen)
+			(void)resize(copy_.m_lLen);
+		m_pCur = m_pBuffer.get();
+		memcpy(m_pBuffer.get(), copy_.m_pCur, copy_.m_lLen);
+		m_lLen = copy_.m_lLen;
+		checkPeak();
+	}
 public:
 	CDynBuffer(unsigned long initSize = 4096, unsigned long maxSize = 0x1000000)
 	{
@@ -172,11 +189,7 @@ public:
 			std::swap(m_pCur, pair.m_pCur);
 			std::swap(m_lLen, pair.m_lLen);
 			std::swap(m_lSize, pair.m_lSize);
-			if (m_lLen>m_peakLen)
-			{
-				m_peakLen = m_lLen;
-				szCurTime(szBufPeakTime, sizeof(szBufPeakTime));
-			}
+			checkPeak();
 			return true;
 		}
 		return false;
@@ -191,11 +204,7 @@ public:
 		memcpy(m_pCur + m_lLen, data, len);
 
 		m_lLen += len;
-		if (m_lLen>m_peakLen)
-		{
-			m_peakLen = m_lLen;
-			szCurTime(szBufPeakTime, sizeof(szBufPeakTime));
-		}
+		checkPeak();
 		return true;
 	}
 
