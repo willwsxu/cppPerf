@@ -30,7 +30,7 @@ class CDynBuffer
 {
 protected:
 	Logger			logger;
-	char *			m_pBuffer;
+	std::unique_ptr<char[]>			m_pBuffer;
 	unsigned long	m_lSize;		// size of the current buffer
 	unsigned long	m_lMaxSize;		// max allowed
 	unsigned long	m_lLen;
@@ -52,12 +52,9 @@ public:
 		m_lSize = initSize;
 		m_lMaxSize = maxSize;
 		m_lLen = 0;
-		m_pBuffer = new char[m_lSize];
-		m_pCur = m_pBuffer;
+		m_pBuffer = make_unique<char[]>(m_lSize);
+		m_pCur = m_pBuffer.get();
 		ClearStats();
-	}
-	~CDynBuffer() {
-		delete[]m_pBuffer;
 	}
 
 	bool resize(unsigned long len) {
@@ -67,7 +64,7 @@ public:
 			return false;
 		}
 		if (m_lLen + len > m_lSize) {	// time to expand buffer
-			char *pOld = m_pBuffer;
+			std::unique_ptr<char[]> pOld = std::move(m_pBuffer);
 			unsigned long newSize = m_lSize / 2 * 3 + 2;
 			resizeAttempted++;
 			if (newSize < m_lLen + len) {
@@ -84,47 +81,46 @@ public:
 				}
 			}
 			try {
-				m_pBuffer = new char[newSize];
+				m_pBuffer = make_unique<char[]>(newSize);
 			}
 			catch (std::bad_alloc())
 			{
-				m_pBuffer = 0;  //lint !e423
+				m_pBuffer = 0;
 			}
 			catch (...)
 			{
-				m_pBuffer = 0;  //lint !e423
+				m_pBuffer = 0;
 			}
 			if (m_pBuffer == 0)
 			{
 				// roll back
 				resizeException++;
-				m_pBuffer = pOld;
-				logger(SEV_WARN, "DynBuffer [%p]. Failed to resize to %lu from %lu", m_pBuffer, newSize, m_lSize);
+				m_pBuffer = std::move(pOld);
+				logger(SEV_WARN, "DynBuffer [%p]. Failed to resize to %lu from %lu", m_pBuffer.get(), newSize, m_lSize);
 				return false;
 			}
 			if (newSize == m_lMaxSize)
 			{
-				logger("[%p] DynBuffer (from [%p]) resize to max allowed %d", m_pBuffer, pOld, m_lMaxSize);
+				logger("[%p] DynBuffer (from [%p]) resize to max allowed %d", m_pBuffer.get(), pOld.get(), m_lMaxSize);
 			}
-			memcpy(m_pBuffer, m_pCur, m_lLen);
+			memcpy(m_pBuffer.get(), m_pCur, m_lLen);
 
-			m_pCur = m_pBuffer;
+			m_pCur = m_pBuffer.get();
 			m_lSize = newSize;
-			delete[]pOld;
 			resizeCount++;
 		}
-		else if (m_pBuffer - m_pCur + m_lSize < len + m_lLen) {  // move data to beginning if there is not enough from pCur
+		else if (m_pBuffer.get() - m_pCur + m_lSize < len + m_lLen) {  // move data to beginning if there is not enough from pCur
 #ifdef UNIT_TEST
 			char *pTemp = new char[m_lLen + 1];
 			memcpy(pTemp, m_pCur, m_lLen);
 #endif
-			memmove(m_pBuffer, m_pCur, m_lLen);
+			memmove(m_pBuffer.get(), m_pCur, m_lLen);
 #ifdef UNIT_TEST
 			assert(memcmp(m_pBuffer, pTemp, m_lLen) == 0);
 			delete[]pTemp;
 #endif
 			//			memcpy(m_pBuffer, pTemp, m_lLen);
-			m_pCur = m_pBuffer;
+			m_pCur = m_pBuffer.get();
 			resizeMove++;
 		}
 		return true;
@@ -143,31 +139,30 @@ public:
 	bool swapBuffer(CDynBuffer& pair)
 	{
 		assert(m_lLen == 0);
-		assert(m_pBuffer == m_pCur);
-		assert(pair.m_pBuffer == pair.m_pCur);
+		assert(m_pBuffer.get() == m_pCur);
+		assert(pair.m_pBuffer.get() == pair.m_pCur);
 		if (pair.m_lSize > m_lSize)
 		{
-			char *pOld = m_pBuffer;
+			std::unique_ptr<char[]> pOld = std::move(m_pBuffer);
 			try {
-				m_pBuffer = new char[pair.m_lSize];
+				m_pBuffer = make_unique<char[](pair.m_lSize);
 			}
 			catch (std::bad_alloc())
 			{
-				m_pBuffer = pOld;  //lint !e423
+				m_pBuffer = std::move(pOld);
 			}
 			catch (...)
 			{
-				m_pBuffer = pOld;  //lint !e423
+				m_pBuffer = std::move(pOld);
 			}
-			if (m_pBuffer == pOld)
+			if (pOld==nullptr)
 			{
-				logger(SEV_WARN, "DynBuffer swap from [%p] [%p]. Failed to resize to %lu from %lu", m_pBuffer, pair.m_pBuffer, pair.m_lSize, m_lSize);
+				logger(SEV_WARN, "DynBuffer swap from [%p] [%p]. Failed to resize to %lu from %lu", m_pBuffer.get(), pair.m_pBuffer.get(), pair.m_lSize, m_lSize);
 			}
 			else
 			{
 				if (pair.m_lSize == m_lMaxSize)
 					logger("DynBuffer swap old [%p] -> new [%p] resize to max allowed %lu from %lu. Swap with [%p]", pOld, m_pBuffer, m_lMaxSize, m_lSize, pair.m_pBuffer);
-				delete[]pOld;
 				m_lSize = pair.m_lSize;
 			}
 		}
@@ -192,7 +187,7 @@ public:
 	{
 		if (!resize(len))
 			return false;
-		assert(m_pBuffer - m_pCur + m_lSize >= len + m_lLen);
+		assert(m_pBuffer.get() - m_pCur + m_lSize >= len + m_lLen);
 		memcpy(m_pCur + m_lLen, data, len);
 
 		m_lLen += len;
@@ -272,7 +267,7 @@ public:
 
 
 	void ClearData() {
-		m_pCur = m_pBuffer;
+		m_pCur = m_pBuffer.get();
 		m_lLen = 0;
 	}
 
@@ -283,7 +278,7 @@ public:
 		m_lLen -= lLen;
 		m_pCur += lLen;
 		if (m_lLen == 0)
-			m_pCur = m_pBuffer;
+			m_pCur = m_pBuffer.get();
 	}
 	// A special case
 	void ConsumeLong()
@@ -301,7 +296,7 @@ public:
 	// Name should be AppendData
 	bool DataRead(unsigned long len)
 	{
-		assert(m_pBuffer - m_pCur + m_lSize >= len + m_lLen);
+		assert(m_pBuffer.get() - m_pCur + m_lSize >= len + m_lLen);
 		m_lLen += len;
 		return true;
 	}
