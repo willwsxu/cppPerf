@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <functional>
+#include <set>
 using namespace std;
 
 int findMaxForm(vector<string>& strs, int m, int n) {
@@ -1564,7 +1565,51 @@ public:
 	}
 };
 
+struct ListNode
+{
+	int val;
+	ListNode *next;
+	ListNode(int x) : val(x), next(nullptr) {}
 
+	static ListNode * createList(const vector<int>& nodes)
+	{
+		ListNode *head = new ListNode(nodes[0]);
+		ListNode *cur = head;
+		for (int i = 1; i < nodes.size(); i++) {
+			cur->next = new ListNode(nodes[i]);
+			cur = cur->next;
+		}
+		return head;
+	}
+};
+class LinkedList
+{
+public:
+	// G is subset of node values of the list
+	// node value range [0, n-1], if there are n nodes. 1<=n<=10000
+	int numComponents(ListNode *head, vector<int>&G)
+	{
+		set<int> g;
+		for (int i : G)
+			g.emplace(i);
+		int components = 0;
+		bool breaking = true;
+		while (head != nullptr)
+		{
+			if (g.find(head->val)!=g.end()) {
+				if (breaking) {
+					breaking = false;
+					components++;
+				}
+			}
+			else {
+				breaking = true;
+			}
+			head = head->next;
+		}
+		return components;
+	}
+};
 ////////////////////////////////////////////////
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"
@@ -1738,14 +1783,30 @@ TEST_CASE("Find K Closest", "[KClosest]")
 }
 
 
-TEST_CASE("Minimum Size Subarray Sum", "[NEW]")
+TEST_CASE("Minimum Size Subarray Sum", "[SubArray]")
 {
 	BinarySearch t;
 	SECTION("normal case") {
 		REQUIRE(t.minSubArrayLen(7, vector<int>{2, 3, 1, 2, 4, 3}) == 2);
 	}
 	SECTION("edge case") {
-		REQUIRE(t.minSubArrayLen(15, vector<int>{1, 2, 3, 4, 5}) == 5);
+		CHECK(t.minSubArrayLen(15, vector<int>{1, 2, 3, 4, 5}) == 5);
 		REQUIRE(t.minSubArrayLen(16, vector<int>{1, 2, 3, 4, 5}) == 0);
+	}
+}
+
+
+TEST_CASE("Connected Components", "[NEW]")
+{
+	LinkedList t;
+	ListNode *head1 = ListNode::createList(vector<int>{0, 1, 2, 3});
+	ListNode *head2 = ListNode::createList(vector<int>{0, 1, 2, 3, 4});
+	SECTION("normal case") {
+		CHECK(t.numComponents(head1, vector<int>{0, 1, 3})==2);
+		REQUIRE(t.numComponents(head2, vector<int>{0, 1, 3, 4}) == 2);
+	}
+	SECTION("normal case") {
+		CHECK(t.numComponents(head1, vector<int>{3}) == 1);
+		REQUIRE(t.numComponents(head1, vector<int>{0}) == 1);
 	}
 }
