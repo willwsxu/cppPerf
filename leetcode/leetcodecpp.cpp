@@ -1581,6 +1581,14 @@ struct ListNode
 		}
 		return head;
 	}
+	static int count(ListNode* root) {
+		int count = 0;
+		while (root != nullptr) {
+			count++;
+			root = root->next;
+		}
+		return count;
+	}
 };
 class LinkedList
 {
@@ -1589,14 +1597,12 @@ public:
 	// node value range [0, n-1], if there are n nodes. 1<=n<=10000
 	int numComponents(ListNode *head, vector<int>&G)
 	{
-		set<int> g;
-		for (int i : G)
-			g.emplace(i);
+		unordered_set<int> g(begin(G), end(G)); // faster than set, 36ms vs 46ms
 		int components = 0;
 		bool breaking = true;
 		while (head != nullptr)
 		{
-			if (g.find(head->val)!=g.end()) {
+			if (g.count(head->val)) {
 				if (breaking) {
 					breaking = false;
 					components++;
@@ -1608,6 +1614,35 @@ public:
 			head = head->next;
 		}
 		return components;
+	}
+
+	void deleteNode(ListNode* node) {  // delete current node. take next node value, delete next node
+		if (node->next) {
+			node->val = node->next->val;
+			node->next = node->next->next;
+		}
+	}
+	// split into k parts, k can be larger than list size, size difference<=1
+	vector<ListNode*> splitListToParts(ListNode* root, int k) {
+		vector<ListNode*> ans(k, nullptr);
+		int size = ListNode::count(root);
+		int mult = size / k;
+		int rem = size%k;
+		for (int i = 0; i < k && root != nullptr; i++) {
+			ans[i] = root;
+			int loop = mult;
+			if (rem > 0) {  // add a node as early as possible
+				loop++;
+				rem--;
+			}
+			ListNode * prev = root;
+			for (int j = 0; j < loop&& root != nullptr; j++) {
+				prev = root;
+				root = root->next;
+			}
+			prev->next = nullptr;
+		}
+		return ans;
 	}
 };
 ////////////////////////////////////////////////
