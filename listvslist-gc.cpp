@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "SlistEx.h"
 #include <thread>
 #include <list>
 #include <string>
@@ -59,7 +60,6 @@ void testList1()
 }
 
 
-#include "SlistEx.h"
 const unsigned int cMaxElements = 1000000;
 typedef SListItem<string>  MySListItem;
 typedef MemoryRecycler<string, cMaxElements / 4, cMaxElements> MyRecycler;
@@ -116,7 +116,7 @@ void testSlist()
 	prod.join();
 	cons.join();
 }
-int millisec[32] = { 0 };
+long long millisec[32] = { 0 };
 void worker(int id, int loops)
 {
 	auto start = chrono::high_resolution_clock::now();
@@ -146,6 +146,6 @@ void testThreads()
 	}
 	for (int i = 0; i < cpu; i++)
 		t[i]->join();
-	int total = std::accumulate(millisec, millisec + cpu, 0);
+	long long total = std::accumulate(millisec, millisec + cpu, (long long)0);
 	cout << " total msec " << total << endl;
 }

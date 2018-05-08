@@ -10,27 +10,23 @@
 
 // 
 #include <wtypes.h>
-#include <intrin.h>
-#include <process.h>
-#include <time.h>
+//#include <intrin.h>
+//#include <process.h>
+//#include <time.h>
 #include <list>
 #include <sstream>
 
 #include <vector>
-
-//#include "smlUtil.h"
+#include <memory>
 
 using namespace std;
 
-template <class T>
+template <typename T>
 struct SListItem
 {
     SLIST_ENTRY entry;
 	T			data;
 };
-
-// ToDo
-// Add msg insert rate?
 
 
 // One producer to call PushItem. It can support multiple producers if sequence can be maintained.
@@ -45,47 +41,35 @@ class SListEx
 {
 protected:
 	SLIST_HEADER	m_head;
-//	PSLIST_ENTRY    m_pRetrieveList;
 	volatile unsigned long	m_NumItemsLife;		// total received
 	volatile unsigned long	m_NumItemsOut;		// total items retrieved to application
 	unsigned long	m_PeakItems;		// 
-	GC	*			pGc;
-	bool			myGC;
+	shared_ptr<GC>	pGc;
 	string			szPeakTime;
-//	unsigned long	iSleepCount;
 
 private:
-	SListEx(const SListEx& noCopy);
-	SListEx &operator=(const SListEx & right);
+	SListEx(const SListEx& noCopy)=delete;
+	SListEx &operator=(const SListEx & right)=delete;
+	SListEx(const SListEx&& noCopy) = delete;
+	SListEx &operator=(const SListEx && right) = delete;
 
 public:
-	SListEx(GC & _gc) : pGc(&_gc)
+	SListEx(shared_ptr<GC> _gc) : pGc(_gc)
 	{
 		::InitializeSListHead( &m_head );
-//		m_pRetrieveList=nullptr;
 		m_PeakItems=0;
 		m_NumItemsOut=0;
 		m_NumItemsLife=0;
 		myGC=false;
-//		iSleepCount=0;
 	}
 
 	SListEx()
 	{
 		::InitializeSListHead( &m_head );
-//		m_pRetrieveList=nullptr;
 		m_PeakItems=0;
 		m_NumItemsLife=0;
 		m_NumItemsOut=0;
-		myGC=true;
-		pGc = new GC;
-//		iSleepCount=0;
-	}
-
-	~SListEx()
-	{
-		if ( myGC )
-			delete pGc;
+		pGc = make_shared< GC>();
 	}
 
 	// Push item to slist
@@ -337,8 +321,8 @@ class MemoryRecycler
 	}
 
 private:
-	MemoryRecycler(const MemoryRecycler& noCopy);
-	MemoryRecycler &operator=(const MemoryRecycler & right);
+	MemoryRecycler(const MemoryRecycler& noCopy) = delete;
+	MemoryRecycler &operator=(const MemoryRecycler & right)=delete;
 
 public:
 	MemoryRecycler()
