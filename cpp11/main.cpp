@@ -1,7 +1,13 @@
 #include "dynBuffer.h"
 #include "DynMsg.h"
 #include <iostream>
+#include <vector>
 using namespace std;
+
+#include "matrix2D.h"
+
+typedef Matrix2D<int, vector> MatrixVii;
+typedef Matrix2D<int, vector>::ColIterator ColIter;
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"

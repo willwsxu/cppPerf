@@ -6,16 +6,7 @@
 #include <functional>
 #include <set>
 
-#include "matrix2D.h"
 using namespace std;
-
-template <typename T>
-class Test
-{};
-
-typedef Matrix2D<int, vector> MatrixVii;
-typedef Matrix2D<int, vector>::ColIterator ColIter;
-
 
 int findMaxForm(vector<string>& strs, int m, int n) {
 	int **memo = new int*[m + 1];

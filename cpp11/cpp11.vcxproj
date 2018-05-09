@@ -112,6 +112,7 @@
   <ItemGroup>
     <ClInclude Include="DynBuffer.h" />
     <ClInclude Include="DynMsg.h" />
+    <ClInclude Include="Matrix2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
