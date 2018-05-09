@@ -5,7 +5,17 @@
 #include <algorithm>
 #include <functional>
 #include <set>
+
+#include "matrix2D.h"
 using namespace std;
+
+template <typename T>
+class Test
+{};
+
+typedef Matrix2D<int, vector> MatrixVii;
+typedef Matrix2D<int, vector>::ColIterator ColIter;
+
 
 int findMaxForm(vector<string>& strs, int m, int n) {
 	int **memo = new int*[m + 1];
@@ -79,7 +89,7 @@ public:
 	{
 		vector<vector<int>> triangle;
 		triangle.push_back(vector<int>{ 2 });
-		triangle.push_back(vector<int>{ 3, 4 });
+		triangle.emplace_back( 3, 4 );
 		triangle.push_back(vector<int>{ 6, 5, 7 });
 		triangle.push_back(vector<int>{ 4, 1, 8, 3 });
 		printf("%d", minimumTotal(triangle));
@@ -217,7 +227,7 @@ void testKey2()
 
 // prevBuy, last postion of buy, -1 means no
 int maxProfit(vector<int>& prices, int pos, int prevBuy, vector<vector<int>>& dp) {
-	if (pos >= prices.size()) {
+	if (pos >= (int)prices.size()) {
 		return 0;
 	}
 	if (dp[pos][prevBuy + 1] >= 0)
@@ -341,6 +351,37 @@ struct TreeNode {
 	TreeNode *left;
 	TreeNode *right;
 	TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+
+	static TreeNode *preorder(const vector<int>& nodes, int low, int high)  //O(n^2)
+	{
+		if (low > high)
+			return nullptr;
+		TreeNode *r = new TreeNode(nodes[low]);
+		int right = high + 1;
+		for (right = low; right <= high; right++)
+			if (nodes[right] > nodes[low])  // find first number greater than root
+				break;
+		r->left = preorder(nodes, low+1, right-1);
+		r->right = preorder(nodes, right, high);
+		return r;
+	}
+	static TreeNode * createBST(const vector<int>& nodes, int order)
+	{
+		return preorder(nodes, 0, nodes.size() - 1);
+	}
+	static void preorderPrint(TreeNode *r)
+	{
+		if (r == nullptr)
+			return;
+		cout << r->val << " ";
+		preorderPrint(r->left);
+		preorderPrint(r->right);
+	}
+	static void test()
+	{
+		TreeNode *r = createBST(vector<int>{10,5,1,7,40,50}, 0);
+		preorderPrint(r);
+	}
 };
 // 515. Find Largest Value in Each Tree Row of a binary tree.
 // BFS, similar to 102. Binary Tree Level Order Traversal, 199. Binary Tree Right Side View, 103.Binary Tree Zigzag Level Order Traversal,513.Find Bottom Left Tree Value
@@ -367,6 +408,37 @@ public:
 			}
 			ans.push_back(large);
 		}
+		return ans;
+	}
+
+	// 230. Kth Smallest Element in a BST, 1 ≤ k ≤ BST's total elements
+	int count(TreeNode* root) {
+		if (root == nullptr)
+			return 0;
+		return 1+ count(root->left)+ count(root->right);
+	}
+	int kthSmallest_bs(TreeNode* root, int k) {  //binary search, beat 97%
+		int cnt = count(root->left); // left count
+		if (cnt+1 == k)
+			return root->val;
+		if (cnt >= k)   // target is in left side
+			return kthSmallest(root->left, k);  
+		return kthSmallest(root->right, k-1-cnt);  // go to right side, adjust k (minus let count, minus root
+	}
+	int ans;
+	int cnt;
+	void inorder(TreeNode* root) {
+		if (root == nullptr || cnt == 0)
+			return;
+		inorder(root->left);
+		if (--cnt == 0)
+			ans = root->val;
+		inorder(root->right);
+	}
+	int kthSmallest(TreeNode* root, int k) // inorder traversal, same speed, beat 97%
+	{
+		cnt = k;
+		inorder(root);
 		return ans;
 	}
 };
@@ -458,6 +530,12 @@ public:
 		}
 		return ans;
 	}
+
+	//Integers in each row are sorted from left to right.
+	//The first integer of each row is greater than the last integer of the previous row.
+	bool searchMatrix(vector<vector<int>>& matrix, int target) {
+
+	}
 };
 
 auto printvv = [](vector<vector<int>>& ans) {
@@ -526,7 +604,7 @@ public:
 		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < n; j++) {
 				if (pacific[i][j] && atlantic[i][j])
-					ans.push_back(pair<int, int>{i, j});
+					ans.emplace_back(i, j);
 			}
 		}
 		/*
@@ -666,13 +744,13 @@ class NQueens {
 
 		}
 		bool get(int idx) {
-			if (idx < mask.size())
+			if (idx < (int)mask.size())
 				return mask[idx];
 			return false;
 		}
 		void set(int idx, bool v)
 		{
-			if (idx < mask.size())
+			if (idx < (int)mask.size())
 				mask[idx] = v;
 		}
 	};
@@ -1124,10 +1202,10 @@ public:
 			while (num[pos] == '0')  // find next none 0
 				num.erase(pos, 1);
 			int newK = k - i;
-			if (pos + newK >= num.size())  // remove all
+			if (pos + newK >= (int)num.size())  // remove all
 				return "0";
-			while (pos < num.size()) {
-				if (pos >= num.size() - newK)
+			while (pos < (int)num.size()) {
+				if (pos >= (int)num.size() - newK)
 					return num.substr(0, pos); // remove all char from pos
 				auto min = min_element(begin(num) + pos + 1, begin(num) + pos + 1 + newK);
 				if (*min < num[pos]) {  // find a small char, so we can remove current char
@@ -1440,7 +1518,7 @@ class BinarySearch {
 		int mid = (low + hi) / 2;
 		if (hi - low == 1)
 			mid = low;
-		int hiVal = mid + k<arr.size()? arr[mid + k]: INT_MAX;  // right most elem+k will be out of bound
+		int hiVal = mid + k<(int)arr.size()? arr[mid + k]: INT_MAX;  // right most elem+k will be out of bound
 		if (x - arr[mid] > arr[mid + k] - x)
 			return lower_bound_closest(arr, k, x, mid + 1, hi);
 		return lower_bound_closest(arr, k, x, low, mid);
@@ -1497,7 +1575,7 @@ public:
 	// 658. Find K Closest Elements
 	// 
 	vector<int> findClosestElements(vector<int>& arr, int k, int x) {
-		if (arr.size() <= k)
+		if ((int)arr.size() <= k)
 			return arr;
 		int i = lower_bound_closest(arr, k ,x, 0, arr.size()-k);
 		vector<int> ans;
@@ -1575,7 +1653,7 @@ struct ListNode
 	{
 		ListNode *head = new ListNode(nodes[0]);
 		ListNode *cur = head;
-		for (int i = 1; i < nodes.size(); i++) {
+		for (int i = 1; i < (int)nodes.size(); i++) {
 			cur->next = new ListNode(nodes[i]);
 			cur = cur->next;
 		}
@@ -1645,6 +1723,7 @@ public:
 		return ans;
 	}
 };
+
 ////////////////////////////////////////////////
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"
@@ -1831,7 +1910,7 @@ TEST_CASE("Minimum Size Subarray Sum", "[SubArray]")
 }
 
 
-TEST_CASE("Connected Components", "[NEW]")
+TEST_CASE("Connected Components", "[LinkedListCC]")
 {
 	LinkedList t;
 	ListNode *head1 = ListNode::createList(vector<int>{0, 1, 2, 3});
@@ -1843,5 +1922,17 @@ TEST_CASE("Connected Components", "[NEW]")
 	SECTION("normal case") {
 		CHECK(t.numComponents(head1, vector<int>{3}) == 1);
 		REQUIRE(t.numComponents(head1, vector<int>{0}) == 1);
+	}
+}
+
+TEST_CASE("kth smallest BST Components", "[NEW]")
+{
+	TreeNode::test();
+	Tree t;
+	TreeNode * r = TreeNode::createBST(vector<int>{1, 2}, 0);
+	TreeNode::preorderPrint(r);
+	SECTION("edge case") {
+		CHECK(t.kthSmallest(r, 2) == 2);
+		REQUIRE(t.kthSmallest(r, 1) == 1);
 	}
 }
