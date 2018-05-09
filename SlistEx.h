@@ -9,13 +9,9 @@
 // This design is to restrict one producer/one consumer. We can furthur test performance if there are two producers
 
 // 
-#include <wtypes.h>
-//#include <intrin.h>
-//#include <process.h>
-//#include <time.h>
+#include <wtypes.h>  // required SLIST_ENTRY
 #include <list>
 #include <sstream>
-
 #include <vector>
 #include <memory>
 
