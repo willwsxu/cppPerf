@@ -522,10 +522,36 @@ public:
 		return ans;
 	}
 
+	// 74. Search a 2D Matrix, easier than #240
 	//Integers in each row are sorted from left to right.
 	//The first integer of each row is greater than the last integer of the previous row.
-	bool searchMatrix(vector<vector<int>>& matrix, int target) {
-
+	int lowerBoundRow(vector<vector<int>>& matrix, int target, int col, int low, int high)  // find the row contains target
+	{
+		if (low == high)
+			return low;
+		int mid = (low + high) / 2;
+		if (mid==high)
+			mid = low;  // set up proper terminating condition low>=high
+		if (matrix[mid][col] == target)
+			return mid;
+		if (matrix[mid][col] > target)  // could be in this row, or left half
+			return lowerBoundRow(matrix, target, col, low, mid);
+		return lowerBoundRow(matrix, target, col, mid+1, high); // right half, from mid+1
+	}
+	bool searchMatrix(vector<vector<int>>& matrix, int target) { // beat 71%
+		if (matrix.empty() || matrix[0].empty())
+			return false;
+		if (target < matrix[0][0])
+			return false;
+		int m = matrix.size(); 
+		int n = matrix[0].size();
+		if (target > matrix[m-1][n-1])
+			return false;
+		int row = lowerBoundRow(matrix, target, n - 1, 0, m - 1);
+		if (matrix[row][n - 1] == target)
+			return true;
+		auto found = lower_bound(begin(matrix[row]), end(matrix[row]), target);
+		return *found == target;
 	}
 };
 
@@ -1916,7 +1942,7 @@ TEST_CASE("Connected Components", "[LinkedListCC]")
 	}
 }
 
-TEST_CASE("kth smallest BST Components", "[NEW]")
+TEST_CASE("kth smallest BST Components", "[BST]")
 {
 	TreeNode::test();
 	Tree t;
@@ -1925,5 +1951,29 @@ TEST_CASE("kth smallest BST Components", "[NEW]")
 	SECTION("edge case") {
 		CHECK(t.kthSmallest(r, 2) == 2);
 		REQUIRE(t.kthSmallest(r, 1) == 1);
+	}
+}
+
+TEST_CASE("Search Matrix", "[NEW]")
+{
+	Matrix m;
+	vector<vector<int>> v1{ {1, 3, 5, 7}, { 10, 11, 16, 20 }, { 23, 30, 34, 50 }};
+	SECTION("normal case") {
+		CHECK(m.searchMatrix(v1, 3) );
+		CHECK(m.searchMatrix(v1, 4)==false);
+		CHECK(m.searchMatrix(v1, 13)==false);
+		CHECK(m.searchMatrix(v1, 10));
+		CHECK(m.searchMatrix(v1, 31) == false);
+		REQUIRE(m.searchMatrix(v1, 34));
+	}
+	SECTION("edge case") {
+		CHECK(m.searchMatrix(vector<vector<int>>{}, 3) == false);
+		CHECK(m.searchMatrix(vector<vector<int>>{ {}}, 3) == false);
+		CHECK(m.searchMatrix(vector<vector<int>>{ {3}}, 3));
+		CHECK(m.searchMatrix(vector<vector<int>>{ {3}}, 1) == false);
+		CHECK(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 8) == false);
+		CHECK(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 0) == false);
+		CHECK(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 4) == false);
+		CHECK(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 1) == true);
 	}
 }
