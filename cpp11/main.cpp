@@ -7,7 +7,7 @@ using namespace std;
 #include "matrix2D.h"
 
 typedef Matrix2D<int, vector> MatrixVii;
-typedef Matrix2D<int, vector>::ColIterator ColIter;
+typedef Matrix2D<int, vector>::ColIterator vii_col_iter;
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"
@@ -72,13 +72,26 @@ TEST_CASE("DynBuffer", "BUF")
 
 TEST_CASE("DynMsg", "DMSG")
 {
-	CDynMsg<Console, char> buf;
 	SECTION("basic") {
+		CDynMsg<Console, char> buf;
 		buf.AppendData("Hello");
 		REQUIRE(buf.GetBufferLen() == 5);
 	}
 	SECTION("copy") {
+		CDynMsg<Console, char> buf;
+		buf.AddMsg("Hello!", 6);
 		CDynMsg<Console, char> buf2 = buf;
-		REQUIRE(buf2.GetBufferLen() == 5);
+		CHECK(buf.GetBufferLen() == 10);
+		CHECK(buf2.GetBufferLen() == 10);
+		REQUIRE(buf2.GetNumMsgs() == 1);
 	}
+}
+
+
+TEST_CASE("Matrix", "MATRIX")
+{
+	MatrixVii vii;
+	vii.emplace_back(vector<int>{2, 4, 6});
+	vii.emplace_back(vector<int>{1, 3, 5});
+	//sort(vii.begin(1), vii.end(1));
 }
