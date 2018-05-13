@@ -553,6 +553,38 @@ public:
 		auto found = lower_bound(begin(matrix[row]), end(matrix[row]), target);
 		return *found == target;
 	}
+
+	// binary search by value, not index
+	int kthSmallest(vector<vector<int>>& matrix, int k, int low, int high)
+	{
+		if (low >= high)
+			return low;
+		int mid = (low + high) / 2;
+		if (mid == high)
+			mid = low;// prevent infinite loop
+		int count = 0;
+		int realMid = low;
+		for (auto& v : matrix) {  // seach by row
+			if (v[0] > mid)
+				break;
+			auto found = upper_bound(begin(v), end(v), mid);
+			count += (found - begin(v));  // count of values <= mid
+			int temp = *(found - 1);
+			if (temp > realMid)
+				realMid = temp;
+		}
+		if (count == k)
+			return realMid;
+		if (count > k)
+			return kthSmallest(matrix, k, low, realMid);
+		return kthSmallest(matrix, k, mid + 1, high);
+	}
+	// 378. Kth Smallest Element in a Sorted Matrix
+	// Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element.
+	int kthSmallest(vector<vector<int>>& matrix, int k) {// binary search beat 90%
+		int n = matrix.size()-1;
+		return kthSmallest(matrix, k, matrix[0][0], matrix[n][n]);
+	}
 };
 
 auto printvv = [](vector<vector<int>>& ans) {
@@ -1954,7 +1986,7 @@ TEST_CASE("kth smallest BST Components", "[BST]")
 	}
 }
 
-TEST_CASE("Search Matrix", "[NEW]")
+TEST_CASE("Search Matrix", "[MATRIX]")
 {
 	Matrix m;
 	vector<vector<int>> v1{ {1, 3, 5, 7}, { 10, 11, 16, 20 }, { 23, 30, 34, 50 }};
@@ -1974,6 +2006,24 @@ TEST_CASE("Search Matrix", "[NEW]")
 		CHECK(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 8) == false);
 		CHECK(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 0) == false);
 		CHECK(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 4) == false);
-		CHECK(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 1) == true);
+		REQUIRE(m.searchMatrix(vector<vector<int>>{ {1, 3, 5, 7}}, 1) == true);
+	}
+}
+
+
+TEST_CASE("Kth smallest Matrix", "[NEW]")
+{
+	Matrix m;
+	vector<vector<int>> v1{ { 1,  5,  9 },{ 10, 11, 13 },{ 12, 13, 15 } };
+	SECTION("normal case") {
+		CHECK(m.kthSmallest(v1, 1) == 1);
+		CHECK(m.kthSmallest(v1, 2) == 5);
+		CHECK(m.kthSmallest(v1, 3)==9);
+		CHECK(m.kthSmallest(v1, 7) == 13);
+		CHECK(m.kthSmallest(v1, 8) == 13);
+		REQUIRE(m.kthSmallest(v1, 9) == 15);
+	}
+	SECTION("edge case") {
+		CHECK(m.kthSmallest(vector<vector<int>>{ {3}}, 1)==3);
 	}
 }
