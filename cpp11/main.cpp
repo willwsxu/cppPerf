@@ -92,6 +92,22 @@ TEST_CASE("Matrix", "MATRIX")
 {
 	MatrixVii vii;
 	vii.emplace_back(vector<int>{2, 4, 6});
-	vii.emplace_back(vector<int>{1, 3, 5});
+	vii.emplace_back(vector<int>{1, 3, 7});
+	auto it = vii.begin(1);
+	++it;
+	--it;
+	it += 1;
+	it -= 1;
+	auto z=it + 1;
+	auto y=it - 1;
+	auto end = vii.end(1);
+	auto size = end - it;
+	vii_col_iter zz = z;
+	//zz = z;
+	auto c=count(vii.begin(1), end, 1);
+	CHECK(c == 0);
+	CHECK(count(vii.begin(1), end, 3)==1);
 	//sort(vii.begin(1), vii.end(1));
+	auto x= lower_bound(vii.begin(2), vii.end(2), 6);
+	REQUIRE(*x == 6);
 }
