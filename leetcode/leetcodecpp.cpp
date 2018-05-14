@@ -1771,6 +1771,40 @@ public:
 		}
 		return ans;
 	}
+
+	int addTwoNumbers(ListNode* l1, ListNode* l2, int diff) {  // l2 is shorter
+		if (l2 == nullptr)
+			return 0;
+		int carry = 0;
+		if (diff > 0)
+			carry = addTwoNumbers(l1->next, l2, --diff);
+		else {
+			carry = addTwoNumbers(l1->next, l2->next, --diff);
+			carry += l2->val;
+		}
+		carry += l1->val;
+		l1->val = carry % 10;
+		return carry / 10;
+	}
+	// 445. Add Two Numbers II, from most significant digit to least 
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) { // pass without test, beat 74%
+		auto c1 = ListNode::count(l1);
+		auto c2 = ListNode::count(l2);
+		int carry = 0;
+		ListNode *ans = l1;
+		if (c1 > c2)
+			carry = addTwoNumbers(l1, l2, c1 - c2);
+		else {
+			carry = addTwoNumbers(l2, l1, c2 - c1);
+			ans = l2;
+		}
+		if (carry > 0) {
+			ListNode *head = new ListNode(carry);
+			head->next = ans;
+			return head;
+		}
+		return ans;
+	}
 };
 
 ////////////////////////////////////////////////
