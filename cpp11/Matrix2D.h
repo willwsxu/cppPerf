@@ -107,6 +107,7 @@ public:
 		const T& operator*() const { return (*matrix)[row][col]; }
 		const T* operator->() const { return &(*matrix)[row][col]; }
 
+		operator bool() { return row < matrix->size(); }
 		friend bool operator<(const const_ColIterator& lhs, const const_ColIterator& rhs) { return lhs.row < rhs.row; } // required by count
 	};
 
