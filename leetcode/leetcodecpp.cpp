@@ -1805,6 +1805,30 @@ public:
 		}
 		return ans;
 	}
+
+	// first node is odd, etc. group all odd nodes together followed by the even nodes
+	ListNode* oddEvenList(ListNode* head) {  // beat 99.7%
+		if (head == nullptr)
+			return nullptr;
+		ListNode *oddHead = head;
+		ListNode *evenHead = head->next;
+		ListNode *prevOdd = oddHead;
+		ListNode *prevEven = evenHead;
+		head = head->next;
+		while (head) { // even node
+			head = head->next; // odd node
+			if (!head) {
+				break;
+			}
+			prevOdd->next = head;
+			prevOdd = head;
+			head = head->next; // even node
+			prevEven->next = head;
+			prevEven = head;
+		}
+		prevOdd->next = evenHead;
+		return oddHead;
+	}
 };
 
 ////////////////////////////////////////////////
