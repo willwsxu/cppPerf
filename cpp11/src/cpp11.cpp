@@ -7,6 +7,8 @@
 //============================================================================
 #include "cpp11.h"
 #include <iostream>
+#include <vector>
+#include <numeric>
 using namespace std;
 
 struct Console
@@ -19,7 +21,12 @@ struct Console
 	}
 };
 
-
+template <size_t... args>
+struct arrayx
+{
+	enum {N=sizeof...(args)};
+	size_t arr[N]={args...};
+};
 
 int main() {
 	Console c;
@@ -32,5 +39,8 @@ int main() {
 	c(Sum::sum(10));
 	c(Sum::avg(1,3,5.6));
 	c(::avg(1,3,5.6));
+
+	arrayx<1,2,3,4,5> arr;
+	cout << accumulate(begin(arr.arr), end(arr.arr),0);
 	return 0;
 }

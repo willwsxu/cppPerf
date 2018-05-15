@@ -45,4 +45,6 @@ auto avg(TArgs...args) -> decltype(Sum::sum(args...))  // decltype(avg(args...))
 {
 	return Sum::sum(args...)/sizeof...(args);
 }
+
+
 #endif /* CPP11_H_ */
