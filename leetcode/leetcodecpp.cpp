@@ -1810,24 +1810,17 @@ public:
 	ListNode* oddEvenList(ListNode* head) {  // beat 99.7%
 		if (head == nullptr)
 			return nullptr;
-		ListNode *oddHead = head;
 		ListNode *evenHead = head->next;
-		ListNode *prevOdd = oddHead;
+		ListNode *prevOdd = head;
 		ListNode *prevEven = evenHead;
-		head = head->next;
-		while (head) { // even node
-			head = head->next; // odd node
-			if (!head) {
-				break;
-			}
-			prevOdd->next = head;
-			prevOdd = head;
-			head = head->next; // even node
-			prevEven->next = head;
-			prevEven = head;
+		while (prevEven && prevEven->next) { // more odd node
+			prevOdd->next = prevEven->next;
+			prevOdd = prevEven->next;
+			prevEven->next = prevOdd->next; // even node
+			prevEven = prevOdd->next;
 		}
 		prevOdd->next = evenHead;
-		return oddHead;
+		return head;
 	}
 };
 
