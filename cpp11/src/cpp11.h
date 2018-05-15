@@ -20,5 +20,29 @@ void hello(Logger log, T t, TArgs...args) {
 	hello(log, args...);
 }
 
+struct Sum
+{
+	template <typename T>
+	static T sum(T t)
+	{
+		return t;
+	}
+	template <typename T, typename ...TArgs>
+	static auto sum(T t, TArgs...args) -> decltype(t+sum(args...)) // recursive arguments only works as member function
+	{
+		return t+sum(args...);
+	}
 
+	template <typename ...TArgs>
+	static auto avg(TArgs...args) -> decltype(sum(args...))  // decltype(avg(args...)) fails
+	{
+		return sum(args...)/sizeof...(args);
+	}
+};
+
+template <typename ...TArgs>
+auto avg(TArgs...args) -> decltype(Sum::sum(args...))  // decltype(avg(args...)) fails
+{
+	return Sum::sum(args...)/sizeof...(args);
+}
 #endif /* CPP11_H_ */

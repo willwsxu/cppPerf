@@ -25,5 +25,12 @@ int main() {
 	Console c;
 	hello(c, "Hello", "World");
 	hello(c, "Hello", "World");
+
+	auto x=Sum::sum(1,3,5);
+	c(x);
+	c(Sum::sum(1,3,5.6));
+	c(Sum::sum(10));
+	c(Sum::avg(1,3,5.6));
+	c(::avg(1,3,5.6));
 	return 0;
 }
