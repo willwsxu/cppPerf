@@ -1822,6 +1822,17 @@ public:
 		prevOdd->next = evenHead;
 		return head;
 	}
+
+	ListNode* swapPairs(ListNode* head) {  // recursive, beat 100%
+		if (head == nullptr)
+			return nullptr;
+		auto second = head->next;
+		if (second == nullptr)
+			return head;
+		head->next = swapPairs(second->next);  // connect to next pair
+		second->next = head;		// swap second and head
+		return second;
+	}
 };
 
 ////////////////////////////////////////////////
