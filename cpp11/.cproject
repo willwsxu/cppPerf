@@ -55,11 +55,13 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.other.other.1218539699" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-std=c++14 -c -fmessage-length=0" valueType="string"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.include.paths.565242486" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+                                <option id="gnu.cpp.compiler.option.include.paths.565242486" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
                                     									
                                     <listOptionValue builtIn="false" value="../__GXX_EXPERIMENTAL_CXX0X__"/>
                                     								
                                 </option>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.std.1103277792" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++1y" valueType="enumerated"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin.1435234461" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin"/>
                                 							
@@ -70,6 +72,8 @@
                                 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.cygwin.exe.debug.option.optimization.level.10254740" name="Optimization Level" superClass="gnu.c.compiler.cygwin.exe.debug.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
                                 								
                                 <option id="gnu.c.compiler.cygwin.exe.debug.option.debugging.level.430808406" name="Debug Level" superClass="gnu.c.compiler.cygwin.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+                                								
+                                <option id="gnu.c.compiler.option.dialect.std.1441012379" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.c11" valueType="enumerated"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin.1955205238" superClass="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin"/>
                                 							

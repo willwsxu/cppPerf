@@ -28,10 +28,14 @@ struct arrayx
 	size_t arr[N]={args...};
 };
 
+template <typename T>
+class MyClass: public CRTP<MyClass<T>>
+{
+
+};
 int main() {
 	Console c;
-	hello(c, "Hello", "World");
-	hello(c, "Hello", "World");
+	hello(c, "Hello", "World","!","\n");
 
 	auto x=Sum::sum(1,3,5);
 	c(x);
@@ -41,6 +45,11 @@ int main() {
 	c(::avg(1,3,5.6));
 
 	arrayx<1,2,3,4,5> arr;
-	cout << accumulate(begin(arr.arr), end(arr.arr),0);
+	cout << accumulate(begin(arr.arr), end(arr.arr),0) << endl;
+
+	MyClass<int> obj1;
+	MyClass<int> obj2(obj1);
+	MyClass<double> obj3;
+	cout << MyClass<int>::live() << " " << MyClass<double>::live() << endl;
 	return 0;
 }
