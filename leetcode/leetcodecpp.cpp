@@ -1833,6 +1833,47 @@ public:
 		second->next = head;		// swap second and head
 		return second;
 	}
+
+	// 206. Reverse Linked List
+	auto reverseHelper(ListNode* head)
+	{
+		if (head == nullptr || head->next == nullptr)
+			return std::make_tuple(head, head);
+		auto trailer = reverseHelper(head->next);
+		std::get<1>(trailer)->next = head;
+		head->next = nullptr;
+		return std::make_tuple(std::get<0>(trailer), head);  // return bother head and tail of list
+	}
+
+	ListNode* reverseList(ListNode* head) {//beat 98%, recursion
+		auto ans = reverseHelper(head);
+		return std::get<0>(ans);
+	}
+	// 92. Reverse Linked List II
+	ListNode *trailer = nullptr;
+	bool bDone = false;
+	// reverse nodes from position m to n, inclusive, 1 based
+	ListNode* reverseBetween(ListNode* head, int m, int n) {
+		if (head == nullptr || head->next == nullptr)
+			return head;
+		if (m > 1) {
+			head->next = reverseBetween(head->next, --m, --n);
+			return head;
+		}
+		if (n >1) {
+			ListNode* newhead = reverseBetween(head->next, m, --n);
+			newhead->next = head;
+			if (trailer) {
+				head->next = trailer;
+			else
+				head->next = nullptr;
+			return head;
+		}
+		trailer = head->next;
+		head->next = nullptr;
+		bDone = true;
+		return head;
+	}
 };
 
 ////////////////////////////////////////////////
