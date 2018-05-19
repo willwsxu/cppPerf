@@ -56,7 +56,7 @@ void testLocks()
 		return local;
 	});
 
-	perfTest("atomic long prexfix++", [loops]() {
+	perfTest("atomic long pre++", [loops]() {
 		std::atomic<long> internalId(0);
 		for (long i = 0; i < loops; i++)
 			++internalId;
