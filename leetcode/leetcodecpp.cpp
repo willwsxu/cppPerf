@@ -1839,10 +1839,10 @@ public:
 	{
 		if (head == nullptr || head->next == nullptr)
 			return std::make_tuple(head, head);
-		auto trailer = reverseHelper(head->next);
-		std::get<1>(trailer)->next = head;
-		head->next = nullptr;
-		return std::make_tuple(std::get<0>(trailer), head);  // return bother head and tail of list
+		auto trailer = reverseHelper(head->next); // recursively compute rest of the list
+		std::get<1>(trailer)->next = head;		  // append current head after last node
+		head->next = nullptr;                     // head become tail
+		return std::make_tuple(std::get<0>(trailer), head);  // return both head and tail of list
 	}
 
 	ListNode* reverseList(ListNode* head) {//beat 98%, recursion
@@ -1863,7 +1863,7 @@ public:
 		if (n >1) {
 			ListNode* newhead = reverseBetween(head->next, m, --n);
 			newhead->next = head;
-			if (trailer) {
+			if (trailer)
 				head->next = trailer;
 			else
 				head->next = nullptr;
