@@ -49,6 +49,13 @@ void testLocks()
 		return count;
 	});
 
+	perfTest("thread_local", [loops]() {
+		thread_local long local(0);
+		for (long i = 0; i < loops; i++)
+			++local;
+		return local;
+	});
+
 	perfTest("atomic long prexfix++", [loops]() {
 		std::atomic<long> internalId(0);
 		for (long i = 0; i < loops; i++)
@@ -84,11 +91,14 @@ void testLocks()
 		return count;
 	});
 
-	perfTest("thread_local", [loops]() {
-		thread_local long local(0);
-		for (long i = 0; i < loops; i++)
-			++local;
-		return local;
+	perfTest("criticalsection", [loops]() {
+		long count = 0;
+		tal::threading::CriticalSectionLock cs;
+		for (long i = 0; i < loops; i++) {
+			tal::threading::CriticalSectionLock::scope lock(cs);
+			++count;
+		}
+		return count;
 	});
 
 	perfTest("mutex", [loops]() {
@@ -96,16 +106,6 @@ void testLocks()
 		std::mutex m;
 		for (long i = 0; i < loops; i++) {
 			std::lock_guard<mutex> lock(m);
-			++count;
-		}
-		return count;
-	});
-
-	perfTest("criticalsection", [loops]() {
-		long count = 0;
-		tal::threading::CriticalSectionLock cs;
-		for (long i = 0; i < loops; i++) {
-			tal::threading::CriticalSectionLock::scope lock(cs);
 			++count;
 		}
 		return count;
