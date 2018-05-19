@@ -1849,29 +1849,33 @@ public:
 		auto ans = reverseHelper(head);
 		return std::get<0>(ans);
 	}
-	// 92. Reverse Linked List II
-	ListNode *trailer = nullptr;
-	bool bDone = false;
+	// 92. Reverse Linked List II	
+	auto reverseHelper2(ListNode* head, int n)  // ->[head, tail, rest after nth node]
+	{
+		if (head == nullptr)
+			return std::make_tuple(head, head, head);
+		if (n==1)
+			return std::make_tuple(head, head, head->next);  // find nth node, 3rd tuple is the rest 
+		auto trailer = reverseHelper2(head->next, --n); // recursively compute rest of the list
+		std::get<1>(trailer)->next = head;		  // append current head after last node
+		head->next = nullptr;                     // head become tail
+		return std::make_tuple(std::get<0>(trailer), head, std::get<2>(trailer));  // return both head and tail of list
+	}
 	// reverse nodes from position m to n, inclusive, 1 based
-	ListNode* reverseBetween(ListNode* head, int m, int n) {
-		if (head == nullptr || head->next == nullptr)
-			return head;
-		if (m > 1) {
-			head->next = reverseBetween(head->next, --m, --n);
-			return head;
+	ListNode* reverseBetween(ListNode* head, int m, int n) {// beat 67%
+		if (m == 1) {
+			auto trailer = reverseHelper2(head, n);
+			std::get<1>(trailer)->next = std::get<2>(trailer);  // connect nth node and the rest
+			return std::get<0>(trailer);
 		}
-		if (n >1) {
-			ListNode* newhead = reverseBetween(head->next, m, --n);
-			newhead->next = head;
-			if (trailer)
-				head->next = trailer;
-			else
-				head->next = nullptr;
-			return head;
+		int len = n - m + 1;
+		ListNode* tail = head;
+		while (head && m-- > 2) {
+			tail = tail->next;  // tail is (m-1)th node
 		}
-		trailer = head->next;
-		head->next = nullptr;
-		bDone = true;
+		auto trailer = reverseHelper2(tail->next, len);
+		std::get<1>(trailer)->next = std::get<2>(trailer);
+		tail->next = std::get<0>(trailer);
 		return head;
 	}
 };
