@@ -24,6 +24,9 @@
     <ClInclude Include="Matrix2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="meta.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

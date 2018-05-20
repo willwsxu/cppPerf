@@ -113,6 +113,7 @@
     <ClInclude Include="DynBuffer.h" />
     <ClInclude Include="DynMsg.h" />
     <ClInclude Include="Matrix2D.h" />
+    <ClInclude Include="meta.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
