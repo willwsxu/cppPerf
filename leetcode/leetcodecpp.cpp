@@ -1878,6 +1878,39 @@ public:
 		tail->next = std::get<0>(trailer);
 		return head;
 	}
+
+	// Given a linked list and a value x, partition it such that all nodes less than x come before nodes greater than or equal to x.
+	ListNode* partition(ListNode* head, int x) {  // beat 87%
+		tuple<ListNode*, ListNode*> less{ nullptr, nullptr };
+		tuple<ListNode*, ListNode*> more{ nullptr, nullptr };
+		auto add = [](auto& t, ListNode *n) {
+			auto& tail = get<1>(t);  // must use reference
+			if (tail) {
+				tail->next = n;
+				tail = n;
+			}
+			else
+			{
+				get<0>(t) = n;
+				get<1>(t) = n;
+			}
+		};
+		while (head) {
+			if (head->val < x)
+				add(less, head);
+			else
+				add(more, head);
+			head = head->next;
+		}
+		auto t2 = get<1>(more);
+		if (t2)
+			t2->next = nullptr; // terminate list on last node
+		auto tail = get<1>(less);
+		if ( tail== nullptr)
+			return get<0>(more);
+		tail->next = get<0>(more); // link less part to more part
+		return get<0>(less);
+	}
 };
 
 ////////////////////////////////////////////////
@@ -2118,7 +2151,7 @@ TEST_CASE("Search Matrix", "[MATRIX]")
 }
 
 
-TEST_CASE("Kth smallest Matrix", "[NEW]")
+TEST_CASE("Kth smallest Matrix", "[Matrix]")
 {
 	Matrix m;
 	vector<vector<int>> v1{ { 1,  5,  9 },{ 10, 11, 13 },{ 12, 13, 15 } };
@@ -2133,4 +2166,13 @@ TEST_CASE("Kth smallest Matrix", "[NEW]")
 	SECTION("edge case") {
 		CHECK(m.kthSmallest(vector<vector<int>>{ {3}}, 1)==3);
 	}
+}
+TEST_CASE("Linked List Partition", "[NEW]")
+{
+	auto head = ListNode::createList(vector<int>{1,4,3,2,5,2});
+	LinkedList t;
+	auto ans=t.partition(head, 3);
+	int c = ListNode::count(ans);
+
+	CHECK(c == 6);
 }
