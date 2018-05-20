@@ -33,23 +33,28 @@ class MyClass: public CRTP<MyClass<T>>
 {
 
 };
-int main() {
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "..\..\catch.hpp"
+
+TEST_CASE("Variadic templates", "VARIA")
+{
 	Console c;
 	hello(c, "Hello", "World","!","\n");
 
-	auto x=Sum::sum(1,3,5);
-	c(x);
-	c(Sum::sum(1,3,5.6));
-	c(Sum::sum(10));
-	c(Sum::avg(1,3,5.6));
-	c(::avg(1,3,5.6));
+	CHECK((int)Sum::sum(1,3,5)==9); // @suppress("Invalid arguments")
+	CHECK(static_cast<double>(Sum::sum(1,3,5.6))==9.6); // @suppress("Invalid arguments")
+	CHECK(Sum::sum(10)==10);
+	CHECK(static_cast<double>(Sum::avg(1,3,5.6))==Approx(3.2)); // @suppress("Invalid arguments")
+	CHECK(static_cast<double>(::avg(1,3,5.6))==Approx(3.2)); // @suppress("Invalid arguments")
 
 	arrayx<1,2,3,4,5> arr;
-	cout << accumulate(begin(arr.arr), end(arr.arr),0) << endl;
-
+	REQUIRE( accumulate(begin(arr.arr), end(arr.arr),0) ==15 );;
+}
+TEST_CASE("CRTP", "CRTP")
+{
 	MyClass<int> obj1;
 	MyClass<int> obj2(obj1);
 	MyClass<double> obj3;
-	cout << MyClass<int>::live() << " " << MyClass<double>::live() << endl;
-	return 0;
+	CHECK(MyClass<int>::live()==2);
+	REQUIRE(MyClass<double>::live()==1);
 }
