@@ -28,32 +28,32 @@ template<bool b, typename T, typename F> class IF
 
 };
 
-template <int N, bool odd=N%2>
+template <typename T, int N, bool odd=N%2>
 struct Power3  // can not overload class name Power
 {
-	double operator()(double x) {
-		return Power3<N/2>()(x) * Power3<N / 2>()(x);
+	T operator()(T x) {
+		return Power3<T, N/2>()(x) * Power3<T, N / 2>()(x);
 	}
 };
 
-template <int N>
-struct Power3<N, true>  // specialize odd power
+template <typename T, int N>
+struct Power3<T, N, true>  // specialize odd power
 {
-	double operator()(double x) {
-		return x *Power3<(N-1) / 2>()(x) *Power3<(N - 1) / 2>()(x);
+	T operator()(T x) {
+		return x *Power3<T, (N-1) / 2>()(x) *Power3<T, (N - 1) / 2>()(x);
 	}
 };
 
-template <>   // specialization, must be defined after general template
-struct Power3<0, false> {
-	double operator()(double x) {
+template <typename T>   // specialization, must be defined after general template
+struct Power3<T, 0, false> {
+	T operator()(T x) {
 		return 1;
 	}
 };
 
-template <>   // specialization, must be defined after general template
-struct Power3<1, true> {
-	double operator()(double x) {
+template <typename T>   // specialization, must be defined after general template
+struct Power3<T, 1, true> {
+	T operator()(T x) {
 		return x;
 	}
 };
