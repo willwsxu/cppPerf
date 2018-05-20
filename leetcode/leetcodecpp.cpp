@@ -1911,6 +1911,43 @@ public:
 		tail->next = get<0>(more); // link less part to more part
 		return get<0>(less);
 	}
+	// 83. Remove Duplicates from Sorted List
+	ListNode* deleteDuplicates(ListNode* head) {// beat 63%
+		ListNode * cur = head;
+		while (cur) {
+			auto next = cur->next;
+			while (next && next->val == cur->val)
+				next = next->next;
+			cur->next = next;
+			cur = next;
+		}
+		return head;
+	}
+	// Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only distinct numbers from the original list.
+	ListNode* deleteDuplicates2(ListNode* head) { // beat 7%
+		ListNode * cur = head;
+		ListNode * prev = head;
+		while (cur) {
+			auto next = cur->next;
+			bool dup = false;
+			while (next && next->val == cur->val) {
+				dup = true;
+				next = next->next;
+			}
+			if (!dup) {  // previous is not duplicated, add next
+				cur->next = next;
+				prev = cur;
+			}
+			else if (prev==cur) {  // first node is duplicated, move to next
+				prev = next;
+				head = next;
+			} else {
+				prev->next = next;
+			}
+			cur = next;
+		}
+		return head;
+	}
 };
 
 ////////////////////////////////////////////////
