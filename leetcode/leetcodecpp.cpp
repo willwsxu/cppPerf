@@ -1822,6 +1822,62 @@ public:
 		prevOdd->next = evenHead;
 		return head;
 	}
+
+	ListNode* swapPairs(ListNode* head) {  // recursive, beat 100%
+		if (head == nullptr)
+			return nullptr;
+		auto second = head->next;
+		if (second == nullptr)
+			return head;
+		head->next = swapPairs(second->next);  // connect to next pair
+		second->next = head;		// swap second and head
+		return second;
+	}
+
+	// 206. Reverse Linked List
+	auto reverseHelper(ListNode* head)
+	{
+		if (head == nullptr || head->next == nullptr)
+			return std::make_tuple(head, head);
+		auto trailer = reverseHelper(head->next); // recursively compute rest of the list
+		std::get<1>(trailer)->next = head;		  // append current head after last node
+		head->next = nullptr;                     // head become tail
+		return std::make_tuple(std::get<0>(trailer), head);  // return both head and tail of list
+	}
+
+	ListNode* reverseList(ListNode* head) {//beat 98%, recursion
+		auto ans = reverseHelper(head);
+		return std::get<0>(ans);
+	}
+	// 92. Reverse Linked List II	
+	auto reverseHelper2(ListNode* head, int n)  // ->[head, tail, rest after nth node]
+	{
+		if (head == nullptr)
+			return std::make_tuple(head, head, head);
+		if (n==1)
+			return std::make_tuple(head, head, head->next);  // find nth node, 3rd tuple is the rest 
+		auto trailer = reverseHelper2(head->next, --n); // recursively compute rest of the list
+		std::get<1>(trailer)->next = head;		  // append current head after last node
+		head->next = nullptr;                     // head become tail
+		return std::make_tuple(std::get<0>(trailer), head, std::get<2>(trailer));  // return both head and tail of list
+	}
+	// reverse nodes from position m to n, inclusive, 1 based
+	ListNode* reverseBetween(ListNode* head, int m, int n) {// beat 67%
+		if (m == 1) {
+			auto trailer = reverseHelper2(head, n);
+			std::get<1>(trailer)->next = std::get<2>(trailer);  // connect nth node and the rest
+			return std::get<0>(trailer);
+		}
+		int len = n - m + 1;
+		ListNode* tail = head;
+		while (head && m-- > 2) {
+			tail = tail->next;  // tail is (m-1)th node
+		}
+		auto trailer = reverseHelper2(tail->next, len);
+		std::get<1>(trailer)->next = std::get<2>(trailer);
+		tail->next = std::get<0>(trailer);
+		return head;
+	}
 };
 
 ////////////////////////////////////////////////

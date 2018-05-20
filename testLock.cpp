@@ -32,51 +32,86 @@ void worker(thread_data *pData)
 }
 void testLocks()
 {
+	long loops = 1000000;
+	auto perfTest = [](const char *name, auto func) {
+		auto start = chrono::high_resolution_clock::now();
+		long count = func();
+		auto end = chrono::high_resolution_clock::now();
+		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+		cout << name << " nano seconds: " << nanos.count() << " count " << count << endl;
+
+	};
+
+	perfTest("regular long", [loops]() {
+		long count = 0;
+		for (long i = 0; i < loops; i++)
+			++count;
+		return count;
+	});
+
+	perfTest("thread_local", [loops]() {
+		thread_local long local(0);
+		for (long i = 0; i < loops; i++)
+			++local;
+		return local;
+	});
+
+	perfTest("atomic long pre++", [loops]() {
+		std::atomic<long> internalId(0);
+		for (long i = 0; i < loops; i++)
+			++internalId;
+		return internalId.load();
+	});
+
+	perfTest("atomic long post++", [loops]() {
+		std::atomic<long> internalId(0);
+		for (long i = 0; i < loops; i++)
+			internalId++;
+		return internalId.load();
+	});
+
+	perfTest("atomic memory_order_relaxed", [loops]() {
+		std::atomic<long> internalId(0);
+		for (long i = 0; i < loops; i++)
+			internalId.fetch_add(1, memory_order_relaxed);
+		return internalId.load();
+	});
+
+	perfTest("atomic memory_order_seq_cst", [loops]() {
+		std::atomic<long> internalId(0);
+		for (long i = 0; i < loops; i++)
+			internalId.fetch_add(1, memory_order_seq_cst);
+		return internalId.load();
+	});
+
+	perfTest("InterlockedIncrement", [loops]() {
+		long count = 0;
+		for (long i = 0; i < loops; i++)
+			(void)InterlockedIncrement(&count);
+		return count;
+	});
+
+	perfTest("criticalsection", [loops]() {
+		long count = 0;
+		tal::threading::CriticalSectionLock cs;
+		for (long i = 0; i < loops; i++) {
+			tal::threading::CriticalSectionLock::scope lock(cs);
+			++count;
+		}
+		return count;
+	});
+
+	perfTest("mutex", [loops]() {
+		long count = 0;
+		std::mutex m;
+		for (long i = 0; i < loops; i++) {
+			std::lock_guard<mutex> lock(m);
+			++count;
+		}
+		return count;
+	});
+
 	auto start = chrono::high_resolution_clock::now();
-	long loops = 10000000;
-	long count = 0;
-	for (long i = 0; i < loops; i++)
-		++count;
-	auto end = chrono::high_resolution_clock::now();
-	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << "count nano seconds: " << nanos.count() << " count " << count << endl;
-
-	std::atomic<int> internalId;
-	start = chrono::high_resolution_clock::now();
-	for (long i = 0; i < loops; i++)
-		++internalId;
-	end = chrono::high_resolution_clock::now();
-	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << "atomic count nano seconds: " << nanos.count() << " count " << internalId << endl;
-
-	start = chrono::high_resolution_clock::now();
-	for (long i = 0; i < loops; i++)
-		internalId++;
-	end = chrono::high_resolution_clock::now();
-	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << "atomic post++ count nano seconds: " << nanos.count() << " count " << internalId << endl;
-
-	std::mutex m;
-	start = chrono::high_resolution_clock::now();
-	for (long i = 0; i < loops; i++) {
-		std::lock_guard<mutex> lock(m);
-		++count;
-	}
-	end = chrono::high_resolution_clock::now();
-	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << "mutex count nano seconds: " << nanos.count() << " count " << count << endl;
-
-	tal::threading::CriticalSectionLock cs;
-	start = chrono::high_resolution_clock::now();
-	for (long i = 0; i < loops; i++) {
-		tal::threading::CriticalSectionLock::scope lock(cs);
-		++count;
-	}
-	end = chrono::high_resolution_clock::now();
-	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << "criticalsection count nano seconds: " << nanos.count() << " count " << count << endl;
-
-	start = chrono::high_resolution_clock::now();
 	thread_data data;
 	data.count = 0; data.loops = loops / 2;
 	thread w1(worker, &data);
@@ -84,7 +119,7 @@ void testLocks()
 
 	w1.join();
 	w2.join();
-	end = chrono::high_resolution_clock::now();
-	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+	auto end = chrono::high_resolution_clock::now();
+	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
 	cout << "mutex thread count nano seconds: " << nanos.count() << " count " << data.count << endl;
 }

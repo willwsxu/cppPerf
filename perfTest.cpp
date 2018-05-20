@@ -95,9 +95,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	//testNewDelete();
 	//testLamda();
 	//(void)testNum();
-	//testLocks();
+	testLocks();
 	//testmain();
-	testThreads();
+	//testThreads();
 	return 0;
 }
 
