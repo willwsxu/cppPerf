@@ -1854,7 +1854,7 @@ public:
 	{
 		if (head == nullptr)
 			return std::make_tuple(head, head, head);
-		if (n==1)
+		if (n == 1)
 			return std::make_tuple(head, head, head->next);  // find nth node, 3rd tuple is the rest 
 		auto trailer = reverseHelper2(head->next, --n); // recursively compute rest of the list
 		std::get<1>(trailer)->next = head;		  // append current head after last node
@@ -1906,7 +1906,7 @@ public:
 		if (t2)
 			t2->next = nullptr; // terminate list on last node
 		auto tail = get<1>(less);
-		if ( tail== nullptr)
+		if (tail == nullptr)
 			return get<0>(more);
 		tail->next = get<0>(more); // link less part to more part
 		return get<0>(less);
@@ -1923,8 +1923,25 @@ public:
 		}
 		return head;
 	}
+
+	ListNode* deleteDuplicates3(ListNode* head) { // recursive, beat 94%
+		ListNode * cur = head;
+		if (!cur || !cur->next)
+			return head;
+
+		if (cur->next->val != head->val)  // no duplicate, connect to next node
+		{
+			head->next = deleteDuplicates3(head->next);
+			return head;
+		}
+		else { // remove all duplciate nodes, try gain
+			while ((cur = cur->next) && cur->val == head->val)
+				;
+			return deleteDuplicates3(cur);
+		}
+	}
 	// Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only distinct numbers from the original list.
-	ListNode* deleteDuplicates2(ListNode* head) { // beat 7%
+	ListNode* deleteDuplicates2(ListNode* head) { // iterative, beat 7%
 		ListNode * cur = head;
 		ListNode * prev = head;
 		while (cur) {
