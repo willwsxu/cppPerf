@@ -60,12 +60,12 @@ struct Power3<T, 1, true> {
 // constexpr template function, cannot specialize template function
 template <class T>
 constexpr T pow1(const T base, unsigned exp) {  // must use recursion, one line restriction in c+=11
-	return exp == 0 ? 1 : base * pow(base, exp - 1);
+	return exp == 0 ? 1 : base * pow1(base, exp - 1);
 }
 
 template <class T>
 constexpr T pow2(const T base, unsigned exp) { // bisection method, faster
 	return exp == 0 ? 1 :
-		exp % 2 == 0 ? pow(base, exp / 2) * pow(base, exp / 2) :
-		base * pow(base, (exp - 1) / 2) * pow(base, (exp - 1) / 2);
+		exp % 2 == 0 ? pow2(base, exp / 2) * pow2(base, exp / 2) :
+		base * pow2(base, (exp - 1) / 2) * pow2(base, (exp - 1) / 2);
 }
