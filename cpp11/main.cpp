@@ -22,6 +22,13 @@ TEST_CASE("Variadic template", "VARIA")
 	float f = 2.0f;
 	testPattern("%f %f", i, f);
 	testPattern2("%f %f", i, f);
+
+	CHECK(variadicTuple(i, f) == tuple<int,float>{i,f});
+
+	/*ostringstream oss;
+	oss << "test";
+	//cout << variadicTuple(i, f);
+	REQUIRE(oss.str() == string("1,2.0"));*/
 }
 
 TEST_CASE("DynBuffer", "BUF")
