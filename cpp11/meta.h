@@ -59,7 +59,7 @@ struct Power3<T, 1, true> {
 };
 // constexpr template function, cannot specialize template function
 template <class T>
-constexpr T pow(const T base, unsigned exp) {  // must use recursion, one line restriction in c+=11
+constexpr T pow1(const T base, unsigned exp) {  // must use recursion, one line restriction in c+=11
 	return exp == 0 ? 1 : base * pow(base, exp - 1);
 }
 

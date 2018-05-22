@@ -1965,6 +1965,34 @@ public:
 		}
 		return head;
 	}
+	// 143. Reorder List, L1..Ln ->L1LnL2Ln-1...
+	void reorderList(ListNode* head) {
+		if (!head || !head->next)
+			return;// no more than one node
+		ListNode *fast = head;
+		ListNode *slow = head; // slow point to middle
+		ListNode *tail = head; // tail of first half
+		int count = 0; // count = (N+1)/2;
+		// find head of second half, count of first half, and tail of first half
+		while (fast) {
+			++count;
+			fast = fast->next; // fast move 2 steps
+			if (fast)
+				fast = fast->next;
+			tail = slow;
+			slow = slow->next;
+		}
+		tail->next = nullptr;  // terminate first half
+		slow = reverseList(slow); // reverse second half
+		fast = head; // reset to head of first half of list
+		for (int i = 0; i < count && slow; i++) { // alternate node betweem first and second half
+			auto temp = slow->next;
+			slow->next = fast->next;  // connect Ln to L2
+			fast->next = slow;			// connect L1 to Ln
+			fast = slow->next;		// move both pointer
+			slow = temp;  // break out when second half has no more node
+		}
+	}
 };
 
 ////////////////////////////////////////////////
