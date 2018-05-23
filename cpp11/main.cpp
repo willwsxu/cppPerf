@@ -29,6 +29,7 @@ TEST_CASE("Variadic template", "VARIA")
 	oss << "test";
 	//cout << variadicTuple(i, f);
 	REQUIRE(oss.str() == string("1,2.0"));*/
+
 }
 
 TEST_CASE("DynBuffer", "BUF")
@@ -71,11 +72,16 @@ TEST_CASE("Matrix", "MATRIX")
 	auto end = vii.end(1);
 	auto size = end - it;
 	vii_col_iter zz = z;
-	//zz = z;
-	auto c=count(vii.begin(1), end, 1);
-	CHECK(c == 0);
+	zz = z;
+	CHECK(count(vii.begin(1), end, 1) == 0);
 	CHECK(count(vii.begin(1), end, 3)==1);
-	//sort(vii.begin(1), vii.end(1));
+	CHECK(count_if(vii.begin(1), end, [](auto i) {return i % 2 == 0; }) == 1);
+	CHECK(find_if(vii.begin(1), end, [](auto i) {return i % 2 == 0; }) != end);
+	CHECK(is_sorted(vii.begin(1), vii.end(1)) == false);
+	reverse(vii.begin(1), end);
+	CHECK(*vii.begin(1) == 3);
+	CHECK(is_sorted(vii.begin(1), vii.end(1)) == true);
+	//stable_sort(vii.begin(1), vii.end(1), std::less<int>());
 	auto x= lower_bound(vii.begin(2), vii.end(2), 6);
 	REQUIRE(*x == 6);
 }
