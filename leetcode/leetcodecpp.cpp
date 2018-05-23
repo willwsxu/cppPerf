@@ -1993,6 +1993,30 @@ public:
 			slow = temp;  // break out when second half has no more node
 		}
 	}
+
+	// 61 Given a linked list, rotate the list to the right by k places, where k is non-negative
+	ListNode* rotateRight(ListNode* head, int k) { // beat 62%
+		if (!head)
+			return head;
+		int count = 1;  // count 1st one
+		ListNode * tail = head;
+		while (tail->next) {  // chck if next exists
+			count++;
+			tail = tail->next;
+		}
+		k = k%count;
+		if (k == 0)
+			return head;
+		tail->next = head;  // connect last node to first node
+		k = count - k; // if k==1, count-1th node will be new head
+		while (--k > 0) {  // shift to right count-k-1 times
+			head = head->next;
+		}
+		tail = head;  // rotate to tail
+		head = head->next;
+		tail->next = nullptr;
+		return head;
+	}
 };
 
 ////////////////////////////////////////////////
@@ -2249,12 +2273,21 @@ TEST_CASE("Kth smallest Matrix", "[Matrix]")
 		CHECK(m.kthSmallest(vector<vector<int>>{ {3}}, 1)==3);
 	}
 }
-TEST_CASE("Linked List Partition", "[NEW]")
+
+TEST_CASE("Linked List Partition", "[PART]")
 {
 	auto head = ListNode::createList(vector<int>{1,4,3,2,5,2});
 	LinkedList t;
 	auto ans=t.partition(head, 3);
 	int c = ListNode::count(ans);
 
-	CHECK(c == 6);
+	REQUIRE(c == 6);
+}
+
+TEST_CASE("Linked List Rotate Right", "[NEW]")
+{
+	auto head = ListNode::createList(vector<int>{1, 2, 3, 4, 5});
+	LinkedList t;
+	auto ans = t.rotateRight(head, 2);
+	CHECK(ans->val == 4);
 }
