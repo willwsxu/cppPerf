@@ -122,3 +122,32 @@ TEST_CASE("type conversion check", "TYPE")
 	CHECK(Conversion<double, int>::result == 1);  //convert double to int, ok but warning
 	CHECK(Conversion<int, double>::result == 1);
 }
+
+#include "courseSchedule.h"
+
+TEST_CASE("Course Schedule conflict", "SCHED")
+{
+	std::vector<Schedule> schedule;
+	const char*str[] = { "CS101", "W", "1730", "2030","CS242", "T", "1000", "1130","CS242", "T", "1230", "1430","CS242", "R", "1000", "1130","CS281", "T", "1300", "1430",
+		"CS281", "R", "1300", "1430","CS282", "M", "1300", "1430","CS282", "W", "1300", "1430","CS201", "T", "1600", "1730","CS201", "R", "1600", "1730" };
+	auto count = sizeof(str) / sizeof(char*);
+	std::copy(cstring_iterator<Schedule>(count, str, 4), cstring_iterator<Schedule>(), back_inserter(schedule));
+	CHECK(schedule.size() == 10);
+	sort(begin(schedule), end(schedule));
+	copy(begin(schedule), end(schedule), ostream_iterator<Schedule>(cout, "\n"));
+	auto conflict = adjacent_find(begin(schedule), end(schedule));
+	if (conflict != end(schedule)) {
+		cout << "CONFLICT:" << endl;
+		cout << *conflict << endl;
+		cout << *(conflict + 1) << endl;
+	}
+	std::transform(begin(schedule), end(schedule) - 1, begin(schedule) + 1, begin(schedule), [](const auto& lhs, const auto& rhs)->const auto& {
+		if (lhs == rhs) {
+			cout << "CONFLICT:" << endl;
+			cout << lhs << endl;
+			cout << rhs << endl;
+		}
+		return lhs;
+	});
+	copy(begin(schedule), end(schedule), ostream_iterator<Schedule>(cout, "\n"));
+}
