@@ -96,3 +96,22 @@ TEST_CASE("Meta Programming", "META")
 	CHECK(pow1(2, 30) == 1073741824);  // constexpr
 	CHECK(pow2(2, 29) == 536870912);  // constexpr
 }
+
+template <typename C, typename V>
+vector<typename C::value_type*> find_all(C& c, const V&v) // must use const V to allow literal
+{
+	vector<typename C::value_type*> ans;  // must typename C::, value_type<C> does not compile
+	for (auto& x : c) {
+		if (x == v)
+			ans.push_back(&x);
+	}
+	return ans;
+}
+
+TEST_CASE("template example from Stroustrup", "example")
+{
+	string s{ "Mary has a little lamb" };
+	for (const auto p: find_all(s, 'a')) 
+		CHECK(*p=='a');
+	REQUIRE(find_all(s, 'a').size() == 4);
+}
