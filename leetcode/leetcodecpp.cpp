@@ -2321,16 +2321,34 @@ public:
 			}
 			visit(nums, i, ans);
 		}
-		return std::move(ans);
+		return ans; // move constructor is called automatically
+	}
+
+	// 
+	int findPoisonedDuration(vector<int>& timeSeries, int duration) {  // beat 44%
+		int total = timeSeries.empty()?0:duration; // duration on last time series
+		for (int i = 0; i < (int)timeSeries.size() - 1; i++) {
+			total += min(duration, timeSeries[i + 1] - timeSeries[i]);
+		}
+		return total;
 	}
 };
 
 
-TEST_CASE("Array find duplciate", "[NEW]")
+TEST_CASE("Array find duplciate", "[DUP]")
 {
 	Array arr;
 	CHECK(arr.findDuplicates(vector<int>{4, 3, 2, 7, 8, 2, 3, 1}) == vector<int>{3, 2});
 	CHECK(arr.findDuplicates(vector<int>{1}) == vector<int>{});
 	CHECK(arr.findDuplicates(vector<int>{1,1}) == vector<int>{1});
-	CHECK(arr.findDuplicates(vector<int>{2,2}) == vector<int>{2});
+	REQUIRE(arr.findDuplicates(vector<int>{2,2}) == vector<int>{2});
+}
+
+TEST_CASE("Array calculate inerval", "[NEW]")
+{
+	Array arr;
+	CHECK(arr.findPoisonedDuration(vector<int>{}, 2) == 0);
+	CHECK(arr.findPoisonedDuration(vector<int>{1}, 2) == 2);
+	CHECK(arr.findPoisonedDuration(vector<int>{1,2}, 2) == 3);
+	CHECK(arr.findPoisonedDuration(vector<int>{1, 3}, 2) == 4);
 }
