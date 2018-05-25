@@ -110,6 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Alexandrescu.h" />
     <ClInclude Include="DynBuffer.h" />
     <ClInclude Include="DynMsg.h" />
     <ClInclude Include="Matrix2D.h" />

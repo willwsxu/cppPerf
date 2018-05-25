@@ -115,3 +115,10 @@ TEST_CASE("template example from Stroustrup", "example")
 		CHECK(*p=='a');
 	REQUIRE(find_all(s, 'a').size() == 4);
 }
+
+#include "Alexandrescu.h"
+TEST_CASE("type conversion check", "TYPE")
+{
+	CHECK(Conversion<double, int>::result == 1);  //convert double to int, ok but warning
+	CHECK(Conversion<int, double>::result == 1);
+}
