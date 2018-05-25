@@ -2284,10 +2284,53 @@ TEST_CASE("Linked List Partition", "[PART]")
 	REQUIRE(c == 6);
 }
 
-TEST_CASE("Linked List Rotate Right", "[NEW]")
+TEST_CASE("Linked List Rotate Right", "[ROTATE]")
 {
 	auto head = ListNode::createList(vector<int>{1, 2, 3, 4, 5});
 	LinkedList t;
 	auto ans = t.rotateRight(head, 2);
 	CHECK(ans->val == 4);
+}
+
+class Array
+{
+	void visit(vector<int>& nums, int pos, vector<int>& ans)
+	{
+		int next = nums[pos] - 1;  // next position to visit
+		nums[pos] = 0;
+		while (next != pos && nums[next] > 0) {
+			pos = next; // save last position
+			next = nums[pos] - 1;
+			nums[pos] = -1;  // mark last position as visited
+		}
+		if (nums[next] == 0)
+			nums[next] = -1;
+		else
+			ans.push_back(next + 1); // find dup when loop ends
+	}
+public:
+	// 442. Given an array of integers, 1 ≤ a[i] ≤ n (n = size of array), some elements appear twice and others appear once
+	vector<int> findDuplicates(vector<int>& nums) {
+		vector<int> ans{};
+		for (auto i = 0u; i < nums.size(); i++) {
+			if (nums[i] <= 0)  // visited
+				continue;
+			if (nums[i] == i + 1) {  // nums at right position
+				nums[i] = -1;
+				continue;
+			}
+			visit(nums, i, ans);
+		}
+		return std::move(ans);
+	}
+};
+
+
+TEST_CASE("Array find duplciate", "[NEW]")
+{
+	Array arr;
+	CHECK(arr.findDuplicates(vector<int>{4, 3, 2, 7, 8, 2, 3, 1}) == vector<int>{3, 2});
+	CHECK(arr.findDuplicates(vector<int>{1}) == vector<int>{});
+	CHECK(arr.findDuplicates(vector<int>{1,1}) == vector<int>{1});
+	CHECK(arr.findDuplicates(vector<int>{2,2}) == vector<int>{2});
 }
