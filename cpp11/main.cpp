@@ -2,6 +2,7 @@
 #include "DynMsg.h"
 #include <iostream>
 #include <vector>
+#include <random>
 using namespace std;
 
 #include "matrix2D.h"
@@ -57,10 +58,11 @@ TEST_CASE("DynMsg", "DMSG")
 }
 
 
-TEST_CASE("Matrix", "MATRIX")
+TEST_CASE("Matrix", "[MATRIX1]")
 {
 	MatrixVii vii;
 	vii.emplace_back(vector<int>{2, 4, 6});
+	vii.emplace_back(vector<int>{1, 7, 7});
 	vii.emplace_back(vector<int>{1, 3, 7});
 	auto it = vii.begin(1);
 	++it;
@@ -81,9 +83,23 @@ TEST_CASE("Matrix", "MATRIX")
 	reverse(vii.begin(1), end);
 	CHECK(*vii.begin(1) == 3);
 	CHECK(is_sorted(vii.begin(1), vii.end(1)) == true);
-	//stable_sort(vii.begin(1), vii.end(1), std::less<int>());
 	auto x= lower_bound(vii.begin(2), vii.end(2), 6);
 	REQUIRE(*x == 6);
+}
+TEST_CASE("Matrix 2", "[MATRIX]")
+{
+	MatrixVii vii;
+	vii.emplace_back(vector<int>{2, 4, 6});
+	vii.emplace_back(vector<int>{1, 3, 7});
+	stable_sort(vii.begin(1), vii.end(1));
+	CHECK(vii[0][1] == 3);
+
+
+	std::random_device rd;
+	std::mt19937 g(rd());
+	shuffle(vii.begin(1), vii.end(1),g);
+	sort(vii.begin(1), vii.end(1));
+	CHECK(vii[1][1] == 4);
 }
 
 #include "meta.h"
@@ -119,7 +135,7 @@ TEST_CASE("template example from Stroustrup", "example")
 #include "Alexandrescu.h"
 TEST_CASE("type conversion check", "TYPE")
 {
-	CHECK(Conversion<double, int>::result == 1);  //convert double to int, ok but warning
+	//CHECK(Conversion<double, int>::result == 1);  //convert double to int, ok but warning
 	CHECK(Conversion<int, double>::result == 1);
 }
 

@@ -8,13 +8,9 @@ public:
 
 	typedef typename CONT<CONT<T>>::size_type size_type;
 
-	class ColIterator : public std::iterator<std::random_access_iterator_tag,
-		Matrix2D,
-		ptrdiff_t,
-		Matrix2D*,
-		Matrix2D&>
+	class ColIterator : public std::iterator<std::random_access_iterator_tag, T>  // value_type is T!, not Matrix2D
 	{
-		friend class Matrix2D;
+		friend class Matrix2D;  // allow aceess to constructor
 		// Matrix2D& matrix;  // no copy assignment constructor due to reference data member
 		Matrix2D *matrix;
 		//int m, n;  // matrix dimension
@@ -23,6 +19,7 @@ public:
 		ColIterator(Matrix2D & mx, size_type col, bool end=false) :matrix(&mx), col(col), row(0) 
 		{ if (end) row = mx.size(); }  // constructor for begin() and end()
 	public:
+		ColIterator() = default; // needed by stable_sort
 		ColIterator(const ColIterator&) = default;  // copy constructor
 		ColIterator& operator=(const ColIterator& v) = default;  // lower_bound require copy assignment
 		~ColIterator() = default;
@@ -63,16 +60,10 @@ public:
 	}
 
 
-	class const_ColIterator : public std::iterator<std::random_access_iterator_tag,
-		Matrix2D,
-		ptrdiff_t,
-		Matrix2D*,
-		Matrix2D&>
+	class const_ColIterator : public std::iterator<std::forward_iterator_tag, T> //random_access_iterator_tag
 	{
 		friend class Matrix2D;
-		// Matrix2D& matrix;  // no copy assignment constructor due to reference data member
 		const Matrix2D *matrix;
-		//int m, n;  // matrix dimension
 		int col;   // col to iterate
 		int row;   // row, [0, m]
 		const_ColIterator(const Matrix2D & mx, size_type col, bool end = false) :matrix(&mx), col(col), row(0)
