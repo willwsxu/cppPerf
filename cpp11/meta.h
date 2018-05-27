@@ -143,11 +143,20 @@ namespace Test
 	using true_type = bool_constant<true>;
 	using false_type = bool_constant<false>;
 
-	template <typename T> class is_void : false_type {};
-	template <> class is_void<void> : true_type {};  // more for const void, volatile void, and const volatile void
+	template <typename T> struct is_void : false_type {};
+	template <> struct is_void<void> : true_type {};  // more for const void, volatile void, and const volatile void
 
-	template <typename T, typename U> class  is_same : public false_type {};
-	template <typename T> class  is_same<T, T> : public true_type {};
-	//template <typename T> class remove_cv
+	template <typename T, typename U> struct  is_same : false_type {};
+	template <typename T> struct  is_same<T, T> : true_type {};
+	template <typename T> using remove_cv = remove_volatile<remove_const_t<T>>;
+		
 }
-template <typename T> class Is_void : public Test::is_same<void, remove_cv<T>> {};
+template <typename T> struct Is_void : Test::is_same<void, Test::remove_cv<T>> {};
+
+// generalize is_same, does T match any one of the types listed
+template <typename T, typename... Args> struct is_one_of;  // just declaration, 3 specializations
+template <typename T> struct is_one_of<T> : public Test::false_type {};  // no other types
+template <typename T, typename...Args> struct is_one_of<T,T,Args...> : public Test::true_type {}; // match top of the Args
+template <typename T, typename U, typename...Args> struct is_one_of<T,U,Args...> : is_one_of<T, Args...> {}; // no match
+
+template <typename T> struct Is_void2 : public is_one_of<T, void, void const, volatile void, volatile const void> {};

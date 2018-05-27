@@ -116,6 +116,7 @@
     <ClInclude Include="DynMsg.h" />
     <ClInclude Include="Matrix2D.h" />
     <ClInclude Include="meta.h" />
+    <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

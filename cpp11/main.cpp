@@ -121,6 +121,7 @@ TEST_CASE("Meta Programming", "[META]")
 	CHECK(bool(std::is_void<int>{}) == false);
 	CHECK(std::is_void<int>{}() == false);
 	CHECK(Is_void<int>::value == false);
+	CHECK(Is_void2<int>::value == false);
 }
 
 template <typename C, typename V>
