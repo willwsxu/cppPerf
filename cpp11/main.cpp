@@ -103,7 +103,7 @@ TEST_CASE("Matrix 2", "[MATRIX]")
 }
 
 #include "meta.h"
-TEST_CASE("Meta Programming", "META")
+TEST_CASE("Meta Programming", "[META]")
 {
 	CHECK(Power<2>::pow == 4);
 	CHECK(Power2<3,2>::pow == 9);
@@ -111,6 +111,16 @@ TEST_CASE("Meta Programming", "META")
 	CHECK(Power3<long, 29>()(2L) == 536870912);
 	CHECK(pow1(2, 30) == 1073741824);  // constexpr
 	CHECK(pow2(2, 29) == 536870912);  // constexpr
+
+	CHECK(GCD<1200, 800>::value == 400);
+	using array_t = int[2][3][4];
+	CHECK(Rank<array_t>::value == 3);
+	CHECK(Rank2<array_t>::value == 3);
+
+	CHECK( std::is_void<void>::value ==true);
+	CHECK(bool(std::is_void<int>{}) == false);
+	CHECK(std::is_void<int>{}() == false);
+	CHECK(Is_void<int>::value == false);
 }
 
 template <typename C, typename V>
