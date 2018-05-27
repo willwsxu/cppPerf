@@ -2324,13 +2324,39 @@ public:
 		return ans; // move constructor is called automatically
 	}
 
-	// 
+	// attack at each time point, cause duration of being poisoned, each point represent time elapses
 	int findPoisonedDuration(vector<int>& timeSeries, int duration) {  // beat 44%
 		int total = timeSeries.empty()?0:duration; // duration on last time series
 		for (int i = 0; i < (int)timeSeries.size() - 1; i++) {
-			total += min(duration, timeSeries[i + 1] - timeSeries[i]);
+			total += min(duration, timeSeries[i + 1] - timeSeries[i]);  // poisoned duration can not exceed time span between 2 points
 		}
 		return total;
+	}
+
+	// 667. Beautiful Arrangement II
+	// Give Array with value 1 to n, arrange it so difference of neighboring 2 numbers have exact k distinct values
+	vector<int> constructArray(int n, int k) {  // beat 90%
+		vector<int> ans(n);
+		int delta = k;
+		int val = 1;  // start from, add k, minus k-1, add k+2, etc.
+		bool up = true;
+		for (int i = 0; i <= k; i++) {  // fill first k+1 elements per algorithm above
+			ans[i] = val;
+			val = up ? val + delta : val - delta;
+			up = !up;
+			--delta;
+		}
+		iota(begin(ans)+ k+1, end(ans), k+2); // fill remaining slots in sequential order
+		return ans;
+	}
+	vector<int> constructArray2(int n, int k) {  // borrow idea, beat 70%
+		vector<int> ans(n);
+		for (int i = 0,j=1; i <= k; i+=2,j++)  // even slot, 1,2,3,...
+			ans[i] = j;
+		for (int i = 1, j = k+1; i <= k; i += 2, j--)  // odd slot, k+1, k, k-1,...
+			ans[i] = j;
+		iota(begin(ans) + k + 1, end(ans), k + 2); // fill remaining slots in sequential order
+		return ans;
 	}
 };
 
@@ -2344,11 +2370,27 @@ TEST_CASE("Array find duplciate", "[DUP]")
 	REQUIRE(arr.findDuplicates(vector<int>{2,2}) == vector<int>{2});
 }
 
-TEST_CASE("Array calculate inerval", "[NEW]")
+TEST_CASE("Array calculate inerval", "[POISON]")
 {
 	Array arr;
 	CHECK(arr.findPoisonedDuration(vector<int>{}, 2) == 0);
 	CHECK(arr.findPoisonedDuration(vector<int>{1}, 2) == 2);
 	CHECK(arr.findPoisonedDuration(vector<int>{1,2}, 2) == 3);
-	CHECK(arr.findPoisonedDuration(vector<int>{1, 3}, 2) == 4);
+	REQUIRE(arr.findPoisonedDuration(vector<int>{1, 3}, 2) == 4);
+}
+
+TEST_CASE("Array arrange k", "[NEW]")
+{
+	Array r;
+	CHECK(r.constructArray(6, 5) == vector<int>{1,6,2,5,3,4});
+	CHECK(r.constructArray(6, 4) == vector<int>{1, 5, 2, 4, 3, 6});
+	CHECK(r.constructArray(6, 3) == vector<int>{1, 4, 2, 3, 5, 6});
+	CHECK(r.constructArray(6, 2) == vector<int>{1,3, 2, 4, 5, 6});
+	CHECK(r.constructArray(6, 1) == vector<int>{1,2,3,4,5,6});
+
+	CHECK(r.constructArray2(6, 5) == vector<int>{1, 6, 2, 5, 3, 4});
+	CHECK(r.constructArray2(6, 4) == vector<int>{1, 5, 2, 4, 3, 6});
+	CHECK(r.constructArray2(6, 3) == vector<int>{1, 4, 2, 3, 5, 6});
+	CHECK(r.constructArray2(6, 2) == vector<int>{1, 3, 2, 4, 5, 6});
+	REQUIRE(r.constructArray2(6, 1) == vector<int>{1, 2, 3, 4, 5, 6});
 }
