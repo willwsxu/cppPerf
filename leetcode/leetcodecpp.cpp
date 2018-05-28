@@ -2358,6 +2358,30 @@ public:
 		iota(begin(ans) + k + 1, end(ans), k + 2); // fill remaining slots in sequential order
 		return ans;
 	}
+
+	// 238. Product of Array Except Self
+	void productExceptSelf(vector<int>& nums, vector<int>& ans, int start, int end) {
+		if (start >= end)
+			return;
+		int mid = (start + end) / 2;
+		int leftprod = 1;
+		int rightprod = 1;
+		for (int i = start; i <= mid; i++)
+			leftprod *= nums[i];
+		for (int i = mid + 1; i <= end; i++) {
+			rightprod *= nums[i];
+			ans[i] *= leftprod;
+		}
+		for (int i = start; i <= mid; i++)
+			ans[i] *= rightprod;
+		productExceptSelf(nums, ans, start, mid);
+		productExceptSelf(nums, ans, mid+1, end);
+	}
+	vector<int> productExceptSelf(vector<int>& nums) {
+		vector<int> ans(nums.size(), 1);
+		productExceptSelf(nums, ans, 0, nums.size() - 1);
+		return ans;
+	}
 };
 
 
