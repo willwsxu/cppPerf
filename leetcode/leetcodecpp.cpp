@@ -2394,6 +2394,26 @@ public:
 		}
 		return ans;
 	}
+
+	// A zero-indexed array A of length N contains all integers from 0 to N-1. 
+	// Find and return the longest length of set S, where S[i] = {A[i], A[A[i]], A[A[A[i]]], ... }
+	int arrayNesting(vector<int>& nums) {
+		int count = 0;
+		for (int i = 0; i < nums.size(); i++) {
+			if (nums[i] < 0)
+				continue;
+			int c = 1;
+			int j = nums[i];
+			while (j != i) { //
+				int temp = nums[j];
+				nums[j] = -1; // mark as visited
+				j = temp;
+				++c;
+			}
+			count = max(count, c);
+		}
+		return count;
+	}
 };
 
 
