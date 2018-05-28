@@ -122,6 +122,8 @@ TEST_CASE("Meta Programming", "[META]")
 	CHECK(std::is_void<int>{}() == false);
 	CHECK(Is_void<int>::value == false);
 	CHECK(Is_void2<int>::value == false);
+
+	CHECK(Is_copy_assignable<CDynBuffer<Console, char>>{}() == false);
 }
 
 template <typename C, typename V>
@@ -143,11 +145,26 @@ TEST_CASE("template example from Stroustrup", "example")
 	REQUIRE(find_all(s, 'a').size() == 4);
 }
 
+struct Base {};
+struct Derived : public Base {};
+
 #include "Alexandrescu.h"
-TEST_CASE("type conversion check", "TYPE")
+TEST_CASE("type conversion check", "[CONV]")
 {
+	using dyn_msg_t = CDynMsg<Console, char>;
+	using dyn_buf_t = CDynBuffer<Console, char>;
 	//CHECK(Conversion<double, int>::result == 1);  //convert double to int, ok but warning
 	CHECK(Conversion<int, double>::result == 1);
+
+	dyn_msg_t x;
+	dyn_buf_t &y = x;
+	//dyn_msg_t &z = y;
+	//auto x=conversion_t<dyn_msg_t, dyn_buf_t>;
+	//CHECK(Conversion<dyn_msg_t, dyn_buf_t>::result == 1);   // lack copy constructor
+	//using xx = decltype(declval<Derived&>() = declval<Base&>());  // not well formed
+	using yy = decltype(declval<Base&>() = declval<Derived&>());
+	CHECK(type_convertable<Derived, Base>::value == true);  // Derived can be converted to Base
+	CHECK(type_convertable<Base, Derived>::value == false);
 }
 
 #include "courseSchedule.h"

@@ -12,3 +12,12 @@ class Conversion
 public:
 	enum { result = sizeof(convert(makeT())) == sizeof(Small) };  // can only call static methods
 };
+
+template <typename T, typename U>  // convert T to U
+using conversion_t = decltype(declval<U&>() = declval<T>());
+
+template<typename T, typename U, class = void>  // primary template, default arg is essential
+struct type_convertable : false_type {};
+
+template <typename T, typename U>
+struct type_convertable<T, U, void_t<conversion_t<T,U>>> : true_type {};
