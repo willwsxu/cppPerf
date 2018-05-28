@@ -2377,9 +2377,21 @@ public:
 		productExceptSelf(nums, ans, start, mid);
 		productExceptSelf(nums, ans, mid+1, end);
 	}
-	vector<int> productExceptSelf(vector<int>& nums) {
+	vector<int> productExceptSelf(vector<int>& nums) {  // beat 56%
 		vector<int> ans(nums.size(), 1);
 		productExceptSelf(nums, ans, 0, nums.size() - 1);
+		return ans;
+	}
+	vector<int> productExceptSelf2(vector<int>& nums) {  // 99%
+		int n = nums.size();
+		vector<int> ans(n, 1);
+		for (int i = 1; i < n; i++)
+			ans[i] = ans[i - 1] * nums[i - 1];
+		int right = 1;  // right to left
+		for (int i = n - 1; i >= 0; i--) {
+			ans[i] *= right;
+			right *= nums[i];
+		}
 		return ans;
 	}
 };
@@ -2417,4 +2429,6 @@ TEST_CASE("Array arrange k", "[NEW]")
 	CHECK(r.constructArray2(6, 3) == vector<int>{1, 4, 2, 3, 5, 6});
 	CHECK(r.constructArray2(6, 2) == vector<int>{1, 3, 2, 4, 5, 6});
 	REQUIRE(r.constructArray2(6, 1) == vector<int>{1, 2, 3, 4, 5, 6});
+
+	CHECK(r.productExceptSelf2(vector<int>{1, 2, 3, 4}) == vector<int>{24, 12, 8, 6});
 }
