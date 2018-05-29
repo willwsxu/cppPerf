@@ -2399,7 +2399,7 @@ public:
 	// Find and return the longest length of set S, where S[i] = {A[i], A[A[i]], A[A[A[i]]], ... }
 	int arrayNesting(vector<int>& nums) {  // beat 64%
 		int count = 0;
-		for (int i = 0; i < nums.size(); i++) {
+		for (int i = 0; i < (int)nums.size(); i++) {
 			int size = 0;
 			for (int j = i; nums[j] >= 0; size++) {
 				int temp = nums[j];
@@ -2409,6 +2409,34 @@ public:
 			count = max(count, size);
 		}
 		return count;
+	}
+
+	// 769. Max Chunks To Make Sorted, when each chunk is sorted
+	int findChunk(vector<int>& arr, int start, int n) { //  chunk must include value start
+		int i = start;
+		int maxVal = arr[start];
+		for (; i < n; i++) {
+			maxVal = max(maxVal, arr[i]);
+			if (arr[i] == start)
+				break;
+		}
+		for (i = i + 1; i <n; i++) {
+			if (i<= maxVal)
+				maxVal = max(maxVal, arr[i]);
+			if (arr[i] > maxVal)
+				break;
+		}
+		return i - 1;
+	}
+	int maxChunksToSorted(vector<int>& arr) {  // beats 97%
+		int chunks = 0;
+		int start=0;
+		int n = arr.size();
+		while (start < n) {
+			start = findChunk(arr, start, n) + 1;  // chunk must include the start value and all values less than max
+			chunks++;
+		}
+		return chunks;
 	}
 };
 
@@ -2431,7 +2459,7 @@ TEST_CASE("Array calculate inerval", "[POISON]")
 	REQUIRE(arr.findPoisonedDuration(vector<int>{1, 3}, 2) == 4);
 }
 
-TEST_CASE("Array arrange k", "[NEW]")
+TEST_CASE("Array arrange k", "[Construct]")
 {
 	Array r;
 	CHECK(r.constructArray(6, 5) == vector<int>{1,6,2,5,3,4});
@@ -2447,4 +2475,13 @@ TEST_CASE("Array arrange k", "[NEW]")
 	REQUIRE(r.constructArray2(6, 1) == vector<int>{1, 2, 3, 4, 5, 6});
 
 	CHECK(r.productExceptSelf2(vector<int>{1, 2, 3, 4}) == vector<int>{24, 12, 8, 6});
+}
+
+TEST_CASE("chunk sort", "[NEW]")
+{
+	Array t;
+	CHECK(t.maxChunksToSorted(vector<int>{2, 0, 1, 4, 3, 5, 6}) == 4);
+	CHECK(t.maxChunksToSorted(vector<int>{}) == 0);
+	CHECK(t.maxChunksToSorted(vector<int>{0}) == 1);
+	CHECK(t.maxChunksToSorted(vector<int>{1, 4, 3, 6, 0, 7, 8, 2, 5}) == 1);
 }
