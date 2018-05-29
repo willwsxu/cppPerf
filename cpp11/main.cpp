@@ -82,7 +82,6 @@ TEST_CASE("Matrix", "[MATRIX1]")
 	CHECK(is_sorted(vii.begin(1), vii.end(1)) == false);
 	reverse(vii.begin(1), end);
 	CHECK(*vii.begin(1) == 3);
-	CHECK(is_sorted(vii.begin(1), vii.end(1)) == true);
 	auto x= lower_bound(vii.begin(2), vii.end(2), 6);
 	REQUIRE(*x == 6);
 }
@@ -94,12 +93,12 @@ TEST_CASE("Matrix 2", "[MATRIX]")
 	stable_sort(vii.begin(1), vii.end(1));
 	CHECK(vii[0][1] == 3);
 
-
 	std::random_device rd;
 	std::mt19937 g(rd());
 	shuffle(vii.begin(1), vii.end(1),g);
 	sort(vii.begin(1), vii.end(1));
 	CHECK(vii[1][1] == 4);
+	CHECK(is_sorted(vii.begin(1), vii.end(1)) == true);
 }
 
 #include "meta.h"
@@ -124,6 +123,7 @@ TEST_CASE("Meta Programming", "[META]")
 	CHECK(Is_void2<int>::value == false);
 
 	CHECK(Is_copy_assignable<CDynBuffer<Console, char>>{}() == false);
+	CHECK(Is_copy_assignable<vii_col_iter>{}() == true);
 }
 
 template <typename C, typename V>

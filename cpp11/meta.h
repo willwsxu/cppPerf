@@ -66,7 +66,7 @@ constexpr T pow2(const T base, unsigned exp) { // bisection method, faster
 		base * pow2(base, (exp - 1) / 2) * pow2(base, (exp - 1) / 2);
 }
 
-// examples from cppcon2014 Brown
+// examples from cppcon2014 Walter Brown
 // gcd
 template <long long P, long long Q>  // P>Q
 struct GCD
@@ -160,3 +160,20 @@ template <typename T, typename...Args> struct is_one_of<T,T,Args...> : public Te
 template <typename T, typename U, typename...Args> struct is_one_of<T,U,Args...> : is_one_of<T, Args...> {}; // no match
 
 template <typename T> struct Is_void2 : public is_one_of<T, void, void const, volatile void, volatile const void> {};
+
+template <typename ...> using Void_t = void;  // use to test if any class is well formed
+
+template <typename, typename=void>   //primary, detect presence/absence of a type member
+struct Has_type_member : false_type {};
+template <typename T> // specialization
+struct Has_type_member<T, void_t<typename T::type>> : true_type {};  // if T::type is well formed, more specialized
+
+// test if class T supports copy assignment
+template <typename T>
+using copy_assignment_t = decltype(declval<T&>()=declval<T const&>());
+
+template<typename T, class=void>  // primary template, default arg is essential
+struct Is_copy_assignable : false_type {};
+
+template <typename T>
+struct Is_copy_assignable<T, void_t<copy_assignment_t<T>>> : Test::is_same<copy_assignment_t<T>, T& > {};
