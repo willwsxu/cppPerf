@@ -2497,62 +2497,16 @@ namespace std
 		}
 	};
 }
-/*
-bool operator==(const MyPair& p1 ,const  MyPair&p2) {  // define == as overlappings
-	if (get<1>(p1) <= get<0>(p2))
-		return false;
-	if (get<1>(p2) <= get<0>(p1))
-		return false;
-	return true;
-}
 
-bool operator!=(const MyPair& p1, const  MyPair&p2) {
-	return !(p1 == p2);
-}
-bool operator<(const MyPair& p1, const  MyPair&p2) {
-	if (get<1>(p1) <= get<0>(p2))
-		return true;
-	return false;
-}
-*/
-/*
-struct MyPair
-{
-	int first;
-	int second;
-	MyPair(int p1, int p2):first(p1),second(p2)
-	{
-	}
-};
-bool operator==(const MyPair& p1, const  MyPair&p2) {  // define == as overlappings
-	if (p1.second <= p2.first)
-		return false;
-	if (p2.second <= p1.first)
-		return false;
-	return true;
-}
-
-bool operator!=(const MyPair& p1, const  MyPair&p2) {
-	return !(p1 == p2);
-}
-bool operator<(const MyPair& p1, const  MyPair&p2) {
-	if (p1.second <= p2.first)
-		return true;
-	return false;
-}
-*/
 class MyCalendar {
 	using Calendar = set<MyPair>;  // sorted by start
 	Calendar cal;
 
 public:
-	MyCalendar() {
-
-	}
+	MyCalendar() {}
 
 	bool book(int start, int end) {
-		auto res = cal.emplace(start, end);
-		return res.second;
+		return cal.emplace(start, end).second;
 	}
 };
 
