@@ -2477,11 +2477,90 @@ TEST_CASE("Array arrange k", "[Construct]")
 	CHECK(r.productExceptSelf2(vector<int>{1, 2, 3, 4}) == vector<int>{24, 12, 8, 6});
 }
 
-TEST_CASE("chunk sort", "[NEW]")
+TEST_CASE("chunk sort", "[CHUNK]")
 {
 	Array t;
 	CHECK(t.maxChunksToSorted(vector<int>{2, 0, 1, 4, 3, 5, 6}) == 4);
 	CHECK(t.maxChunksToSorted(vector<int>{}) == 0);
 	CHECK(t.maxChunksToSorted(vector<int>{0}) == 1);
 	CHECK(t.maxChunksToSorted(vector<int>{1, 4, 3, 6, 0, 7, 8, 2, 5}) == 1);
+}
+
+using MyPair = tuple<int, int>;
+namespace std
+{
+	template<> struct less<MyPair>
+	{
+		bool operator()(const MyPair& lhs, const MyPair& rhs) const  //constexpr not working 
+		{
+			return get<1>(lhs) <= get<0>(rhs) ? true : false;
+		}
+	};
+}
+/*
+bool operator==(const MyPair& p1 ,const  MyPair&p2) {  // define == as overlappings
+	if (get<1>(p1) <= get<0>(p2))
+		return false;
+	if (get<1>(p2) <= get<0>(p1))
+		return false;
+	return true;
+}
+
+bool operator!=(const MyPair& p1, const  MyPair&p2) {
+	return !(p1 == p2);
+}
+bool operator<(const MyPair& p1, const  MyPair&p2) {
+	if (get<1>(p1) <= get<0>(p2))
+		return true;
+	return false;
+}
+*/
+/*
+struct MyPair
+{
+	int first;
+	int second;
+	MyPair(int p1, int p2):first(p1),second(p2)
+	{
+	}
+};
+bool operator==(const MyPair& p1, const  MyPair&p2) {  // define == as overlappings
+	if (p1.second <= p2.first)
+		return false;
+	if (p2.second <= p1.first)
+		return false;
+	return true;
+}
+
+bool operator!=(const MyPair& p1, const  MyPair&p2) {
+	return !(p1 == p2);
+}
+bool operator<(const MyPair& p1, const  MyPair&p2) {
+	if (p1.second <= p2.first)
+		return true;
+	return false;
+}
+*/
+class MyCalendar {
+	using Calendar = set<MyPair>;  // sorted by start
+	Calendar cal;
+
+public:
+	MyCalendar() {
+
+	}
+
+	bool book(int start, int end) {
+		auto res = cal.emplace(start, end);
+		return res.second;
+	}
+};
+
+
+TEST_CASE("calendar booking", "[NEW]")
+{
+	MyCalendar t;
+	CHECK(t.book(10, 20) == true);
+	CHECK(t.book(15, 25) == false);
+	CHECK(t.book(20, 30) == true);
 }
