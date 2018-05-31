@@ -2511,10 +2511,69 @@ public:
 };
 
 
-TEST_CASE("calendar booking", "[NEW]")
+TEST_CASE("calendar booking", "[BOOK]")
 {
 	MyCalendar t;
 	CHECK(t.book(10, 20) == true);
 	CHECK(t.book(15, 25) == false);
 	CHECK(t.book(20, 30) == true);
+}
+
+vector<MyPair> intersect(const MyPair& p1, const MyPair& p2, set<MyPair>& overlap)
+{
+	if (less<MyPair>()(p1, p2) || less<MyPair>()(p2, p1))   // less<> is not same as < operator
+		return{}; // no overlap
+
+	if (get<1>(p2) < get<1>(p1))
+		return intersect(p2, p1, overlap);   //ensure p1 not after p2
+	vector<MyPair> ans;
+	if (get<0>(p1) >= get<0>(p2)) {  // p1 is subset of p2
+		overlap.insert(p1);  // overlapping section
+		if (get<0>(p1) > get<0>(p2))  // left of p1
+			ans.emplace_back(get<0>(p2), get<0>(p1));
+	}
+	else {
+		ans.emplace_back(get<0>(p1), get<0>(p2));
+		overlap.emplace(get<0>(p2), get<1>(p1));  // overlapping section
+	}
+	if (get<1>(p1) < get<1>(p2))  // rigth of p1
+		ans.emplace_back(get<1>(p1), get<1>(p2));
+	return ans;
+}
+
+class MyCalendarTwo {
+	using Calendar = multiset<MyPair>;  // sorted by start
+	Calendar cal;
+
+public:
+	MyCalendarTwo() {}
+
+	bool book(int start, int end) {
+		auto rng = cal.equal_range({ start,end });
+		auto dist = distance(rng.first, rng.second);
+		if ( dist >= 2) {  // triple booking is not allowed
+			return false;
+		}
+		else if (dist == 1) { // compute intersect and other none overlapping parts, add intersect twice
+			cal.erase(rng.first);  // remove existing overlapping one
+
+		} else  // no overlap
+			cal.emplace(start, end);
+		return true;
+	}
+};
+
+
+TEST_CASE("calendar booking 2", "[NEW]")
+{
+	set<MyPair> overlap;
+	CHECK(intersect({ 3, 6 }, { 5,8 }, overlap).size() == 2);
+	/*
+	MyCalendarTwo t;
+	CHECK(t.book(10, 20) == true);
+	CHECK(t.book(50, 60) == true);
+	CHECK(t.book(10, 40) == true);
+	CHECK(t.book(5, 15) == false);
+	CHECK(t.book(5, 10) == true);
+	CHECK(t.book(25, 55) == true);*/
 }
