@@ -195,3 +195,42 @@ TEST_CASE("Course Schedule conflict", "SCHED")
 	});
 	copy(begin(schedule), end(schedule), ostream_iterator<Schedule>(cout, "\n"));
 }
+
+#include "slist.h"
+using slistSimple = slist<int>;
+
+TEST_CASE("slist single thread", "SLIST")
+{
+	slistSimple simple;
+	simple.push_front(1);
+	simple.push_front(2);
+	simple.push_front(3);
+	CHECK(*simple.peek() == 3);
+	simple.pop_front();
+	CHECK(*simple.peek() == 2);
+}
+
+struct MemoryTracker
+{
+	static int count;
+	MemoryTracker() {
+		count++; 
+	}
+	~MemoryTracker()
+	{
+		--count;
+	}
+};
+int MemoryTracker::count=0;
+
+using slistTracker = slist<MemoryTracker>;
+TEST_CASE("slist single thread memory tracker", "SLIST")
+{
+	slistTracker simple;
+	simple.push_front(MemoryTracker());
+	simple.push_front(MemoryTracker());
+	simple.push_front(MemoryTracker());
+	CHECK(MemoryTracker::count == 3);
+	simple.pop_front();
+	CHECK(MemoryTracker::count == 3);
+}
