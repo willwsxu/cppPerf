@@ -2542,23 +2542,27 @@ vector<MyPair> intersect(const MyPair& p1, const MyPair& p2, set<MyPair>& overla
 }
 
 class MyCalendarTwo {
-	using Calendar = multiset<MyPair>;  // sorted by start
-	Calendar cal;
+	using Calendar = set<MyPair>; 
+	Calendar cal, overlap;
 
 public:
 	MyCalendarTwo() {}
 
 	bool book(int start, int end) {
-		auto rng = cal.equal_range({ start,end });
-		auto dist = distance(rng.first, rng.second);
-		if ( dist >= 2) {  // triple booking is not allowed
+		if (overlap.count({ start,end }) > 0)  // triple booking
 			return false;
-		}
-		else if (dist == 1) { // compute intersect and other none overlapping parts, add intersect twice
-			cal.erase(rng.first);  // remove existing overlapping one
-
-		} else  // no overlap
+		auto rng = cal.equal_range({ start, end });  // could have more than one overlap sections
+		if (rng.first == rng.second)  // no overlap
 			cal.emplace(start, end);
+		else {  // double booking
+			vector<MyPair> noneoverlap;
+			for (auto found = rng.first; found != rng.second; ++found) 			{
+				auto parts = intersect(*found, { start,end }, overlap);  // compute parts of none overlapping sections, and overlapped section
+				noneoverlap.insert(noneoverlap.end(), parts.begin(), parts.end());  // append result, don't erase in the loop as iterator will be invalid
+			}
+			cal.erase(rng.first, rng.second);  // delete the old one
+			cal.insert(begin(noneoverlap), noneoverlap.end());
+		}
 		return true;
 	}
 };
@@ -2568,12 +2572,48 @@ TEST_CASE("calendar booking 2", "[NEW]")
 {
 	set<MyPair> overlap;
 	CHECK(intersect({ 3, 6 }, { 5,8 }, overlap).size() == 2);
-	/*
+	CHECK(intersect({ 5, 6 }, { 5,8 }, overlap).size() == 1);
+	CHECK(overlap.size() == 1);  //[5,6)
+	CHECK(intersect({ 6, 7 }, { 5,8 }, overlap).size() == 2);
+	CHECK(overlap.size() == 2);  //[6,7) added
+	CHECK(intersect({ 6, 8 }, { 5,8 }, overlap).size() == 1);
+	CHECK(overlap.size() == 2);  // [6,8) not added
+	CHECK(intersect({ 7, 8 }, { 5,8 }, overlap).size() == 1);
+	CHECK(overlap.size() == 3);  // [7,8) not added
+	CHECK(intersect({ 5,8 }, { 3, 6 }, overlap).size() == 2);
+	CHECK(overlap.size() == 3);
+	
 	MyCalendarTwo t;
 	CHECK(t.book(10, 20) == true);
 	CHECK(t.book(50, 60) == true);
 	CHECK(t.book(10, 40) == true);
 	CHECK(t.book(5, 15) == false);
 	CHECK(t.book(5, 10) == true);
-	CHECK(t.book(25, 55) == true);*/
+	CHECK(t.book(25, 55) == true);
+
+	MyCalendarTwo t2;
+	CHECK(t2.book(5,12) == true);
+	CHECK(t2.book(42, 50) == true);
+	CHECK(t2.book(4, 9) == true);
+	CHECK(t2.book(33, 41) == true);
+	CHECK(t2.book(2, 7) == false);
+
+	CHECK(t2.book(16, 25) == true);
+	CHECK(t2.book(7, 16) == false);
+	CHECK(t2.book(6, 11) == false);
+	CHECK(t2.book(13, 18) == true);
+	CHECK(t2.book(38, 43) == true);
+
+	CHECK(t2.book(49, 50) == true);
+	CHECK(t2.book(6, 15) == false);
+	CHECK(t2.book(5, 13) == false);
+	CHECK(t2.book(35, 42) == false);
+	CHECK(t2.book(19, 24) == true);
+
+	CHECK(t2.book(46, 50) == false);
+	CHECK(t2.book(39, 44) == false);
+	CHECK(t2.book(28, 36) == true);
+	CHECK(t2.book(28, 37) == false);
+	CHECK(t2.book(20, 29) == false);
+	CHECK(t2.book(41, 49) == false);
 }
