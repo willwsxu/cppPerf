@@ -2439,7 +2439,7 @@ public:
 		return chunks;
 	}
 	// 26. Remove Duplicates from Sorted Array, O(1) memory
-	int removeDuplicates(vector<int>& nums) {
+	int removeDuplicates(vector<int>& nums) { // 2 pointers
 		int n = nums.size();
 		if (n < 2)
 			return n;
@@ -2448,10 +2448,30 @@ public:
 			if (nums[i] == nums[uniq]) // skip same value
 				continue;
 			if (++uniq != i) {  // uniq slot extended
-				swap(nums[uniq], nums[i]);
+				nums[uniq] = nums[i];
 			}
 		}
 		return uniq + 1;
+	}
+	// 80. Remove Duplicates from Sorted Array II, allow duplicates appeared at most twice
+	int removeDuplicates2(vector<int>& nums) { // 2 pointers, beat 93%
+		int n = nums.size();
+		if (n <= 2)
+			return n;
+		int result = 0; // first one is chosen
+		int count = 1;
+		for (int i = 1; i < n; i++) {
+			if (nums[i] == nums[result]) { // skip dup more than twice
+				if (++count > 2)
+					continue;
+			}
+			else
+				count = 1;  // a different number
+			if (++result != i) {  // uniq slot extended
+				nums[result] = nums[i];
+			}
+		}
+		return result + 1;
 	}
 };
 
