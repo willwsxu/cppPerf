@@ -2438,6 +2438,21 @@ public:
 		}
 		return chunks;
 	}
+	// 26. Remove Duplicates from Sorted Array, O(1) memory
+	int removeDuplicates(vector<int>& nums) {
+		int n = nums.size();
+		if (n < 2)
+			return n;
+		int uniq = 0; // first one is unique,
+		for (int i = 1; i < n; i++) {
+			if (nums[i] == nums[uniq]) // skip same value
+				continue;
+			if (++uniq != i) {  // uniq slot extended
+				swap(nums[uniq], nums[i]);
+			}
+		}
+		return uniq + 1;
+	}
 };
 
 
