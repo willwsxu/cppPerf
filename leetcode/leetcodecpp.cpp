@@ -2473,6 +2473,36 @@ public:
 		}
 		return result + 1;
 	}
+
+	// 795. Number of Subarrays with Bounded Maximum between L and R
+	// 1 2 3 4 5  L=3, R=4
+	// 1 2 3
+	//   2 3
+	//     3
+	//       4
+	int numSubarrayBoundedMax(vector<int>& A, int L, int R) {
+		int n = A.size();
+		if (n == 0)
+			return 0;
+		int count = 0;  // # of sub aray seq ends at i
+		int total = 0;
+		int smallElem = 0;
+		for (int i = 0; i < n; i++) {
+			if (A[i] > R) {
+				count = 0;  // sequence stopped
+				smallElem = 0;
+				continue;
+			}
+			if (A[i] >= L) {  // start another new sequence
+				count += (1+ smallElem);
+				smallElem = 0;
+			}
+			else
+				smallElem++; //leading small number cannot start a new sequence, but can if there is a bigger one later
+			total += count; // add up ongoing sequences
+		}
+		return total;
+	}
 };
 
 
@@ -2603,7 +2633,7 @@ public:
 };
 
 
-TEST_CASE("calendar booking 2", "[NEW]")
+TEST_CASE("calendar booking 2", "[CAL]")
 {
 	set<MyPair> overlap;
 	CHECK(intersect({ 3, 6 }, { 5,8 }, overlap).size() == 2);
@@ -2651,4 +2681,13 @@ TEST_CASE("calendar booking 2", "[NEW]")
 	CHECK(t2.book(28, 37) == false);
 	CHECK(t2.book(20, 29) == false);
 	CHECK(t2.book(41, 49) == false);
+}
+
+
+TEST_CASE("subarray with bounded max", "[NEW]")
+{
+	Array t;
+	CHECK(t.numSubarrayBoundedMax(vector<int>{2,9,2,5,6}, 2, 8) == 7);
+	CHECK(t.numSubarrayBoundedMax(vector<int>{73, 55, 36, 5, 55, 14, 9, 7, 72, 52}, 32, 69) == 22);
+	CHECK(t.numSubarrayBoundedMax(vector<int>{1,2,3,4,5}, 3,4) == 7);
 }
