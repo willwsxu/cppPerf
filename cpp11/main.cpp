@@ -231,6 +231,10 @@ int MemoryTracker::count=0;
 slist shared_ptr nano seconds: 136080100 count 2
 slist unique_ptr nano seconds:  91674500 count 2
 slist raw ptr nano seconds:     76840000 count 2
+64 bit
+slist shared_ptr nano seconds: 106155300 count 2
+slist unique_ptr nano seconds:  81200800 count 2
+slist raw ptr nano seconds:     67407500 count 2
 */
 TEST_CASE("slist single thread memory tracker", "SLIST")
 {
