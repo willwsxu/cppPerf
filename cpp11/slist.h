@@ -43,12 +43,17 @@ class slist_r
 		Node*	next;
 		Node(const T&& d) :data(move(d)), next(nullptr){}
 		Node(const T& d) :data(move(d)), next(nullptr) {}
+		~Node() { delete next; }
 	};
 	Node *	head;
 
 public:
 	slist_r():head(nullptr)
 	{}
+	~slist_r()
+	{
+		delete head;
+	}
 	void push_front(const T& t)  // cannot use &&
 	{
 		auto n =new Node(t);
