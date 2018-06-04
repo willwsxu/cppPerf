@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <atomic>
 
 template <typename T>
 class slist
@@ -35,7 +36,7 @@ public:
 };
 
 
-template <typename T>
+template <bool atom, typename T>
 class slist_r
 {
 	struct Node {
@@ -45,7 +46,8 @@ class slist_r
 		Node(const T& d) :data(move(d)), next(nullptr) {}
 		~Node() { delete next; }
 	};
-	Node *	head;
+	using NodeType = typename conditional<atom, std::atomic<Node*>, Node *>::type;
+	NodeType head;
 
 public:
 	slist_r():head(nullptr)

@@ -277,7 +277,7 @@ TEST_CASE("slist single thread memory tracker", "SLIST")
 		return MemoryTracker::count;
 	});
 
-	using slistTrackerR = slist_r<MemoryTracker>;
+	using slistTrackerR = slist_r<false, MemoryTracker>;
 	perfTest("slist raw ptr", [loops]() {
 		slistTrackerR simple;
 		for (long i = 0; i < loops; i++) {
