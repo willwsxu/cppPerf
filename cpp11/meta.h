@@ -23,7 +23,23 @@ struct Power2<X, 0> {
 	enum { pow = 1 };
 };
 
-
+/*
+template<class T>
+inline constexpr T power4(const T x, integral_constant<T, 0>)
+{
+	return 1;
+}
+template<class T, int N>  // helper func
+inline constexpr T power4(const T x, integral_constant<T, N>)
+{
+	return power4(x, integral_constant<T, N - 1>)*x;
+}
+template<int N, class T>   // public interface
+inline constexpr T power4(const T x)
+{
+	return power4(x, integral_constant<T, N>);
+}
+*/
 template <typename T, int N, bool odd=N%2>
 struct Power3  // can not overload class name Power
 {
@@ -65,6 +81,10 @@ constexpr T pow2(const T base, unsigned exp) { // bisection method, faster
 		exp % 2 == 0 ? pow2(base, exp / 2) * pow2(base, exp / 2) :
 		base * pow2(base, (exp - 1) / 2) * pow2(base, (exp - 1) / 2);
 }
+
+// force constexpr
+template <class T, T base, unsigned exp>
+using pow_const = integral_constant<T, pow2(base, exp)>;
 
 // examples from cppcon2014 Walter Brown
 // gcd

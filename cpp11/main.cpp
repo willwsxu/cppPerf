@@ -110,6 +110,9 @@ TEST_CASE("Meta Programming", "[META]")
 	CHECK(Power3<long, 29>()(2L) == 536870912);
 	CHECK(pow1(2, 30) == 1073741824);  // constexpr
 	CHECK(pow2(2, 29) == 536870912);  // constexpr
+	CHECK(pow_const<int, 2, 29>::value == 536870912);  // constexpr forced
+	CHECK(pow_const<int, 2, 29>() == 536870912);  // constexpr forced
+	//CHECK(power4<29, int>(2) == 536870912);  fail to compile
 
 	CHECK(GCD<1200, 800>::value == 400);
 	using array_t = int[2][3][4];
