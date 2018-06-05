@@ -5,6 +5,11 @@
 #include <algorithm>
 #include <functional>
 #include <set>
+#include <queue>
+#include <unordered_set>
+#include <unordered_map>
+#include <iterator>
+#include <iostream>
 
 using namespace std;
 
@@ -244,11 +249,6 @@ void testStockBuySell()
 	std::cout << (maxProfit(vector<int> { 1, 2, 3, 0, 2 }) == 3) << endl;
 	std::cout << (maxProfit(vector<int> { 2, 1}) == 0) << endl;
 }
-
-#include <queue>
-#include <unordered_set>
-#include <iterator>
-#include <iostream>
 
 void print(vector<int>& v)
 {
@@ -2684,10 +2684,70 @@ TEST_CASE("calendar booking 2", "[CAL]")
 }
 
 
-TEST_CASE("subarray with bounded max", "[NEW]")
+TEST_CASE("subarray with bounded max", "[BOUND]")
 {
 	Array t;
 	CHECK(t.numSubarrayBoundedMax(vector<int>{2,9,2,5,6}, 2, 8) == 7);
 	CHECK(t.numSubarrayBoundedMax(vector<int>{73, 55, 36, 5, 55, 14, 9, 7, 72, 52}, 32, 69) == 22);
 	CHECK(t.numSubarrayBoundedMax(vector<int>{1,2,3,4,5}, 3,4) == 7);
+}
+
+// average O(1) time
+class RandomizedSet {
+	unordered_map<int,int> indexMap;
+	unordered_map<int,int> valueMap;
+public:
+	/** Initialize your data structure here. */
+	RandomizedSet() {
+
+	}
+
+	/** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+	bool insert(int val) {
+		if (valueMap.find(val) != valueMap.end())
+			return false;
+		valueMap[val] = valueMap.size()+1; // map value to last index (1 based)
+		indexMap[valueMap.size()] = val;
+		return true;
+	}
+
+	/** Removes a value from the set. Returns true if the set contained the specified element. */
+	bool remove(int val) {
+		auto found = valueMap.find(val);
+		if (found == valueMap.end())
+			return false;
+		int remIndex = found->second; // index to remove
+		valueMap.erase(found);
+		auto f2= indexMap.find(remIndex);
+		if (f2 != indexMap.end())
+			indexMap.erase(f2);
+		f2 = indexMap.find(indexMap.size() + 1);  // find the max index
+		if (f2 == indexMap.end())
+			return true;
+		val = f2->second;
+		indexMap.erase(f2);
+		valueMap[val] = remIndex;
+		indexMap[remIndex] = val;
+		return true;
+	}
+
+	/** Get a random element from the set. */
+	int getRandom() {
+		std::random_device rd;  //Will be used to obtain a seed for the random number engine
+		std::uniform_int_distribution<int> dist(1, indexMap.size());
+		return indexMap.at(dist(rd));
+	}
+};
+
+
+TEST_CASE("random set O(1) op", "[NEW]")
+{
+	RandomizedSet t;
+	CHECK(t.insert(1) == true);
+	CHECK(t.remove(2) == false);
+	CHECK(t.insert(2) == true);
+	cout << "get random=" << t.getRandom() << endl;
+	CHECK(t.remove(1) == true);
+	CHECK(t.insert(2) == false);
+	CHECK(t.getRandom() == 2);
 }
