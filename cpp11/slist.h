@@ -56,10 +56,17 @@ public:
 	{
 		delete head;
 	}
-	template<typename=std::enable_if_t<is_pointer_v<NodeType>>>
-	inline void exchange(Node *n) {
+	
+	template<typename=std::enable_if_t<is_class_v<NodeType>>>  // template signature must be different from next overload func
+	void exchange(Node *n) {
 		head = n;
 	}
+
+	template<std::enable_if_t<is_pointer_v<NodeType>, NodeType> = 0>  // must add space > =, must use none void as second type
+	void exchange(Node *n) {
+		head = n;
+	}
+
 	void push_front(const T& t)  // cannot use &&
 	{
 		auto n =new Node(t);
