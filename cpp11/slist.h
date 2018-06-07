@@ -56,11 +56,15 @@ public:
 	{
 		delete head;
 	}
+	template<typename=std::enable_if_t<is_pointer_v<NodeType>>>
+	inline void exchange(Node *n) {
+		head = n;
+	}
 	void push_front(const T& t)  // cannot use &&
 	{
 		auto n =new Node(t);
 		n->next = head;
-		head = n;
+		exchange(n);
 	}
 	void pop_front()
 	{
