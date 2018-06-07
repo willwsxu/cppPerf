@@ -293,4 +293,6 @@ TEST_CASE("slist single thread memory tracker", "SLIST")
 		}
 		return MemoryTracker::count;
 	});
+
+	using slistTrackerRAtomic = slist_r<true, MemoryTracker>;
 }
