@@ -257,7 +257,7 @@ TEST_CASE("slist single thread memory tracker", "SLIST")
 	CHECK(MemoryTracker::count == 2);
 
 
-	long loops = 1000000;
+	long loops = 100000;
 	auto perfTest = [](const char *name, auto func) {
 		auto start = chrono::high_resolution_clock::now();
 		long count = func();

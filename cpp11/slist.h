@@ -57,7 +57,7 @@ public:
 		delete head;
 	}
 	
-	template<typename=std::enable_if_t<is_class_v<NodeType>>>  // template signature must be different from next overload func
+	template<typename=std::enable_if_t<!Is_copy_assignable<NodeType>>>  // template signature must be different from next overload func
 	void exchange(Node *n) {
 		head = n;
 	}
