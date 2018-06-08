@@ -2292,6 +2292,20 @@ TEST_CASE("Linked List Rotate Right", "[ROTATE]")
 	CHECK(ans->val == 4);
 }
 
+template<class ForwardIt>
+ForwardIt max_element_last(ForwardIt first, ForwardIt last)
+{
+	if (first == last) return last;
+
+	ForwardIt largest = first;
+	++first;
+	for (; first != last; ++first) {
+		if (*largest <= *first) {
+			largest = first;
+		}
+	}
+	return largest;
+}
 class Array
 {
 	void visit(vector<int>& nums, int pos, vector<int>& ans)
@@ -2503,7 +2517,6 @@ public:
 		}
 		return total;
 	}
-
 	//670. given none-negative int, swap two digits at most once to get the maximum valued number
 	int maximumSwap(int num) {
 		if (num < 10)
@@ -2514,13 +2527,13 @@ public:
 			digits.push_back(num % 10);
 			num /= 10;
 		}
-		reverse(begin(digits), end(digits));
+		reverse(begin(digits), end(digits));  // digits in right order
 		auto part = begin(digits);  // find reverse sorted sequence from begin
 		while (++part != end(digits) && *part <=*(part-1)) {
 		}
 		if (part == end(digits))
 			return ori;
-		auto target = max_element(part, end(digits));
+		auto target = max_element_last(part, end(digits)); // e.g 1993
 		auto ins = upper_bound(begin(digits), part, *target, greater<int>());
 		iter_swap(ins, target);
 		num = 0;
@@ -2574,6 +2587,13 @@ TEST_CASE("chunk sort", "[CHUNK]")
 	CHECK(t.maxChunksToSorted(vector<int>{}) == 0);
 	CHECK(t.maxChunksToSorted(vector<int>{0}) == 1);
 	CHECK(t.maxChunksToSorted(vector<int>{1, 4, 3, 6, 0, 7, 8, 2, 5}) == 1);
+}
+
+TEST_CASE("maximum Swap once", "[NEW]")
+{
+	Array t;
+	CHECK(t.maximumSwap(1993) == 9913);
+	CHECK(t.maximumSwap(10909091) == 90909011);
 }
 
 using MyPair = tuple<int, int>;
