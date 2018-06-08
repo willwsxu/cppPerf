@@ -1,11 +1,13 @@
-#include "dynBuffer.h"
-#include "DynMsg.h"
+
 #include <iostream>
 #include <vector>
 #include <random>
 #include <atomic>
 using namespace std;
 
+#include "ConsoleLogger.h"
+#include "dynBuffer.h"
+#include "DynMsg.h"
 #include "matrix2D.h"
 #include "variadic.h"
 
@@ -18,7 +20,7 @@ typedef Matrix2D<int, vector>::ColIterator vii_col_iter;
 TEST_CASE("Variadic template", "VARIA")
 {
 	Console c;
-	c(1, "[%p] DynBuffer (from [%p]) resize to max allowed %d", &c, 10, 20);
+	c(LOG_INFO, "[%p] DynBuffer (from [%p]) resize to max allowed %d", &c, 10, 20);
 
 	int i = 1;
 	float f = 2.0f;

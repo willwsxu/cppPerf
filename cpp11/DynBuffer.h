@@ -22,7 +22,6 @@ void szCurTime(char szTime[], size_t size)
 	szTime[len - 1] = 0;
 }
 
-#define SEV_WARN 2
 // Recommend to call reserve to avoid memory realloc
 // no virtual functions for speed
 template<typename Logger, typename T>
@@ -113,12 +112,12 @@ public:
 				// roll back
 				resizeException++;
 				m_pBuffer = std::move(pOld);
-				logger(SEV_WARN, "DynBuffer [%p]. Failed to resize to %lu from %lu", m_pBuffer.get(), newSize, m_lSize);
+				logger(LOG_WARN, "DynBuffer [%p]. Failed to resize to %lu from %lu", m_pBuffer.get(), newSize, m_lSize);
 				return false;
 			}
 			if (newSize == m_lMaxSize)
 			{
-				logger("[%p] DynBuffer (from [%p]) resize to max allowed %d", m_pBuffer.get(), pOld.get(), m_lMaxSize);
+				logger(LOG_INFO, "[%p] DynBuffer (from [%p]) resize to max allowed %d", m_pBuffer.get(), pOld.get(), m_lMaxSize);
 			}
 			memcpy(m_pBuffer.get(), m_pCur, m_lLen);
 

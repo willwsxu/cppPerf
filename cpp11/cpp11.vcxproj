@@ -114,12 +114,17 @@
     <ClInclude Include="courseSchedule.h" />
     <ClInclude Include="DynBuffer.h" />
     <ClInclude Include="DynMsg.h" />
+    <ClInclude Include="ConsoleLogger.h" />
+    <ClInclude Include="FileReadMock.h" />
+    <ClInclude Include="HashTable.h" />
+    <ClInclude Include="HashTableMockImpl.h" />
     <ClInclude Include="slist.h" />
     <ClInclude Include="Matrix2D.h" />
     <ClInclude Include="meta.h" />
     <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="HashMockTest.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

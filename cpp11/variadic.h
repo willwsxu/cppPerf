@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 void tprintf(const char *fmt) {
 	cout << fmt << endl;
 }
@@ -17,6 +17,7 @@ void tprintf(const char *fmt, T val, Targs ...Fargs)
 	}
 }
 //tuple piecewise constructor
+/*
 class Console
 {
 public:
@@ -32,7 +33,7 @@ public:
 		tprintf(fmt, Fargs...);
 	}
 };
-
+*/
 template<typename ... Targs, typename = void, typename U>
 void testPattern(U fmt, Targs...targs)
 {

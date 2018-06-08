@@ -2503,6 +2503,31 @@ public:
 		}
 		return total;
 	}
+
+	//670. given none-negative int, swap two digits at most once to get the maximum valued number
+	int maximumSwap(int num) {
+		if (num < 10)
+			return num;
+		int ori = num;
+		vector<int> digits;
+		while (num) {
+			digits.push_back(num % 10);
+			num /= 10;
+		}
+		reverse(begin(digits), end(digits));
+		auto part = begin(digits);  // find reverse sorted sequence from begin
+		while (++part != end(digits) && *part <=*(part-1)) {
+		}
+		if (part == end(digits))
+			return ori;
+		auto target = max_element(part, end(digits));
+		auto ins = upper_bound(begin(digits), part, *target, greater<int>());
+		iter_swap(ins, target);
+		num = 0;
+		for (int i : digits)
+			num = num * 10 + i;
+		return num;
+	}
 };
 
 
@@ -2751,3 +2776,23 @@ TEST_CASE("random set O(1) op", "[NEW]")
 	CHECK(t.insert(2) == false);
 	CHECK(t.getRandom() == 2);
 }
+
+// 48. Rotate Image
+/* 
+1 2 3
+4 5 6
+7 8 9
+
+7 2 1  rotate (0,0) -> (0,2) -> (2,2) -> (2,0)
+4 5 6
+9 8 3
+
+7 4 1  rotate (0,1) -> (1,2) -> (2,1) -> (1,0)
+8 5 2
+9 6 3*/
+class Array2D {
+public:
+	void rotate(vector<vector<int>>& matrix) {
+
+	}
+};
