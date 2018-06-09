@@ -2543,7 +2543,7 @@ public:
 	}
 
 	// 392 Given a string s and a string t, check if s is subsequence of t.
-	bool isSubsequence(string s, string t) {  // beat 98%
+	bool isSubsequence(const string& s, const string& t) {  // beat 98%
 		auto start=begin(t);
 		for (char c : s) {
 			auto found = find(start, end(t), c);
@@ -2553,14 +2553,37 @@ public:
 		}
 		return true;
 	}
-	// 
-	int numMatchingSubseq(string S, vector<string>& words) {
+	// 792. Number of Matching Subsequences
+	int numMatchingSubseq_too_slow(string S, vector<string>& words) {
 		int count = 0;
-		for (string w : words) {
+		for (string& w : words) {
 			if (isSubsequence(w, S))
 				++count;
 		}
 		return count;
+	}
+	int numMatchingSubseq(string S, vector<string>& words) { // parallel processing, beat 79%
+		int n = words.size();
+		if (n == 0)
+			return 0;
+		if (n == 1)
+			return isSubsequence(words[0], S) ? 1 : 0;
+		unordered_map<char, vector<const char*>> lanes;  // put words in lane per first char
+		for (string& w : words)
+			lanes[w[0]].push_back(w.c_str());
+		auto& res = lanes[0];  // complete matches are in lane 0
+		for (char c : S) {  // go through S once
+			auto& vec = lanes[c];
+			if (!vec.empty()) { // c match some words 
+				auto advance = vec;  // copy these words, and advance to next char
+				vec.clear();  // clear existing bucket
+				for (const char *p : advance)
+					lanes[*(++p)].push_back(p); // re-assign lanes per next char
+				if (res.size() == n)
+					return n;
+			}
+		}
+		return res.size();
 	}
 };
 
