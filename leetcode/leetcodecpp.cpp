@@ -2541,6 +2541,27 @@ public:
 			num = num * 10 + i;
 		return num;
 	}
+
+	// 392 Given a string s and a string t, check if s is subsequence of t.
+	bool isSubsequence(string s, string t) {  // beat 98%
+		auto start=begin(t);
+		for (char c : s) {
+			auto found = find(start, end(t), c);
+			if (found == end(t))
+				return false;
+			start = found + 1;
+		}
+		return true;
+	}
+	// 
+	int numMatchingSubseq(string S, vector<string>& words) {
+		int count = 0;
+		for (string w : words) {
+			if (isSubsequence(w, S))
+				++count;
+		}
+		return count;
+	}
 };
 
 
