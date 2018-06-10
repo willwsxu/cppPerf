@@ -2841,7 +2841,7 @@ TEST_CASE("random set O(1) op", "[NEW]")
 	CHECK(t.getRandom() == 2);
 }
 
-// 48. Rotate Image
+// 48. Rotate Image. nxn matrix 90 degree clockwise
 /* 
 1 2 3
 4 5 6
@@ -2857,6 +2857,13 @@ TEST_CASE("random set O(1) op", "[NEW]")
 class Array2D {
 public:
 	void rotate(vector<vector<int>>& matrix) {
-
+		int n = matrix.size();
+		if (n < 2)
+			return;
+		reverse(matrix.begin(), matrix.end()); // reverse row order
+		for (int i = 0; i < n - 1; i++) {  // swap diagonally
+			for (int j = i + 1; j < n; j++)
+				swap(matrix[i][j], matrix[j][i]);
+		}
 	}
 };
