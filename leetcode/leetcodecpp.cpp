@@ -2873,7 +2873,7 @@ class Triangle2
 	// 611. Valid Triangle Number
 	// The length of the given array won't exceed 1000.
 	// The integers in the given array are in the range of[0, 1000].
-	int triangleNumber(vector<int>& nums) {
+	int triangleNumber(vector<int>& nums) {  // beat 95%
 		sort(nums.begin(), nums.end(),greater<int>());  // sort in reverse order
 		int n = nums.size();
 		int ans = 0;
@@ -2881,14 +2881,15 @@ class Triangle2
 			int L = i + 1;
 			int R = n - 1;
 			int c = nums[i];
-			while (L <= R) {
+			while (L < R) {  // check 2 end points
 				if (nums[L] + nums[R] > c) {
 					ans += (R - L);  // a=nums[L], b can be any from L+1
 					++L;
 				}
 				else  // a+b<=c, R does not work with any, as it it the smallest
-					R--;
+					--R;
 			}
 		}
+		return ans;
 	}
 };
