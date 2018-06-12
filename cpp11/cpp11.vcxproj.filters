@@ -54,6 +54,15 @@
     <ClInclude Include="MoveCtor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="hashTableFileRead.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HashTableFileReadSimple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HashTableBase .h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

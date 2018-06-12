@@ -117,6 +117,9 @@
     <ClInclude Include="ConsoleLogger.h" />
     <ClInclude Include="FileReadMock.h" />
     <ClInclude Include="HashTable.h" />
+    <ClInclude Include="HashTableBase .h" />
+    <ClInclude Include="hashTableFileRead.h" />
+    <ClInclude Include="HashTableFileReadSimple.h" />
     <ClInclude Include="HashTableMockImpl.h" />
     <ClInclude Include="slist.h" />
     <ClInclude Include="Matrix2D.h" />
