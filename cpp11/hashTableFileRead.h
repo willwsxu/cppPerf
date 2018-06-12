@@ -2,12 +2,17 @@
 #pragma once
 #pragma warning( disable : 4996 )
 
+// winerror.h
+
+#define S_OK                               0L//    ((HRESULT)0L)
+#define S_FALSE                            1L//    ((HRESULT)1L)
+
 #include <vector>
 #include <string>
 
 static char *GetToken(char **ppCur, char delim, bool bIsXCL)
 {
-	BOOL bEndQuotes = FALSE;
+	bool bEndQuotes = false;
 	char *pStart = *ppCur;
 
 	if (bIsXCL)
@@ -18,7 +23,7 @@ static char *GetToken(char **ppCur, char delim, bool bIsXCL)
 
 	if (*pStart == '"')
 	{
-		bEndQuotes = TRUE;
+		bEndQuotes = true;
 	}
 
 	while (*pCur)
@@ -94,7 +99,7 @@ class HASH_TABLE_FILE_READER_MOCK : public HashTableImpl<Logger, HASH_DATA, Hash
 	std::string filepath;
 	std::string	lastSymUpdTime;		// file read time
 	char delim;
-	UINT iErrors;
+	size_t iErrors;
 	time_t	tLastModified;		// file time is changed
 	bool bIsXCL;
 protected:
@@ -112,7 +117,7 @@ protected:
 		lastSymUpdTime = oss.str();
 	}
 
-	void ReadtoHashTable(const char *szPath, const char *h)  // = nullptr
+	void ReadtoHashTable(const char *szPath, const char *h="no header")  // = nullptr
 	{
 		filepath = szPath;
 		FILE * pfTransform = nullptr;
@@ -298,4 +303,13 @@ protected:
 		SetLocalTimeString();
 	}
 
+public:
+	void WriteHashTable() {
+		std::fstream s((filepath + ".out").c_str(), ios_base::out);
+		if (!s.is_open()) {
+			logger(LOG_WARN, "%s", "open file to write failed");
+			return;
+		}
+		copy(begin(), end(), ostream_iterator<HASH_DATA>(s, "\n"));
+	}
 };

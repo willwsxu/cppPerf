@@ -60,7 +60,13 @@
     <ClInclude Include="HashTableFileReadSimple.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HashTableBase .h">
+    <ClInclude Include="HashTableBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Functor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctorX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -69,6 +75,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HashMockTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HashTableBaseTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HashTableBaseFileTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctorTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

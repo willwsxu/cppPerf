@@ -116,8 +116,10 @@
     <ClInclude Include="DynMsg.h" />
     <ClInclude Include="ConsoleLogger.h" />
     <ClInclude Include="FileReadMock.h" />
+    <ClInclude Include="Functor.h" />
+    <ClInclude Include="FunctorX.h" />
     <ClInclude Include="HashTable.h" />
-    <ClInclude Include="HashTableBase .h" />
+    <ClInclude Include="HashTableBase.h" />
     <ClInclude Include="hashTableFileRead.h" />
     <ClInclude Include="HashTableFileReadSimple.h" />
     <ClInclude Include="HashTableMockImpl.h" />
@@ -128,7 +130,10 @@
     <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FunctorTest.cpp" />
     <ClCompile Include="HashMockTest.cpp" />
+    <ClCompile Include="HashTableBaseFileTest.cpp" />
+    <ClCompile Include="HashTableBaseTest.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

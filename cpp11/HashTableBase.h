@@ -1,5 +1,7 @@
 #pragma once
 
+typedef unsigned int UINT;
+
 inline UINT defaultHashFunction(const char *key, size_t size, int prime)
 {
 	register UINT h = 0;
