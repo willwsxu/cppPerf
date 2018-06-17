@@ -2810,13 +2810,11 @@ TEST_CASE("subarray with bounded max", "[BOUND]")
 
 // average O(1) time
 class RandomizedSet {
-	unordered_map<int,int> indexMap;
-	unordered_map<int,int> valueMap;
+	map<int,int> indexMap;
+	map<int,int> valueMap;
 public:
 	/** Initialize your data structure here. */
-	RandomizedSet() {
-
-	}
+	RandomizedSet() {	}
 
 	/** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
 	bool insert(int val) {
@@ -2834,16 +2832,23 @@ public:
 			return false;
 		int remIndex = found->second; // index to remove
 		valueMap.erase(found);
-		auto f2= indexMap.find(remIndex);
-		if (f2 != indexMap.end())
-			indexMap.erase(f2);
-		f2 = indexMap.find(indexMap.size() + 1);  // find the max index
-		if (f2 == indexMap.end())
+		auto size = indexMap.size();  // old size
+		if (remIndex == size)  // last one removed, done
+		{
+			auto f = indexMap.find(remIndex);
+			if (f != indexMap.end())
+				indexMap.erase(f);
 			return true;
-		val = f2->second;
-		indexMap.erase(f2);
-		valueMap[val] = remIndex;
-		indexMap[remIndex] = val;
+		}
+		{
+			auto f2 = indexMap.find(size);  // find the max index
+			if (f2 == indexMap.end())  // impossible
+				return false;
+			val = f2->second;
+			indexMap.erase(f2);			// erase last index
+		}
+		valueMap[val] = remIndex;  // update index in value map
+		indexMap[remIndex] = val;  // update value in index map
 		return true;
 	}
 
@@ -2856,7 +2861,7 @@ public:
 };
 
 
-TEST_CASE("random set O(1) op", "[RAND]")
+TEST_CASE("random set O(1) op", "[NEW]")
 {
 	RandomizedSet t;
 	CHECK(t.insert(1) == true);
