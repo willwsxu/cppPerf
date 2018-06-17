@@ -2932,6 +2932,26 @@ public:
 		}
 		return ans;
 	}
+
+	// 59. Spiral Matrix II, Given a positive integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+	vector<vector<int>> generateMatrix(int n) {  // beat 74%, seems slower than just walk the spiral path
+		vector<vector<int>> ans(n ,vector<int>(n, 0));
+		int i = 0, j = 0; 
+		int di = 0, dj = 1; // increment delta for i and j
+		int k = 0;  
+		int n2 = n*n;
+		while (k < n2) {
+			ans[i][j] = ++k;
+			if (i+di==n || j+dj==n || j+dj<0 || ans[i + di][j + dj]) {  // time to turn 
+				int temp = di;
+				di = dj;			// di=dj, dj=-di
+				dj = -temp;
+			}
+			i += di;
+			j += dj;
+		}
+		return ans;
+	}
 };
 
 class Triangle2
@@ -2961,9 +2981,15 @@ class Triangle2
 };
 
 
-TEST_CASE("subarray sum", "[NEW]")
+TEST_CASE("subarray sum", "[SUB]")
 {
 	BinarySearch t;
 	CHECK(t.subarraySum(vector<int>{28, 54, 7, -70, 22, 65, -6}, 100) == 1);//prefix is not sorted
 	CHECK(t.subarraySum(vector<int>{1, 1, 1}, 2) == 2);
+}
+
+TEST_CASE("generate matrix", "[NEW]")
+{
+	Array2D t;
+	CHECK(t.generateMatrix(3) == vector<vector<int>>{ {1, 2, 3}, { 8, 9, 4 }, { 7, 6, 5 }});
 }
