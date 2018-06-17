@@ -2893,6 +2893,45 @@ public:
 				swap(matrix[i][j], matrix[j][i]);
 		}
 	}
+	vector<int> spiralOrder(vector<vector<int>>& matrix) {
+		vector<int> ans;
+		int left = 0;
+		int top = 0;
+		int bottom = matrix.size() - 1;
+		if (bottom < 0)
+			return ans;
+		int right = matrix[0].size() - 1;
+		if (right < 0)
+			return ans;
+		ans.reserve((bottom+1)*(right+1));
+		int dir = 0;
+		while (left <= right && top <= bottom) {
+			switch (dir) {
+			case 0:  // left to right, top row
+				for (int i = left; i <= right; i++)
+					ans.push_back(matrix[top][i]);
+				++top;
+				break;
+			case 1: // top to bottom, right column
+				for (int i = top; i <= bottom; i++)
+					ans.push_back(matrix[i][right]);
+				--right;
+				break;
+			case 2: // right to left, bottom row
+				for (int i = right; i >= left; i--)
+					ans.push_back(matrix[bottom][i]);
+				--bottom;
+				break;
+			case 3: // bottom up, left column
+				for (int i = bottom; i >= top; i--)
+					ans.push_back(matrix[i][left]);
+				++left;
+				break;
+			}
+			dir = (dir + 1) % 4;
+		}
+		return ans;
+	}
 };
 
 class Triangle2
