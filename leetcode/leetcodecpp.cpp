@@ -1656,6 +1656,33 @@ public:
 		}
 		return ans;
 	}
+	void prefixsum(vector<int>& nums)
+	{
+		for (unsigned int i = 1; i < nums.size(); i++)
+			nums[i] += nums[i - 1];
+	}
+	//560. find the total number of continuous subarrays whose sum equals to k
+	// The range of numbers in the array is [-1000, 1000] and the range of the integer k is [-1e7, 1e7].
+	// strategy: compute prefix sum Sj, find if there is any Sj-k already computed, store prefix sum in hashmap
+	int subarraySum(vector<int>& nums, int k) {
+		unordered_map<int, int> PrefixSumCount{ {0,1} };  // add sum=0, count=1 as baseline
+		int ans = 0;
+		int sum = 0;
+		for (unsigned int i = 0; i < nums.size(); i++) {
+			sum += nums[i];
+			auto found = PrefixSumCount.find(sum - k);  // search sum-k in map
+			if (found != PrefixSumCount.end()) {
+				ans += found->second;
+			}
+			found = PrefixSumCount.find(sum);  // update current sum to map
+			if (found != PrefixSumCount.end()) {
+				PrefixSumCount[sum] = PrefixSumCount[sum] + 1;
+			}
+			else
+				PrefixSumCount[sum] = 1;
+		}
+		return ans;
+	}
 };
 
 class BinarySearch2
@@ -2633,7 +2660,7 @@ TEST_CASE("chunk sort", "[CHUNK]")
 	CHECK(t.maxChunksToSorted(vector<int>{1, 4, 3, 6, 0, 7, 8, 2, 5}) == 1);
 }
 
-TEST_CASE("maximum Swap once", "[NEW]")
+TEST_CASE("maximum Swap once", "[SWAP]")
 {
 	Array t;
 	CHECK(t.maximumSwap(1993) == 9913);
@@ -2829,7 +2856,7 @@ public:
 };
 
 
-TEST_CASE("random set O(1) op", "[NEW]")
+TEST_CASE("random set O(1) op", "[RAND]")
 {
 	RandomizedSet t;
 	CHECK(t.insert(1) == true);
@@ -2893,3 +2920,11 @@ class Triangle2
 		return ans;
 	}
 };
+
+
+TEST_CASE("subarray sum", "[NEW]")
+{
+	BinarySearch t;
+	CHECK(t.subarraySum(vector<int>{28, 54, 7, -70, 22, 65, -6}, 100) == 1);//prefix is not sorted
+	CHECK(t.subarraySum(vector<int>{1, 1, 1}, 2) == 2);
+}
