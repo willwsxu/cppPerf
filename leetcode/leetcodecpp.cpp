@@ -2810,8 +2810,8 @@ TEST_CASE("subarray with bounded max", "[BOUND]")
 
 // average O(1) time
 class RandomizedSet {
-	map<int,int> indexMap;
-	map<int,int> valueMap;
+	vector<int> indexMap;
+	unordered_map<int,int> valueMap;
 public:
 	/** Initialize your data structure here. */
 	RandomizedSet() {	}
@@ -2820,8 +2820,8 @@ public:
 	bool insert(int val) {
 		if (valueMap.find(val) != valueMap.end())
 			return false;
-		valueMap[val] = valueMap.size()+1; // map value to last index (1 based)
-		indexMap[valueMap.size()] = val;
+		valueMap[val] = valueMap.size(); // map value to last index (0 based)
+		indexMap.emplace_back(val);
 		return true;
 	}
 
@@ -2832,30 +2832,20 @@ public:
 			return false;
 		int remIndex = found->second; // index to remove
 		valueMap.erase(found);
-		auto size = indexMap.size();  // old size
-		if (remIndex == size)  // last one removed, done
+		int last = indexMap.size()-1;
+		if (remIndex < last)  // remove is not the last one
 		{
-			auto f = indexMap.find(remIndex);
-			if (f != indexMap.end())
-				indexMap.erase(f);
-			return true;
+			indexMap[remIndex] = indexMap[last]; // swap value at last
+			valueMap[indexMap[remIndex]] = remIndex;  // update index in value map
 		}
-		{
-			auto f2 = indexMap.find(size);  // find the max index
-			if (f2 == indexMap.end())  // impossible
-				return false;
-			val = f2->second;
-			indexMap.erase(f2);			// erase last index
-		}
-		valueMap[val] = remIndex;  // update index in value map
-		indexMap[remIndex] = val;  // update value in index map
+		indexMap.pop_back();
 		return true;
 	}
 
 	/** Get a random element from the set. */
 	int getRandom() {
 		std::random_device rd;  //Will be used to obtain a seed for the random number engine
-		std::uniform_int_distribution<int> dist(1, indexMap.size());
+		std::uniform_int_distribution<int> dist(0, indexMap.size()-1);
 		return indexMap.at(dist(rd));
 	}
 };
