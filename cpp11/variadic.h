@@ -68,3 +68,44 @@ auto variadicTuple(Targs...targs)
 	auto x = std::make_tuple (targs ...);
 	return x;
 }
+
+template <typename T>
+auto Min(T first)
+{
+	return first;
+}
+template <typename T, typename ...ARGS>
+auto Min(T first, ARGS...args)
+{
+	auto second = Min(args...);
+	return first < second ? first : second;
+}
+
+struct unit
+{};
+struct swallow
+{
+	template <typename...ARGS>
+	swallow(ARGS&&...) {}
+};
+template <typename... ARGS>
+void expression(ARGS...args)
+{
+	swallow{ (std::cout << args << ' ', unit{})... };  // variadic expression, initializer list force evaluation from left to right
+}
+
+template <typename... ARGS>
+class VBase
+{
+public:
+	VBase(ARGS...args) {}
+};
+
+template <typename... ARGS>
+class Compose {
+protected:
+	typedef tuple<ARGS...> Variant;
+	VBase<ARGS...> base;
+public:
+	Compose(ARGS ...args) :base(forward<ARGS>(args)...) {}
+};

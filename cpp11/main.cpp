@@ -34,6 +34,12 @@ TEST_CASE("Variadic template", "VARIA")
 	//cout << variadicTuple(i, f);
 	REQUIRE(oss.str() == string("1,2.0"));*/
 
+	CHECK(Min(2, 3, 4, 1, 6) == 1);
+	std::cout << endl << "variadic expression test: ";
+	expression(1, 2, "bar");
+	std::cout << endl;
+
+	Compose<int, float, char> test(1,2.0f,'3');
 }
 
 TEST_CASE("DynBuffer", "BUF")
