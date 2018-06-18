@@ -2820,7 +2820,8 @@ public:
 	bool insert(int val) {
 		if (valueMap.find(val) != valueMap.end())
 			return false;
-		valueMap[val] = valueMap.size(); // map value to last index (0 based)
+		auto size = valueMap.size();  // solve leetcode compiler bug, valueMap[val]=valueMap.size() didn't work
+		valueMap[val] = size; // map value to last index (0 based)
 		indexMap.emplace_back(val);
 		return true;
 	}
@@ -2860,7 +2861,7 @@ TEST_CASE("random set O(1) op", "[NEW]")
 	cout << "get random=" << t.getRandom() << endl;
 	CHECK(t.remove(1) == true);
 	CHECK(t.insert(2) == false);
-	CHECK(t.getRandom() == 2);
+	CHECK(t.getRandom() == 2);  // fix bug insert
 }
 
 // 48. Rotate Image. nxn matrix 90 degree clockwise
