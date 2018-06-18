@@ -1,14 +1,20 @@
 ﻿#include <stdlib.h>
-#include <vector>
 #include <string>
+#include <vector>
 #include <map>
-#include <algorithm>
-#include <functional>
 #include <set>
 #include <queue>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
 #include <iterator>
+#include <functional>
+#include <random>
+#include <cmath>
+#include <cctype>
+#include <numeric>
+#include <memory>
+#include <sstream>
 #include <iostream>
 
 using namespace std;
@@ -40,7 +46,6 @@ int findMaxForm(vector<string>& strs, int m, int n) {
 	return ans;
 }
 
-#include <memory>
 
 std::unique_ptr<int[]> dp;
 int combinationSum4Dp(vector<int>& nums, int target) {
@@ -143,7 +148,6 @@ int findPaths(int m, int n, int N, int i, int j) {
 	return dp3[current][i][j];
 }
 
-#include <iostream>
 void testEqualSumPartition()
 {
 	std::cout << canPartition(vector<int>{}) << endl;
@@ -683,8 +687,6 @@ void testWaterFlow()
 	for_each(begin(ans), end(ans), [](auto p) {cout << "[" << p.first << "," << p.second << "] ";}); //[[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]]
  }
 
-#include <random>
-#include <cmath>
 // 215. Kth Largest Element in an Array, unsorted
 // 1 ≤ k ≤ array's length
 class SortRandom {  // randomized selection sort
@@ -780,9 +782,6 @@ void testKthLargest()
 	cout << s.findKthLargest(vector<int>{3}, 1) << " exp " << 3 << endl;
 }
 
-#include <sstream>
-#include <iterator>
-#include <iostream>
 class NQueens {
 	class DiagMask
 	{
@@ -1004,7 +1003,6 @@ public:
 * obj.addWord(word);
 * bool param_2 = obj.search(word);
 */
-#include <cctype>
 void testWordSearch()
 {
 	WordDictionary d;
@@ -1019,7 +1017,6 @@ void testWordSearch()
 	cout << (d.search(".")==false) << endl;
 }
 
-#include <numeric>
 
 // 526. Beautiful Arrangement
 // Give array of integers 1 to N, arrange with either of following is true, for each position i, 1 <= i <= N
@@ -2809,12 +2806,15 @@ TEST_CASE("subarray with bounded max", "[BOUND]")
 }
 
 // average O(1) time
-class RandomizedSet {
+class RandomizedSet {  // beat 93% after making random engine as data member
 	vector<int> indexMap;
 	unordered_map<int,int> valueMap;
+	std::random_device rd;  //Will be used to obtain a seed for the random number engine
+	std::mt19937 gen; //Standard mersenne_twister_engine seeded with rd()
+
 public:
 	/** Initialize your data structure here. */
-	RandomizedSet() {	}
+	RandomizedSet():gen(rd()) {	}
 
 	/** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
 	bool insert(int val) {
@@ -2845,9 +2845,8 @@ public:
 
 	/** Get a random element from the set. */
 	int getRandom() {
-		std::random_device rd;  //Will be used to obtain a seed for the random number engine
-		std::uniform_int_distribution<int> dist(0, indexMap.size()-1);
-		return indexMap.at(dist(rd));
+		std::uniform_int_distribution<int> dist(0, indexMap.size() - 1);
+		return indexMap.at(dist(gen));
 	}
 };
 
