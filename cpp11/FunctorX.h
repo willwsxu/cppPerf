@@ -35,7 +35,7 @@ class Functor
 {
 public:
 	typedef ResultType  R;  // these typedefs are necessary for other class to refer to
-	typedef type_list<Param...>		TL;
+	typedef type_list<Param...>		TL;  // cannot typedef Param...
 	using Impl = FunctorImpl<R, Param...>;
 	Functor() = default;
 	Functor(const Functor&) = default;
