@@ -2947,6 +2947,42 @@ public:
 		}
 		return ans;
 	}
+	// 289. Game of Life
+	void gameOfLife(vector<vector<int>>& board) {
+		if (board.empty())
+			return;
+		int m = board.size();
+		if (board[0].empty())
+			return;
+		int n = board[0].size();
+		vector<vector<int>> dir{ { -1,-1 },{ -1,0 },{ -1,1 },{ 0,-1 },{ 0,1 },{ 1,-1 },{ 1,0 },{ 1,1 } };  // neighbors
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				if ((board[i][j] & 1) == 0)  // first bit for live or die
+					continue;
+				for (auto& d : dir) {
+					int ni = i + d[0];
+					int nj = j + d[1];
+					if (ni < 0 || ni >= m || nj < 0 || nj >= n)
+						continue;  // invalid
+					int count = board[ni][nj] >> 1;
+					board[ni][nj] = ((++count) << 1) | (board[ni][nj] & 1);
+				}
+			}
+		}
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				int count = board[i][j] >> 1;
+				switch (count) {
+				case 0:
+				case 1:		board[i][j] = 0;	break;		// Any live cell with fewer than two live neighbors dies
+				case 2:		board[i][j] = (board[i][j] & 1);	break;		// Any live cell with two or three live neighbors lives on to the next generation
+				case 3:		board[i][j] = 1;	break;		// Any dead cell with exactly three live neighbors becomes a live cell
+				default:	board[i][j] = 0;	break;		// Any live cell with more than three live neighbors dies
+				}
+			}
+		}
+	}
 };
 
 class Triangle2
