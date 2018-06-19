@@ -94,18 +94,24 @@ void expression(ARGS...args)
 	swallow{ (std::cout << args << ' ', unit{})... };  // variadic expression, initializer list force evaluation from left to right
 }
 
-template <typename... ARGS>
+template <typename...ARGS>
+struct pack {
+	pack(ARGS...args) {}
+};
+
+template <typename Parent>
 class VBase
 {
 public:
-	VBase(ARGS...args) {}
+	VBase(typename Parent::Variant args) {}
 };
 
 template <typename... ARGS>
 class Compose {
-protected:
-	typedef tuple<ARGS...> Variant;
-	VBase<ARGS...> base;
 public:
-	Compose(ARGS ...args) :base(forward<ARGS>(args)...) {}
+	typedef pack<ARGS...>	Variant;
+protected:
+	VBase<Compose> base;
+public:
+	Compose(ARGS ...args) :base(Variant(args...)) {}
 };

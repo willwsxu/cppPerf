@@ -13,8 +13,8 @@ struct FunctorImpl
 	virtual ~FunctorImpl() {}
 };
 
-template <typename Parent, typename Fun>
-struct FunctorHandler : public FunctorImpl<typename Parent::R, typename Parent::P...>
+template <typename Parent, typename Fun, typename...Pack>
+struct FunctorHandler : public FunctorImpl<typename Parent::R, Pack...>
 {
 	typedef typename Parent::R ResultType;
 	FunctorHandler(const Fun& fun) : fun_(fun) {}
@@ -22,9 +22,9 @@ struct FunctorHandler : public FunctorImpl<typename Parent::R, typename Parent::
 	{
 		return new FunctorHandler(*this);
 	}
-	ResultType operator()(typename Parent::P...args) override
+	ResultType operator()(Pack...args) override
 	{
-		return fun_(forward<typename Parent::P>(args)...);
+		return fun_(forward<Pack>(args)...);
 	}
 private:
 	Fun fun_;
@@ -35,19 +35,19 @@ class Functor
 {
 public:
 	typedef ResultType  R;  // these typedefs are necessary for other class to refer to
-	typedef Param...		P;
-	using ImplType = <R, P...> Impl;
+	typedef type_list<Param...>		TL;
+	using Impl = FunctorImpl<R, Param...>;
 	Functor() = default;
 	Functor(const Functor&) = default;
 	Functor& operator=(const Functor&) = default;
 	explicit Functor(std::unique_ptr<Impl> Impl) :m_impl(move(spImpl)) {}  // Impl typedef has to be delcared before use
 
 	template <class Fun>
-	Functor(const Fun& fun) : m_impl(new FunctorHandler<Functor, Fun>(fun)) {}
+	Functor(const Fun& fun) : m_impl(new FunctorHandler<Functor, Fun, Param...>(fun)) {}
 
-	R operator()(P...p)
+	R operator()(Param...p)
 	{
-		return (*m_impl)(forward<P>...p);
+		return (*m_impl)(forward<Param>(p)...);
 	}
 
 private:

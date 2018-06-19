@@ -1,6 +1,6 @@
 #include "..\catch.hpp"
 
-#include "Functor.h"
+#include "FunctorX.h"
 struct TestFun1
 {
 	bool operator()(string i, double d)
