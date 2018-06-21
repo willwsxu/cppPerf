@@ -38,9 +38,11 @@ public:
 	typedef type_list<Param...>		TL;  // cannot typedef Param...
 	using Impl = FunctorImpl<R, Param...>;
 	Functor() = default;
-	Functor(const Functor&) = default;
+	Functor(const Functor&) = default;  // copy constructor is not allowed if there is unique_ptr data memeber
 	Functor& operator=(const Functor&) = default;
-	explicit Functor(std::unique_ptr<Impl> Impl) :m_impl(move(spImpl)) {}  // Impl typedef has to be delcared before use
+
+	// conflict with Functor(const Fun& fun)
+	explicit Functor(std::unique_ptr<Impl> spImpl) :m_impl(move(spImpl)) {}  // Impl typedef has to be delcared before use
 
 	template <class Fun>
 	Functor(const Fun& fun) : m_impl(new FunctorHandler<Functor, Fun, Param...>(fun)) {}
@@ -51,5 +53,5 @@ public:
 	}
 
 private:
-	unique_ptr<Impl>	m_impl;
+	shared_ptr<Impl>	m_impl;
 };

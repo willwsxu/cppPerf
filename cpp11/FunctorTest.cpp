@@ -43,8 +43,10 @@ TEST_CASE("Functor", "[FUNC]")
 	cmd2("4", 4.5);
 
 	Functor<void, string, double> cmd3(&test4);    // return void
-
 	Functor<string, string, double> cmd4(&test5);  // auto convert return type, from const char * to string
-
-												   //	Functor<bool, string, double> cmd5(&TestFun2::test);  // member function pointer
+	using ssdFunc = Functor<string, string, double>;
+	auto up = make_unique<ssdFunc>(cmd4);
+	// ssdFunc cmd5(up);
+												   
+	//	Functor<bool, string, double> cmd5(&TestFun2::test);  // member function pointer
 }
