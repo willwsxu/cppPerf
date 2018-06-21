@@ -30,6 +30,26 @@ private:
 	Fun fun_;
 };
 
+
+//
+template <typename Parent, typename PointerToObj, typename PointerToMemFn, typename...Pack>
+struct MemFunctorHandler : public FunctorImpl<typename Parent::R, Pack...>
+{
+	typedef typename Parent::R ResultType;
+	MemFunctorHandler(PointerToObj p, PointerToMemFn fun) : pObj_(p), pMemFn_(fun) {}
+	MemFunctorHandler* Clone() const override
+	{
+		return new MemFunctorHandler(*this);
+	}
+	ResultType operator()(Pack...args) override
+	{
+		return (pObj_->*pMemFn_)(forward<Pack>(args)...);
+	}
+private:
+	PointerToObj pObj_;   // not ObjectType *pObj, more generic, can be any type of pointer, smart pointer
+	PointerToMemFn pMemFn_;
+};
+
 template <typename ResultType, typename... Param>
 class Functor
 {
@@ -46,6 +66,9 @@ public:
 
 	template <class Fun>
 	Functor(const Fun& fun) : m_impl(new FunctorHandler<Functor, Fun, Param...>(fun)) {}
+
+	template <class Obj, class Fun>
+	Functor(const Obj& obj, const Fun& fun) : m_impl(new MemFunctorHandler<Functor, Obj, Fun, Param...>(obj, fun)) {}
 
 	R operator()(Param...p)
 	{

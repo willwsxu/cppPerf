@@ -13,10 +13,14 @@ struct TestFun1
 
 struct TestFun2
 {
-	void test(string i, double d)
+	TestFun2(int id):m_id(id) 	{}
+	int test(string i, double d)
 	{
 		cout << "test2" << endl;
+		return m_id;
 	}
+private:
+	int m_id;
 };
 
 bool test3(string i, double d)
@@ -37,16 +41,18 @@ TEST_CASE("Functor", "[FUNC]")
 {
 	TestFun1 f;
 	Functor<bool, string, double> cmd(f);
-	cmd("4", 4.5);
+	CHECK(cmd("4", 4.5) == true);
 
 	Functor<bool, string, double> cmd2(&test3);  // must use function pointer
-	cmd2("4", 4.5);
+	CHECK(cmd2("4", 4.5) == true);;
 
 	Functor<void, string, double> cmd3(&test4);    // return void
 	Functor<string, string, double> cmd4(&test5);  // auto convert return type, from const char * to string
 	using ssdFunc = Functor<string, string, double>;
 	auto up = make_unique<ssdFunc>(cmd4);
 	// ssdFunc cmd5(up);
-												   
-	//	Functor<bool, string, double> cmd5(&TestFun2::test);  // member function pointer
+												
+	TestFun2 t(2);
+	Functor<int, string, double> cmd5(&t, &TestFun2::test);  // member function pointer
+	CHECK(cmd5("5", 5.5)==2);
 }
