@@ -98,6 +98,21 @@ public:
 		inorder(root);
 		return ans;
 	}
+
+	// 94. Binary Tree Inorder Traversal
+	vector<int> vec;
+	void inorderTraversalHelper(TreeNode* root)  // beat 97%
+	{
+		if (root == nullptr)
+			return;
+		inorderTraversal(root->left);
+		vec.push_back(root->val);
+		inorderTraversal(root->right);
+	}
+	vector<int> inorderTraversal(TreeNode* root) {
+		inorderTraversalHelper(root);
+		return vec;
+	}
 };
 
 void testTree()
