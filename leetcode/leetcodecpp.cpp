@@ -1,21 +1,8 @@
-﻿#include <stdlib.h>
-#include <string>
-#include <vector>
-#include <map>
-#include <set>
-#include <queue>
-#include <unordered_set>
-#include <unordered_map>
-#include <algorithm>
-#include <iterator>
-#include <functional>
-#include <random>
-#include <cmath>
-#include <cctype>
-#include <numeric>
-#include <memory>
-#include <sstream>
-#include <iostream>
+﻿#include "stdafx.h"
+
+////////////////////////////////////////////////
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "..\catch.hpp"  // don't put this file in stdafx.h
 
 using namespace std;
 
@@ -254,12 +241,6 @@ void testStockBuySell()
 	std::cout << (maxProfit(vector<int> { 2, 1}) == 0) << endl;
 }
 
-void print(vector<int>& v)
-{
-	std::copy(v.begin(), v.end(), std::ostream_iterator<int>(std::cout, " "));
-	cout << endl;
-}
-
 class DirectGraph {
 	vector<vector<vector<int>>>	adjList;
 	vector<int>			distTo;  // dist from dest back to src
@@ -340,116 +321,6 @@ void testCheapestTicket()
 	cout << ans << endl;
 }
 
-
-struct TreeNode {
-	int val;
-	TreeNode *left;
-	TreeNode *right;
-	TreeNode(int x) : val(x), left(NULL), right(NULL) {}
-
-	static TreeNode *preorder(const vector<int>& nodes, int low, int high)  //O(n^2)
-	{
-		if (low > high)
-			return nullptr;
-		TreeNode *r = new TreeNode(nodes[low]);
-		int right = high + 1;
-		for (right = low; right <= high; right++)
-			if (nodes[right] > nodes[low])  // find first number greater than root
-				break;
-		r->left = preorder(nodes, low+1, right-1);
-		r->right = preorder(nodes, right, high);
-		return r;
-	}
-	static TreeNode * createBST(const vector<int>& nodes, int order)
-	{
-		return preorder(nodes, 0, nodes.size() - 1);
-	}
-	static void preorderPrint(TreeNode *r)
-	{
-		if (r == nullptr)
-			return;
-		cout << r->val << " ";
-		preorderPrint(r->left);
-		preorderPrint(r->right);
-	}
-	static void test()
-	{
-		TreeNode *r = createBST(vector<int>{10,5,1,7,40,50}, 0);
-		preorderPrint(r);
-	}
-};
-// 515. Find Largest Value in Each Tree Row of a binary tree.
-// BFS, similar to 102. Binary Tree Level Order Traversal, 199. Binary Tree Right Side View, 103.Binary Tree Zigzag Level Order Traversal,513.Find Bottom Left Tree Value
-class Tree {
-public:
-	vector<int> largestValues(TreeNode* root) {
-		vector<int> ans;
-		queue<TreeNode*> q;
-		if (root == nullptr)
-			return ans;
-		q.push(root);
-		while (!q.empty()) {
-			int oldSize = q.size();
-			int large = INT_MIN;
-			for (int i = 0; i < oldSize; i++) {
-				TreeNode *tn = q.front();
-				q.pop();
-				if (large < tn->val)
-					large = tn->val;
-				if (tn->left)
-					q.push(tn->left);
-				if (tn->right)
-					q.push(tn->right);
-			}
-			ans.push_back(large);
-		}
-		return ans;
-	}
-
-	// 230. Kth Smallest Element in a BST, 1 ≤ k ≤ BST's total elements
-	int count(TreeNode* root) {
-		if (root == nullptr)
-			return 0;
-		return 1+ count(root->left)+ count(root->right);
-	}
-	int kthSmallest_bs(TreeNode* root, int k) {  //binary search, beat 97%
-		int cnt = count(root->left); // left count
-		if (cnt+1 == k)
-			return root->val;
-		if (cnt >= k)   // target is in left side
-			return kthSmallest(root->left, k);  
-		return kthSmallest(root->right, k-1-cnt);  // go to right side, adjust k (minus let count, minus root
-	}
-	int ans;
-	int cnt;
-	void inorder(TreeNode* root) {
-		if (root == nullptr || cnt == 0)
-			return;
-		inorder(root->left);
-		if (--cnt == 0)
-			ans = root->val;
-		inorder(root->right);
-	}
-	int kthSmallest(TreeNode* root, int k) // inorder traversal, same speed, beat 97%
-	{
-		cnt = k;
-		inorder(root);
-		return ans;
-	}
-};
-
-void testTree()
-{
-	TreeNode *tn = new TreeNode(1);
-	tn->left = new TreeNode(3);
-	tn->right = new TreeNode(2);
-	tn->left->left = new TreeNode(5);
-	tn->left->right = new TreeNode(3);
-	tn->right->right = new TreeNode(9);
-	Tree t;
-	vector<int> ans= t.largestValues(tn);
-	print(ans);
-}
 
 //542. 01 Matrix
 // Given a matrix consists of 0 and 1, find the distance of the nearest 0 for each cell
@@ -2043,9 +1914,6 @@ public:
 	}
 };
 
-////////////////////////////////////////////////
-#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
-#include "..\catch.hpp"
 
 TEST_CASE("H-Index2", "HINDEX2")
 {
@@ -2241,18 +2109,6 @@ TEST_CASE("Connected Components", "[LinkedListCC]")
 	SECTION("normal case") {
 		CHECK(t.numComponents(head1, vector<int>{3}) == 1);
 		REQUIRE(t.numComponents(head1, vector<int>{0}) == 1);
-	}
-}
-
-TEST_CASE("kth smallest BST Components", "[BST]")
-{
-	TreeNode::test();
-	Tree t;
-	TreeNode * r = TreeNode::createBST(vector<int>{1, 2}, 0);
-	TreeNode::preorderPrint(r);
-	SECTION("edge case") {
-		CHECK(t.kthSmallest(r, 2) == 2);
-		REQUIRE(t.kthSmallest(r, 1) == 1);
 	}
 }
 
