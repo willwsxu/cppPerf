@@ -109,8 +109,22 @@ public:
 		vec.push_back(root->val);
 		inorderTraversal(root->right);
 	}
-	vector<int> inorderTraversal(TreeNode* root) {
-		inorderTraversalHelper(root);
+	vector<int> inorderTraversal(TreeNode* root) {// iterative solution beat 97%
+		stack<TreeNode*> nodes;
+		while (root) {
+			nodes.push(root);
+			root = root->left;  // traverse to left most leaf node
+		}
+		while (!nodes.empty()) {
+			root = nodes.top();
+			vec.push_back(root->val);
+			nodes.pop();
+			root = root->right;  // visit right subtree
+			while (root) {
+				nodes.push(root);
+				root = root->left;  // traverse to left most leaf node
+			}
+		}
 		return vec;
 	}
 };
