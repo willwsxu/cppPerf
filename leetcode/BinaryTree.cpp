@@ -153,3 +153,70 @@ TEST_CASE("kth smallest BST Components", "[BST]")
 		REQUIRE(t.kthSmallest(r, 1) == 1);
 	}
 }
+
+//449. Serialize and Deserialize BST
+class Codec {  // beat 87%
+	string encode;
+	string encodeOne(int which, char side, int val)
+	{
+		return encode.append(to_string(which)).append(1, side).append("=").append(to_string(val)).append(1, ',');
+	}
+	vector<int> v_preorder;
+	void preorderBST(TreeNode* root)
+	{
+		if (root) {
+			v_preorder.push_back(root->val);
+			preorderBST(root->left);
+			preorderBST(root->right);
+		}
+	}
+public:
+
+	// Encodes a tree to a single string.
+	string serialize(TreeNode* root) {
+		v_preorder.clear();
+		preorderBST(root);
+		std::ostringstream oss;
+		copy(begin(v_preorder), end(v_preorder), ostream_iterator<int>(oss, " "));
+		return oss.str();
+		/*
+		if (root == nullptr)
+			return "null";
+		deque<TreeNode*> level; // nodes on same level
+		level.push_back(root);
+		encode.append("R=").append(to_string(root->val)).append(1, '|');
+		while (!level.empty()) {
+			auto oldSize = level.size();
+			for (int i = 0; i < oldSize; i++) {
+				if (level.at(i)->left) {
+					encodeOne(i, 'L', level.at(i)->left->val);
+					level.push_back(level.at(i)->left);
+				}
+				if (level.at(i)->right) {
+					encodeOne(i, 'R', level.at(i)->right->val);
+					level.push_back(level.at(i)->right);
+				}
+			}
+			for (int i = 0; i < oldSize; i++) {
+				level.pop_front();
+			}
+			encode.append(1, '|');
+		}
+		return encode;*/
+	}
+
+	// Decodes your encoded data to tree.
+	TreeNode* deserialize(string data) {
+		istringstream iss(data);
+		vector<int> vi{ istream_iterator<int>(iss), istream_iterator<int>() };
+		return TreeNode::preorder(vi, 0, vi.size() - 1);
+	}
+};
+
+TEST_CASE("Serialize and Deserialize BST", "[NEW]")
+{
+	TreeNode * r = TreeNode::createBST(vector<int>{4,3,5,1,2,6}, 0);
+	Codec c;
+	string ser = c.serialize(r);
+	CHECK(c.serialize(c.deserialize(ser))==ser);
+}
