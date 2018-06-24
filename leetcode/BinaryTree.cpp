@@ -358,6 +358,38 @@ public:
 			return 0;
 		return sumNumbers(root, 0);
 	}
+
+	// 662. Maximum Width of Binary Tree
+	// length between the end-nodes (the leftmost and right most non-null nodes in the level
+	int widthOfBinaryTree(TreeNode* root) {
+		if (root == nullptr)
+			return 0;
+		deque<TreeNode*> nodes[2];
+		size_t maxW = 1;
+		int inUse = 0;
+		nodes[inUse].push_back(root);
+		while (!nodes[inUse].empty()) {
+			auto oldSize = nodes[inUse].size();
+			for (size_t i = 0; i < oldSize; i++) {
+				if (nodes[inUse].at(i) == nullptr) {
+					nodes[1 - inUse].push_back(nullptr);
+					nodes[1 - inUse].push_back(nullptr);
+				}
+				else {
+					nodes[1 - inUse].push_back(nodes[inUse].at(i)->left);
+					nodes[1 - inUse].push_back(nodes[inUse].at(i)->right);
+				}
+			}
+			nodes[inUse].clear();
+			inUse = 1 - inUse;  //switch to other deque
+			while (!nodes[inUse].empty() && nodes[inUse].front() == nullptr)  // trim front and back
+				nodes[inUse].pop_front();
+			while(!nodes[inUse].empty() && nodes[inUse].back()==nullptr)
+				nodes[inUse].pop_back();
+			maxW = max(maxW, nodes[inUse].size());
+		}
+		return maxW;
+	}
 };
 
 void testTree()
@@ -447,10 +479,25 @@ public:
 	}
 };
 
-TEST_CASE("Serialize and Deserialize BST", "[NEW]")
+TEST_CASE("Serialize and Deserialize BST", "[SER]")
 {
 	TreeNode * r = TreeNode::createBST(vector<int>{4,3,5,1,2,6}, 0);
 	Codec c;
 	string ser = c.serialize(r);
 	CHECK(c.serialize(c.deserialize(ser))==ser);
+}
+
+TreeNode *createTreeByLevel(vector<int> v, int i) {
+	return nullptr;
+}
+TEST_CASE("tree width", "[NEW]")
+{
+	TreeNode *root = new TreeNode(1);
+	root->left = new TreeNode(3);
+	root->right = new TreeNode(2);
+	root->left->left = new TreeNode(5);
+	root->left->right = new TreeNode(3);
+	root->right->right = new TreeNode(9);
+	Tree t;
+	CHECK(t.widthOfBinaryTree(root)==4);
 }
