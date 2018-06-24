@@ -127,6 +127,26 @@ public:
 		}
 		return vec;
 	}
+
+	// 129. Sum Root to Leaf Numbers
+	// Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number.
+
+	int sumNumbers(TreeNode* root, int prev) {
+		prev = prev * 10 + root->val;  // calculate value up to this node
+		if (root->left == nullptr && root->right == nullptr)
+			return prev;  //leaf
+		int sum = 0;
+		if (root->left)
+			sum += sumNumbers(root->left, prev);  // sum of left
+		if (root->right)
+			sum += sumNumbers(root->right, prev); // sum of right
+		return sum;
+	}
+	int sumNumbers(TreeNode* root) {
+		if (root == nullptr)
+			return 0;
+		return sumNumbers(root, 0);
+	}
 };
 
 void testTree()
@@ -156,11 +176,6 @@ TEST_CASE("kth smallest BST Components", "[BST]")
 
 //449. Serialize and Deserialize BST
 class Codec {  // beat 87%
-	string encode;
-	string encodeOne(int which, char side, int val)
-	{
-		return encode.append(to_string(which)).append(1, side).append("=").append(to_string(val)).append(1, ',');
-	}
 	vector<int> v_preorder;
 	void preorderBST(TreeNode* root)
 	{
@@ -179,30 +194,6 @@ public:
 		std::ostringstream oss;
 		copy(begin(v_preorder), end(v_preorder), ostream_iterator<int>(oss, " "));
 		return oss.str();
-		/*
-		if (root == nullptr)
-			return "null";
-		deque<TreeNode*> level; // nodes on same level
-		level.push_back(root);
-		encode.append("R=").append(to_string(root->val)).append(1, '|');
-		while (!level.empty()) {
-			auto oldSize = level.size();
-			for (int i = 0; i < oldSize; i++) {
-				if (level.at(i)->left) {
-					encodeOne(i, 'L', level.at(i)->left->val);
-					level.push_back(level.at(i)->left);
-				}
-				if (level.at(i)->right) {
-					encodeOne(i, 'R', level.at(i)->right->val);
-					level.push_back(level.at(i)->right);
-				}
-			}
-			for (int i = 0; i < oldSize; i++) {
-				level.pop_front();
-			}
-			encode.append(1, '|');
-		}
-		return encode;*/
 	}
 
 	// Decodes your encoded data to tree.
