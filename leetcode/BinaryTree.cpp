@@ -361,7 +361,7 @@ public:
 
 	// 662. Maximum Width of Binary Tree
 	// length between the end-nodes (the leftmost and right most non-null nodes in the level
-	int widthOfBinaryTree(TreeNode* root) {
+	int widthOfBinaryTree(TreeNode* root) { // slow but works, need to find a quicker solution
 		if (root == nullptr)
 			return 0;
 		deque<TreeNode*> nodes[2];
@@ -389,6 +389,65 @@ public:
 			maxW = max(maxW, nodes[inUse].size());
 		}
 		return maxW;
+	}
+
+	// 450. Delete Node in a BST
+	void deleteNodeHelper(TreeNode* del) {
+		TreeNode* parent = del;
+		if (del->left) { // find the largest node in left subtree
+			TreeNode* largest = del->left;
+			while (largest->right) {
+				parent = largest;
+				largest = largest->right;
+			}
+			del->val = largest->val; // replace deleted node with largest value on left sub tree
+			if (parent == del)
+				parent->left = largest->left;
+			else
+				parent->right = largest->left;
+			delete largest;
+		}
+		else if (del->right) {  // find the smallest node in right subtree
+			TreeNode* smallest = del->right;
+			while (smallest->left) {
+				parent = smallest;
+				smallest = smallest->left;
+			}
+			del->val = smallest->val; // replace deleted node with largest value on left sub tree
+			if (parent == del)
+				parent->right = smallest->right;
+			else
+				parent->left = smallest->right;
+			delete smallest;
+		}
+	}
+	TreeNode* deleteNode(TreeNode* root, int key) { // beat 61%
+		if (!root)
+			return nullptr;
+		TreeNode *parent = root;
+		TreeNode *target = root;
+		while (target && target->val != key) {
+			parent = target;
+			if (key < target->val)
+				target = target->left;
+			else
+				target = target->right;
+		}
+		if (target == nullptr) // not found
+			return root;
+		if (!target->left && !target->right) { // target is leaf node
+			delete target;
+			if (target == root) {
+				return nullptr;
+			}
+			else if (parent->left == target)
+				parent->left = nullptr;
+			else
+				parent->right = nullptr;
+			return root;
+		}
+		deleteNodeHelper(target);
+		return root;
 	}
 };
 
@@ -500,4 +559,12 @@ TEST_CASE("tree width", "[NEW]")
 	root->right->right = new TreeNode(9);
 	Tree t;
 	CHECK(t.widthOfBinaryTree(root)==4);
+}
+
+TEST_CASE("BST delete", "[NEW]")
+{
+	TreeNode * r = TreeNode::createBST(vector<int>{3,2,1,4}, 0);
+	Tree t;
+	Codec c;
+	CHECK(c.serialize(t.deleteNode(r, 3))=="2 1 4 ");
 }
