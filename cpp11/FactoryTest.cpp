@@ -25,13 +25,8 @@ using TestFactory = Factory<TestBase, int, TestBase * (*)(), DefaultError>;
 
 namespace
 {
-	TestBase *createTest2()
-	{
-		return new Test2();
-	}
-
 	TestFactory& factory2 = TestFactory::Instance();
-	const bool registered = factory2.Register(2, createTest2);  // fail to compile without assignment??
+	const bool registered = factory2.Register(2, []()-> TestBase * {return new Test2(); });  // fail to compile without assignment??
 };
 
 TEST_CASE("Object Factory", "NEW")
