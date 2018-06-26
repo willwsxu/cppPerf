@@ -123,6 +123,7 @@
     <ClInclude Include="hashTableFileRead.h" />
     <ClInclude Include="HashTableFileReadSimple.h" />
     <ClInclude Include="HashTableMockImpl.h" />
+    <ClInclude Include="ObjectFactory.h" />
     <ClInclude Include="slist.h" />
     <ClInclude Include="Matrix2D.h" />
     <ClInclude Include="meta.h" />
@@ -130,6 +131,7 @@
     <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FactoryTest.cpp" />
     <ClCompile Include="FunctorTest.cpp" />
     <ClCompile Include="HashMockTest.cpp" />
     <ClCompile Include="HashTableBaseFileTest.cpp" />

@@ -1,0 +1,44 @@
+#include "ObjectFactory.h"
+#include "..\catch.hpp"
+
+class TestBase
+{
+public:
+	virtual ~TestBase() {}  // enable dynamic cast
+};
+class Test1 : public TestBase
+{
+
+};
+TestBase *createTest1()
+{
+	return new Test1();;
+}
+
+class Test2 : public TestBase
+{
+
+};
+
+using TestFactory = Factory<TestBase, int, TestBase * (*)(), DefaultError>;
+
+
+namespace
+{
+	TestBase *createTest2()
+	{
+		return new Test2();
+	}
+
+	TestFactory& factory2 = TestFactory::Instance();
+	const bool registered = factory2.Register(2, createTest2);  // fail to compile without assignment??
+};
+
+TEST_CASE("Object Factory", "NEW")
+{
+	TestFactory& factory = TestFactory::Instance();
+	factory.Register(1, &createTest1);
+	CHECK(dynamic_cast<Test1*>(factory.CreateObject(1)) != nullptr);
+	CHECK(dynamic_cast<Test2*>(factory.CreateObject(2)) != nullptr);
+	CHECK(factory.CreateObject(100) == nullptr);
+}
