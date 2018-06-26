@@ -316,7 +316,7 @@ public:
 	}
 
 	unordered_map<TreeNode*, int> dp[2];  // need to store calculation for true and false cases (bug source!!!)
-	int rob(TreeNode* root, bool pick) {
+	int rob(TreeNode* root, bool pick) {   // beat 33%
 		if (root == nullptr)
 			return 0;
 		auto found = dp[pick].find(root); // TLE without dp solution
@@ -332,17 +332,32 @@ public:
 		dp[pick][root] = total;
 		return total;
 	}
+
+	pair<int, int> rob2(TreeNode* root) { // borrowed idea, beat 70%
+		if (root == nullptr)
+			return{ 0,0 };
+		auto left = rob2(root->left);
+		auto right = rob2(root->right);
+		pair<int, int> res;  // first exclude root, second include root
+		res.first = max(left.first, left.second) + max(right.first, right.second);
+		res.second = root->val + left.first + right.first;
+		return res;
+	}
 	// 337. House Robber III
-	int rob(TreeNode* root) {  // beat 33%
+	int rob(TreeNode* root) {
+		auto res = rob2(root);
+		return max(res.first, res.second);
+		/*
 		int total = rob(root, true);
 		dp[0].clear();
 		dp[1].clear();
-		return max(total, rob(root, false));
+		return max(total, rob(root, false));*/
 	}
+
+
 	// 129. Sum Root to Leaf Numbers
 	// Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number.
-
-	int sumNumbers(TreeNode* root, int prev) {
+	int sumNumbers(TreeNode* root, int prev) {  // beat 81%
 		prev = prev * 10 + root->val;  // calculate value up to this node
 		if (root->left == nullptr && root->right == nullptr)
 			return prev;  //leaf
