@@ -1,3 +1,6 @@
+#include <string>
+using namespace std;
+
 #include "ObjectFactory.h"
 #include "..\catch.hpp"
 
@@ -36,4 +39,14 @@ TEST_CASE("Object Factory", "NEW")
 	CHECK(dynamic_cast<Test1*>(factory.CreateObject(1)) != nullptr);
 	CHECK(dynamic_cast<Test2*>(factory.CreateObject(2)) != nullptr);
 	CHECK(factory.CreateObject(100) == nullptr);
+}
+
+TEST_CASE("Object Factory, variadic", "NEW")
+{
+	using TestFactory = Factory<TestBase, int, TestBase * (*)(const string&), DefaultError>;
+	TestFactory& factory = TestFactory::Instance();	
+	
+	const bool registered = factory.Register(2, [](const string&)-> TestBase * {return new Test2(); });
+	CHECK(registered == true);
+	CHECK(factory.CreateObject(2, "test") != nullptr);
 }

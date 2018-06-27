@@ -19,12 +19,13 @@ public:
 		return factoryCallbacks.erase(type)==1;
 	}
 
-	AbstractProduct * CreateObject(const ProductIdType& type)
+	template<typename...ARGS>
+	AbstractProduct * CreateObject(const ProductIdType& type, ARGS...args)
 	{
 		auto found = factoryCallbacks.find(type);
 		if (found == factoryCallbacks.end())
 			return OnUnknownType(type);
-		return factoryCallbacks[type]();
+		return factoryCallbacks[type](forward<ARGS>(args)...);
 	}
 
 	static Factory& Instance()
