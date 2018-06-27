@@ -5,7 +5,16 @@
 
 using namespace std;
 
-// use vector by default, avoid list
+// Practical performance practices by Jason Turner
+// aware compiler optimization
+// use array or vector by default, avoid list
+// prefer unique_ptr over shared_ptr
+// watch out for template bloating
+// avoid none local data
+// constexpr can result in bigger code, compiler can 
+// use final, help inlining
+// few branches
+// smaller code is faster code, improved cache hit rate
 
 /* Implicitly-declared move constructor is created if 
 there are no user-declared copy constructors;
@@ -31,7 +40,7 @@ struct Derived : public Base
 };
 
 
-TEST_CASE("Object Factory", "[NEW]")
+TEST_CASE("rule 0, don't disable move constructor by accident", "[NEW]")
 {
 	Base b;
 	Base b2(std::move(b)); // why move constructor is not dead? maybe only c++11 issue
@@ -80,4 +89,22 @@ TEST_CASE("endl slow down io due to flush", "[NEW]")
 {
 	cout << " good\n good\n";
 	cout << " bad " << endl << " bad " << endl;
+}
+
+string add(const string&lhs, const string&rhs)
+{
+	return lhs + rhs;
+}
+TEST_CASE("prefer lambda over bind/function object", "[NEW]")
+{
+	const auto good = [](const string&b) {
+		return add("Hello ", b);
+	};
+	CHECK(good("World") == "Hello World");
+
+	const auto bad = bind(add, "Hello ", placeholders::_1);
+	CHECK(bad("World") == "Hello World");
+
+	const function<string (const string&)> worse= bind(add, "Hello ", placeholders::_1);
+	CHECK(worse("World")=="Hello World");
 }
