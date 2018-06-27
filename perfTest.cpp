@@ -80,7 +80,7 @@ void testArrayVector(__int64 loops)
 	end = GetTickCount();
 	fprintf(stdout, "loop take %d msec temp=%d\n", end - start, temp);  //0
 }
-
+/*
 extern int testNum();
 //extern void testmain();
 int _tmain(int argc, _TCHAR* argv[])
@@ -101,3 +101,4 @@ int _tmain(int argc, _TCHAR* argv[])
 	return 0;
 }
 
+*/

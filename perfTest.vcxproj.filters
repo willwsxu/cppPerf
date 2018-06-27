@@ -68,5 +68,8 @@
     <ClCompile Include="temp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="perfExample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
