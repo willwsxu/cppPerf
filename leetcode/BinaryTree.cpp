@@ -583,3 +583,411 @@ TEST_CASE("BST delete", "[NEW]")
 	Codec c;
 	CHECK(c.serialize(t.deleteNode(r, 3))=="2 1 4 ");
 }
+
+class FlattenTree
+{
+	vector<TreeNode*> ans;
+	unordered_map<string, int> count;
+	string findDuplicateSubtreesFlatten(TreeNode* root) { // beat 33%
+		if (root == nullptr)
+			return "";
+		string subtree;
+		subtree.reserve(100);  // 100 seem the best value to reserve
+		subtree.append(to_string(root->val)).append(",L,").append(findDuplicateSubtreesFlatten(root->left)).append("R,").append(findDuplicateSubtreesFlatten(root->right)); // mark Left and right
+		auto found = count.find(subtree);
+		if (found == count.end())
+			count[subtree] = 1;
+		else {
+			auto& val = count[subtree];  // avoid calling mapping 2 extra times
+			if (val == 1)
+				ans.push_back(root);
+			val = (val + 1);
+		}
+		return subtree;
+	}
+
+public:
+	// 652. Find Duplicate Subtrees
+	// Given a binary tree, return all duplicate subtrees.For each kind of duplicate subtrees, you only need to return the root node of any one of them.
+	vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+		(void)findDuplicateSubtreesFlatten(root);
+		return ans;
+	}
+
+	TreeNode* flattenHelp(TreeNode* root) {  // beat 22%
+		if (root == nullptr || root->left == nullptr && root->right == nullptr)
+			return root;
+		// single child, flatten it
+		if (!root->left)
+			return flattenHelp(root->right);
+		TreeNode* left = flattenHelp(root->left);
+		// both children, flatten left first
+		left->right = root->right;		// append right to left
+		root->right = root->left;       // move left subtree to right
+		root->left = nullptr;           // set left to null (bug source!!)
+		if (!left->right)
+			return left;
+		return flattenHelp(left->right);
+	}
+
+	// borrow idea
+	TreeNode *prev;
+	void flattenPost(TreeNode* root) {  // beat 43%
+		if (root == nullptr)
+			return;
+		flattenPost(root->right);
+		flattenPost(root->left);
+		root->right = prev;
+		root->left = nullptr;
+		prev = root;
+	}
+
+	// 114. Flatten Binary Tree to Linked List, in place
+	void flatten(TreeNode* root) {
+		prev = nullptr;
+		flattenPost(root);
+		/*
+		while (root) {  // iterative version is a little worse than recursive
+		if (root->left && root->right) {
+		TreeNode* n = root->left;
+		while (n->right)  // find the right most node of left subtree
+		n = n->right;
+		n->right = root->right; // stick right subtree to bottom of left subtree
+		}
+		if (root->left) {  // move left to right
+		root->right = root->left;
+		root->left = nullptr;
+		}
+		root = root->right;
+		}
+		*/
+	}
+};
+
+TEST_CASE("flatten tree", "[FLAT]")
+{
+	TreeNode *r = new TreeNode(1);
+	r->left = new TreeNode(2);
+	r->right = new TreeNode(5);
+	r->left->left = new TreeNode(3);
+	r->left->right = new TreeNode(4);
+	r->right->right = new TreeNode(6);
+	FlattenTree t;
+	t.flatten(r);
+}
+
+class TreePath
+{
+	// 112. Path Sum, if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum
+	bool pathSum(TreeNode* root, int sum, int target) { // beat 99%
+		if (!root)
+			return false;
+		sum += root->val;
+		if (!root->left && !root->right)
+			return sum == target;
+		if (root->left && pathSum(root->left, sum, target))
+			return true;
+		if (root->right && pathSum(root->right, sum, target))
+			return true;
+		return false;
+	}
+public:
+	bool hasPathSum(TreeNode* root, int sum) {
+		return pathSum(root, 0, sum);
+	}
+
+	int pathSum3(TreeNode* root, int sum, int target) {
+		if (!root)
+			return 0;
+		sum += root->val;
+		int count = sum == target ? 1 : 0;
+		count += pathSum3(root->left, sum, target);
+		count += pathSum3(root->right, sum, target);
+		return count;
+	}
+	int pathSum3Help(TreeNode* root, int sum) {
+		if (!root)
+			return 0;
+		return (root->val == sum ? 1 : 0) + pathSum3Help(root->left, sum - root->val) + pathSum3Help(root->right, sum - root->val);
+	}
+	// 437. Path Sum III, The path does not need to start or end at the root or a leaf, but it must go downwards
+	int pathSum3(TreeNode* root, int sum) {
+		if (!root)
+			return 0;
+		return pathSum3(root, 0, sum) + pathSum3(root->left, sum) + pathSum3(root->right, sum);
+	}
+
+	unordered_map<int, int> mii_count;
+	int pathSum3PrefixSum(TreeNode* root, int sum, int target) {  // beat 91%
+		if (!root)
+			return 0;
+		sum += root->val;
+		auto found = mii_count.find(sum - target);
+		int res = found == mii_count.end() ? 0 : found->second;
+		found = mii_count.find(sum);
+		auto & currMapCount = mii_count[sum];
+		currMapCount = found == mii_count.end() ? 1 : found->second + 1;
+		res += pathSum3PrefixSum(root->left, sum, target) + pathSum3PrefixSum(root->right, sum, target);
+
+		currMapCount = currMapCount - 1;  // roll back 1 as this path is complete, don't count toward other branches!!!
+		return res;
+	}
+	int pathSum3PrefixSum(TreeNode* root, int sum) {
+		mii_count[0] = 1;  // add sum=0 as default to calculate diff of prefix sum
+		return pathSum3PrefixSum(root, 0, sum);
+	}
+
+	vector<vector<int>> paths;
+	vector<int> one;
+	void pathSum2x(TreeNode* root, int sum, int target) {  // beat 84%
+		if (!root)
+			return;
+		sum += root->val;
+		one.push_back(root->val);
+		if (!root->left && !root->right) {
+			if (sum == target)
+				paths.push_back(one);
+		}
+		else {
+			if (root->left)
+				pathSum2x(root->left, sum, target);
+			if (root->right)
+				pathSum2x(root->right, sum, target);
+		}
+		one.pop_back();
+	}
+	void pathSum2(TreeNode* root, int sum, int target, vector<int> p) {  // first attemp, slow, too much vector copy
+		if (!root)
+			return;
+		sum += root->val;
+		p.push_back(root->val);
+		if (!root->left && !root->right) {
+			if (sum == target)
+				paths.push_back(p);
+			return;
+		}
+		if (root->left)
+			pathSum2(root->left, sum, target, p);
+		if (root->right)
+			pathSum2(root->right, sum, target, p);
+	}
+	// 113. Path Sum II, 
+	// Given a binary tree and a sum, find all root - to - leaf paths where each path's sum equals the given sum
+	vector<vector<int>> pathSum(TreeNode* root, int sum) {
+		//pathSum2(root, 0, sum, vector<int>{});
+		pathSum2x(root, 0, sum);
+		return paths;
+	}
+};
+
+TEST_CASE("Path sum", "[PATH]")
+{
+	TreeNode *r = new TreeNode(1);
+	r->left = new TreeNode(2);
+	TreePath t;
+	CHECK(t.hasPathSum(r, 1) == false);
+	CHECK(t.hasPathSum(nullptr, 1) == false);
+}
+
+TEST_CASE("Path sum 3", "[PATH]")
+{
+	TreeNode *r = new TreeNode(10);
+	r->left = new TreeNode(5);
+	r->right = new TreeNode(-3);
+	r->left->left = new TreeNode(3);
+	r->left->right = new TreeNode(2);
+	r->right->right = new TreeNode(11);
+	r->left->left->left = new TreeNode(3);
+	r->left->left->right = new TreeNode(-2);
+	r->left->right->right = new TreeNode(1);
+
+	TreePath t;
+	t.pathSum3(r, 8);
+}
+
+TEST_CASE("Path sum 2", "[PATH]")
+{
+	TreeNode *r = new TreeNode(5);
+	r->left = new TreeNode(4);
+	r->right = new TreeNode(8);
+	r->left->left = new TreeNode(11);
+	r->right->left = new TreeNode(13);
+	r->right->right = new TreeNode(4);
+	r->left->left->left = new TreeNode(7);
+	r->left->left->right = new TreeNode(2);
+	r->right->right->left = new TreeNode(5);
+	r->right->right->right = new TreeNode(1);
+
+	TreePath t;
+	CHECK(t.pathSum(r, 22) == vector<vector<int>>{ {5, 4, 11, 2}, { 5,8,4,5 }});
+}
+
+
+struct TreeLinkNode {
+	int val;
+	TreeLinkNode *left;
+	TreeLinkNode *right;
+	TreeLinkNode *next;
+	TreeLinkNode(int x) : val(x), left(nullptr), right(nullptr), next(nullptr) {}
+};
+
+class TreeLink {
+	void connectRight(TreeLinkNode *root, TreeLinkNode *left) {  //left child connect to right child
+		if (!left)
+			return;
+		left->next = root->right;
+		connectRight(left, left->left);
+		connectLeft(left, left->right);
+	}
+	void connectLeft(TreeLinkNode *root, TreeLinkNode *right) { //right child connect to left child of next neighbor
+		if (!right)
+			return;
+		if (!root->next)
+			right->next = nullptr;
+		else
+			right->next = root->next->left;
+		connectRight(right, right->left);
+		connectLeft(right, right->right);
+	}
+public:
+	// 116. Populating Next Right Pointers in Each Node
+	// assume that it is a perfect binary tree
+	void connect(TreeLinkNode *root) {  // beat 91%
+		if (!root)
+			return;
+		root->next = nullptr;
+		connectRight(root, root->left);
+		connectLeft(root, root->right);
+	}
+	void connect1i(TreeLinkNode *root) {  // borrow idea, iterative, beat 91%
+		if (!root)
+			return;
+		while (root->left) {
+			TreeLinkNode *cur = root;
+			while (cur) {  // cur loop all neighbors (->next)
+				cur->left->next = cur->right;  // connect left child to right child
+				if (cur->next)
+					cur->right->next = cur->next->left;  // connect right child to left child of next neighbor
+				cur = cur->next;
+			}
+			root = root->left;  // move the next level
+		}
+	}
+
+	// 117. Populating Next Right Pointers in Each Node II, NOT a perfect binary tree
+	void connect2(TreeLinkNode *root) {  // beat 99.65%
+		while (root) {
+			if (!root->left && !root->right) {  // find the first root with a child, at same level
+				root = root->next;
+				continue;
+			}
+			TreeLinkNode *cur = root;
+			TreeLinkNode *conn = nullptr;   // node to connect
+			while (cur) {
+				if (cur->left) {
+					if (conn)
+						conn->next = cur->left;
+					conn = cur->left;       // next to connect
+				}
+				if (cur->right) {
+					if (conn)
+						conn->next = cur->right;
+					conn = cur->right;
+				}
+				cur = cur->next;
+			}
+			if (root->left)
+				root = root->left;
+			else if (root->right)
+				root = root->right;
+		}
+	}
+};
+
+TEST_CASE("connect next neighbor", "[NEW]")
+{
+	TreeLinkNode *root = new TreeLinkNode(1);
+	root->left = new TreeLinkNode(2);
+	root->right = new TreeLinkNode(3);
+	root->left->left = new TreeLinkNode(4);
+	root->left->right = new TreeLinkNode(5);
+	root->right->left = new TreeLinkNode(6);
+	root->right->right = new TreeLinkNode(7);
+
+	TreeLink t;
+	t.connect(root);
+	CHECK(root->left->right->next == root->right->left);
+}
+
+TEST_CASE("connect next neighbor 2", "[NEW]")
+{
+	TreeLinkNode *root = new TreeLinkNode(1);
+	root->left = new TreeLinkNode(2);
+	root->right = new TreeLinkNode(3);
+	root->left->left = new TreeLinkNode(4);
+	root->left->right = new TreeLinkNode(5);
+	root->right->right = new TreeLinkNode(7);
+
+	TreeLink t;
+	t.connect2(root);
+	CHECK(root->left->right->next == root->right->right);
+}
+
+
+class LCA
+{
+	vector<TreeNode *> lcaCur;
+	int match = 0;
+	vector<TreeNode *> lca[2]; // store the path, then find the common part
+	void LcaHelp(TreeNode* root, TreeNode* p, TreeNode* q)
+	{
+		if (!root || match == 2)
+			return;
+		lcaCur.push_back(root);
+		if (root == p || root == q) {
+			lca[match++] = lcaCur;
+		}
+		LcaHelp(root->left, p, q);
+		LcaHelp(root->right, p, q);
+		lcaCur.pop_back();
+	}
+
+public:
+	// 236. Lowest Common Ancestor of a Binary Tree
+	// All of the nodes' values will be unique
+	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {  // beat 86%
+		LcaHelp(root, p, q);
+		int minSize = min(lca[0].size(), lca[1].size());
+		int i = 0;
+		for (; i < minSize; i++) {
+			if (lca[0][i] != lca[1][i])
+				break;
+		}
+		return i < 1 ? nullptr : lca[0][i - 1];
+	}
+
+	// borrowed idea
+	TreeNode* lowestCommonAncestor2(TreeNode* root, TreeNode* p, TreeNode* q) {  // beat 86%
+		if (!root || root == p || root == q)
+			return root;
+		TreeNode *left = lowestCommonAncestor2(root->left, p, q);
+		TreeNode *right = lowestCommonAncestor2(root->right, p, q);
+		return !left ? right : !right ? left : root;
+	}
+};
+
+TEST_CASE("Lowest Common Ancestor", "[NEW]")
+{
+	TreeNode *r = new TreeNode(3);
+	r->left = new TreeNode(5);
+	r->right = new TreeNode(1);
+	r->left->left = new TreeNode(6);
+	r->left->right = new TreeNode(2);
+	r->right->left = new TreeNode(0);
+	r->right->right = new TreeNode(8);
+	r->left->right->left = new TreeNode(7);
+	r->left->right->right = new TreeNode(4);
+
+	LCA t;
+	CHECK(t.lowestCommonAncestor(r, r->left, r->right)==r);
+}
