@@ -123,6 +123,7 @@
     <ClInclude Include="hashTableFileRead.h" />
     <ClInclude Include="HashTableFileReadSimple.h" />
     <ClInclude Include="HashTableMockImpl.h" />
+    <ClInclude Include="MessageConcept.h" />
     <ClInclude Include="ObjectFactory.h" />
     <ClInclude Include="slist.h" />
     <ClInclude Include="Matrix2D.h" />
@@ -137,6 +138,7 @@
     <ClCompile Include="HashTableBaseFileTest.cpp" />
     <ClCompile Include="HashTableBaseTest.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MessageTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
