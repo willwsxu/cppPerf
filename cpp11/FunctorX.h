@@ -3,26 +3,26 @@
 #include <iostream>
 using namespace std;
 
-template<class...T> struct type_list {};
+//template<class...T> struct type_list {};
 
 template <typename R, typename...Param>
 struct FunctorImpl
 {
-	virtual R operator()(Param...args) = 0;
+	virtual R operator()(Param&&...args) = 0;  // template function cannot be virtual
 	virtual FunctorImpl* Clone() const = 0;
 	virtual ~FunctorImpl() {}
 };
 
-template <typename Parent, typename Fun, typename...Pack>
-struct FunctorHandler : public FunctorImpl<typename Parent::R, Pack...>
+template <typename ResultType, typename Fun, typename...Pack>
+struct FunctorHandler : public FunctorImpl<ResultType, Pack...>
 {
-	typedef typename Parent::R ResultType;
+	//typedef typename Parent::R ResultType;
 	FunctorHandler(const Fun& fun) : fun_(fun) {}
 	FunctorHandler* Clone() const override
 	{
 		return new FunctorHandler(*this);
 	}
-	ResultType operator()(Pack...args) override
+	ResultType operator()(Pack&&...args) override
 	{
 		return fun_(forward<Pack>(args)...);
 	}
@@ -32,16 +32,16 @@ private:
 
 
 //
-template <typename Parent, typename PointerToObj, typename PointerToMemFn, typename...Pack>
-struct MemFunctorHandler : public FunctorImpl<typename Parent::R, Pack...>
+template <typename ResultType, typename PointerToObj, typename PointerToMemFn, typename...Pack>
+struct MemFunctorHandler : public FunctorImpl<typename ResultType, Pack...>
 {
-	typedef typename Parent::R ResultType;
+	//typedef typename Parent::R ResultType;
 	MemFunctorHandler(PointerToObj p, PointerToMemFn fun) : pObj_(p), pMemFn_(fun) {}
 	MemFunctorHandler* Clone() const override
 	{
 		return new MemFunctorHandler(*this);
 	}
-	ResultType operator()(Pack...args) override
+	ResultType operator()(Pack&&...args) override
 	{
 		return (pObj_->*pMemFn_)(forward<Pack>(args)...);
 	}
@@ -55,22 +55,22 @@ class Functor
 {
 public:
 	typedef ResultType  R;  // these typedefs are necessary for other class to refer to
-	typedef type_list<Param...>		TL;  // cannot typedef Param...
+	//typedef type_list<Param...>		TL;  // cannot typedef Param...
 	using Impl = FunctorImpl<R, Param...>;
 	Functor() = default;
 	Functor(const Functor&) = default;  // copy constructor is not allowed if there is unique_ptr data memeber
 	Functor& operator=(const Functor&) = default;
 
 	// conflict with Functor(const Fun& fun)
-	explicit Functor(std::unique_ptr<Impl> spImpl) :m_impl(move(spImpl)) {}  // Impl typedef has to be delcared before use
+	//explicit Functor(std::unique_ptr<Impl> spImpl) :m_impl(move(spImpl)) {}  // Impl typedef has to be delcared before use
 
 	template <class Fun>
-	Functor(const Fun& fun) : m_impl(new FunctorHandler<Functor, Fun, Param...>(fun)) {}
+	Functor(const Fun& fun) : m_impl(new FunctorHandler<R, Fun, Param...>(fun)) {}
 
 	template <class Obj, class Fun>
-	Functor(const Obj& obj, const Fun& fun) : m_impl(new MemFunctorHandler<Functor, Obj, Fun, Param...>(obj, fun)) {}
+	Functor(const Obj& obj, const Fun& fun) : m_impl(new MemFunctorHandler<R, Obj, Fun, Param...>(obj, fun)) {}
 
-	R operator()(Param...p)
+	R operator()(Param&&...p)
 	{
 		return (*m_impl)(forward<Param>(p)...);
 	}
@@ -89,12 +89,13 @@ public:
 	{
 		return new BindFirst(*this);
 	}
-	ResultType operator()(Pack...args) override
+	ResultType operator()(Pack&&...args) override
 	{
-		return fun_(bound_, forward<Pack>(args)...);
+		// Don't forward bound_ data member!!!
+		return fun_(First(bound_), forward<Pack>(args)...);
 	}
 
 private:
 	Incoming fun_;
-	First    bound_;
+	const First    bound_;  // make it const so it is not accidently moved
 };
