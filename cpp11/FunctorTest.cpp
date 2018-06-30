@@ -32,10 +32,16 @@ void test4(string i, double d)
 {
 }
 
-const char * test5(string i, double d)
+const char * test5(string, double d)
 {
-	return "test";
+	return "test5";
 }
+
+string test6(const char *s, double d)
+{
+	return (string("test5:")+s+":"+to_string(d)).c_str();
+}
+
 
 TEST_CASE("Functor", "[FUNC]")
 {
@@ -55,4 +61,12 @@ TEST_CASE("Functor", "[FUNC]")
 	TestFun2 t(2);
 	Functor<int, string, double> cmd5(&t, &TestFun2::test);  // member function pointer
 	CHECK(cmd5("5", 5.5)==2);
+
+	Functor<string, const char*, double> cmd6(&test6);
+	using BindType = BindFirst<Functor<string, const char *, double>, const char *, double>;
+	auto * bf = new BindType(cmd6, "x");
+	(*bf)(5.5);
+	FunctorImpl<string, double> *bf2 = bf;
+	Functor<string, double> cmd7(*bf); // bind to cmd6
+	CHECK(cmd7(5.5)==string("test5:x:5.500000"));
 }

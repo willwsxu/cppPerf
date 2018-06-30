@@ -46,7 +46,7 @@ struct MemFunctorHandler : public FunctorImpl<typename Parent::R, Pack...>
 		return (pObj_->*pMemFn_)(forward<Pack>(args)...);
 	}
 private:
-	PointerToObj pObj_;   // not ObjectType *pObj, more generic, can be any type of pointer, smart pointer
+	PointerToObj pObj_;     // not ObjectType *pObj, more generic, can be any type of pointer, smart pointer
 	PointerToMemFn pMemFn_;
 };
 
@@ -77,4 +77,24 @@ public:
 
 private:
 	shared_ptr<Impl>	m_impl;
+};
+
+template<typename Incoming, typename First, typename...Pack>
+class BindFirst : public FunctorImpl<typename Incoming::R, Pack...>
+{
+	typedef typename Incoming::R ResultType;
+public:
+	BindFirst(const Incoming& fun, First bound) :fun_(fun), bound_(bound) {}
+	BindFirst* Clone() const override
+	{
+		return new BindFirst(*this);
+	}
+	ResultType operator()(Pack...args) override
+	{
+		return fun_(bound_, forward<Pack>(args)...);
+	}
+
+private:
+	Incoming fun_;
+	First    bound_;
 };
