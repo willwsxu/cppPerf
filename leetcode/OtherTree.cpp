@@ -121,7 +121,7 @@ class List2Tree
 {
 	// len=2, midLen=0, mid index is 0, left len is 0, right len is 1
 	// len=3, midLen=1, mid index is 1, left len is 1, right len is 1
-	TreeNode *BST(ListNode* head, int len) {  // beat 9%
+	TreeNode *BST(ListNode* head, int len) {  // beat 50%
 		if (len == 0)
 			return nullptr;
 		if (len == 1)
@@ -130,8 +130,9 @@ class List2Tree
 		int midLen = (len + 1) / 2-1;
 		for (int i = 0; i < midLen; i++)
 			mid = mid->next;
+		TreeNode *left = BST(head, midLen);
 		TreeNode *r = new TreeNode(mid->val);
-		r->left = BST(head, midLen);
+		r->left = left;
 		r->right = BST(mid->next, len - midLen-1);
 		return r;
 	}
@@ -139,5 +140,34 @@ public:
 	TreeNode* sortedListToBST(ListNode* head) {
 		int len = ListNode::count(head);
 		return BST(head, len);
+	}
+};
+
+
+struct RandomListNode {
+	int label;
+	RandomListNode *next, *random;
+	RandomListNode(int x) : label(x), next(NULL), random(NULL) {}
+};
+class RandomList {
+public:
+	RandomListNode *copyRandomList(RandomListNode *head) {  // beat 82%
+		unordered_map<RandomListNode *, RandomListNode*> old2new;
+		old2new[nullptr] = nullptr;
+		RandomListNode dummy(0);
+		RandomListNode *cur = &dummy;
+		while (head) {  // copy all nodes as is, first pass
+			cur->next = new RandomListNode(head->label);
+			cur = cur->next;
+			cur->random = head->random;
+			old2new[head] = cur;   // map old node to new node
+			head = head->next;
+		}
+		cur = dummy.next;
+		while (cur) {  // loop through new nodes
+			cur->random = old2new[cur->random];  // update random pointer using map
+			cur = cur->next;
+		}
+		return dummy.next;
 	}
 };
