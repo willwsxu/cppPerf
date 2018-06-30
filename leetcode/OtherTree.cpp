@@ -113,3 +113,31 @@ TEST_CASE("connect next neighbor 2", "[LINK]")
 	t.connect2(root);
 	CHECK(root->left->right->next == root->right->right);
 }
+
+#include "TreeNode.h"
+#include "ListNode.h"
+
+class List2Tree
+{
+	// len=2, midLen=0, mid index is 0, left len is 0, right len is 1
+	// len=3, midLen=1, mid index is 1, left len is 1, right len is 1
+	TreeNode *BST(ListNode* head, int len) {  // beat 9%
+		if (len == 0)
+			return nullptr;
+		if (len == 1)
+			return new TreeNode(head->val);
+		ListNode *mid = head;
+		int midLen = (len + 1) / 2-1;
+		for (int i = 0; i < midLen; i++)
+			mid = mid->next;
+		TreeNode *r = new TreeNode(mid->val);
+		r->left = BST(head, midLen);
+		r->right = BST(mid->next, len - midLen-1);
+		return r;
+	}
+public:
+	TreeNode* sortedListToBST(ListNode* head) {
+		int len = ListNode::count(head);
+		return BST(head, len);
+	}
+};
