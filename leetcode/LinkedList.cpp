@@ -360,20 +360,6 @@ public:
 		cur->next = l1 ? l1 : l2;
 		return dummy.next;
 	}
-
-	bool hasCycle(ListNode *head) { // easy, beat 98%
-		ListNode *fast = head;
-		while (head && fast) {
-			head = head->next;
-			fast = fast->next;
-			if (fast) {
-				fast = fast->next;  // fast move two steps
-				if (fast == head)   // fast is caught up by slow, in cycle
-					return true;
-			}
-		}
-		return false;
-	}
 };
 
 
@@ -409,3 +395,39 @@ TEST_CASE("Linked List Rotate Right", "[ROTATE]")
 	auto ans = t.rotateRight(head, 2);
 	CHECK(ans->val == 4);
 }
+
+class Cycle
+{
+	ListNode * meetCycle(ListNode *head) {
+		ListNode *fast = head;
+		while (head && fast && fast->next) {
+			head = head->next;
+			fast = fast->next->next; // fast move two steps
+			if (fast == head)   // fast is caught up by slow, in cycle
+				return head;
+		}
+		return nullptr;
+	}
+public:
+	bool hasCycle(ListNode *head) { // easy, beat 98%
+		return meetCycle(head)!=nullptr;
+	}
+	//142  return the node where the cycle begins. If there is no cycle, return null
+	// 1->2->3->4->2
+	// L1 distance from head to cycle entry
+	// L2 distance from entrnt to meeting point of fast and slow
+	// C is the length of cycle
+	// 2(L1+L2) = L1+L2+n.C;
+	// L1+L2 = n.C
+	// L1 = (n-1).C+C-L2, means distance from head to entry = from meet to entry
+	ListNode *detectCycle(ListNode *head) { // beat 99%
+		ListNode *meet = meetCycle(head);
+		if (!meet)
+			return nullptr;
+		while (meet != head) {
+			meet = meet->next;
+			head = head->next;
+		}
+		return head;
+	}
+};

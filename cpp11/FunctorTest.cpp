@@ -50,7 +50,7 @@ TEST_CASE("Functor", "[FUNC]")
 	CHECK(cmd("4", 4.5) == true);
 
 	Functor<bool, string, double> cmd2(&test3);  // must use function pointer
-	CHECK(cmd2("4", 4.5) == true);;
+	CHECK(cmd2("4", 4.5) == true);
 
 	Functor<void, string, double> cmd3(&test4);    // return void
 	Functor<string, string, double> cmd4(&test5);  // auto convert return type, from const char * to string
