@@ -330,7 +330,7 @@ public:
 		return head;
 	}
 
-	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {  // beat 16%
+	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {  // beat 16%, easy
 		if (!l1)
 			return l2;
 		if (!l2)
@@ -341,6 +341,38 @@ public:
 		}
 		l2->next = mergeTwoLists(l1, l2->next);
 		return l2;
+	}
+
+	ListNode* mergeTwoLists2(ListNode* l1, ListNode* l2) { // beat 61%
+		ListNode dummy(INT_MIN);
+		ListNode *cur = &dummy;
+		while (l1 && l2) {
+			if (l1->val < l2->val) {
+				cur->next = l1;
+				l1 = l1->next;
+			}
+			else {
+				cur = l2;
+				l2 = l2->next;
+			}
+			cur = cur->next;
+		}
+		cur->next = l1 ? l1 : l2;
+		return dummy.next;
+	}
+
+	bool hasCycle(ListNode *head) { // easy, beat 98%
+		ListNode *fast = head;
+		while (head && fast) {
+			head = head->next;
+			fast = fast->next;
+			if (fast) {
+				fast = fast->next;  // fast move two steps
+				if (fast == head)   // fast is caught up by slow, in cycle
+					return true;
+			}
+		}
+		return false;
 	}
 };
 
