@@ -2066,7 +2066,7 @@ public:
 };
 
 
-TEST_CASE("random set O(1) op", "[NEW]")
+TEST_CASE("random set O(1) op", "[RAND]")
 {
 	RandomizedSet t;
 	CHECK(t.insert(1) == true);
@@ -2110,4 +2110,47 @@ TEST_CASE("subarray sum", "[SUB]")
 	BinarySearch t;
 	CHECK(t.subarraySum(vector<int>{28, 54, 7, -70, 22, 65, -6}, 100) == 1);//prefix is not sorted
 	CHECK(t.subarraySum(vector<int>{1, 1, 1}, 2) == 2);
+}
+
+class Bucket
+{
+public:
+	// 451 Given a string, sort it in decreasing order based on the frequency of characters.
+	string frequencySort_old(string s) { // beat 34%
+		int count[128] = { 0 };
+		for (char c : s)
+			count[c]++;
+		sort(begin(s), end(s), [&count](char a, char b) {return a!=b &&(count[a] > count[b] || (count[a] == count[b] && a>b)); });
+		return s;
+	}
+	string frequencySort(string s) { // beat 99% using vector sort, faster than heap 93%
+		int count[128] = { 0 };
+		for (char c : s)
+			count[c]++;
+		vector<pair<int, char>> vic;  // count to char pair
+		vic.reserve(26);
+		for (int i = 0; i < sizeof(count)/sizeof(int); i++) {
+			if (count[i]) {
+				vic.emplace_back(count[i], (char)i);
+			}
+		}
+		//sort(begin(vic), end(vic), [](auto&a, auto&b) { return a.first > b.first; });
+		make_heap(begin(vic), end(vic), [](auto&a, auto&b) { return a.first < b.first; } );
+		int pos = 0;
+		//for (auto& p : vic) {
+		while (!vic.empty()) {
+			pop_heap(begin(vic), end(vic));
+			auto p = vic.back();
+			vic.pop_back();
+			s.replace(pos, p.first, p.first, p.second);
+			pos += p.first;
+		}
+		return s;
+	}
+};
+
+TEST_CASE("frequencySort string", "[NEW]")
+{
+	Bucket b;
+	CHECK(b.frequencySort("loveleetcode") == "eeeeoollvtdc");
 }
