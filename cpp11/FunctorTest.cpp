@@ -50,6 +50,7 @@ string test7(string s, double d)
 TEST_CASE("Functor", "[FUNC]")
 {
 	TestFun1 f;
+	FunctorHandler<bool, TestFun1, string, double> fh(f);
 	Functor<bool, string, double> cmd(f);
 	CHECK(cmd("4", 4.5) == true);
 

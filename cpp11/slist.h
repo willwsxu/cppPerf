@@ -7,11 +7,11 @@ class slist
 {
 	struct Node {
 		T	data;
-		shared_ptr<Node>	next;
+		std::shared_ptr<Node>	next;
 		Node(const T&& d) :data(move(d)) {}
 		Node(const T& d) :data(move(d)) {}
 	};
-	shared_ptr<Node>	head;
+	std::shared_ptr<Node>	head;
 
 public:
 	void push_front(const T& t)  // cannot use &&
@@ -46,7 +46,7 @@ class slist_r
 		Node(const T& d) :data(move(d)), next(nullptr) {}
 		~Node() { delete next; }
 	};
-	using NodeType = typename conditional<atom, std::atomic<Node*>, Node *>::type;
+	using NodeType = typename std::conditional<atom, std::atomic<Node*>, Node *>::type;
 	NodeType head;
 
 public:
@@ -62,7 +62,7 @@ public:
 		head = n;
 	}
 
-	template<std::enable_if_t<is_pointer_v<NodeType>, NodeType> = 0>  // must add space > =, must use none void as second type
+	template<std::enable_if_t<std::is_pointer_v<NodeType>, NodeType> = 0>  // must add space > =, must use none void as second type
 	void exchange(Node *n) {
 		head = n;
 	}
@@ -96,11 +96,11 @@ class slist_u
 {
 	struct Node {
 		T	data;
-		unique_ptr<Node>	next;
+		std::unique_ptr<Node>	next;
 		Node(const T&& d) :data(move(d)) {}
 		Node(const T& d) :data(move(d)) {}
 	};
-	unique_ptr<Node>	head;
+	std::unique_ptr<Node>	head;
 
 public:
 	void push_front(const T& t)  // cannot use &&

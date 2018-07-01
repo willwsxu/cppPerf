@@ -13,6 +13,8 @@ struct FunctorImpl
 	virtual ~FunctorImpl() {}
 };
 
+// FunctorHandler and MemFunctorHandler are for internal use of functor
+// May hide them
 template <typename ResultType, typename Fun, typename...Pack>
 struct FunctorHandler : public FunctorImpl<ResultType, Pack...>
 {
@@ -29,9 +31,8 @@ struct FunctorHandler : public FunctorImpl<ResultType, Pack...>
 private:
 	Fun fun_;
 };
-
-
-//
+	
+// Functor for member function
 template <typename ResultType, typename PointerToObj, typename PointerToMemFn, typename...Pack>
 struct MemFunctorHandler : public FunctorImpl<typename ResultType, Pack...>
 {
