@@ -2147,6 +2147,23 @@ public:
 		}
 		return s;
 	}
+
+	// 347. Top K Frequent Elements
+	vector<int> topKFrequent(vector<int>& nums, int k) { // beat 99%
+		unordered_map<int, int> count;
+		for (int i : nums)
+			count[i]++;
+		vector<pair<int, int>> vpii;
+		vpii.reserve(count.size());
+		move(begin(count), end(count), back_inserter(vpii));
+		nth_element(begin(vpii), begin(vpii) + k - 1, end(vpii), [](auto&a, auto&b) { return a.second > b.second; });
+		vector<int> ans;
+		ans.reserve(k);
+		//transform(begin(vpii), begin(vpii) + k, back_inserter(ans), [](auto&p) {return p.first; }); // slower
+		for (auto x = begin(vpii); x != begin(vpii) + k; x++)
+			ans.push_back(x->first);
+		return ans;
+	}
 };
 
 TEST_CASE("frequencySort string", "[NEW]")
