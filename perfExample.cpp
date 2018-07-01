@@ -46,7 +46,7 @@ TEST_CASE("rule 0, don't disable move constructor by accident", "[NEW]")
 	Base b2(std::move(b)); // why move constructor is not dead? maybe only c++11 issue
 	Derived d;
 	Derived d2(std::move(d));
-	CHECK(sizeof(b2) == 4);
+	CHECK(sizeof(b2) >= 4);  // 28 in release mode
 }
 
 // const methods should be thread safe
@@ -108,3 +108,62 @@ TEST_CASE("prefer lambda over bind/function object", "[NEW]")
 	const function<string (const string&)> worse= bind(add, "Hello ", placeholders::_1);
 	CHECK(worse("World")=="Hello World");
 }
+
+TEST_CASE("less branches, test 0", "[NEW]")
+{
+	auto good = [](int err) {
+		if (!err) {
+			// do stuff
+			return 1;
+		}
+		else {
+			if (err == 1)		return -1;
+			else if (err == 2)	return -2;
+			else if (err == 3)	return -3;			
+		}
+		return 0;
+	};
+	auto bad = [](int err) {
+		if (err == 1) {
+			return -1;
+		}
+		else if (err == 2) {
+			return -2;
+		}
+		else if (err == 3) {
+			return -3;
+		}
+		else {
+			// do stuff
+			return 1;
+		}
+		return 0;
+	};
+
+	long loops = 100000000;
+	auto perfTest = [loops](const char *name, auto func) {
+		auto start = chrono::high_resolution_clock::now();
+		long count = 0;
+		for (long i = 0; i < loops; i++)
+			count += func(0);
+		auto end = chrono::high_resolution_clock::now();
+		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+		cout << name << " nano seconds: " << nanos.count() << " count " << count << endl;
+
+	};
+
+	perfTest("test 0", good);
+	perfTest("test 1", bad);
+}
+
+// prefer template or factory over runtime polymorphism
+// memory is slow, delete is slow and probably can be done in a separate thread
+// keep cache hot, don't share L3 cache, use one CPU per thread
+// placement new a little slow due to nullptr check
+// static local initialization should not be used in hotpath, slow
+// gcc pow(base, 1.5) is slow
+// no system call in hotpath
+// profiling vs benchmarking ( google mivro benchmarking ), should do both
+// measure micro latency in environment simulating production data flow
+// hash table probing, keep a pointer to large data. or try google densh hash map
+// inline can slow down. don't inline rarely used code like error logging

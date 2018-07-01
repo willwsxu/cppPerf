@@ -1,5 +1,6 @@
 #include "..\catch.hpp"
-
+#include <chrono>
+#include <iostream>
 #include "slist.h"
 using slistSimple = slist<int>;
 using namespace std;
@@ -41,7 +42,7 @@ slist shared_ptr nano seconds: 106155300 count 2
 slist unique_ptr nano seconds:  81200800 count 2
 slist raw ptr nano seconds:     67407500 count 2
 */
-/*
+
 TEST_CASE("slist single thread memory tracker", "SLIST")
 {
 	using slistTracker = slist<MemoryTracker>;
@@ -52,7 +53,6 @@ TEST_CASE("slist single thread memory tracker", "SLIST")
 	CHECK(MemoryTracker::count == 3);
 	simple.pop_front();
 	CHECK(MemoryTracker::count == 2);
-
 
 	long loops = 100000;
 	auto perfTest = [](const char *name, auto func) {
@@ -95,4 +95,3 @@ TEST_CASE("slist single thread memory tracker", "SLIST")
 
 	using slistTrackerRAtomic = slist_r<true, MemoryTracker>;
 }
-*/
