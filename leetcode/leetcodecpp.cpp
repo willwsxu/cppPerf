@@ -2164,6 +2164,24 @@ public:
 			ans.push_back(x->first);
 		return ans;
 	}
+
+	// 692. Top K Frequent Words, sorted by frequency from highest to lowest. 
+	// If two words have the same frequency, then the word with the lower alphabetical order comes first.
+	vector<string> topKFrequent(vector<string>& words, int k) { // beat 99%
+		unordered_map<string, int> count;
+		for (auto& w : words)
+			count[w]++;
+		vector<pair<string, int>> vp;
+		vp.reserve(count.size());
+		move(begin(count), end(count), back_inserter(vp)); // move elements from map to vector
+		partial_sort(begin(vp), begin(vp) + k, end(vp), [](auto&a, auto&b) { return a.second > b.second || (a.second==b.second && a.first<b.first); });
+
+		vector<string> ans;
+		ans.reserve(k);
+		for (auto x = begin(vp); x != begin(vp) + k; x++)
+			ans.push_back(move(x->first));
+		return ans;
+	}
 };
 
 TEST_CASE("frequencySort string", "[NEW]")
