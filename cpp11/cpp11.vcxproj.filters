@@ -75,6 +75,9 @@
     <ClInclude Include="MessageConcept.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SmallObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -96,6 +99,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MessageTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="slistTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
