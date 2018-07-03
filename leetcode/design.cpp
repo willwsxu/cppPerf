@@ -38,30 +38,31 @@ public:
 	void postTweet(int userId, int tweetId) {
 		static int gid = 0;
 		allTweets[userId].emplace_back(tweetId, ++gid);
-		followees[userId].insert(userId); //follow self
 	}
 
 	/** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
 	vector<int> getNewsFeed(int userId) { // use heap speed up from 73 to 33 ms, beat 99%
 		vector<int> ans;
 		ans.reserve(10);
-		int i = 0;
+		followees[userId].insert(userId);  //follow self
 		auto& follow = followees[userId];  // cache map look up, big performance saver
-		vector<TweetIterator> tweet_heap;
+		vector<TweetIterator> tweet_heap;  // store latest tweet from each followee into a heap
 		for (auto f : follow) {
 			auto& tweet = allTweets[f];
 			if (!tweet.empty())
 				tweet_heap.push_back(TweetIterator(tweet));
 		}
-		make_heap(begin(tweet_heap), end(tweet_heap), [](auto&a, auto&b) {return a.begin->seq < b.begin->seq; });
+		auto comp = [](auto&a, auto&b) {return a.begin->seq < b.begin->seq; };
+		make_heap(begin(tweet_heap), end(tweet_heap), comp);
+		int i = 0;
 		while (!tweet_heap.empty() && i++<10) {
-			pop_heap(begin(tweet_heap), end(tweet_heap), [](auto&a, auto&b) {return a.begin->seq < b.begin->seq; });
+			pop_heap(begin(tweet_heap), end(tweet_heap), comp);
 			auto t = tweet_heap.back();
 			tweet_heap.pop_back();
 			ans.push_back(t.begin->tid);
-			if (++t.begin != t.end) {
+			if (++t.begin != t.end) {  // check if there is next tweet from this user
 				tweet_heap.push_back(t);
-				push_heap(begin(tweet_heap), end(tweet_heap), [](auto&a, auto&b) {return a.begin->seq < b.begin->seq; });
+				push_heap(begin(tweet_heap), end(tweet_heap), comp);
 			}
 		}
 		return ans;
@@ -70,7 +71,6 @@ public:
 	/** Follower follows a followee. If the operation is invalid, it should be a no-op. */
 	void follow(int followerId, int followeeId) {
 		if (followerId != followeeId) { // check invalid follow (error #2)
-			//followers[followeeId].insert(followerId);
 			followees[followerId].insert(followeeId);
 		}
 	}
@@ -78,8 +78,6 @@ public:
 	/** Follower unfollows a followee. If the operation is invalid, it should be a no-op. */
 	void unfollow(int followerId, int followeeId) {
 		if (followerId != followeeId) {  // check invalid unfollow (error #3)
-			//followers[followeeId].erase(followerId);
-
 			// remove followee from follower set
 			followees[followerId].erase(followeeId);
 		}
