@@ -413,7 +413,7 @@ TEST_CASE("generate matrix", "[GEN]")
 	Array2D t;
 	CHECK(t.generateMatrix(3) == vector<vector<int>>{ {1, 2, 3}, { 8, 9, 4 }, { 7, 6, 5 }});
 }
-TEST_CASE("Game of life", "[NEW]")
+TEST_CASE("Game of life", "[LIFE]")
 {
 	Array2D t;
 	SECTION("normal case") {
@@ -543,7 +543,7 @@ TEST_CASE("set zero", "[ZERO]")
 	}
 }
 
-TEST_CASE("image overlap", "[NEW]")
+TEST_CASE("image overlap", "[LAP]")
 {
 	Solution t;
 	SECTION("normal case") {

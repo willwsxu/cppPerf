@@ -2184,7 +2184,7 @@ public:
 	}
 };
 
-TEST_CASE("frequencySort string", "[NEW]")
+TEST_CASE("frequencySort string", "[FREQ]")
 {
 	Bucket b;
 	CHECK(b.frequencySort("loveleetcode") == "eeeeoollvtdc");

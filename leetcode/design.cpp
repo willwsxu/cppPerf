@@ -3,10 +3,30 @@
 
 using namespace std;
 
+struct Tweet  // immutable class
+{
+	Tweet(int id, int s) :tid(id), seq(s) {
+	}
+	const int tid;
+	const int seq;
+};
+
+struct TweetIterator
+{
+	TweetIterator(const vector<Tweet>& vt)
+	{
+		begin = rbegin(vt);
+		end = rend(vt);
+	}
+	typedef vector<Tweet>::const_reverse_iterator rit;
+	rit begin;
+	rit end;
+};
+
 class Twitter {
-	vector<pair<int, int>> allTweets;
-	unordered_map<int, unordered_set<int>> followers;  // map person to his or her followers
-	unordered_map<int, unordered_set<int>> followees;  // map person to people to whom he/she follow
+	unordered_map<int, vector<Tweet>>		allTweets;
+	//unordered_map<int, unordered_set<int>>	followers;  // map person to his or her followers
+	unordered_map<int, unordered_set<int>>	followees;  // map person to people to whom he/she follow
 
 public:
 	/** Initialize your data structure here. */
@@ -16,20 +36,32 @@ public:
 
 	/** Compose a new tweet. */
 	void postTweet(int userId, int tweetId) {
-		allTweets.emplace_back(userId, tweetId);
+		static int gid = 0;
+		allTweets[userId].emplace_back(tweetId, ++gid);
+		followees[userId].insert(userId); //follow self
 	}
 
 	/** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
-	vector<int> getNewsFeed(int userId) {
+	vector<int> getNewsFeed(int userId) { // use heap speed up from 73 to 33 ms, beat 99%
 		vector<int> ans;
 		ans.reserve(10);
 		int i = 0;
 		auto& follow = followees[userId];  // cache map look up, big performance saver
-		for (auto p = rbegin(allTweets); p != rend(allTweets); p++) {
-			if (p->first == userId || follow.count(p->first)) {
-				ans.push_back(p->second);
-				if (++i == 10)
-					break;
+		vector<TweetIterator> tweet_heap;
+		for (auto f : follow) {
+			auto& tweet = allTweets[f];
+			if (!tweet.empty())
+				tweet_heap.push_back(TweetIterator(tweet));
+		}
+		make_heap(begin(tweet_heap), end(tweet_heap), [](auto&a, auto&b) {return a.begin->seq < b.begin->seq; });
+		while (!tweet_heap.empty() && i++<10) {
+			pop_heap(begin(tweet_heap), end(tweet_heap), [](auto&a, auto&b) {return a.begin->seq < b.begin->seq; });
+			auto t = tweet_heap.back();
+			tweet_heap.pop_back();
+			ans.push_back(t.begin->tid);
+			if (++t.begin != t.end) {
+				tweet_heap.push_back(t);
+				push_heap(begin(tweet_heap), end(tweet_heap), [](auto&a, auto&b) {return a.begin->seq < b.begin->seq; });
 			}
 		}
 		return ans;
@@ -38,7 +70,7 @@ public:
 	/** Follower follows a followee. If the operation is invalid, it should be a no-op. */
 	void follow(int followerId, int followeeId) {
 		if (followerId != followeeId) { // check invalid follow (error #2)
-			followers[followeeId].insert(followerId);
+			//followers[followeeId].insert(followerId);
 			followees[followerId].insert(followeeId);
 		}
 	}
@@ -46,7 +78,7 @@ public:
 	/** Follower unfollows a followee. If the operation is invalid, it should be a no-op. */
 	void unfollow(int followerId, int followeeId) {
 		if (followerId != followeeId) {  // check invalid unfollow (error #3)
-			followers[followeeId].erase(followerId);
+			//followers[followeeId].erase(followerId);
 
 			// remove followee from follower set
 			followees[followerId].erase(followeeId);
