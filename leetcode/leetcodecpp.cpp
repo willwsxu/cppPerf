@@ -2112,84 +2112,6 @@ TEST_CASE("subarray sum", "[SUB]")
 	CHECK(t.subarraySum(vector<int>{1, 1, 1}, 2) == 2);
 }
 
-class Bucket
-{
-public:
-	// 451 Given a string, sort it in decreasing order based on the frequency of characters.
-	string frequencySort_old(string s) { // beat 34%
-		int count[128] = { 0 };
-		for (char c : s)
-			count[c]++;
-		sort(begin(s), end(s), [&count](char a, char b) {return a!=b &&(count[a] > count[b] || (count[a] == count[b] && a>b)); });
-		return s;
-	}
-	string frequencySort(string s) { // beat 99% using vector sort, faster than heap 93%
-		int count[128] = { 0 };
-		for (char c : s)
-			count[c]++;
-		vector<pair<int, char>> vic;  // count to char pair
-		vic.reserve(26);
-		for (int i = 0; i < sizeof(count)/sizeof(int); i++) {
-			if (count[i]) {
-				vic.emplace_back(count[i], (char)i);
-			}
-		}
-		//sort(begin(vic), end(vic), [](auto&a, auto&b) { return a.first > b.first; });
-		make_heap(begin(vic), end(vic), [](auto&a, auto&b) { return a.first < b.first; } );
-		int pos = 0;
-		//for (auto& p : vic) {
-		while (!vic.empty()) {
-			pop_heap(begin(vic), end(vic));
-			auto p = vic.back();
-			vic.pop_back();
-			s.replace(pos, p.first, p.first, p.second);
-			pos += p.first;
-		}
-		return s;
-	}
-
-	// 347. Top K Frequent Elements
-	vector<int> topKFrequent(vector<int>& nums, int k) { // beat 99%
-		unordered_map<int, int> count;
-		for (int i : nums)
-			count[i]++;
-		vector<pair<int, int>> vpii;
-		vpii.reserve(count.size());
-		move(begin(count), end(count), back_inserter(vpii));
-		nth_element(begin(vpii), begin(vpii) + k - 1, end(vpii), [](auto&a, auto&b) { return a.second > b.second; });
-		vector<int> ans;
-		ans.reserve(k);
-		//transform(begin(vpii), begin(vpii) + k, back_inserter(ans), [](auto&p) {return p.first; }); // slower
-		for (auto x = begin(vpii); x != begin(vpii) + k; x++)
-			ans.push_back(x->first);
-		return ans;
-	}
-
-	// 692. Top K Frequent Words, sorted by frequency from highest to lowest. 
-	// If two words have the same frequency, then the word with the lower alphabetical order comes first.
-	vector<string> topKFrequent(vector<string>& words, int k) { // beat 99%
-		unordered_map<string, int> count;
-		for (auto& w : words)
-			count[w]++;
-		vector<pair<string, int>> vp;
-		vp.reserve(count.size());
-		move(begin(count), end(count), back_inserter(vp)); // move elements from map to vector
-		partial_sort(begin(vp), begin(vp) + k, end(vp), [](auto&a, auto&b) { return a.second > b.second || (a.second==b.second && a.first<b.first); });
-
-		vector<string> ans;
-		ans.reserve(k);
-		for (auto x = begin(vp); x != begin(vp) + k; x++)
-			ans.push_back(move(x->first));
-		return ans;
-	}
-};
-
-TEST_CASE("frequencySort string", "[FREQ]")
-{
-	Bucket b;
-	CHECK(b.frequencySort("loveleetcode") == "eeeeoollvtdc");
-}
-
 class TwoPointers {
 public:
 	//567  return true if s2 contains the permutation of s1
@@ -2234,5 +2156,32 @@ public:
 				count += (second - first + 1);  // add all subarrays from second pointer to first pointer
 		}
 		return count;
+	}
+	// 826. Most Profit Assigning Work, first 2 vectors are for job's difficulty and profit
+	// 3rd vector is worker's ability, can only do job of same of less difficulty
+	int maxProfitAssignment(vector<int>& difficulty, vector<int>& profit, vector<int>& worker) {
+		auto p = begin(profit);
+		using pii = pair<int, int>;
+		vector<pii> zip;
+		zip.reserve(profit.size());
+		for (auto d = begin(difficulty); d != end(difficulty) && p != end(profit); d++, p++) {
+			zip.emplace_back(*d, *p);
+		}
+		// assume all vectors are not sorted
+		sort(begin(zip), end(zip), [](auto&a, auto&b) { return a.first < b.first; });  // sort by difficult
+		sort(begin(worker), end(worker));
+		// work with higher ability should earn more, thus we only need to go through zip once;
+		int maxP = 0;
+		int total = 0;
+		auto z = begin(zip);
+		for (int a : worker) {
+			for (; z != end(zip); z++) {
+				if (z->first > a)  // job too difficult for worker a
+					break;
+				maxP = max(maxP, z->second);
+			}  // found max profit up to difficulty a
+			total += maxP;
+		}
+		return total;
 	}
 };
