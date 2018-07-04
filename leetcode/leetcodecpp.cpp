@@ -2172,16 +2172,19 @@ public:
 		sort(begin(worker), end(worker));
 		// work with higher ability should earn more, thus we only need to go through zip once;
 		int maxP = 0;
-		int total = 0;
 		auto z = begin(zip);
-		for (int a : worker) {
+		auto Max = [&z, &zip, &maxP](int acc, int a) {
 			for (; z != end(zip); z++) {
 				if (z->first > a)  // job too difficult for worker a
 					break;
 				maxP = max(maxP, z->second);
 			}  // found max profit up to difficulty a
-			total += maxP;
-		}
-		return total;
+			return maxP+acc;
+		};
+		return accumulate(begin(worker), end(worker), 0, Max); // faster after using accumulate, 89ms vs 114ms
+		//for (int a : worker) {
+		//	total += maxP;
+		//}
+		//return total;
 	}
 };
