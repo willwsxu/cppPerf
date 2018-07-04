@@ -2189,3 +2189,99 @@ TEST_CASE("frequencySort string", "[FREQ]")
 	Bucket b;
 	CHECK(b.frequencySort("loveleetcode") == "eeeeoollvtdc");
 }
+
+class TwoPointers {
+public:
+	//567  return true if s2 contains the permutation of s1
+	bool checkInclusion(string s1, string s2) {  // beat 83%
+		int len1 = s1.length();
+		int len2 = s2.length();
+		if (len1 > len2)
+			return false;
+		int count1[128] = { 0 };
+		int count2[128] = { 0 };
+		for (char c : s1)
+			count1[c]++;
+		auto test = [&count1, &count2]() {
+			for (int i = 'a'; i <= 'z'; i++) {
+				if (count1[i] > count2[i])
+					return false;
+			}
+			return true;
+		};
+		for (int i = 0; i<len1; i++)
+			count2[s2[i]]++;
+		if (test())
+			return true;
+		for (int i = len1; i < len2; i++) {  // sliding window of len1
+			count2[s2[i]]++;       // add next char
+			count2[s2[i - len1]]--;  // remove first
+			if (test())
+				return true;
+		}
+		return false;
+	}
+
+	bool checkInclusion2(string s1, string s2) {  // beat 99%
+		int len1 = s1.length();
+		int len2 = s2.length();
+		if (len1 > len2)
+			return false;
+		int count[128] = { 0 };
+		auto same = [&count]() {
+			for (int i = 'a'; i <= 'z'; i++) {
+				if (count[i])
+					return false;
+			}
+			return true;
+		};
+		for (int i = 0; i < len1; i++) {
+			count[s1[i]]++;   // add letter count from s1
+			count[s2[i]]--;   // subtract letter count from s2
+		}
+		if (same())
+			return true;
+		for (int i = len1; i < len2; i++) {  // sliding window of len1
+			count[s2[i]]--;         // subtract next char
+			count[s2[i - len1]]++;  // add back first
+			if (same())
+				return true;
+		}
+		return false;
+	}
+
+	// 713 number of (contiguous) subarrays where the product of all the elements in the subarray is less than k
+	int numSubarrayProductLessThanK(vector<int>& nums, int k) {  // beat 62%
+		int count = 0;
+		int prod = 1;   // compute product between first and second pointer
+		for (int second = 0, first = 0; second < (int)nums.size(); second++) {
+			prod *= nums[second];     // multiply new val
+			while (prod >= k && first <= second) { // divide from beginning of subarray, update pointer
+				prod /= nums[first++];
+			}
+			if (first <= second)   // subarray is not empty
+				count += (second - first + 1);  // add all subarrays from second pointer to first pointer
+		}
+		return count;
+	}
+};
+/*
+class Heap
+{
+public:
+	// Given two integer arrays nums1 and nums2 sorted in ascending order and an integer k
+	// Find the k pairs (u1,v1),(u2,v2) ...(uk,vk) with the smallest sums
+	vector<pair<int, int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+		using pii = pair<int, int>;
+		vector<pii> heap;
+		for (int n1 : nums1) {
+			for (int n2 : nums2) {
+				heap.emplace_back(n1, n2);
+			}
+		}
+		auto comp = [](pii&p1, pii&p2) { return p1.first + p1.second > p2.first + p2.second; };
+		if (k>=heap.size())
+			return 
+	}
+};
+*/

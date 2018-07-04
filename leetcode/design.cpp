@@ -38,13 +38,13 @@ public:
 	void postTweet(int userId, int tweetId) {
 		static int gid = 0;
 		allTweets[userId].emplace_back(tweetId, ++gid);
+		followees[userId].insert(userId);  //follow self
 	}
 
 	/** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
 	vector<int> getNewsFeed(int userId) { // use heap speed up from 73 to 33 ms, beat 99%
 		vector<int> ans;
 		ans.reserve(10);
-		followees[userId].insert(userId);  //follow self
 		auto& follow = followees[userId];  // cache map look up, big performance saver
 		vector<TweetIterator> tweet_heap;  // store latest tweet from each followee into a heap
 		for (auto f : follow) {
@@ -58,7 +58,7 @@ public:
 		while (!tweet_heap.empty() && i++<10) {
 			pop_heap(begin(tweet_heap), end(tweet_heap), comp);
 			auto t = tweet_heap.back();
-			tweet_heap.pop_back();
+			tweet_heap.pop_back();      // must pop out then push back, why?
 			ans.push_back(t.begin->tid);
 			if (++t.begin != t.end) {  // check if there is next tweet from this user
 				tweet_heap.push_back(t);
