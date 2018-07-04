@@ -114,3 +114,26 @@ TEST_CASE("Tweeter design", "[NEW]")
 	tw.follow(1, 2);
 	CHECK(tw.getNewsFeed(1) == vector<int>{9, 8, 7, 6, 5});  // maintain relative order of past tweets
 }
+
+
+
+class Heap
+{
+	public:
+	// Given two integer arrays nums1 and nums2 sorted in ascending order and an integer k
+	// Find the k pairs (u1,v1),(u2,v2) ...(uk,vk) with the smallest sums
+	vector<pair<int, int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+		size_t len1 = nums1.size();
+		size_t len2 = nums2.size();
+		vector<int>& longOne = len1 > len2 ? nums1 : nums2;
+		vector<int>& shortOne = len1 <= len2 ? nums1 : nums2;
+		using pii = pair<int, int>;
+		vector<pii> heap;
+		for (int n2 : nums2)  // initialize heap with k pairs, 
+			heap.emplace_back(nums1[0], n2);
+
+		auto comp = [](pii&p1, pii&p2) { return p1.first + p1.second > p2.first + p2.second; };
+		//if (k >= heap.size())
+			return heap;
+	}
+};

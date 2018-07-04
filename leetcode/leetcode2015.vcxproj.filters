@@ -53,7 +53,7 @@
     <ClCompile Include="OtherTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="design.cpp">
+    <ClCompile Include="designHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

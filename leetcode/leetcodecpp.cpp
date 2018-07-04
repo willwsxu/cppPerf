@@ -2236,23 +2236,3 @@ public:
 		return count;
 	}
 };
-/*
-class Heap
-{
-public:
-	// Given two integer arrays nums1 and nums2 sorted in ascending order and an integer k
-	// Find the k pairs (u1,v1),(u2,v2) ...(uk,vk) with the smallest sums
-	vector<pair<int, int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
-		using pii = pair<int, int>;
-		vector<pii> heap;
-		for (int n1 : nums1) {
-			for (int n2 : nums2) {
-				heap.emplace_back(n1, n2);
-			}
-		}
-		auto comp = [](pii&p1, pii&p2) { return p1.first + p1.second > p2.first + p2.second; };
-		if (k>=heap.size())
-			return 
-	}
-};
-*/
