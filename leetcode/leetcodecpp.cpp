@@ -2193,36 +2193,7 @@ TEST_CASE("frequencySort string", "[FREQ]")
 class TwoPointers {
 public:
 	//567  return true if s2 contains the permutation of s1
-	bool checkInclusion(string s1, string s2) {  // beat 83%
-		int len1 = s1.length();
-		int len2 = s2.length();
-		if (len1 > len2)
-			return false;
-		int count1[128] = { 0 };
-		int count2[128] = { 0 };
-		for (char c : s1)
-			count1[c]++;
-		auto test = [&count1, &count2]() {
-			for (int i = 'a'; i <= 'z'; i++) {
-				if (count1[i] > count2[i])
-					return false;
-			}
-			return true;
-		};
-		for (int i = 0; i<len1; i++)
-			count2[s2[i]]++;
-		if (test())
-			return true;
-		for (int i = len1; i < len2; i++) {  // sliding window of len1
-			count2[s2[i]]++;       // add next char
-			count2[s2[i - len1]]--;  // remove first
-			if (test())
-				return true;
-		}
-		return false;
-	}
-
-	bool checkInclusion2(string s1, string s2) {  // beat 99%
+	bool checkInclusion(string s1, string s2) {  // beat 99%
 		int len1 = s1.length();
 		int len2 = s2.length();
 		if (len1 > len2)
@@ -2239,7 +2210,7 @@ public:
 			count[s1[i]]++;   // add letter count from s1
 			count[s2[i]]--;   // subtract letter count from s2
 		}
-		if (same())
+		if (same())  // same when count is 0 for all letters
 			return true;
 		for (int i = len1; i < len2; i++) {  // sliding window of len1
 			count[s2[i]]--;         // subtract next char
