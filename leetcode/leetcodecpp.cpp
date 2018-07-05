@@ -2182,9 +2182,44 @@ public:
 			return maxP+acc;
 		};
 		return accumulate(begin(worker), end(worker), 0, Max); // faster after using accumulate, 89ms vs 114ms
-		//for (int a : worker) {
-		//	total += maxP;
-		//}
-		//return total;
+	}
+
+	template<class RanIt>
+	pair<RanIt, RanIt> mountain_range(RanIt first, RanIt last)
+	{
+		first= adjacent_find(first, last, less<int>());
+		if (first != last) {
+			auto top = first + 1;
+			auto down = top;
+			while (++down != last) {
+				if (*down == *top)
+					return mountain_range(down, last);
+				else if (*down < *top)
+					break;
+				else
+					++top;
+			}
+			if (down != last) {
+				auto next = down;
+				while (++next != last) {
+					if (*next >= *down)
+						break;
+					else
+						++down;
+				}
+				return{ first, down };
+			}
+		}
+		return{ last,last };
+	}
+	// 845. Longest Mountain in Array, strictly up or down
+	int longestMountain(vector<int>& A) {
+		int longest = 0;
+		auto res = mountain_range(begin(A), end(A));
+		while (res.first != res.second) {
+			longest = max(longest, (int)distance(res.first, res.second)+1);
+			res= mountain_range(res.second, end(A));
+		}
+		return longest;
 	}
 };
