@@ -466,38 +466,6 @@ TEST_CASE("kth smallest BST Components", "[BST]")
 	}
 }
 
-// 173. Binary Search Tree Iterator, iterator will be initialized with the root node of a BST
-// Calling next() will return the next smallest number in the BST
-// no duplciate
-class BSTIterator {   // beats 97%!!
-	stack<TreeNode*> roots;
-public:
-	BSTIterator(TreeNode *root) {
-		while (root) {
-			roots.push(root);
-			root = root->left;
-		} // get to left most leaf node
-	}
-
-	/** @return whether we have a next smallest number */
-	bool hasNext() {
-		return !roots.empty();
-	}
-
-	/** @return the next smallest number */
-	int next() {
-		TreeNode *cur = roots.top();
-		int ans = cur->val;
-		roots.pop();
-		cur = cur->right;
-		while (cur) {
-			roots.push(cur);
-			cur = cur->left;
-		}
-		return ans;
-	}
-};
-
 //449. Serialize and Deserialize BST
 class Codec {  // beat 87%
 	vector<int> v_preorder;
