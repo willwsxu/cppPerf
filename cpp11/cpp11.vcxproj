@@ -125,6 +125,7 @@
     <ClInclude Include="HashTableMockImpl.h" />
     <ClInclude Include="MessageConcept.h" />
     <ClInclude Include="ObjectFactory.h" />
+    <ClInclude Include="SeanParentAlgorithm.h" />
     <ClInclude Include="slist.h" />
     <ClInclude Include="Matrix2D.h" />
     <ClInclude Include="meta.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="HashTableBaseTest.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MessageTest.cpp" />
+    <ClCompile Include="SeanParentTest.cpp" />
     <ClCompile Include="slistTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
