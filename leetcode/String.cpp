@@ -35,36 +35,28 @@ public:
 
 	// 553. Optimal Division, maximize result, add / and parenthesis only, no redundant parenthesis
 	// size [1,10], nums val [2,1000]
-	float maximize(const vector<int>& nums, int start, int last)
-	{
-		int n = last - start;
-		if (n < 1)
-			return 0;
+	// simple algorithm to maximize division of integers:
+	// use first int as dividend, rest as divisor. divide in sequential order to minimize divisor
+	string optimalDivision(vector<int>& nums) { // tricky question, but easy. beat 100%
+		if (nums.empty())
+			return "";
+		string str;
+		str.reserve(50);
+		str.append(to_string(nums[0]));
+		int n = nums.size();
 		if (n == 1)
-			return (float)nums[start];
-		float div2 = (float)nums[start] / nums[start + 1];
-		if (n == 2)
-			return div2;
-		float v1 = (float)nums[start] / minimize(nums, start + 1, last);
-		float v2 = div2/ minimize(nums, start + 2, last);
-		return max(v1, v2);
-	}
-	float minimize(const vector<int>& nums, int start, int last)
-	{
-		int n = last - start;
-		if (n < 1)
-			return 0;
-		if (n == 1)
-			return (float)nums[start];
-		float div2 = (float)nums[start] / nums[start + 1];
-		if (n == 2)
-			return div2;
-		float v1 = (float)nums[start] / maximize(nums, start + 1, last);
-		float v2 = div2 / maximize(nums, start + 2, last);
-		return min(v1, v2);
-	}
-	string optimalDivision(vector<int>& nums) {
-		return "";
+			return str;
+		str.append(1, '/');
+		if (n > 2)
+			str.append(1, '(');
+		for (int i = 1; i < n; i++) {
+			str.append(to_string(nums[i]));
+			if (i < n - 1)
+				str.append(1, '/');
+		}
+		if (n > 2)
+			str.append(1, ')');
+		return str;
 	}
 
 	// 856. Score of Parentheses
@@ -93,25 +85,6 @@ public:
 		return scoreOfParenthesesHelp(S);
 	}
 
-	// 583. Delete Operation for Two Strings, minimum number of steps required to make word1 and word2 the same
-	vector<vector<int>> dp;
-	int minDistance(const string& word1, const string& word2, int pos1, int pos2) {
-		if (pos1 == word1.size())
-			return word2.size() - pos2;
-		if (pos2 == word2.size())
-			return word1.size() - pos1;
-		if (dp[pos1][pos2] >= 0)
-			return dp[pos1][pos2];
-		if (word1[pos1] == word2[pos2])
-			dp[pos1][pos2]= minDistance(word1, word2, pos1 + 1, pos2 + 1);
-		else
-			dp[pos1][pos2] = min(1 + minDistance(word1, word2, pos1 + 1, pos2), 1+minDistance(word1, word2, pos1, pos2 + 1));
-		return dp[pos1][pos2];
-	}
-	int minDistance(string word1, string word2) {
-		dp = vector<vector<int>>( word1.size(), vector<int>(word2.size(), int(-1)) );
-		return minDistance(word1, word2, 0, 0);
-	}
 };
 
 
@@ -130,10 +103,4 @@ TEST_CASE("parenthesis score", "[paren]")
 	CHECK(s.scoreOfParentheses("()()") == 2);
 	CHECK(s.scoreOfParentheses("(())") == 2);
 	CHECK(s.scoreOfParentheses("(()(()))") == 6);
-}
-
-TEST_CASE("delete char to make string same", "[NEW]")
-{
-	String s;
-	CHECK(s.minDistance("sea", "eat") == 2);
 }

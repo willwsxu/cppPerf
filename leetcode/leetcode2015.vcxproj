@@ -156,6 +156,7 @@
     <ClCompile Include="BinaryTree.cpp" />
     <ClCompile Include="designHeap.cpp" />
     <ClCompile Include="designIterator.cpp" />
+    <ClCompile Include="DynamicProgramming.cpp" />
     <ClCompile Include="leetcode.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
