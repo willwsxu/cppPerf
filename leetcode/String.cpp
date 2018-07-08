@@ -32,11 +32,82 @@ public:
 		auto i = c1[0] * c2[1] + c1[1] * c2[0];
 		return to_string(r).append(1, '+').append(to_string(i)).append(1, 'i');
 	}
+
+	// 553. Optimal Division, maximize result, add / and parenthesis only, no redundant parenthesis
+	// size [1,10], nums val [2,1000]
+	float maximize(const vector<int>& nums, int start, int last)
+	{
+		int n = last - start;
+		if (n < 1)
+			return 0;
+		if (n == 1)
+			return (float)nums[start];
+		float div2 = (float)nums[start] / nums[start + 1];
+		if (n == 2)
+			return div2;
+		float v1 = (float)nums[start] / minimize(nums, start + 1, last);
+		float v2 = div2/ minimize(nums, start + 2, last);
+		return max(v1, v2);
+	}
+	float minimize(const vector<int>& nums, int start, int last)
+	{
+		int n = last - start;
+		if (n < 1)
+			return 0;
+		if (n == 1)
+			return (float)nums[start];
+		float div2 = (float)nums[start] / nums[start + 1];
+		if (n == 2)
+			return div2;
+		float v1 = (float)nums[start] / maximize(nums, start + 1, last);
+		float v2 = div2 / maximize(nums, start + 2, last);
+		return min(v1, v2);
+	}
+	string optimalDivision(vector<int>& nums) {
+		return "";
+	}
+
+	// 856. Score of Parentheses
+	//() 1, ()() 1+1=2, (()) 2*1=2
+	size_t pos=0;
+	int scoreOfParenthesesHelp(const string& S) {
+		int res = 0;
+		while (pos < S.size()) {
+			char c = S[pos++];
+			if (c == '(') {
+				if (S[pos] == ')') {
+					res++;
+					pos++;
+				}
+				else
+					res += 2 * scoreOfParenthesesHelp(S);
+			}
+			else
+				return res;
+		}
+		return res;
+	}
+
+	int scoreOfParentheses(const string& S) {
+		pos = 0;
+		return scoreOfParenthesesHelp(S);
+	}
 };
 
 
-TEST_CASE("Complex multiply", "[NEW]")
+TEST_CASE("Complex multiply", "[COMPLEX]")
 {
 	String s;
 	CHECK(s.complexNumberMultiply("1+1i", "1+1i") == "0+2i");
+}
+
+
+TEST_CASE("parenthesis score", "[NEW]")
+{
+	String s;
+	CHECK(s.scoreOfParentheses("((()())())") == 10);
+	CHECK(s.scoreOfParentheses("()") == 1);
+	CHECK(s.scoreOfParentheses("()()") == 2);
+	CHECK(s.scoreOfParentheses("(())") == 2);
+	CHECK(s.scoreOfParentheses("(()(()))") == 6);
 }

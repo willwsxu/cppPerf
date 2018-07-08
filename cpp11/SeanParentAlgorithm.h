@@ -1,5 +1,9 @@
 #pragma once
 
+// no raw loops
+// no raw synchronization
+// no raw pointers
+
 template <typename In, typename Pred>
 In stable_partition(In first, In last, Pred p)
 {
@@ -38,3 +42,5 @@ void sort_subrange(In first, In last, In sf, In sl)
 	}
 	partial_sort(sf, sl, last);
 }
+// slide
+// gather
