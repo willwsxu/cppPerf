@@ -85,6 +85,28 @@ public:
 		return scoreOfParenthesesHelp(S);
 	}
 
+	// 609. Find Duplicate File in System, output files with duplicate content
+	vector<vector<string>> findDuplicate(vector<string>& paths) { // beat 99% easy
+		unordered_map<string, vector<string>> contents;
+		for (const auto& p : paths) {
+			vector<string> files;
+			istringstream iss(p);
+			copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(files));
+			for (size_t i = 1; i < files.size(); i++) {
+				auto c = files[i].find_first_of('(');
+				if (c != string::npos) {
+					contents[files[i].substr(c + 1, files[i].size() - c - 2)].push_back(files[0]+"/"+files[i].substr(0, c));
+				}
+			}
+		}
+		vector<vector<string>> ans;
+		for (auto& dup : contents) {
+			if (dup.second.size() > 1) {
+				ans.push_back(std::move(dup.second));
+			}
+		}
+		return ans;
+	}
 };
 
 
@@ -103,4 +125,12 @@ TEST_CASE("parenthesis score", "[paren]")
 	CHECK(s.scoreOfParentheses("()()") == 2);
 	CHECK(s.scoreOfParentheses("(())") == 2);
 	CHECK(s.scoreOfParentheses("(()(()))") == 6);
+}
+
+
+TEST_CASE("find duplicate files", "[NEW]")
+{
+	String s;
+	CHECK(s.findDuplicate(vector<string>{ "root/a 1.txt(abcd) 2.txt(efgh)", "root/c 3.txt(abcd)", "root/c/d 4.txt(efgh)", "root 4.txt(efgh)" }) 
+		== vector<vector<string>>{ {"root/a/2.txt", "root/c/d/4.txt", "root/4.txt"}, {"root/a/1.txt", "root/c/3.txt"}});
 }
