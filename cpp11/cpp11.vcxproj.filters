@@ -78,7 +78,7 @@
     <ClInclude Include="SmallObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SeanParentAlgorithm.h">
+    <ClInclude Include="SeanParentBetterCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
