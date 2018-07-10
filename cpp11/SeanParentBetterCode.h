@@ -4,9 +4,9 @@
 // 5 Goals
 // no Incomplete types
 // no raw loops
-// No Incidental Data Structures (no raw pointers)
+// No Incidental Data Structures
 // no raw synchronization primitives
-// no inheritance
+// no inheritance (no raw pointers)
 
 template <typename In, typename Pred>
 In stable_partition(In first, In last, Pred p)
@@ -69,8 +69,19 @@ std::pair<RandI, RandI> slide(RandI first, RandI last, RandI to)
 }
 
 template<typename BiDirI, typename UPred>
-std::pair<BiDirI, BiDirI> gather(BiDirI first, BiDirI last, BiDirI to, UPred p)
+auto gather(BiDirI first, BiDirI last, BiDirI to, UPred p)->std::pair<BiDirI, BiDirI>
 {
-	return{ stable_partition(first, to, not1(p)), stable_partition(to, last, p) };
+	BiDirI a = std::stable_partition(first, to, not1(p));
+	BiDirI b = std::stable_partition(to, last, p);
+	return{ a, b };
 }
 
+
+template<typename BiDirI, typename UPred>
+auto gather2(BiDirI first, BiDirI last, BiDirI to, UPred p)->std::pair<BiDirI, BiDirI>
+{
+	using value_type = iterator_traits<BiDirI>::value_type;
+	BiDirI a = std::stable_partition(first, to, [&p](const value_type& x) {return !p(x); });
+	BiDirI b = std::stable_partition(to, last, p);
+	return{ a, b };
+}
