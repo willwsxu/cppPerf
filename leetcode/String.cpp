@@ -119,14 +119,12 @@ public:
 		for (int i = 0; i < n; i++)
 			triplets.emplace_back(indexes[i], sources[i], targets[i]);
 		sort(begin(triplets), end(triplets), [](auto&a, auto&b) {return get<0>(a) > get<0>(b); });
-		//int delta=0;  // keep track of string len change, to adjust index later!!!
 		for (const auto& tr : triplets) {
 			const auto&src = get<1>(tr);
-			auto loc = cbegin(S) + get<0>(tr);// +delta;
+			auto loc = cbegin(S) + get<0>(tr);
 			if (equal(cbegin(src), cend(src), loc)) {  // if source match S, replace, and update delta
 				const auto& dst = get<2>(tr);
 				S.replace(loc, loc + src.size(), dst);
-				//delta += dst.size() - src.size();
 			}
 		}
 		return S;
