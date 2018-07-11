@@ -107,6 +107,30 @@ public:
 		}
 		return ans;
 	}
+
+
+	// 833. Find And Replace in String,
+	// if source match S at index, replace with target. guarantee no overlap
+	string findReplaceString(string S, vector<int>& indexes, vector<string>& sources, vector<string>& targets) {// beat 99.8%
+		using triple = tuple<int, string, string>;
+		vector<triple> triplets;  // bundle and sort by index
+		int n = indexes.size();
+		triplets.reserve(n);
+		for (int i = 0; i < n; i++)
+			triplets.emplace_back(indexes[i], sources[i], targets[i]);
+		sort(begin(triplets), end(triplets), [](auto&a, auto&b) {return get<0>(a) > get<0>(b); });
+		//int delta=0;  // keep track of string len change, to adjust index later!!!
+		for (const auto& tr : triplets) {
+			const auto&src = get<1>(tr);
+			auto loc = cbegin(S) + get<0>(tr);// +delta;
+			if (equal(cbegin(src), cend(src), loc)) {  // if source match S, replace, and update delta
+				const auto& dst = get<2>(tr);
+				S.replace(loc, loc + src.size(), dst);
+				//delta += dst.size() - src.size();
+			}
+		}
+		return S;
+	}
 };
 
 
@@ -128,9 +152,16 @@ TEST_CASE("parenthesis score", "[paren]")
 }
 
 
-TEST_CASE("find duplicate files", "[NEW]")
+TEST_CASE("find duplicate files", "[DUP]")
 {
 	String s;
 	CHECK(s.findDuplicate(vector<string>{ "root/a 1.txt(abcd) 2.txt(efgh)", "root/c 3.txt(abcd)", "root/c/d 4.txt(efgh)", "root 4.txt(efgh)" }) 
 		== vector<vector<string>>{ {"root/a/2.txt", "root/c/d/4.txt", "root/4.txt"}, {"root/a/1.txt", "root/c/3.txt"}});
+}
+
+
+TEST_CASE("string replacements", "[NEW]")
+{
+	String s;
+	CHECK(s.findReplaceString("abcd", vector<int>{0, 2}, vector<string>{"ab", "ec"}, vector<string>{"eee", "ffff"}) == "eeecd");
 }
