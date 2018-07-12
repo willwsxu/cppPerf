@@ -4,6 +4,7 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
+#include "..\common\myalgo.h"
 using namespace std;
 
 int findMaxForm(vector<string>& strs, int m, int n) {
@@ -1531,20 +1532,6 @@ TEST_CASE("Minimum Size Subarray Sum", "[SubArray]")
 	}
 }
 
-template<class ForwardIt>
-ForwardIt max_element_last(ForwardIt first, ForwardIt last)
-{
-	if (first == last) return last;
-
-	ForwardIt largest = first;
-	++first;
-	for (; first != last; ++first) {
-		if (*largest <= *first) {
-			largest = first;
-		}
-	}
-	return largest;
-}
 class Array
 {
 	void visit(vector<int>& nums, int pos, vector<int>& ans)
