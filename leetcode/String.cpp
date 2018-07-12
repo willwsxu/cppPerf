@@ -129,6 +129,19 @@ public:
 		}
 		return S;
 	}
+	// 49. Group Anagrams
+	vector<vector<string>> groupAnagrams(vector<string>& strs) { // beat 96%
+		map<string, vector<string>> group;
+		for (const auto& s : strs) {
+			string key = s;
+			sort(begin(key), end(key)); // sort string as key
+			group[key].emplace_back(s); // group sring by sorted key
+		}
+		vector<vector<string>> ans;
+		ans.reserve(group.size());
+		transform(begin(group), end(group), back_inserter(ans), [](auto&p) {return move(p.second); });  // move groups from map to vector
+		return ans;
+	}
 };
 
 
