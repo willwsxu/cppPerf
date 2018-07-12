@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
+#include "..\common\myalgo.h"
 using namespace std;
 
 #include <complex>
@@ -129,12 +130,74 @@ public:
 		}
 		return S;
 	}
+
+	int minDifference(vector<int>& minutes)
+	{
+		bucket_sort(begin(minutes), end(minutes), 24 * 60);
+		int ans = INT_MAX;
+		int n = minutes.size();
+		for (int i = 1; i < n; i++)
+			ans = min(ans, minutes[i] - minutes[i - 1]);
+		return min(ans, 24 * 60 + minutes[0] - minutes[n - 1]);
+	}
+
+	// 539. Minimum Time Difference in minutes. The input time is legal and ranges from 00:00 to 23:59, points [2,20000]
+	int findMinDifference(vector<string>& timePoints) {  // beat 73% using sort, beat 97% with bucket sort
+		vector<int> minutes;
+		minutes.reserve(timePoints.size());
+		auto convert = [](const string& s) {
+			istringstream iss(s);
+			int h, m;
+			iss >> h;
+			iss.ignore(1);
+			iss >> m;
+			return h * 60 + m;
+		};
+		transform(begin(timePoints), end(timePoints), back_inserter(minutes), convert);
+		return minDifference(minutes);
+	}
+
+	// 831. Masking Personal Information, string can be either email or phone
+	// email in form name1@name2.name3, mask name 1 with first and last letter and 5 * in between
+	// phone # use [+-() ], mask local # as ***-***-1111, mask international # as +***-***-***-1111
+	string maskPII(string S) {  // beat 100%, 0ms vs avg 4 ms
+		if (isalpha(S[0])) {  // email
+			transform(begin(S), end(S), begin(S), [](unsigned char c) { return tolower(c); });
+			size_t at = S.find_first_of('@');
+			if (at != string::npos) {
+				S.replace(1, at - 2, 5, '*');
+			}
+			return S;
+		}
+		else {
+			int digits = count_if(begin(S), end(S), [](unsigned char c) { return isdigit(c); });
+			string masking;
+			masking.reserve(digits + 4);
+			if (digits > 10) {  // add county code mask
+				masking.append(1, '+');
+				masking.append(digits - 10, '*');
+				masking.append(1, '-');
+			}
+			masking.append("***-***-");  // local mask
+			int len = masking.size();
+			int count = 0;
+			for (auto ch = rbegin(S); ch != rend(S) && count<4; ch++) {
+				if (isdigit(*ch)) {
+					masking.append(1, *ch);
+					count++;
+				}
+			}
+			reverse(begin(masking) + len, end(masking));  // reverse order of last 4 digits
+			return masking;
+		}
+	}
+
 	// 49. Group Anagrams
 	vector<vector<string>> groupAnagrams(vector<string>& strs) { // beat 96%
 		map<string, vector<string>> group;
 		for (const auto& s : strs) {
 			string key = s;
-			sort(begin(key), end(key)); // sort string as key
+			bucket_sort(begin(key), end(key), 128); // sort string as key
 			group[key].emplace_back(s); // group sring by sorted key
 		}
 		vector<vector<string>> ans;
@@ -175,4 +238,234 @@ TEST_CASE("string replacements", "[NEW]")
 {
 	String s;
 	CHECK(s.findReplaceString("abcd", vector<int>{0, 2}, vector<string>{"ab", "ec"}, vector<string>{"eee", "ffff"}) == "eeecd");
+}
+
+
+class StringX {
+	void bucket_sort(vector<int>& minutes, int buckets)
+	{
+		vector<int> b(buckets, 0);
+		for (int m : minutes)
+			b[m]++;
+		auto cp = begin(minutes);
+		for (int i = 0; i < buckets; i++)
+		{
+			if (b[i]) {
+				fill_n(cp, b[i], i);
+				cp += b[i];
+			}
+		}
+	}
+public:
+
+	struct validNumber
+	{
+		const string& str;
+		int first;
+		int last;
+		bool lead0;  // ends none zero
+		validNumber(const string& s, int f, int l) :str(s), first(f), last(l) {
+			lead0 = (str[first] == '0');
+		}
+
+		string generate1()
+		{
+			string res;
+			res.append(1, str[first]).append(1, '.').append(begin(str) + first + 1, begin(str) + last);
+			return res;
+		}
+		vector<string> generate12()
+		{
+			int len = last - first;
+			vector<string> ans;
+			if (len == 1 || !lead0) {  // add whole
+				ans.push_back(str.substr(first, len));
+			}
+			if (len < 2 || str[last - 1] == '0')
+				return ans;
+			auto b = begin(str) + first;
+			auto e = b + len;
+			int loop = lead0 ? 2 : len;
+			for (int dp = 1; dp < loop; dp++) {
+				string res;
+				res.reserve(len + 1);
+				res.append(b, b + dp).append(1, '.').append(b + dp, e);
+				ans.push_back(res);
+			}
+			return ans;
+		}
+		template<typename BackIns>
+		void generate(BackIns back, string second) {
+			int len = last - first;
+			int totalLen = len + second.size() + 5;
+			auto b = begin(str) + first;
+			auto e = b + len;
+			if (len == 1 || !lead0) {  // add whole
+				string res;
+				res.reserve(totalLen);
+				res.append(1, '(').append(b, e).append(", ").append(second).append(1, ')');
+				*back++ = res;
+			}
+			if (len < 2 || str[last - 1] == '0')
+				return;
+			int loop = lead0 ? 2 : len;
+			for (int dp = 1; dp < loop; dp++) {
+				string res;
+				res.reserve(totalLen);
+				res.append(1, '(').append(b, b + dp).append(1, '.').append(b + dp, e).append(", ").append(second).append(1, ')');
+				*back++ = res;
+			}
+		}
+
+		template<typename BackIns>
+		void generate3(BackIns back, string str1st) {
+			int len = last - first;
+			int totalLen = len + str1st.size() + 5;
+			auto b = begin(str) + first;
+			auto e = b + len;
+			if (len == 1 || !lead0) {  // add whole
+				string res;
+				res.reserve(totalLen);
+				res.append(1, '(').append(str1st).append(", ").append(b, e).append(1, ')');
+				*back++ = res;
+			}
+			if (len < 2 || str[last - 1] == '0')
+				return;
+			int loop = lead0 ? 2 : len;
+			for (int dp = 1; dp < loop; dp++) {
+				string res;
+				res.reserve(totalLen);
+				res.append(1, '(').append(str1st).append(", ").append(b, b + dp).append(1, '.').append(b + dp, e).append(1, ')');
+				*back++ = res;
+			}
+		}
+		template<typename BackIns, typename RandI>
+		void generate2(BackIns back, RandI s1, RandI s2) {
+			int len = last - first;
+			auto b = begin(str) + first;
+			auto e = b + len;
+			string res;
+			res.reserve(str.size());
+			if (len == 1 || !lead0) {  // add whole
+				for (auto s = s1; s != s2; s++) {
+					res.append(1, '(').append(b, e).append(", ").append(*s).append(1, ')');
+					*back++ = res;
+					res.clear();
+				}
+			}
+			if (len < 2 || str[last - 1] == '0')
+				return;
+			int loop = lead0 ? 2 : len;
+			for (int dp = 1; dp < loop; dp++) {
+				for (auto s = s1; s != s2; s++) {
+					res.append(1, '(').append(b, b + dp).append(1, '.').append(b + dp, e).append(", ").append(*s).append(1, ')');
+					*back++ = res;
+					res.clear();
+				}
+			}
+		}
+	};
+	// 816. Ambiguous Coordinates
+	// rule 1: a number cannot have 0 at start and end
+	// rule 2: if a number start with 0, it must contain ., total 1 choices
+	// rule 3: if a number ends with 0, it must not contain ., i.e. 1 choice whole number
+	// rule 4: if a number does not start or end with 0, choices=n, whole, plus dp in n-1 places
+	// rules for string S, (###)
+	// rule 5: if S starts and ends with 0, split string at consecutive none zero only
+	// rule 6: if S does not starts or ends 0, split at any places
+	// rule 7: if S starts 0 but not end 0, split must skip until none zero
+	// rule 8: if S starts none 0 but ends 0, split must find none zero as second part
+	vector<string> ambiguousCoordinates(string S) {  // beat 100%
+		vector<string> ans;
+		int start = 1;
+		int end = S.size() - 1;   // exclusive
+		int len = S.size() - 2;
+		if (len < 2)  // cannot be shorter than 4, (12)
+			return ans;
+		if (len == 2) {
+			ans.push_back({ '(',S[start],',',' ',S[end - 1],')' });
+			return ans;
+		}
+		bool start0 = (S[start] == '0');
+		bool end0 = (S[end - 1] == '0');
+		if (start0 && end0) {
+			// two consecutive 1, special case at begining and end
+			bool prev = true; // so first 0 is chosen
+			for (int d = start + 1; d < end; d++) {
+				if (S[d] == '0') {
+					if (prev && d == end - 1) {  // last case
+						validNumber num(S, start, d);
+						num.generate(back_inserter(ans), S.substr(d, end - d));
+					}
+					prev = false;
+				}
+				else {
+					if (prev) {
+						validNumber num(S, start, d);
+						num.generate(back_inserter(ans), S.substr(d, end - d));
+					}
+					else
+						prev = true;
+				}
+			}
+		}
+		else if (start0) {
+			validNumber num(S, start + 1, end);
+			num.generate3(back_inserter(ans), "0");
+			for (int d = start + 1; d < end - 1; d++) {  // d belong to first part
+				if (S[d] != '0') {
+					validNumber num1(S, start, d + 1);
+					validNumber num2(S, d + 1, end);
+					num2.generate3(back_inserter(ans), num1.generate1());
+				}
+			}
+		}
+		else if (end0) {
+			for (int d = start + 1; d < end - 1; d++) {  // d belong to second part
+				if (S[d] != '0') {
+					validNumber num1(S, start, d);
+					num1.generate(back_inserter(ans), S.substr(d, end - d));
+				}
+			}
+			validNumber num1(S, start, end - 1);
+			num1.generate(back_inserter(ans), "0");
+		}
+		else {
+			for (int d = start + 1; d < end; d++) {
+				validNumber num1(S, start, d);
+				validNumber num2(S, d, end);
+				auto second = num2.generate12();
+				num1.generate2(back_inserter(ans), begin(second), second.end());
+			}
+		}
+		return ans;
+	}
+};
+
+
+TEST_CASE("Minimum time difference", "[DIFF]")
+{
+	String s;
+	CHECK(s.findMinDifference(vector<string>{ "23:58", "00:00", "23:57" }) == 1);
+}
+
+
+TEST_CASE("Mask info", "[MASK]")
+{
+	String s;
+	CHECK(s.maskPII("LeetCode@LeetCode.com") == "l*****e@leetcode.com");
+	CHECK(s.maskPII("AB@qq.com") == "a*****b@qq.com");
+	CHECK(s.maskPII("1(234)567-890") == "***-***-7890");
+	CHECK(s.maskPII("86-(10)12345678") == "+**-***-***-5678");
+}
+
+TEST_CASE("coordinates valid", "[COOR]")
+{
+	StringX s;
+	CHECK(s.ambiguousCoordinates("(1001)") == vector<string>{"(1, 0.01)", "(10, 0.1)", "(100, 1)"});
+	CHECK(s.ambiguousCoordinates("(00)") == vector<string>{"(0, 0)"});
+	CHECK(s.ambiguousCoordinates("(01230)") == vector<string>{"(0, 1230)", "(0.1, 230)", "(0.12, 30)", "(0.123, 0)"});
+	CHECK(s.ambiguousCoordinates("(010234)") == vector<string>{"(0, 10234)", "(0, 1.0234)", "(0, 10.234)", "(0, 102.34)", "(0, 1023.4)", "(0.1, 0.234)", "(0.102, 34)", "(0.102, 3.4)", "(0.1023, 4)"});
+	CHECK(s.ambiguousCoordinates("(123040)") == vector<string>{"(1, 23040)", "(12, 3040)", "(1.2, 3040)", "(1230, 40)", "(12304, 0)", "(1.2304, 0)", "(12.304, 0)", "(123.04, 0)", "(1230.4, 0)"});
+	CHECK(s.ambiguousCoordinates("(12304)") == vector<string>{"(1, 2304)", "(1, 2.304)", "(1, 23.04)", "(1, 230.4)", "(12, 304)", "(12, 3.04)", "(12, 30.4)", "(1.2, 304)", "(1.2, 3.04)", "(1.2, 30.4)", "(123, 0.4)", "(1.23, 0.4)", "(12.3, 0.4)", "(1230, 4)"});
 }
