@@ -10,9 +10,9 @@ class String {
 public:
 	// 791. Custom Sort String, sort t same as letter order in s
 	string customSortString(string S, string T) {  // beat 100%
-		size_t order[128];
-		for (size_t i = 0; i < S.size(); i++)
-			order[S[i]] = i;
+		size_t order[128];  // map letter to index for ordering
+		int i = 0;
+		for_each(begin(S), end(S), [&order, &i](char c) { order[c] = i++; }); // no raw loop
 		sort(begin(T), end(T), [&order](char a, char b) { return order[a] < order[b]; });
 		return T;
 	}
