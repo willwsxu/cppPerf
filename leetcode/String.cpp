@@ -118,14 +118,14 @@ public:
 		for (int i = 0; i < n; i++)
 			triplets.emplace_back(indexes[i], sources[i], targets[i]);
 		sort(begin(triplets), end(triplets), [](auto&a, auto&b) {return get<0>(a) > get<0>(b); }); // sort reverse order
-		for (const auto& tr : triplets) {
+		for_each(begin(triplets), end(triplets), [&S](const auto& tr) {
 			const auto&src = get<1>(tr);
 			auto loc = cbegin(S) + get<0>(tr);
 			if (equal(cbegin(src), cend(src), loc)) {  // if source match S, replace, from right to left
 				const auto& dst = get<2>(tr);
 				S.replace(loc, loc + src.size(), dst);
 			}
-		}
+		});
 		return S;
 	}
 
