@@ -1,5 +1,7 @@
 #pragma once
 
+#include <regex>
+
 template<typename FwdI>
 void bucket_sort(FwdI first, FwdI last, int buckets)
 {
@@ -41,6 +43,14 @@ std::vector<V> map2vec(Map<K,V> &m)
 	ans.reserve(m.size());
 	transform(begin(m), end(m), back_inserter(ans), [](auto&p) {return move(p.second); });  // move groups from map to vector
 	return ans;
+}
+
+std::vector<std::string> tokenizer(std::string::iterator sb, std::string::iterator se, const char *sep)
+{
+	std::regex rgx(sep);
+	std::vector<std::string> tokens;
+	copy(std::sregex_token_iterator(sb, se, rgx, -1), std::sregex_token_iterator(), std::back_inserter(tokens));
+	return tokens;
 }
 
 // hash function independent of element order

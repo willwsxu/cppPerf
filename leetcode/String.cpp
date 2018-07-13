@@ -5,7 +5,6 @@
 using namespace std;
 
 #include <complex>
-#include <regex>
 class String {
 public:
 	// 791. Custom Sort String, sort t same as letter order in s
@@ -21,9 +20,7 @@ public:
 	// Input: "1+-1i", "1+-1i"
 	// Output: "0+-2i"
 	vector<int> parseComplex(string s) {
-		regex clx("[\\+i]+");
-		vector<string> ord;
-		copy(sregex_token_iterator(s.begin(), s.end(), clx, -1), sregex_token_iterator(), back_inserter(ord));
+		vector<string> ord= tokenizer(s.begin(), s.end(), "[\\+i]+");
 		return{ atoi(ord[0].c_str()),atoi(ord[1].c_str()) };
 	}
 	string complexNumberMultiply(string a, string b) {  // beat 59%
