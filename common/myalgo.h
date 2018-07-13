@@ -33,3 +33,15 @@ ForwardIt max_element_last(ForwardIt first, ForwardIt last)  // max element, las
 	}
 	return largest;
 }
+
+template<typename K, typename V, template<typename K, typename V, class Comp = std::less<K>, class A = std::allocator<std::pair<const K, V>>> class Map>
+std::vector<V> map2vec(Map<K,V> &m)
+{
+	vector<V> ans;
+	ans.reserve(m.size());
+	transform(begin(m), end(m), back_inserter(ans), [](auto&p) {return move(p.second); });  // move groups from map to vector
+	return ans;
+}
+
+// hash function independent of element order
+// unique_hash

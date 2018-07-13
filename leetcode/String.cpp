@@ -92,10 +92,10 @@ public:
 		for (const auto& p : paths) {
 			vector<string> files;
 			istringstream iss(p);
-			copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(files));
-			for (size_t i = 1; i < files.size(); i++) {
+			copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(files)); // tokenize path
+			for (size_t i = 1; i < files.size(); i++) { // first is file dir, rest are file name and content
 				auto c = files[i].find_first_of('(');
-				if (c != string::npos) {
+				if (c != string::npos) { // map file content to file path
 					contents[files[i].substr(c + 1, files[i].size() - c - 2)].push_back(files[0]+"/"+files[i].substr(0, c));
 				}
 			}
@@ -119,11 +119,11 @@ public:
 		triplets.reserve(n);
 		for (int i = 0; i < n; i++)
 			triplets.emplace_back(indexes[i], sources[i], targets[i]);
-		sort(begin(triplets), end(triplets), [](auto&a, auto&b) {return get<0>(a) > get<0>(b); });
+		sort(begin(triplets), end(triplets), [](auto&a, auto&b) {return get<0>(a) > get<0>(b); }); // sort reverse order
 		for (const auto& tr : triplets) {
 			const auto&src = get<1>(tr);
 			auto loc = cbegin(S) + get<0>(tr);
-			if (equal(cbegin(src), cend(src), loc)) {  // if source match S, replace, and update delta
+			if (equal(cbegin(src), cend(src), loc)) {  // if source match S, replace, from right to left
 				const auto& dst = get<2>(tr);
 				S.replace(loc, loc + src.size(), dst);
 			}
@@ -200,10 +200,10 @@ public:
 			bucket_sort(begin(key), end(key), 128); // sort string as key
 			group[key].emplace_back(s); // group sring by sorted key
 		}
-		vector<vector<string>> ans;
-		ans.reserve(group.size());
-		transform(begin(group), end(group), back_inserter(ans), [](auto&p) {return move(p.second); });  // move groups from map to vector
-		return ans;
+		//vector<vector<string>> ans;
+		//ans.reserve(group.size());
+		//transform(begin(group), end(group), back_inserter(ans), [](auto&p) {return move(p.second); });  // move groups from map to vector
+		return map2vec(group);
 	}
 };
 
@@ -242,22 +242,7 @@ TEST_CASE("string replacements", "[NEW]")
 
 
 class StringX {
-	void bucket_sort(vector<int>& minutes, int buckets)
-	{
-		vector<int> b(buckets, 0);
-		for (int m : minutes)
-			b[m]++;
-		auto cp = begin(minutes);
-		for (int i = 0; i < buckets; i++)
-		{
-			if (b[i]) {
-				fill_n(cp, b[i], i);
-				cp += b[i];
-			}
-		}
-	}
 public:
-
 	struct validNumber
 	{
 		const string& str;
