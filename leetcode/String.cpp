@@ -4,7 +4,7 @@
 #include "..\common\myalgo.h"
 using namespace std;
 
-#include <complex>
+//#include <complex>
 class String {
 public:
 	// 791. Custom Sort String, sort t same as letter order in s
@@ -83,7 +83,7 @@ public:
 		return res;
 	}
 
-	int scoreOfParentheses(const string& S) {
+	int scoreOfParentheses(const string& S) {  // borrow idea, stack or recursion
 		pos = 0;
 		return scoreOfParenthesesHelp(S);
 	}
@@ -103,11 +103,7 @@ public:
 			}
 		}
 		vector<vector<string>> ans;
-		for (auto& dup : contents) {
-			if (dup.second.size() > 1) {
-				ans.push_back(std::move(dup.second));
-			}
-		}
+		transform_if(begin(contents), end(contents), back_inserter(ans), [](auto&p) {return move(p.second); }, [](const auto&p) {return p.second.size() > 1; });
 		return ans;
 	}
 
@@ -228,7 +224,7 @@ TEST_CASE("parenthesis score", "[paren]")
 }
 
 
-TEST_CASE("find duplicate files", "[DUP]")
+TEST_CASE("find duplicate files", "[NEW]")
 {
 	String s;
 	CHECK(s.findDuplicate(vector<string>{ "root/a 1.txt(abcd) 2.txt(efgh)", "root/c 3.txt(abcd)", "root/c/d 4.txt(efgh)", "root 4.txt(efgh)" }) 

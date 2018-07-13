@@ -45,7 +45,18 @@ std::vector<V> map2vec(Map<K,V> &m)
 	return ans;
 }
 
-std::vector<std::string> tokenizer(std::string::const_iterator sb, std::string::const_iterator se, const char *sep)
+template< class InputIt, class OutputIt, class UnaryOp, class Pred>
+OutputIt transform_if(InputIt first1, InputIt last1, OutputIt d_first, UnaryOp unary_op, Pred pred)
+{
+	while (first1 != last1) {
+		if (pred(*first1))
+			*d_first++ = unary_op(*first1);
+		++first1;
+	}
+	return d_first;
+}
+
+inline std::vector<std::string> tokenizer(std::string::const_iterator sb, std::string::const_iterator se, const char *sep)
 {
 	std::regex rgx(sep);
 	std::vector<std::string> tokens;
@@ -53,7 +64,7 @@ std::vector<std::string> tokenizer(std::string::const_iterator sb, std::string::
 	return tokens;
 }
 
-std::pair<int, int> multiplyComplex(int r1, int i1, int r2, int i2)
+inline std::pair<int, int> multiplyComplex(int r1, int i1, int r2, int i2)
 {
 	return{ r1*r2 - i1*i2, r1*i2 + r2*i1 };
 }
