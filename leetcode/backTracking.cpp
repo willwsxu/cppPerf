@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
+#include "helper.h"
+
 using namespace std;
 
 class BackTracking {
@@ -8,13 +10,6 @@ class BackTracking {
 	// number cannot start with 0, unless it is 0
 	// 0 <= F[i] <= 2^31 - 1
 	vector<int> ans;
-	int to_int(const string& S, int start, int last)
-	{
-		int len = last - start + 1;
-		if (len == 10 && S[start] > '2')  // overflow
-			return -1;
-		return atoi(S.substr(start, len).c_str());
-	}
 	bool splitIntoFibonacci(const string& S, int start) {
 		int len = S.size();
 		if (start == len)
