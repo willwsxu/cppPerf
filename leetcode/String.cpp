@@ -198,9 +198,6 @@ public:
 			bucket_sort(begin(key), end(key), 128); // sort string as key
 			group[key].emplace_back(s); // group sring by sorted key
 		}
-		//vector<vector<string>> ans;
-		//ans.reserve(group.size());
-		//transform(begin(group), end(group), back_inserter(ans), [](auto&p) {return move(p.second); });  // move groups from map to vector
 		return map2vec(group);
 	}
 };
@@ -239,7 +236,7 @@ TEST_CASE("string replacements", "[NEW]")
 }
 
 
-class StringX {
+class Coordinates {
 public:
 	struct validNumber
 	{
@@ -444,7 +441,7 @@ TEST_CASE("Mask info", "[MASK]")
 
 TEST_CASE("coordinates valid", "[COOR]")
 {
-	StringX s;
+	Coordinates s;
 	CHECK(s.ambiguousCoordinates("(1001)") == vector<string>{"(1, 0.01)", "(10, 0.1)", "(100, 1)"});
 	CHECK(s.ambiguousCoordinates("(00)") == vector<string>{"(0, 0)"});
 	CHECK(s.ambiguousCoordinates("(01230)") == vector<string>{"(0, 1230)", "(0.1, 230)", "(0.12, 30)", "(0.123, 0)"});
@@ -493,7 +490,7 @@ public:
 			auto equal = [&cur, &last, &count]() { // either same count, or count is extended to at last 3
 				if (cur->ch != last)
 					return false;
-				if (cur->cnt != count && (cur->cnt<count || cur->cnt < 3))  // requirement so extended definition is not clear
+				if (cur->cnt != count && (cur->cnt<count || cur->cnt < 3))  // requirement for extended definition is not clear
 					return false;
 				return true;
 			};
