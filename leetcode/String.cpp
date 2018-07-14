@@ -558,18 +558,20 @@ public:
 			return a == b ? -1 : a.size();
 		return max(a.size(), b.size());
 	}
+	// 522. Longest Uncommon Subsequence II
 	int findLUSlength(vector<string>& strs) {
-		sort(strs.begin(), strs.end(), [](const auto&a, const auto&b) { if (a.size() > b.size()) return true; else if (a.size() < b.size()) return false; return a > b; });
+		auto comp = [](const string& a, const string& b) { return a.size() > b.size(); }; // sort string by len from long to short
+		sort(strs.begin(), strs.end(), comp);
 		auto start = begin(strs);
-		auto comp = [](const string& a, const string& b) { return a.size() > b.size(); };
 		while (start != end(strs)) {
 			int ans = start->size();
-			auto range = equal_range(start, end(strs), *start, comp);
-			for (auto it = range.first; it != range.second; ++it) {
-				if (count_if(strs.begin(), range.second, [it](const string&a) { return subsequence(a.begin(), a.end(), it->begin(), it->end()); }) == 1)
-					return ans;
+			auto range = equal_range(start, end(strs), *start, comp); // find range of string of same length
+			for (auto it = range.first; it != range.second; ++it) {   // examine each string  in this range
+				if (count_if(strs.begin(), range.second, // search from begining to end of this range
+					[it](const string&a) { return subsequence(a.begin(), a.end(), it->begin(), it->end()); }) == 1)
+					return ans;  // find a string that is not subsequence of any string of equal or longer length, ==1 means find just itself
 			}
-			start = range.second;
+			start = range.second; // try a shorter string if no solution found yet
 		}
 		return -1;
 	}
