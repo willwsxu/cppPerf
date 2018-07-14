@@ -1,7 +1,5 @@
 #pragma once
 
-#include <regex>
-
 template<typename FwdI>
 void bucket_sort(FwdI first, FwdI last, int buckets)
 {
@@ -56,19 +54,6 @@ OutputIt transform_if(InputIt first1, InputIt last1, OutputIt d_first, UnaryOp u
 	return d_first;
 }
 
-inline std::vector<std::string> tokenizer(std::string::const_iterator sb, std::string::const_iterator se, const char *sep)
-{
-	std::regex rgx(sep);
-	std::vector<std::string> tokens;
-	copy(std::sregex_token_iterator(sb, se, rgx, -1), std::sregex_token_iterator(), std::back_inserter(tokens));
-	return tokens;
-}
-
-inline std::pair<int, int> multiplyComplex(int r1, int i1, int r2, int i2)
-{
-	return{ r1*r2 - i1*i2, r1*i2 + r2*i1 };
-}
-
 // hash function independent of element order
 // unique_hash
 
@@ -87,14 +72,15 @@ bool subsequence(ForwardIterator1 first1, ForwardIterator1 last1,  // first sequ
 	return first2 == last2;
 }
 
-// todo
-int continuousLongestBy(const string& s, bool present[])  // long substring that conform to a condition
+// untested!!
+template<typename InpI, typename Pred>
+int continuousLongestBy(InpI first, InpI last, Pred isGood)  // long substring that conform to a condition
 {
 	int max = -1;
 	int start = 0;
 	int next = 0;
-	for (char c : s) {
-		if (present[c]) {  // reset
+	for (auto x = first; x != last; ++x) {
+		if (isGood(*x)) {  // reset
 			if (next - start > max)
 				max = next - start;
 			next = 0;
