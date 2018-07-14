@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
-#include "..\common\myalgo.h"
+#include "myalgo.h"
 using namespace std;
 
 //#include <complex>
@@ -451,4 +451,152 @@ TEST_CASE("coordinates valid", "[COOR]")
 	CHECK(s.ambiguousCoordinates("(010234)") == vector<string>{"(0, 10234)", "(0, 1.0234)", "(0, 10.234)", "(0, 102.34)", "(0, 1023.4)", "(0.1, 0.234)", "(0.102, 34)", "(0.102, 3.4)", "(0.1023, 4)"});
 	CHECK(s.ambiguousCoordinates("(123040)") == vector<string>{"(1, 23040)", "(12, 3040)", "(1.2, 3040)", "(1230, 40)", "(12304, 0)", "(1.2304, 0)", "(12.304, 0)", "(123.04, 0)", "(1230.4, 0)"});
 	CHECK(s.ambiguousCoordinates("(12304)") == vector<string>{"(1, 2304)", "(1, 2.304)", "(1, 23.04)", "(1, 230.4)", "(12, 304)", "(12, 3.04)", "(12, 30.4)", "(1.2, 304)", "(1.2, 3.04)", "(1.2, 30.4)", "(123, 0.4)", "(1.23, 0.4)", "(12.3, 0.4)", "(1230, 4)"});
+}
+
+
+struct CharCount
+{
+	const char ch;
+	const int  cnt;
+	CharCount(char c, int i) :ch(c), cnt(i) {}
+};
+class MoreString {
+public:
+	// 809. Expressive Words, letters are extended to express feeling. 
+	// A group is extended if that group is length 3 or more
+	// For some given string S, a query word is stretchy if it can be made to be equal to S by extending some groups
+	int expressiveWords(string S, vector<string>& words) { // beat 100%
+		if (S.empty())
+			return 0;
+		vector<CharCount> chc;  // count letters
+		char last = S[0];
+		int count = 0;
+		for (char c : S) {
+			if (c == last)
+				count++;
+			else {
+				chc.emplace_back(last, count);
+				last = c;
+				count = 1;
+			}
+		}
+		chc.emplace_back(last, count);  // add last one
+
+		auto first = begin(chc);
+		auto endi = end(chc);
+		auto match = [first, endi](const string& w) { // match word by letter count
+			if (w.empty())
+				return false;
+			auto cur = first;
+			char last = w[0];
+			int count = 0;
+			auto equal = [&cur, &last, &count]() { // either same count, or count is extended to at last 3
+				if (cur->ch != last)
+					return false;
+				if (cur->cnt != count && (cur->cnt<count || cur->cnt < 3))  // requirement so extended definition is not clear
+					return false;
+				return true;
+			};
+			for (char c : w) {
+				if (c == last)
+					count++;
+				else {
+					if (!equal())  // compare each letter count
+						return false;
+					last = c;
+					count = 1;
+					++cur;
+				}
+			}
+			if (!equal())
+				return false;
+			return ++cur == endi;
+		};
+		return count_if(begin(words), end(words), match);
+	}
+
+	//848. Shifting Letters
+	// shift letter n times, in alphabeta order, wrap around from z to a
+	// each shift count applies to all letters up tot his point
+	string shiftingLetters(string S, vector<int>& shifts) {  // beat 99%, tricky overflow
+		int count = 0;
+		int n = shifts.size();
+		for (int i = n - 1; i >= 0; i--) {  // shift from right
+			count += shifts[i];
+			count %= 26;		// avoid int overflow
+			S[i] += count;
+			if ((unsigned char)S[i] > 'z')   // watch out for char overflow, negative
+				S[i] = (unsigned char)S[i] - 'z' + 'a' - 1;  // wrap around fron 'z' to 'a'
+		}
+		return S;
+	}
+
+	int longest(const string& s, bool present[])  // long substring of letters not preset in other tring
+	{
+		int max = -1;
+		int start = 0;
+		int next = 0;
+		for (char c : s) {
+			if (present[c]) {  // reset
+				if (next - start > max)
+					max = next - start;
+				next = 0;
+				start = 0;
+			}
+			else {
+				next++;
+			}
+		}
+		if (next - start > max)
+			max = next - start;
+		return max;
+	}
+	// 521. Longest Uncommon Subsequence I, the longest subsequence of one of these strings should not be any subsequence of the other strings
+	// idea: if one string is longer, pick it. cases when two string of same len, check if string are iddentical
+	int findLUSlength(string a, string b) { // easy once understood the confusing question, beat 100%
+		if (a.size() == b.size())
+			return a == b ? -1 : a.size();
+		return max(a.size(), b.size());
+	}
+	int findLUSlength(vector<string>& strs) {
+		sort(strs.begin(), strs.end(), [](const auto&a, const auto&b) { if (a.size() > b.size()) return true; else if (a.size() < b.size()) return false; return a > b; });
+		auto start = begin(strs);
+		auto comp = [](const string& a, const string& b) { return a.size() > b.size(); };
+		while (start != end(strs)) {
+			int ans = start->size();
+			auto range = equal_range(start, end(strs), *start, comp);
+			for (auto it = range.first; it != range.second; ++it) {
+				if (count_if(strs.begin(), range.second, [it](const string&a) { return subsequence(a.begin(), a.end(), it->begin(), it->end()); }) == 1)
+					return ans;
+			}
+			start = range.second;
+		}
+		return -1;
+	}
+};
+
+
+TEST_CASE("match expressive words", "[EXPR]")
+{
+	MoreString s;
+	string S = "nnnnsssuuuvvvwwwwdddddettttttaaaaaatttttnnnuuullllllqqqqoooooojggggggbbbbsssiiiiffffffwwwwwbkkk";
+	auto v = vector<string>{ "nnssuvvwwdettatnuullqoojgbbssiifwbbkk", "nssuvvwdetaattnulqqoojjgbssiffwbkk", "nssuvvwwddeettaattnnulqojgbssiifwwbk", "nnssuuvvwwdeettaattnuulqoojjgbbssiiffwbbk", "nssuuvvwwdettaattnnullqqojgbsiifwbbk", "nnssuvvwdeettaatnullqqojjggbssiifwwbk", "nnssuvvwwdeettatnnuulqoojjgbssiiffwbkk", "nssuuvwwddeettattnnullqqoojggbbssifwwbbkk", "nnsuuvvwdeetattnuulqojjgbbssiiffwbkk", "nssuuvvwddeetaattnnulqqoojgbbssiffwbbk", "nnsuuvwwddettaatnuulqojgbbssifwbbkk", "nssuuvvwwddeettattnnulqoojjggbbsiiffwbkk", "nssuvvwwdettatnullqojggbbssifwbbk", "nnsuuvwddettattnuullqoojggbsifwwbkk", "nsuvwddetaatnuullqoojgbssiifwwbkk", "nsuvwdetatnulqojjgbbsiffwwbk", "nssuvvwddeettaattnnulqqojjgbbssiffwwbk", "nnssuvvwwddeetaatnnuulqojgbbssiffwbbkk", "nssuvvwddeettatnullqqoojgbssiffwbbkk", "nnssuvvwwdeettattnnulqqoojgbssifwbkk", "nsuuvvwwdettatnuulqqoojggbssifwbbk", "nssuvwwddeettattnulqojjggbbssifwwbkk", "nnssuuvvwdeetaattnnulqqoojjggbbsifwbk", "nsuvwdeetaatnulqoojggbssiffwwbbk", "nnsuvvwdeettattnullqoojjgbbsiffwbbkk", "nnssuvwdetattnnuullqqoojgbbsiiffwwbkk", "nnssuvwwdetattnnullqqoojjgbbssiifwwbk", "nnsuvvwwddeetattnnulqqojjggbsiifwwbbk", "nssuvwdetattnnuullqoojjggbsiiffwwbbk", "nnsuvvwwdetatnuulqoojjgbssifwbkk", "nsuuvvwwddeettaatnullqojgbbsiifwwbkk", "nsuuvwwddeettaattnuullqqoojgbbsifwbbk", "nsuvwdettaattnnuulqqojgbbssiifwwbk", "nnsuvwwdettaattnnulqqoojjgbsifwwbbk", "nsuvvwwddettaatnulqoojggbbsifwwbbkk", "nsuuvwwddeettaattnulqojgbbsiffwbkk", "nnsuvwwdeettaatnullqqoojgbsiiffwbbkk", "nssuvwwddettaattnulqoojgbsifwbkk", "nssuvwddeettaatnnullqojggbbssifwwbbk", "nnssuvvwwddeetatnulqoojjggbbsiiffwbk", "nnsuuvwddetattnnulqojjgbsiiffwwbk", "nssuuvvwwddeetaattnnulqqoojjgbbssifwwbbkk", "nsuvwdeettatnnullqqojggbbsiiffwwbkk", "nssuuvvwddeetaattnullqoojjggbbsifwbk", "nnsuvwwddettaatnnulqoojggbbssiiffwwbk", "nnsuuvwdettatnnuullqqojjgbsiffwwbbkk", "nsuvwdeettaattnnulqoojjgbssifwwbkk", "nnssuuvwddeettatnnullqqoojjgbbsiiffwbk", "nsuuvvwwdeetatnnuulqojggbssiiffwbk", "nnssuuvwwddeettaatnuullqojggbbssiffwbk", "nnsuuvvwwdeettaatnnuulqojjggbsiffwbk", "nnssuuvvwwddeetaattnuulqqojgbsiffwbk", "nssuvwddetaattnnuulqqojggbsiffwwbbkk", "nnsuuvvwwdetatnnullqqojggbssiifwbk", "nnsuuvwwddeetaattnullqojgbssiffwbbkk", "nssuvvwddetatnnulqojjggbbssiiffwwbbk", "nnsuuvvwwddeetatnullqojgbbssifwwbbkk", "nnssuvvwwdetaatnnulqqojggbbssifwwbkk", "nnssuvwdeettaatnnuulqojggbsiifwwbbk", "nssuvvwwddetatnuullqojjgbbssiffwbk", "nssuuvvwddeettatnuullqoojjgbbsiifwbbkk", "nssuuvvwwdettaatnuullqqoojjgbbssiifwbbk", "nnssuvvwwdeetaatnnullqqoojggbsiiffwbk", "nnssuuvwdettaatnuullqqoojggbbsiifwwbbkk", "nssuvvwddettattnulqojjgbsiffwbkk", "nnssuvwwdeetaatnullqojgbssifwwbkk", "nnssuvwwddettattnnullqqoojgbssiffwbk", "nsuuvwdeettaatnuulqoojjgbsiffwwbbk", "nssuvwdeetattnnulqojggbbsiiffwwbbk", "nnsuuvvwwdeettatnnuullqoojjggbssiiffwbbkk", "nnssuuvvwddeettatnulqojggbssiifwwbkk", "nnsuuvwdettaattnuulqoojjgbbssiifwwbkk", "nnsuvvwddeettaatnnulqqoojggbbsiiffwwbbk", "nsuuvwddeettaattnnuulqojjggbssifwwbbkk", "nnssuuvwwdettatnullqqojggbbssifwwbbk", "nnssuuvvwdetatnuulqojgbbsifwbbkk", "nnssuuvwddeetattnullqqoojjgbssiffwwbbk", "nssuvvwwdettattnnuulqqojgbbsifwwbbk", "nnssuvwwdettaattnnullqojgbssiifwwbkk", "nsuuvvwwdeettatnnulqqoojjggbbsiffwbbkk", "nssuvvwdettatnuulqqoojgbssiifwwbbkk", "nnssuvwddeettaattnuulqojggbbssiifwbk", "nnssuvwwddeettaattnullqqojggbsiifwwbbk", "nssuvwddeettaatnulqqoojgbsifwbbkk", "nnsuuvvwwdeetaattnnulqqoojjgbbssiiffwwbbkk", "nssuvwdeetatnulqqoojgbsiifwwbbk", "nssuvvwdeettaattnnuulqojggbbssifwbbkk", "nnssuvvwwddetattnuullqqoojgbssiiffwbbkk", "nnssuuvwdettatnuullqqoojggbbssiifwwbbkk", "nnssuvvwwddetatnuulqoojgbbssifwwbk", "nssuvvwwdeetaatnulqqojjgbsiiffwwbkk", "nnssuvwwdeettattnuulqojjggbssifwbk", "nnssuvvwwddetattnnullqoojgbbssiifwwbbk", "nnsuuvvwwdeettaatnulqqoojjggbsiiffwwbkk", "nssuuvvwddettattnnuullqoojjgbbssifwwbkk", "nssuvwwddeetaatnuulqqojjgbssiifwwbkk", "nnsuvvwwdettatnnuulqqoojggbbssiifwbkk", "nnssuuvwwdetatnuulqqojjggbbssiifwwbkk", "nsuuvwddettattnuulqojggbssiffwwbbk", "nssuuvwddeetattnnulqqoojgbssiiffwbbk" };
+	CHECK(s.expressiveWords(S, v) == 12);
+	CHECK(s.expressiveWords("heeelllooo", vector<string>{"hello", "hi", "helo"}) == 2);
+	CHECK(s.expressiveWords("abcd", vector<string>{"abc"}) == 0);
+}
+
+
+TEST_CASE("shift letters", "[SHIFT]")
+{
+	MoreString s;
+	CHECK(s.shiftingLetters("ruu", vector<int>{26, 9, 17}) == "rul");
+}
+
+TEST_CASE("longest uncommon sequence", "[NEW]")
+{
+	MoreString s;
+	CHECK(s.findLUSlength("aba", "cdc") == 3);
+	CHECK(s.findLUSlength(vector<string>{ "aabbcc", "aabbcc", "cb", "abc" }) == 2);
+	CHECK(s.findLUSlength(vector<string>{ "bb", "ab", "bba", "bba", "bbb", "bbbb", "bbbb" }) == 2);
 }

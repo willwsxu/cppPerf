@@ -71,3 +71,18 @@ inline std::pair<int, int> multiplyComplex(int r1, int i1, int r2, int i2)
 
 // hash function independent of element order
 // unique_hash
+
+template<class ForwardIterator1, class ForwardIterator2>
+bool subsequence(ForwardIterator1 first1, ForwardIterator1 last1,  // first sequence contain subsequence of the second
+	ForwardIterator2 first2, ForwardIterator2 last2)
+{
+	while (first1 != last1 && first2 != last2) {
+		if (*first1 == *first2) {
+			first1++;
+			first2++;
+		}
+		else
+			first1++;
+	}
+	return first2 == last2;
+}

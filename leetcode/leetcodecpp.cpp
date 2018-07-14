@@ -4,7 +4,7 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
-#include "..\common\myalgo.h"
+#include "myalgo.h"
 using namespace std;
 
 int findMaxForm(vector<string>& strs, int m, int n) {
@@ -979,21 +979,6 @@ public:
 
 	// Given a string and a string dictionary, find the longest in dictionary that can be formed by deleting some characters of the given string
 	// If there are more than one possible results, return the longest word with the smallest lexicographical order
-	template<class ForwardIterator1, class ForwardIterator2>
-	bool subsequence(ForwardIterator1 first1, ForwardIterator1 last1,
-		ForwardIterator2 first2, ForwardIterator2 last2)
-	{
-		while (first1 != last1 && first2 != last2) {
-			if (*first1 == *first2) {
-				first1++;
-				first2++;
-			}
-			else
-				first1++;
-		}
-		return first2 == last2;
-	}
-
 	string findLongestWord(string s, vector<string>& d) {  // beat 96%
 		string *ans = nullptr;
 		for (string& word : d) {
