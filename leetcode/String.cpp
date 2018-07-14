@@ -531,26 +531,6 @@ public:
 		return S;
 	}
 
-	int longest(const string& s, bool present[])  // long substring of letters not preset in other tring
-	{
-		int max = -1;
-		int start = 0;
-		int next = 0;
-		for (char c : s) {
-			if (present[c]) {  // reset
-				if (next - start > max)
-					max = next - start;
-				next = 0;
-				start = 0;
-			}
-			else {
-				next++;
-			}
-		}
-		if (next - start > max)
-			max = next - start;
-		return max;
-	}
 	// 521. Longest Uncommon Subsequence I, the longest subsequence of one of these strings should not be any subsequence of the other strings
 	// idea: if one string is longer, pick it. cases when two string of same len, check if string are iddentical
 	int findLUSlength(string a, string b) { // easy once understood the confusing question, beat 100%

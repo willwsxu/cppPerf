@@ -86,3 +86,25 @@ bool subsequence(ForwardIterator1 first1, ForwardIterator1 last1,  // first sequ
 	}
 	return first2 == last2;
 }
+
+// todo
+int continuousLongestBy(const string& s, bool present[])  // long substring that conform to a condition
+{
+	int max = -1;
+	int start = 0;
+	int next = 0;
+	for (char c : s) {
+		if (present[c]) {  // reset
+			if (next - start > max)
+				max = next - start;
+			next = 0;
+			start = 0;
+		}
+		else {
+			next++;
+		}
+	}
+	if (next - start > max)
+		max = next - start;
+	return max;
+}
