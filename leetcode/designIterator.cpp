@@ -41,18 +41,33 @@ public:
 // This is the interface that allows for creating nested lists.
 // You should not implement it, or speculate about its implementation
 class NestedInteger {
+	int val;
+	bool isInt;
 public:
+	// Constructor initializes an empty nested list.
+	NestedInteger() :isInt(false), val(0) {}
+
+	// Constructor initializes a single integer.
+	NestedInteger(int value):isInt(true), val(value) {}
+
 	// Return true if this NestedInteger holds a single integer, rather than a nested list.
 	bool isInteger() const
 	{
-		return true;
+		return isInt;
 	}
+
+	// Set this NestedInteger to hold a single integer.
+	void setInteger(int value) {
+		val = value; isInt = true;	}
+	
+	// Set this NestedInteger to hold a nested list and adds a nested integer to it.
+	void add(const NestedInteger &ni) {}
 
 	// Return the single integer that this NestedInteger holds, if it holds a single integer
 	// The result is undefined if this NestedInteger holds a nested list
 	int getInteger() const
 	{
-		return 1;
+		return val;
 	}
 
 	// Return the nested list that this NestedInteger holds, if it holds a nested list
@@ -112,3 +127,57 @@ public:
 		return !nested.empty();
 	}
 };
+
+class MiniParser {
+public:
+	NestedInteger parsing(stringstream& iss) {  // recursion with loop
+		NestedInteger ni;
+		while (!iss.eof()) {
+			char c = iss.peek();
+			switch (c) {
+			case '[':
+				iss.ignore();
+				if (iss.peek() == ']') {  // empty list
+					iss.ignore();
+					return ni;
+				}
+				ni.add(parsing(iss));
+				break;
+			case ']':
+				iss.ignore();
+				return ni;
+			case ',':
+				iss.ignore();
+				ni.add(parsing(iss));
+				break;
+			case '-':
+			default:
+			{
+				if (iss.peek() == '"')
+					iss.ignore();
+				int val;
+				iss >> val;
+				ni.setInteger(val);
+				if (iss.peek() == '"')
+					iss.ignore();
+				return ni;
+			}
+			}
+		}
+		return ni;
+	}
+	// 385. Mini Parser, Given a nested list of integers represented as a string, implement a parser to deserialize it.
+	NestedInteger deserialize(string s) {  //beat 100%
+		stringstream iss(s);
+		return parsing(iss);
+	}
+};
+
+
+TEST_CASE("nested int parser", "[NEW]")
+{
+	MiniParser().deserialize("[[]]");	
+	MiniParser().deserialize("[123,456,[788,799,833],[[]],10,[]]");
+	MiniParser().deserialize("[123,[456,[789]]]");
+	CHECK(MiniParser().deserialize("123").getInteger()==123);
+}

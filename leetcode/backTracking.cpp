@@ -116,7 +116,7 @@ public:
 			return{ line.substr(start, found.second - start) + next.first, next.second };
 		}
 	}
-	vector<string> removeComments(vector<string>& source) {
+	vector<string> removeComments(vector<string>& source) { // beat 100%
 		bool openBlock = false;
 		vector<string> ans;
 		for (const string& line : source) {
