@@ -572,10 +572,84 @@ TEST_CASE("shift letters", "[SHIFT]")
 	CHECK(s.shiftingLetters("ruu", vector<int>{26, 9, 17}) == "rul");
 }
 
-TEST_CASE("longest uncommon sequence", "[NEW]")
+TEST_CASE("longest uncommon sequence", "[SEQ]")
 {
 	MoreString s;
 	CHECK(s.findLUSlength("aba", "cdc") == 3);
 	CHECK(s.findLUSlength(vector<string>{ "aabbcc", "aabbcc", "cb", "abc" }) == 2);
 	CHECK(s.findLUSlength(vector<string>{ "bb", "ab", "bba", "bba", "bbb", "bbbb", "bbbb" }) == 2);
+}
+
+
+class StringMulptiply
+{
+	static string addImpl(string& s1, string& s2)  // s1 longer, add two string of numbers
+	{
+		auto dest = rbegin(s1);  // pick longer string as destination
+		int carry = 0;
+		for (auto src = rbegin(s2); src != rend(s2); ++src, ++dest) {
+			int sum = (*src - '0') + (*dest - '0') + carry;
+			*dest = sum % 10 + '0';
+			carry = sum / 10;
+		}
+		if (carry > 0) {
+			for (; dest != rend(s1); dest++) {
+				carry += (*dest - '0');
+				*dest = carry % 10 + '0';
+				carry /= 10;
+			}
+		}
+		if (carry)
+			s1.insert(0, 1, carry + '0');
+		return s1;
+	}
+public:
+	static string add(string s1, string s2, int offset) // s2 shift to left before add
+	{
+		// use reverse iterator to get to position, then call base to get regular iterator so string is not reversed
+		string s1r((s1.rbegin() + offset).base(), s1.end()); // same as shift S1 to right, save the offset part
+		s1.erase((s1.rbegin() + offset).base(), s1.end());  // trim s1 to align with s2
+		if (s1.size() < s2.size())
+			return addImpl(s2, s1).append(s1r);  // append back s1 right portion
+		return addImpl(s1, s2).append(s1r);
+	}
+	static string multiply(string num1, int i)
+	{
+		auto x = accumulate(rbegin(num1), rend(num1), 0, [i](int carry, char& d) {
+			int m = i*(d-'0')+carry;
+			d = (m % 10) + '0';  // convert product to digit
+			return m / 10; // return carry after multiplication
+		});
+		return x>0?num1.insert(0,1,x+'0'):num1;
+	}
+	static string multiply(string num1, char i);  // declared to prevent bad callling with char
+
+	static string multiplyImpl(string& num1, string& num2) {  // num2 is shorter
+		string ans;
+		int offset = 0;
+		for (auto c2 = rbegin(num2); c2 != rend(num2); ++c2, offset++) {
+			string prod = multiply(num1, *c2-'0');  // multiple one char at a time
+			ans = add(ans, prod, offset);  // add to previous result, need to offset for alignment
+		}
+		return ans;
+	}
+	string multiply(string num1, string num2) { // beat 94%
+		if (num1 == "0" || num2 == "0")
+			return "0";
+		if (num1.size() < num2.size())
+			return multiplyImpl(num2, num1);
+		return multiplyImpl(num1, num2);
+	}
+};
+
+
+TEST_CASE("string multiply", "[NEW]")
+{
+	CHECK(StringMulptiply().multiply("0", "9193") == "998001");
+	CHECK(StringMulptiply().multiply("999", "999") == "998001");
+	CHECK(StringMulptiply::multiply("323", 4) == "1292");
+	CHECK(StringMulptiply::add("999", "2", 1) == "1019");
+	CHECK(StringMulptiply::add("2", "999", 0) == "1001");
+	CHECK(StringMulptiply::add("2", "999", 1) == "9992");
+	CHECK(StringMulptiply().multiply("123", "456") == "56088");
 }
