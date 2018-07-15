@@ -643,7 +643,7 @@ public:
 };
 
 
-TEST_CASE("string multiply", "[NEW]")
+TEST_CASE("string multiply", "[MULT]")
 {
 	CHECK(StringMulptiply().multiply("0", "9193") == "998001");
 	CHECK(StringMulptiply().multiply("999", "999") == "998001");
