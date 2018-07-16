@@ -670,7 +670,8 @@ class ValidIP
 	}
 
 public:
-	string validIPAddress(string IP) {
+	// 468. Validate IP Address
+	string validIPAddress(string IP) {  // beat 100% 0ms
 		if (IP.find('.') != string::npos) {
 			auto invalid = [](const string& s) {
 				if (s.size() > 3 || s.empty())  // 1 to 3 digits
@@ -688,8 +689,8 @@ public:
 			auto invalid = [](const string& s) {
 				if (s.size() > 4 || s.empty())  // 1 to 4 digits
 					return true;
-				if (any_of(s.begin(), s.end(), [](char c) { return !isxdigit(c); }))
-					return true; // not hex digit
+				if (!all_of(s.begin(), s.end(), [](char c) { return isxdigit(c); }))
+					return true; // not all of hex digit
 				return false;
 			};
 			if (validIP(IP, ":", 8, invalid))
