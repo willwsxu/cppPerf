@@ -128,7 +128,7 @@ public:
 	}
 };
 
-class MiniParser {
+class MiniParser {  // #385
 public:
 	NestedInteger parsing(stringstream& iss) {  // recursion with loop
 		NestedInteger ni;

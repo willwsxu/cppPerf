@@ -653,3 +653,59 @@ TEST_CASE("string multiply", "[MULT]")
 	CHECK(StringMulptiply::add("2", "999", 1) == "9992");
 	CHECK(StringMulptiply().multiply("123", "456") == "56088");
 }
+
+class ValidIP
+{
+	template<typename Pred>
+	bool validIP(const string&IP, const char *sep, int groups, Pred&& invalid) {
+		char cSep = sep[strlen(sep) - 1];
+		if (IP.front() == cSep || IP.back() == cSep)  // check if there . or : ar begin or end
+			return false;
+		vector<string> tokens = tokenizer(IP.begin(), IP.end(), sep);
+		if (tokens.size() != groups)  // must be 4 or 8 groups
+			return false;
+		if (any_of(tokens.begin(), tokens.end(), invalid))  // find any invalid group
+			return false;
+		return true;
+	}
+
+public:
+	string validIPAddress(string IP) {
+		if (IP.find('.') != string::npos) {
+			auto invalid = [](const string& s) {
+				if (s.size() > 3 || s.empty())  // 1 to 3 digits
+					return true;
+				if (s[0] == '0' && s.size() > 1)  // leading 0 not allowed
+					return true;
+				if (any_of(s.begin(), s.end(), [](char c) { return !isdigit(c); }))
+					return true; // not digit
+				return atoi(s.c_str()) > 255;  // value out of range
+			};
+			if (validIP(IP, "\\.", 4, invalid))
+				return "IPv4";
+		}
+		else if (IP.find(':') != string::npos) {
+			auto invalid = [](const string& s) {
+				if (s.size() > 4 || s.empty())  // 1 to 4 digits
+					return true;
+				if (any_of(s.begin(), s.end(), [](char c) { return !isxdigit(c); }))
+					return true; // not hex digit
+				return false;
+			};
+			if (validIP(IP, ":", 8, invalid))
+				return "IPv6";
+		}
+		return "Neither";
+	}
+};
+
+
+TEST_CASE("valid IP", "[NEW]")
+{
+	CHECK(ValidIP().validIPAddress("172.16.254.1")=="IPv4");
+	CHECK(ValidIP().validIPAddress("172.16.254.1.") == "Neither");
+	CHECK(ValidIP().validIPAddress(".172.16.254.1") == "Neither");
+	CHECK(ValidIP().validIPAddress("2001:0db8:85a3:0:0:8A2E:0370:7334") == "IPv6");
+	CHECK(ValidIP().validIPAddress("2001:0db8:85a3:0:0:8A2E:0370:7334:") == "Neither");
+	CHECK(ValidIP().validIPAddress("256.256.256.256") == "Neither");
+}
