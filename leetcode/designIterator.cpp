@@ -181,3 +181,61 @@ TEST_CASE("nested int parser", "[NEW]")
 	MiniParser().deserialize("[123,[456,[789]]]");
 	CHECK(MiniParser().deserialize("123").getInteger()==123);
 }
+
+
+// Below is the interface for Iterator, which is already defined for you.
+// **DO NOT** modify the interface for Iterator.
+class Iterator {
+	struct Data;
+	Data* data;
+public:
+	Iterator(const vector<int>& nums) {}
+	Iterator(const Iterator& iter) {}
+	virtual ~Iterator() {}
+	// Returns the next element in the iteration.
+	int next()
+	{
+		return 0;
+	}
+	// Returns true if the iteration has more elements.
+	bool hasNext() const
+	{
+		return true;
+	}
+};
+
+
+class PeekingIterator : public Iterator {  // beat 100%, 0 ms
+	bool peeked;
+	int  cache;
+public:
+	PeekingIterator(const vector<int>& nums) : Iterator(nums) {
+		// Initialize any member here.
+		// **DO NOT** save a copy of nums and manipulate it directly.
+		// You should only use the Iterator interface methods.
+		peeked = false;
+	}
+
+	// Returns the next element in the iteration without advancing the iterator.
+	int peek() {
+		if (!peeked) {
+			peeked = true;
+			cache = Iterator::next();
+		}
+		return cache;
+	}
+
+	// hasNext() and next() should behave the same as in the Iterator interface.
+	// Override them if needed.
+	int next() {
+		if (peeked) {
+			peeked = false;
+			return cache;
+		}
+		return Iterator::next();
+	}
+
+	bool hasNext() const {
+		return peeked || Iterator::hasNext();
+	}
+};
