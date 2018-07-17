@@ -143,3 +143,42 @@ TEST_CASE("remove c++ comment", "[NEW]")
 
 	CHECK(CppComments().removeComments(vector<string>{"a/*comment", "line", "more_comment*/b"}) == vector<string>{"ab"});
 }
+
+
+class StringParenthesis
+{
+public:
+	// 678. Valid Parenthesis String, (*)) is valid because * can be ( or ) or blank
+	bool valid(const string& s, int pos, char prev, int balance) { // beat 15%
+		if (pos == s.size()) {
+			return balance == 0;
+		}
+		char cur = s[pos];
+		switch (cur) {
+		case '(':
+			return valid(s, pos + 1, '(', balance + 1);
+		case ')':
+			if (balance>0)
+				return valid(s, pos + 1, ')', balance - 1);
+			return false;
+		case '*':
+			if (valid(s, pos + 1, ')', balance))
+				return true;
+			if (valid(s, pos + 1, ')', balance + 1))
+				return true;
+			if (balance>0)
+				return valid(s, pos + 1, ')', balance - 1);
+		}
+		return false;
+	}
+	bool checkValidString(string s) {
+		return valid(s, 0, 0, 0);
+	}
+};
+
+TEST_CASE("Valid Parenthesis", "[NEW]")
+{
+	StringParenthesis p;
+	CHECK(p.checkValidString("(*()())") == true);
+	CHECK(p.checkValidString("(*))") == true);
+}
