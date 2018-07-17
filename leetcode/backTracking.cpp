@@ -149,30 +149,33 @@ class StringParenthesis
 {
 public:
 	// 678. Valid Parenthesis String, (*)) is valid because * can be ( or ) or blank
-	bool valid(const string& s, int pos, char prev, int balance) { // beat 15%
-		if (pos == s.size()) {
-			return balance == 0;
+	bool valid(const string& s, int start, int balance) {
+		for (int pos = start; pos < s.size(); pos++)
+		{
+			switch (s[pos]) {
+			case '(':
+				balance++;
+				break;
+			case ')':
+				if (balance > 0) {
+					balance--;
+					break;
+				}
+				return false;
+			case '*':
+				if (valid(s, pos + 1, balance))
+					return true;
+				if (valid(s, pos + 1, balance + 1))
+					return true;
+				if (balance > 0)
+					return valid(s, pos + 1, balance - 1);
+				return false;
+			}
 		}
-		char cur = s[pos];
-		switch (cur) {
-		case '(':
-			return valid(s, pos + 1, '(', balance + 1);
-		case ')':
-			if (balance>0)
-				return valid(s, pos + 1, ')', balance - 1);
-			return false;
-		case '*':
-			if (valid(s, pos + 1, ')', balance))
-				return true;
-			if (valid(s, pos + 1, ')', balance + 1))
-				return true;
-			if (balance>0)
-				return valid(s, pos + 1, ')', balance - 1);
-		}
-		return false;
+		return balance == 0;
 	}
-	bool checkValidString(string s) {
-		return valid(s, 0, 0, 0);
+	bool checkValidString(string s) {  // beat
+		return valid(s, 0, 0);
 	}
 };
 
