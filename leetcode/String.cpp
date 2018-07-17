@@ -710,3 +710,87 @@ TEST_CASE("valid IP", "[NEW]")
 	CHECK(ValidIP().validIPAddress("2001:0db8:85a3:0:0:8A2E:0370:7334:") == "Neither");
 	CHECK(ValidIP().validIPAddress("256.256.256.256") == "Neither");
 }
+
+//165. Compare Version Numbers
+class StringParsing
+{
+	bool any_none_zero(stringstream& iss) {
+		int val;
+		while (!iss.eof()) {
+			if (iss.peek() == '.')
+				iss.ignore();
+			iss >> val;
+			if (val)
+				return true;
+		}
+		return false;
+	}
+public:
+	int compareVersion(string version1, string version2) {  // simple, beat 100%
+		stringstream v1(version1), v2(version2);
+		int val1, val2;
+		while (!v1.eof() && !v2.eof()) {
+			if (v1.peek() == '.')
+				v1.ignore();
+			if (v2.peek() == '.')
+				v2.ignore();
+			v1 >> val1;
+			v2 >> val2;
+			if (val1 < val2)
+				return -1;
+			if (val1 > val2)
+				return 1;
+		}
+		if (v1.eof() && v2.eof())
+			return 0;
+		if (v1.eof())
+			return any_none_zero(v2) ? -1 : 0;  // special case, 1.0 is same as 1
+		return any_none_zero(v1) ? 1 : 0;
+	}
+
+	// 71. Simplify Path (Unix-style)
+	// remove any redundant  /
+	// interpret . and ..
+	string simplifyPath(string path) {  // beat 55%
+		auto tokens = tokenizer(path.cbegin(), path.cend(), "/");
+		deque<string> pk;
+		for (const string& t : tokens) {
+			if (t.empty() || t == ".")
+				continue;
+			if (t == "..") {
+				if (!pk.empty())
+					pk.pop_back();
+			}
+			else
+				pk.push_back(t);
+		}
+		if (pk.empty())
+			return "/";
+		stringstream oss;
+		for (const string& t : pk) {
+			oss << '/' << t;
+		}
+		return oss.str();
+	}
+};
+
+
+TEST_CASE("version compare", "[VER]")
+{
+	StringParsing v;
+	CHECK(v.compareVersion("1.1", "0.1") == 1);
+	CHECK(v.compareVersion("1.0.1.1", "1.0.1") == 1);
+	CHECK(v.compareVersion("1.0", "1") == 0);
+	CHECK(v.compareVersion("1.0", "1.0.0") == 0);
+	CHECK(v.compareVersion("1.0", "1.0") == 0);
+	CHECK(v.compareVersion("1.0", "1.0.1") == -1);
+	CHECK(v.compareVersion("1.0", "1.1.1") == -1);
+}
+
+TEST_CASE("simplify path", "[NEW]")
+{
+	StringParsing v;
+	CHECK(v.simplifyPath("/home//foo/") == "/home/foo");
+	CHECK(v.simplifyPath("/../") == "/");
+	CHECK(v.simplifyPath("/a/./b/../../c/") == "/c");
+}
