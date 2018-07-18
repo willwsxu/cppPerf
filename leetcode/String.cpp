@@ -794,3 +794,32 @@ TEST_CASE("simplify path", "[NEW]")
 	CHECK(v.simplifyPath("/../") == "/");
 	CHECK(v.simplifyPath("/a/./b/../../c/") == "/c");
 }
+
+class StringWords {
+public:
+	void reverseWords(string &s) {  // easy beat 99%
+		reverse(s.begin(), s.end());  // reverse the whole string
+		istringstream iss(s);
+		auto first = s.begin();
+		auto last = s.end();
+		for_each(istream_iterator<string>(iss), istream_iterator<string>(), [&first, last](const string& word) {
+			for (auto x = word.rbegin(); x != word.rend(); ++x)  // reverse back the word
+				*first++ = *x;
+			if (first != last)
+				*first++ = ' ';
+		});
+		if (*(first - 1) == ' ')  // strip last space if exist
+			--first;
+		s.erase(first, last);
+	}
+};
+
+TEST_CASE("reverse words in a string", "[NEW]")
+{
+	string str{ "the sky is blue" };
+	StringWords().reverseWords(str);
+	CHECK(str == "blue is sky the");
+	string str2{ " the sky is  blue " };
+	StringWords().reverseWords(str2);
+	CHECK(str2 == "blue is sky the");
+}

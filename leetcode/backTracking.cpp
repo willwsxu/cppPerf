@@ -174,7 +174,7 @@ public:
 		}
 		return balance == 0;
 	}
-	bool checkValidString(string s) {  // beat
+	bool checkValidString(string s) {  // improve backtracking, speed up from 300 to 160 ms, but still only 16%
 		return valid(s, 0, 0);
 	}
 };
