@@ -150,7 +150,7 @@ class StringParenthesis
 public:
 	// 678. Valid Parenthesis String, (*)) is valid because * can be ( or ) or blank
 	bool valid(const string& s, int start, int balance) {
-		for (int pos = start; pos < s.size(); pos++)
+		for (size_t pos = start; pos < s.size(); pos++)
 		{
 			switch (s[pos]) {
 			case '(':
@@ -177,11 +177,27 @@ public:
 	bool checkValidString(string s) {  // improve backtracking, speed up from 300 to 160 ms, but still only 16%
 		return valid(s, 0, 0);
 	}
+
+	bool checkValidString2(string s) {  // borrow clever idea to count bounds, 0ms
+		int lb=0, ub=0; // count ( as positive, ) as negative. keep track of upper and lower bound
+		for (char c : s) {
+			switch (c) {
+			case '(':	lb++, ub++;	break;
+			case ')':   lb--, ub--; break;
+			case '*':   lb--, ub++; break;
+			}
+			if (ub < 0)
+				return false;
+			if (lb < 0)
+				lb = 0;
+		}
+		return lb == 0;
+	}
 };
 
 TEST_CASE("Valid Parenthesis", "[NEW]")
 {
 	StringParenthesis p;
-	CHECK(p.checkValidString("(*()())") == true);
-	CHECK(p.checkValidString("(*))") == true);
+	CHECK(p.checkValidString2("(*()())") == true);
+	CHECK(p.checkValidString2("(*))") == true);
 }
