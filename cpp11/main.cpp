@@ -1,8 +1,11 @@
 
 #include <iostream>
 #include <vector>
+#include <deque>
+#include <list>
 #include <random>
 #include <atomic>
+#include <string>
 using namespace std;
 
 #include "ConsoleLogger.h"
@@ -263,4 +266,29 @@ TEST_CASE("Small class Custom", "CUST")
 		}
 		return loops;
 	});
+}
+
+#include "eraseRemove.h"
+
+TEST_CASE("remove erase idiom", "[NEW]")
+{
+	vector<int> v{ 1,2,3,4,5 };
+	erase_remove(v, 3);
+	CHECK(v == vector<int>{1, 2, 4, 5});
+	/*
+	string st{ "12345"};  // string and set have same template signature, how to distinguish?
+	erase_remove(st, '3');
+	CHECK(st == "1245");
+	*/
+	deque<int> d{ 1,2,3,4,5 };
+	erase_remove(d, 3);
+	CHECK(d == deque<int>{1, 2, 4, 5});
+
+	list<int> l{ 1,2,3,4,5 };
+	erase_remove(l, 3);
+	CHECK(l == list<int>{1, 2, 4, 5});
+
+	set<int> s{ 1,2,3,4,5 };
+	erase_remove(s, 3);
+	CHECK(s == set<int>{1, 2, 4, 5});
 }
