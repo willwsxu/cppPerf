@@ -168,6 +168,7 @@
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="OtherTree.cpp" />
+    <ClCompile Include="stack.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
