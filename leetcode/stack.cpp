@@ -9,14 +9,7 @@ class Stacking {
 public:
 	// 739. Daily Temperatures, tells you how many days you would have to wait until a warmer temperature
 	vector<int> dailyTemperatures(vector<int>& temperatures) {  // beat 99%
-		vector<int> nxGreater = nextGreater(temperatures, false);   // reuse code from project 503, slower, beat 80%
-		for (int i = 0; i < nxGreater.size(); i++) {	
-			if (nxGreater[i] < 0)
-				nxGreater[i] = 0;
-			else
-				nxGreater[i] -= i;
-		}
-		return nxGreater;
+		return nextGreater(temperatures, false, true);   // reuse code from project 503, slower, beat 80%
 		/*
 		stack<int> pending;  // temp of day index if it cannot determine warm day right away, just store index
 		int n = temperatures.size();
@@ -83,22 +76,22 @@ public:
 		return findNums;
 	}
 
-	vector<int> nextGreater(vector<int>& nums, bool bCircular) {
+	vector<int> nextGreater(vector<int>& nums, bool bCircular, bool delta=false) {  // add delta slow down program a lot
 		stack<int> pending;  // store index of number which is not followed immediately by a larger number
 		int n = nums.size();
-		vector<int> greater(n, -1);
-		auto processStack = [&pending, &nums, &greater](int i) {
+		vector<int> greater(n, delta?0:-1);
+		auto processStack = [&pending, &nums, &greater, delta](int i) {
 			while (!pending.empty()) { // process all numbers on stack which is smaller than current number
 				int t = pending.top();
 				if (nums[t] >= nums[i])
 					break;
-				greater[t] = i;
+				greater[t] = delta?i-t:i;
 				pending.pop();
 			}
 		};
 		for (int i = 1; i < n; i++) {
 			if (nums[i - 1] < nums[i]) {   // number is larger than previous
-				greater[i - 1] = i;        // process immediately
+				greater[i - 1] = delta?1:i;        // process immediately
 				processStack(i);
 			}
 			else
