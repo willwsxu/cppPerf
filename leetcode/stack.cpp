@@ -9,7 +9,7 @@ class Stacking {
 public:
 	// 739. Daily Temperatures, tells you how many days you would have to wait until a warmer temperature
 	vector<int> dailyTemperatures(vector<int>& temperatures) {  // beat 99%
-		return nextGreater(temperatures, false, true);   // reuse code from project 503, slower, beat 80%
+		return nextGreater(temperatures, false, true);   // reuse code from project 503, slower, beat 80%, slow down more after add 3rd param
 		/*
 		stack<int> pending;  // temp of day index if it cannot determine warm day right away, just store index
 		int n = temperatures.size();
@@ -28,7 +28,8 @@ public:
 			else
 				pending.push(i - 1);  // not warmer, add previous slot to stack
 		}
-		return warm;*/
+		return warm;
+		*/
 	}
 
 	unordered_map<int, int> nextGreater(vector<int>& temperatures) {  // beat 94% comparing to use dailyTemperatures
