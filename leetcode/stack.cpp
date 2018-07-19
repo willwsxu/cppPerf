@@ -9,6 +9,15 @@ class Stacking {
 public:
 	// 739. Daily Temperatures, tells you how many days you would have to wait until a warmer temperature
 	vector<int> dailyTemperatures(vector<int>& temperatures) {  // beat 99%
+		vector<int> nxGreater = nextGreater(temperatures, false);   // reuse code from project 503, slower, beat 80%
+		for (int i = 0; i < nxGreater.size(); i++) {	
+			if (nxGreater[i] < 0)
+				nxGreater[i] = 0;
+			else
+				nxGreater[i] -= i;
+		}
+		return nxGreater;
+		/*
 		stack<int> pending;  // temp of day index if it cannot determine warm day right away, just store index
 		int n = temperatures.size();
 		vector<int> warm(n, 0);
@@ -26,7 +35,7 @@ public:
 			else
 				pending.push(i - 1);  // not warmer, add previous slot to stack
 		}
-		return warm;
+		return warm;*/
 	}
 
 	unordered_map<int, int> nextGreater(vector<int>& temperatures) {  // beat 94% comparing to use dailyTemperatures
@@ -59,11 +68,11 @@ public:
 	// given two arrays (without duplicates) nums1 and nums2 where nums1’s elements are subset of nums2. 
 	// Find all the next greater numbers for nums1's elements in the corresponding places of nums2
 	vector<int> nextGreaterElement(vector<int>& findNums, vector<int>& nums) { // beat 100%
-		vector<int> nextGreater = dailyTemperatures(nums);   // reuse code from previous project
+		vector<int> nxGreater = nextGreater(nums, false);   // reuse code from project 503
 		unordered_map<int, int> index;  // map value to index of next greater
-		for (size_t k = 0; k < nextGreater.size(); k++)
-			index[nums[k]] = nextGreater[k] ? nextGreater[k] + k : 0;
-		transform(begin(findNums), end(findNums), begin(findNums), [&nums, &index](int n) { return index[n] ? nums[index[n]] : -1; });
+		for (size_t k = 0; k < nxGreater.size(); k++)
+			index[nums[k]] = nxGreater[k];
+		transform(begin(findNums), end(findNums), begin(findNums), [&nums, &index](int n) { return index[n]>=0 ? nums[index[n]] : -1; });
 		return findNums;
 	}
 
@@ -78,36 +87,27 @@ public:
 		stack<int> pending;  // store index of number which is not followed immediately by a larger number
 		int n = nums.size();
 		vector<int> greater(n, -1);
+		auto processStack = [&pending, &nums, &greater](int i) {
+			while (!pending.empty()) { // process all numbers on stack which is smaller than current number
+				int t = pending.top();
+				if (nums[t] >= nums[i])
+					break;
+				greater[t] = i;
+				pending.pop();
+			}
+		};
 		for (int i = 1; i < n; i++) {
 			if (nums[i - 1] < nums[i]) {   // number is larger than previous
 				greater[i - 1] = i;        // process immediately
-				while (!pending.empty()) { // process all numbers on stack which is smaller than current number
-					int t = pending.top();
-					if (nums[t] >= nums[i])
-						break;
-					greater[t] = i;
-					pending.pop();
-				}
+				processStack(i);
 			}
 			else
 				pending.push(i - 1);  // not warmer, add previous slot to stack
 		}
 		if (bCircular) { // circle back to beginning of the array
 			pending.push(n - 1);  // add last element
-			for (int i = 0; i < n - 1 && !pending.empty(); i++) {
-				while (!pending.empty()) {
-					int t = pending.top();
-					if (i >= t)  //full circle, this check in not necessary as it does not matter if it pass full circle
-					{
-						pending.pop();
-						continue;
-					}
-					if (nums[t] >= nums[i])
-						break;
-					greater[t] = i;
-					pending.pop();
-				}
-			}
+			for (int i = 0; i < n - 1 && !pending.empty(); i++)
+				processStack(i); // not necessary to check if stack top is more than one circle as staled numbers will be at bottom of the stack
 		}
 		return greater;
 	}
