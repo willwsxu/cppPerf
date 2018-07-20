@@ -18,6 +18,12 @@ void erase_remove(string<T, Traits, A>& s, T target)
 	s.erase(remove(begin(s), end(s), target), end(s));
 }
 */
+template<typename T>
+void erase_remove(basic_string<T>& s, T target)
+{
+	s.erase(remove(begin(s), end(s), target), end(s));
+}
+
 template<typename T, typename A = allocator>
 void erase_remove(list<T, A>& li, T target)
 {
