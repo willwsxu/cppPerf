@@ -151,3 +151,54 @@ TEST_CASE("Next Greater Element I, II, III", "[NEW]")
 	CHECK(Stacking().nextGreaterElement(230242) == 230422);  // need to find upper bound
 	CHECK(Stacking().nextGreaterElement(1999999999) == -1);
 }
+
+
+class CallStack {
+public:
+	// 636. Exclusive Time of Functions
+	// wierd time convention, start time and end time are inclusive. start from 0 end 0 took 1 time interval
+	tuple<int, bool, int> parse(const string&s)
+	{  // string parsing is much faster than stringstream extraction, beat 99% vs 39%, 16ms vs 24 ms
+		int n = s.find_first_of(':');
+		int f = atoi(s.substr(0, n).c_str());
+		bool start = s.find(":start:") != string::npos;//s[n + 1] == 's';
+		n += start ? 7 : 5;
+		int e = atoi(s.substr(n).c_str());
+		return{ f, start, e };
+	}
+	vector<int> exclusiveTime(int n, vector<string>& logs) {
+		vector<int> time(n, 0);
+		stack<int> calls;
+		int prevTime = 0;  // process stack so only prev time is needed for computing
+		for (const string& log : logs) {
+			int func, stamp;
+			bool start;
+			//stringstream iss(log);
+			//iss >> func;
+			tie(func, start, stamp) = parse(log);
+			if (start) {  //log.find(":start:") != string::npos
+						  //iss.ignore(7);
+						  //iss >> stamp;
+				if (!calls.empty()) {
+					time[calls.top()] += stamp - prevTime;
+				}
+				prevTime = stamp;
+				calls.emplace(func);
+			}
+			else {
+				//iss.ignore(5);
+				//iss >> stamp;
+				time[func] += stamp - prevTime + 1;
+				prevTime = stamp + 1;
+				calls.pop();
+			}
+		}
+		return time;
+	}
+};
+
+TEST_CASE("exclusive execution time", "[NEW]")
+{
+	CHECK(CallStack().exclusiveTime(2, vector<string>{"0:start:0", "1:start:2", "1:end:5", "0:end:6"}) == vector<int>{3, 4});
+	CHECK(CallStack().exclusiveTime(1, vector<string>{"0:start:0", "0:start:2", "0:end:5", "0:start:6", "0:end:6", "0:end:7"}) == vector<int>{8});
+}
