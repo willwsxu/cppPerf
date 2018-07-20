@@ -292,3 +292,27 @@ TEST_CASE("remove erase idiom", "[NEW]")
 	erase_remove(s, 3);
 	CHECK(s == set<int>{1, 2, 4, 5});
 }
+
+TEST_CASE("remove erase idiom with predicate", "[NEW]")
+{
+	auto even = [](int i) { return i % 2 == 0; };
+	vector<int> v{ 1,2,3,4,5 };
+	erase_remove_if(v, even);
+	CHECK(v == vector<int>{1, 3, 5});
+
+	deque<int> d{ 1,2,3,4,5 };
+	erase_remove_if2(d, even);
+	CHECK(d == deque<int>{1, 3, 5});
+
+	string st{ "12345" };  // string and set have same template signature, how to distinguish?
+	erase_remove_if(st, [](char i) { return (i-'0') % 2 == 0; });
+	CHECK(st == "135");
+
+	list<int> l{ 1,2,3,4,5 };
+	erase_remove_if(l, even);
+	CHECK(l == list<int>{1, 3, 5});
+
+	set<int> s{ 1,2,3,4,5 };
+	erase_remove_if(s, even);
+	CHECK(s == set<int>{1, 3, 5});
+}
