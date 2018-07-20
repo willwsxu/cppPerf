@@ -250,7 +250,7 @@ public:
 	tuple<int, int> getCount(const string& s, int start) {  // start from [
 		int count = 0;
 		int mult = 1;
-		while (--start >= 0 && isdigit(s[start])) {
+		while (--start >= 0 && isdigit(s[start])) {  // calculate from right to left
 			count += (s[start] - '0')*mult;
 			mult *= 10;
 		}
@@ -261,22 +261,22 @@ public:
 		int n = s.size();
 		for (int i = 0; i < n; i++) {
 			switch (s[i]) {
-			case '[':	ob.push(i);		break;
-			case ']':
+			case '[':	ob.push(i);		break;  // these positions won't be impacted by decode from right side
+			case ']':  // decode inner most []
 			{
-				int start = ob.top() + 1;
+				int start = ob.top() + 1; // start of encode string
 				int ins_pos, count;
-				tie(ins_pos, count) = getCount(s, ob.top());
+				tie(ins_pos, count) = getCount(s, ob.top()); // compute count and insertion point
 				ob.pop();
-				int replaced = i - ins_pos + 1;
-				string encode = s.substr(start, i - start);
+				int replaced = i - ins_pos + 1;  // chars to replace, #[encode]
+				string encode = s.substr(start, i - start); //[encode]
 				int encode_len = i - start;
-				s.replace(ins_pos, replaced, encode);
-				for (int i = 0; i < count - 1; i++) {
+				s.replace(ins_pos, replaced, encode);  // replace #[encode] with encode once
+				for (int i = 0; i < count - 1; i++) {  // insert encode string count -1 times more
 					ins_pos += encode_len;
 					s.insert(ins_pos, encode);
 				}
-				int delta = encode_len*count - replaced;
+				int delta = encode_len*count - replaced;  // compute net chars changes to string
 				i += delta;
 				n += delta;
 			}
