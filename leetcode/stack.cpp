@@ -133,14 +133,14 @@ public:
 	}
 };
 
-TEST_CASE("Daily Temperatures find warmer day ahead", "[NEW]")
+TEST_CASE("Daily Temperatures find warmer day ahead", "[GRE]")
 {
 	CHECK(Stacking().dailyTemperatures(vector<int>{73, 74, 75, 71, 69, 72, 76, 73}) == vector<int>{1, 1, 4, 2, 1, 1, 0, 0});
 	CHECK(Stacking().dailyTemperatures(vector<int>{}) == vector<int>{});
 	CHECK(Stacking().dailyTemperatures(vector<int>{73}) == vector<int>{0});
 }
 
-TEST_CASE("Next Greater Element I, II, III", "[NEW]")
+TEST_CASE("Next Greater Element I, II, III", "[GRE]")
 {
 	CHECK(Stacking().nextGreaterElement(vector<int>{4, 1, 2}, vector<int>{1, 3, 4, 2}) == vector<int>{-1, 3, -1});
 
@@ -161,7 +161,7 @@ public:
 	{  // string parsing is much faster than stringstream extraction, beat 99% vs 39%, 16ms vs 24 ms
 		int n = s.find_first_of(':');
 		int f = atoi(s.substr(0, n).c_str());
-		bool start = s.find(":start:") != string::npos;//s[n + 1] == 's';
+		bool start = s[n + 1] == 's';
 		n += start ? 7 : 5;
 		int e = atoi(s.substr(n).c_str());
 		return{ f, start, e };
@@ -173,12 +173,8 @@ public:
 		for (const string& log : logs) {
 			int func, stamp;
 			bool start;
-			//stringstream iss(log);
-			//iss >> func;
 			tie(func, start, stamp) = parse(log);
-			if (start) {  //log.find(":start:") != string::npos
-						  //iss.ignore(7);
-						  //iss >> stamp;
+			if (start) {
 				if (!calls.empty()) {
 					time[calls.top()] += stamp - prevTime;
 				}
@@ -186,8 +182,6 @@ public:
 				calls.emplace(func);
 			}
 			else {
-				//iss.ignore(5);
-				//iss >> stamp;
 				time[func] += stamp - prevTime + 1;
 				prevTime = stamp + 1;
 				calls.pop();
@@ -201,4 +195,108 @@ TEST_CASE("exclusive execution time", "[NEW]")
 {
 	CHECK(CallStack().exclusiveTime(2, vector<string>{"0:start:0", "1:start:2", "1:end:5", "0:end:6"}) == vector<int>{3, 4});
 	CHECK(CallStack().exclusiveTime(1, vector<string>{"0:start:0", "0:start:2", "0:end:5", "0:start:6", "0:end:6", "0:end:7"}) == vector<int>{8});
+}
+class GeneralStack
+{
+public:
+	// 735. Asteroid Collision, absolute value represents its size, and the sign represents its direction (positive meaning right, negative meaning left). Each asteroid moves at the same speed.
+	//  If two asteroids meet, the smaller one will explode. If both are the same size, both will explode
+	// Ideas: negative on the left are safe, store positive on stack until it meets some left traveling asteroid
+	vector<int> asteroidCollision(vector<int>& asteroids) {  // messed up requirement at first, beat 99%
+		if (asteroids.empty())
+			return{};
+		vector<int> ans;
+		ans.reserve(asteroids.size() / 2);
+		deque<int> rightward; // asteroids rightward
+		for (int a : asteroids) {
+			if (rightward.empty()) {
+				if (a < 0)
+					ans.push_back(a);
+				else
+					rightward.push_back(a);
+			}
+			else {
+				if (a>0)
+					rightward.push_back(a);
+				else {
+					int size2 = -a;
+					while (!rightward.empty()) {
+						if (rightward.back() > size2)  // new asteroid explode
+							break;
+						else if (rightward.back() == size2) { // both explode
+							rightward.pop_back();
+							break;
+						}
+						else {
+							rightward.pop_back();  // old one explode
+							if (rightward.empty()) {
+								ans.push_back(a);  // no more collission
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (rightward.empty())
+			return ans;
+		copy(begin(rightward), end(rightward), back_inserter(ans));
+		return ans;
+	}
+
+	// 394. Decode String, k[encode], repeat encode k times, k is positive int
+	// 3[2[a]] -> aaaaaa
+	// 3a, 2[4] are invalid
+	tuple<int, int> getCount(const string& s, int start) {  // start from [
+		int count = 0;
+		int mult = 1;
+		while (--start >= 0 && isdigit(s[start])) {
+			count += (s[start] - '0')*mult;
+			mult *= 10;
+		}
+		return{ start + 1, count };
+	}
+	string decodeString(string s) {
+		stack<int> ob; // open brackets
+		int n = s.size();
+		for (int i = 0; i < n; i++) {
+			switch (s[i]) {
+			case '[':	ob.push(i);		break;
+			case ']':
+			{
+				int start = ob.top() + 1;
+				int ins_pos, count;
+				tie(ins_pos, count) = getCount(s, ob.top());
+				ob.pop();
+				int replaced = i - ins_pos + 1;
+				string encode = s.substr(start, i - start);
+				int encode_len = i - start;
+				s.replace(ins_pos, replaced, encode);
+				for (int i = 0; i < count - 1; i++) {
+					ins_pos += encode_len;
+					s.insert(ins_pos, encode);
+				}
+				int delta = encode_len*count - replaced;
+				i += delta;
+				n += delta;
+			}
+			break;
+			}
+		}
+		return s;
+	}
+};
+
+
+TEST_CASE("asteroidCollision", "[NEW]")
+{
+	CHECK(GeneralStack().asteroidCollision(vector<int>{5, 10, -5, -15, 5, -5}) == vector<int>{-15});
+	CHECK(GeneralStack().asteroidCollision(vector<int>{-2, -1, 1, 2}) == vector<int>{-2, -1, 1, 2});
+}
+
+TEST_CASE("decode string", "[NEW]")
+{
+	CHECK(GeneralStack().decodeString("3[a]2[bc]") == "aaabcbc");
+	CHECK(GeneralStack().decodeString("3[a2[c]]") == "accaccacc");
+	CHECK(GeneralStack().decodeString("2[abc]3[cd]ef") == "abcabccdcdcdef");
 }
