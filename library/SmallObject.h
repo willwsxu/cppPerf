@@ -1,5 +1,7 @@
 #pragma once
 #include <cassert>
+#include <vector>
+#include <algorithm>
 
 struct Chunk
 {
@@ -39,4 +41,34 @@ void Chunk::Deallocate(void *p, size_t blockSize) {
 	*toRelease = firstAvailableBlock_;
 	firstAvailableBlock_ = (toRelease - pData_) / blockSize;
 	++blocksAvailable_;
+}
+
+class FixedAllocator
+{
+public:
+	void * Allocate();
+private:
+	size_t	blockSize_;
+	unsigned char	numBlocks_;
+	using Chunks = std::vector<Chunk>;
+	Chunks	chunks_;
+	Chunk *	allocChunk_= nullptr;
+	Chunk * deallocChunk_ = nullptr;
+};
+
+void *FixedAllocator::Allocate()
+{
+	if (allocChunk_ == nullptr || allocChunk_->blocksAvailable_ == 0) {
+		auto found = std::find_if(chunks_.begin(), chunks_.end(), [](const Chunk& chk) { return chk.blocksAvailable_ > 0; });
+		if (found == chunks_.end())
+			allocChunk_ = &*found;
+		else {
+			chunks_.reserve(chunks_.size() + 1);
+			chunks_.push_back(Chunk());
+			chunks_.back().Init(blockSize_, numBlocks_);
+			allocChunk_ = &chunks_.back();
+			deallocChunk_ = &chunks_.back();
+		}
+	}
+	return allocChunk_->Allocate(blockSize_);
 }
