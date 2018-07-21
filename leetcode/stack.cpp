@@ -290,12 +290,10 @@ public:
 	int evalRPN(vector<string>& tokens) {  // simple, beat 100%
 		stack<int> operands;
 		for (const string & s : tokens) {
-			if (s.size() == 1 && !isdigit(s[0])) {
-				int n2 = operands.top();
-				operands.pop();
-				int n1 = operands.top();
-				operands.pop();
-
+			if (s.size() == 1 && !isdigit(s[0])) {  // operator
+				int n2 = operands.top();				operands.pop();
+				int n1 = operands.top();				operands.pop();
+				// compute and put it back on stack
 				switch (s[0]) {
 				case '+':	operands.push(n1 + n2);	break;
 				case '-':	operands.push(n1 - n2);	break;
@@ -308,18 +306,61 @@ public:
 		}
 		return operands.top();
 	}
+
+	// 331. Verify Preorder Serialization of a Binary Tree
+	// idea: each node must has two children
+	bool isValidSerialization(string preorder) { // beat 100%, watch out for special case
+		if (preorder.empty())
+			return false;
+		if (preorder == "#")   //special case
+			return true;
+		stack<int> childCount;
+		bool digit = false;  // keep track of end of digit token
+		for (size_t i = 0; i < preorder.size(); i++) {
+			switch (preorder[i]) {
+			case '#':	// leaf node
+				if (childCount.empty())
+					return false;
+				if (++childCount.top() > 2)
+					return false;
+				i++;
+				break;
+			case ',':
+				digit = false;
+				break;
+			default:
+				if (digit)
+					break;
+				digit = true;
+				if (!childCount.empty())
+					childCount.top()++;
+				childCount.push(0);
+				break;
+			}
+			while (!childCount.empty() && childCount.top() == 2)  // backtrack to processed parents with 2 children
+				childCount.pop();
+			if (childCount.empty() && i < preorder.size() - 2)  // special case, tree is complete but there are  more nodes
+				return false;
+		}
+		return childCount.empty();  //
+	}
 };
 
-
-TEST_CASE("asteroidCollision", "[NEW]")
+TEST_CASE("asteroidCollision", "[AST]")
 {
 	CHECK(GeneralStack().asteroidCollision(vector<int>{5, 10, -5, -15, 5, -5}) == vector<int>{-15});
 	CHECK(GeneralStack().asteroidCollision(vector<int>{-2, -1, 1, 2}) == vector<int>{-2, -1, 1, 2});
 }
 
-TEST_CASE("decode string", "[NEW]")
+TEST_CASE("decode string", "[DECODE]")
 {
 	CHECK(GeneralStack().decodeString("3[a]2[bc]") == "aaabcbc");
 	CHECK(GeneralStack().decodeString("3[a2[c]]") == "accaccacc");
 	CHECK(GeneralStack().decodeString("2[abc]3[cd]ef") == "abcabccdcdcdef");
+}
+
+TEST_CASE("preorder tree valid", "[NEW]")
+{
+	CHECK(GeneralStack().isValidSerialization("9,3,4,#,#,1,#,#,#,2,#,6,#,#") == false);
+	CHECK(GeneralStack().isValidSerialization("#") == true);
 }
