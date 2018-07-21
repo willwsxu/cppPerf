@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClCompile Include="backTracking.cpp" />
     <ClCompile Include="BinaryTree.cpp" />
+    <ClCompile Include="calculator.cpp" />
     <ClCompile Include="designHeap.cpp" />
     <ClCompile Include="designIterator.cpp" />
     <ClCompile Include="DynamicProgramming.cpp" />

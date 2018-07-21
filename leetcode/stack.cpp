@@ -399,3 +399,32 @@ TEST_CASE("car fleet", "[NEW]")
 	CHECK(NoStack().carFleet(10, vector<int>{0, 4, 2}, vector<int>{2, 1, 3}) == 1);
 	CHECK(NoStack().carFleet(12, vector<int>{10, 8, 0, 5, 3}, vector<int>{2, 4, 1, 1, 3}) == 3);
 }
+
+class MoreStack {
+public:
+	// 456. 132 Pattern, subsequence ai, aj, ak such that i < j < k and ai < ak < aj
+	// n will be less than 15,000
+	bool find132pattern(vector<int>& nums) {
+		if (nums.size() < 3)
+			return false;
+		stack<int>   up;
+		up.push(nums[0]);
+		for (int num : nums) {
+			if (num > up.top())  // store largest on stack so it has better chance to go down (greedy)
+				up.push(num);
+			else if (num < up.top()) {  // if current num is smaller
+				if (up.size() > 1)
+					return true;
+				up.pop();         // replace stack top with a smaller number (greedy) so it has better chance to go up in the future
+				up.push(num);
+			}
+		}
+		return false;
+	}
+
+};
+
+TEST_CASE("132 pattern", "[NEW]")
+{
+	MoreStack().find132pattern(vector<int>{1, 0, 1, -4, -3});
+}
