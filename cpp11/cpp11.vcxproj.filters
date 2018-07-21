@@ -75,13 +75,13 @@
     <ClInclude Include="MessageConcept.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SmallObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SeanParentBetterCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\library\eraseRemove.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\SmallObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

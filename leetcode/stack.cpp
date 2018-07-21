@@ -285,6 +285,29 @@ public:
 		}
 		return s;
 	}
+
+	// 150. Evaluate Reverse Polish Notation
+	int evalRPN(vector<string>& tokens) {  // simple, beat 100%
+		stack<int> operands;
+		for (const string & s : tokens) {
+			if (s.size() == 1 && !isdigit(s[0])) {
+				int n2 = operands.top();
+				operands.pop();
+				int n1 = operands.top();
+				operands.pop();
+
+				switch (s[0]) {
+				case '+':	operands.push(n1 + n2);	break;
+				case '-':	operands.push(n1 - n2);	break;
+				case '*':	operands.push(n1 * n2);	break;
+				case '/':	operands.push(n1 / n2);	break;
+				}
+			}
+			else
+				operands.push(atoi(s.c_str()));
+		}
+		return operands.top();
+	}
 };
 
 

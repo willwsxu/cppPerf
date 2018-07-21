@@ -112,6 +112,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\library\eraseRemove.h" />
+    <ClInclude Include="..\library\SmallObject.h" />
     <ClInclude Include="Alexandrescu.h" />
     <ClInclude Include="courseSchedule.h" />
     <ClInclude Include="DynBuffer.h" />
@@ -132,7 +133,6 @@
     <ClInclude Include="Matrix2D.h" />
     <ClInclude Include="meta.h" />
     <ClInclude Include="MoveCtor.h" />
-    <ClInclude Include="SmallObject.h" />
     <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>

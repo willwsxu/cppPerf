@@ -47,6 +47,7 @@ class FixedAllocator
 {
 public:
 	void * Allocate();
+	void Deallocate(void* p, size_t blockSize);
 private:
 	size_t	blockSize_;
 	unsigned char	numBlocks_;
@@ -72,3 +73,8 @@ void *FixedAllocator::Allocate()
 	}
 	return allocChunk_->Allocate(blockSize_);
 }
+
+class SmallObjAllocator
+{
+
+};
