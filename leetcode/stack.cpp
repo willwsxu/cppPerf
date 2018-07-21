@@ -364,3 +364,38 @@ TEST_CASE("preorder tree valid", "[NEW]")
 	CHECK(GeneralStack().isValidSerialization("9,3,4,#,#,1,#,#,#,2,#,6,#,#") == false);
 	CHECK(GeneralStack().isValidSerialization("#") == true);
 }
+
+
+class NoStack  // conceptual stack
+{
+public:
+	// 853. Car Fleet, faster car behind cannot past slow car in front so they join as one fleet
+	// idea: calculate how much time it took to get to target
+	// sort by position in reverse (critical)
+	// process from car closer to target, faster cars cannot pass so just discard, slower car will become a new fleet
+	int carFleet(int target, vector<int>& position, vector<int>& speed) {
+		if (position.empty())
+			return 0;
+		vector<pair<int, double>> tempo;
+		for (size_t i = 0; i < position.size(); i++) {
+			tempo.emplace_back(position[i], (double)(target - position[i]) / speed[i]);
+		}
+		sort(tempo.begin(), tempo.end(), [](const auto&a, const auto&b) { return a.first > b.first; });
+		double front_tempo = tempo[0].second;
+		int ans = 1;
+		for (const auto&p : tempo) {
+			if (front_tempo < p.second) {  // front car is faster, start a new fleet
+				ans++;
+				front_tempo = p.second;
+			}
+		}
+		return ans;
+	}
+};
+
+
+TEST_CASE("car fleet", "[NEW]")
+{
+	CHECK(NoStack().carFleet(10, vector<int>{0, 4, 2}, vector<int>{2, 1, 3}) == 1);
+	CHECK(NoStack().carFleet(12, vector<int>{10, 8, 0, 5, 3}, vector<int>{2, 4, 1, 1, 3}) == 3);
+}
