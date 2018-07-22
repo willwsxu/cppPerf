@@ -401,17 +401,16 @@ TEST_CASE("car fleet", "[NEW]")
 }
 
 class Pattern132 {
-	/*stack<int>   mid;  // mid numbers
-	int top() { return mid.top(); }
+	/*int top() { return mid.top(); }    // slower than use stack as local varialbe in function, 20 ms vs 16ms
 	bool empty() { return mid.empty(); }
 	void pop() { mid.pop(); }
-	void push(int i) { mid.push(i); }*/
+	void push(int i) { mid.push(i); }
 	vector<int> *stack;
 	int top_, full_;
 	int top() { return (*stack)[top_]; }
 	bool empty() { return top_==full_; }
 	void pop() { top_++; }
-	void push(int i) { (*stack)[--top_]=i; }
+	void push(int i) { (*stack)[--top_]=i; }*/
 
 public:
 	// 456. 132 Pattern, subsequence ai, aj, ak such that i < j < k and ai < ak < aj
@@ -420,19 +419,20 @@ public:
 	// add to number to stack if it is not solution, but pop out smaller numbers first so stack top is the mid number
 	// update third # as max of numbers popped out of the stack
 	bool find132pattern(vector<int>& nums) {  // beat 98%
-		stack = &nums;
+		/*stack = &nums;
 		top_ = nums.size();
-		full_ = top_;
+		full_ = top_;*/
 
+		stack<int>   mid;  // mid numbers
 		int a3 = INT_MIN;  // third number in 132 pattern
 		for (auto next = nums.rbegin(); next != nums.rend(); ++next) { // from right to left
-			if (*next<a3 && *next<top() )  // no need to check stack full after a3 becomes a valid number
+			if (*next<a3 && *next<mid.top() )  // no need to check stack full after a3 becomes a valid number
 				return true;
-			while (!empty() && *next > top()) {  // pop out any smaller number on stack
-				a3 = max(a3, top());  // update a3 to be the greater
-				pop();
+			while (!mid.empty() && *next > mid.top()) {  // pop out any smaller number on stack
+				a3 = max(a3, mid.top());  // update a3 to be the greater
+				mid.pop();
 			}
-			push(*next);
+			mid.push(*next);
 		}
 		return false;
 	}
