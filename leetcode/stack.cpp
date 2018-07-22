@@ -404,17 +404,20 @@ class MoreStack {
 public:
 	// 456. 132 Pattern, subsequence ai, aj, ak such that i < j < k and ai < ak < aj
 	// n will be less than 15,000
-	bool find132pattern(vector<int>& nums) {
+	// borrowed idea: look for first number from right to left, 
+	// add to number to stack if it is not solution, but pop out smaller numbers first so stack top is the mid number
+	// update third # as max of numbers popped out of the stack
+	bool find132pattern(vector<int>& nums) {  // beat 98%
 		int a3 = INT_MIN;  // third number in 132 pattern
-		stack<int>   up;  // mid numbers
+		stack<int>   mid;  // mid numbers
 		for (auto next = nums.rbegin(); next != nums.rend(); ++next) { // from right to left
-			if (*next<a3 && *next<up.top() )  // no need to check stack full after a3 becomes a valid number
+			if (*next<a3 && *next<mid.top() )  // no need to check stack full after a3 becomes a valid number
 				return true;
-			while (!up.empty() && *next > up.top()) {  // pop out any smaller number on stack
-				a3 = max(a3, up.top());  // update a3 to be the greater
-				up.pop();
+			while (!mid.empty() && *next > mid.top()) {  // pop out any smaller number on stack
+				a3 = max(a3, mid.top());  // update a3 to be the greater
+				mid.pop();
 			}
-			up.push(*next);
+			mid.push(*next);
 		}
 		return false;
 	}
