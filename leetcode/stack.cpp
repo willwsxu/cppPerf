@@ -400,7 +400,13 @@ TEST_CASE("car fleet", "[NEW]")
 	CHECK(NoStack().carFleet(12, vector<int>{10, 8, 0, 5, 3}, vector<int>{2, 4, 1, 1, 3}) == 3);
 }
 
-class MoreStack {
+class Pattern132 {
+	stack<int>   mid;  // mid numbers
+	int top() { return mid.top(); }
+	bool empty() { return mid.empty(); }
+	void pop() { mid.pop(); }
+	void push(int i) { mid.push(i); }
+
 public:
 	// 456. 132 Pattern, subsequence ai, aj, ak such that i < j < k and ai < ak < aj
 	// n will be less than 15,000
@@ -409,15 +415,14 @@ public:
 	// update third # as max of numbers popped out of the stack
 	bool find132pattern(vector<int>& nums) {  // beat 98%
 		int a3 = INT_MIN;  // third number in 132 pattern
-		stack<int>   mid;  // mid numbers
 		for (auto next = nums.rbegin(); next != nums.rend(); ++next) { // from right to left
-			if (*next<a3 && *next<mid.top() )  // no need to check stack full after a3 becomes a valid number
+			if (*next<a3 && *next<top() )  // no need to check stack full after a3 becomes a valid number
 				return true;
-			while (!mid.empty() && *next > mid.top()) {  // pop out any smaller number on stack
-				a3 = max(a3, mid.top());  // update a3 to be the greater
+			while (!empty() && *next > top()) {  // pop out any smaller number on stack
+				a3 = max(a3, top());  // update a3 to be the greater
 				mid.pop();
 			}
-			mid.push(*next);
+			push(*next);
 		}
 		return false;
 	}
@@ -426,9 +431,9 @@ public:
 
 TEST_CASE("132 pattern", "[NEW]")
 {
-	CHECK(MoreStack().find132pattern(vector<int>{1, 0, 1, -4, -3}) == false);
-	CHECK(MoreStack().find132pattern(vector<int>{3, 5, 0, 3, 4}) == true);
-	CHECK(MoreStack().find132pattern(vector<int>{3, 5, 0, 2, 1}) == true);
-	CHECK(MoreStack().find132pattern(vector<int>{8, 5, 7, 4, 8, 7}) == true);
-	CHECK(MoreStack().find132pattern(vector<int>{24, 26, 25, 30, 20}) == true);
+	CHECK(Pattern132().find132pattern(vector<int>{1, 0, 1, -4, -3}) == false);
+	CHECK(Pattern132().find132pattern(vector<int>{3, 5, 0, 3, 4}) == true);
+	CHECK(Pattern132().find132pattern(vector<int>{3, 5, 0, 2, 1}) == true);
+	CHECK(Pattern132().find132pattern(vector<int>{8, 5, 7, 4, 8, 7}) == true);
+	CHECK(Pattern132().find132pattern(vector<int>{24, 26, 25, 30, 20}) == true);
 }
