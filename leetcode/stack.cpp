@@ -405,16 +405,10 @@ public:
 	// 456. 132 Pattern, subsequence ai, aj, ak such that i < j < k and ai < ak < aj
 	// n will be less than 15,000
 	bool find132pattern(vector<int>& nums) {
-		auto inc = adjacent_find(nums.rbegin(), nums.rend(), [](int a, int b) {return a < b; }); // from right to left
-		if (inc == nums.rend())
-			return false;
-		int a3 = *inc;  // third number in 132 pattern
+		int a3 = INT_MIN;  // third number in 132 pattern
 		stack<int>   up;  // mid numbers
-		up.push(*(++inc));
-		if (++inc == nums.rend())
-			return false;
-		for (auto next = inc; next != nums.rend(); ++next) {
-			if (*next<up.top() && *next<a3)
+		for (auto next = nums.rbegin(); next != nums.rend(); ++next) { // from right to left
+			if (*next<a3 && *next<up.top() )  // no need to check stack full after a3 becomes a valid number
 				return true;
 			while (!up.empty() && *next > up.top()) {  // pop out any smaller number on stack
 				a3 = max(a3, up.top());  // update a3 to be the greater
@@ -433,4 +427,5 @@ TEST_CASE("132 pattern", "[NEW]")
 	CHECK(MoreStack().find132pattern(vector<int>{3, 5, 0, 3, 4}) == true);
 	CHECK(MoreStack().find132pattern(vector<int>{3, 5, 0, 2, 1}) == true);
 	CHECK(MoreStack().find132pattern(vector<int>{8, 5, 7, 4, 8, 7}) == true);
+	CHECK(MoreStack().find132pattern(vector<int>{24, 26, 25, 30, 20}) == true);
 }
