@@ -15,10 +15,10 @@ struct Token
 
 class Calculator {
 public:
-	int calculate(string s) {  // beat 27%
+	int calculate(string s) {  // improve from 20ms to 12ms after atoi
 		vector<Token> tokens;
-		int start = 0;
-		int cur = 0;
+		bool number = false;
+		int num = 0;
 		for (char c : s) {
 			switch (c) {
 			case '+':
@@ -26,19 +26,22 @@ public:
 			case '*':
 			case '/':
 			case' ':
-				if (cur > start)
-					tokens.emplace_back(s.substr(start, cur - start));
+				if (number) {
+					tokens.emplace_back(num);  // parse operand
+					number = false;
+					num = 0;
+				}
 				if (c != ' ')
-					tokens.emplace_back(s[cur]);
-				start = ++cur;
+					tokens.emplace_back(c);  // add operator
 				break;
 			default:  //  digits
-				cur++;
+				number = true;
+				num = num * 10 + c - '0';
 				break;
 			}
 		}
-		if (cur > start)
-			tokens.emplace_back(s.substr(start, cur - start));
+		if (number)
+			tokens.emplace_back(num);
 		if (tokens.empty())
 			return 0;
 		deque<Token> eval;
@@ -86,7 +89,7 @@ public:
 };
 
 
-TEST_CASE("calculator", "[CALC]")
+TEST_CASE("calculator", "[NEW]")
 {
 	Calculator c;
 	CHECK(c.calculate(" 3+5 / 2 ") == 5);
