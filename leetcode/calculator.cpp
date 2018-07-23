@@ -19,6 +19,23 @@ public:
 		vector<Token> tokens;
 		bool number = false;
 		int num = 0;
+		auto multi_divide = [&tokens](int num) { // do multiply and division as token is parsed
+			if (!tokens.empty()) {
+				switch (tokens.back().val) {
+				case '*':
+					tokens.pop_back();
+					num *= tokens.back().val;
+					tokens.pop_back();
+					break;
+				case '/':
+					tokens.pop_back();
+					num = tokens.back().val / num;
+					tokens.pop_back();
+					break;
+				}
+			}
+			tokens.emplace_back(num);  // push operand or result of multiplication or division
+		};
 		for (char c : s) {
 			switch (c) {
 			case '+':
@@ -27,7 +44,7 @@ public:
 			case '/':
 			case' ':
 				if (number) {
-					tokens.emplace_back(num);  // parse operand
+					multi_divide(num);
 					number = false;
 					num = 0;
 				}
@@ -40,40 +57,13 @@ public:
 				break;
 			}
 		}
-		if (number)
-			tokens.emplace_back(num);
+		if (number) 
+			multi_divide(num);
 		if (tokens.empty())
 			return 0;
-		deque<Token> eval;
-		eval.push_back(tokens[0]);
-		auto t = begin(tokens) + 1;
-		while (t != end(tokens)) {
-			// t must be operator;
-			switch (t->val) {
-			case '*':
-			{
-				int left = eval.back().val;
-				eval.pop_back();
-				eval.push_back(Token(left* (++t)->val));
-				break;
-			}
-			case '/':
-			{
-				int left = eval.back().val;
-				eval.pop_back();
-				eval.push_back(Token(left / (++t)->val));
-				break;
-			}
-			default:  // + -
-				eval.push_back(*(t));
-				eval.push_back(*(++t));
-			}
-			++t;  // move to next operator
-		}
-		// second pass
-		int ans = eval.front().val;
-		auto e = begin(eval) + 1;
-		while (e != end(eval)) {
+		int ans = tokens.front().val;
+		auto e = begin(tokens) + 1;
+		while (e != end(tokens)) {
 			switch (e->val) {
 			case '+':
 				ans += (++e)->val;
