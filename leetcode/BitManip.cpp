@@ -10,10 +10,8 @@ class SingleNumber
 public:
 	// 136 every element appears twice except for one.Find that single one.
 	int singleNumber(vector<int>& nums) {  // beat 97%, interesting queestion
-		int ans = 0;
-		for (int n : nums)  // xor cancel out same number. xor has associative property and commutative property
-			ans ^= n;
-		return ans;
+		// xor cancel out same number. xor has associative property and commutative property
+		return accumulate(nums.begin(), nums.end(), 0, bit_xor<int>());
 	}
 
 	//137  every element appears three times except for one, which appears exactly once
@@ -45,5 +43,11 @@ public:
 				b ^= n;
 		}
 		return{ a, b };
+	}
+	vector<int> singleNumber3_stl(vector<int>& nums) {  // beat 98%
+		int x = accumulate(nums.begin(), nums.end(), 0, bit_xor<int>()); // a^b
+		int diff_bit = (x & (-x));  // a and b are different, pick right most bit that is different between and and b
+		auto second = partition(nums.begin(), nums.end(), [diff_bit](int n) {return n&diff_bit; });
+		return{ accumulate(nums.begin(), second, 0, bit_xor<int>()), accumulate(second, nums.end(), 0, bit_xor<int>()) };
 	}
 };

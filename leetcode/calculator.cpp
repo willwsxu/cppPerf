@@ -113,7 +113,7 @@ public:
 			}
 			tokens.emplace_back(num);  // push operand or result of multiplication or division
 		};
-		for (; pos < s.size(); pos++) {
+		for (; pos < (int)s.size(); pos++) {
 			switch (s[pos]) {
 			case '+':
 			case'-':
