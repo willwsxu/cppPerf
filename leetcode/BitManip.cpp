@@ -9,7 +9,7 @@ class SingleNumber
 {
 public:
 	// 136 every element appears twice except for one.Find that single one.
-	int singleNumber(vector<int>& nums) {  // beat 97%, interesting queestion
+	int singleNumber(vector<int>& nums) {  // beat 97%, interesting question
 		// xor cancel out same number. xor has associative property and commutative property
 		return accumulate(nums.begin(), nums.end(), 0, bit_xor<int>());
 	}

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "leetcodeC", "leetcode2015.vcxproj", "{C25CAF52-0A3A-4078-9740-27C330DFBC2D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "leetcode", "leetcode2015.vcxproj", "{C25CAF52-0A3A-4078-9740-27C330DFBC2D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp11", "..\cpp11\cpp11.vcxproj", "{4AD8D5B6-A842-4E98-AD68-9F99FADFC687}"
 EndProject

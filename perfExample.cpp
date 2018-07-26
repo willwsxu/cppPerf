@@ -1,9 +1,34 @@
 #include "stdafx.h"
-
-#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
-#include "catch.hpp"
+#include <string>
+//#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+//#include "catch.hpp"
+#include <benchmark/benchmark.h>
 
 using namespace std;
+
+
+static void BM_post_increment(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		int i = 0;
+		int a[10];
+		while (i < 10)
+			a[i++] = 0;
+	}
+}
+
+static void BM_pre_increment(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		int i = -1;
+		int a[10];
+		while (i < 9)
+			a[++i] = 0;
+	}
+}
+BENCHMARK(BM_post_increment);
+BENCHMARK(BM_pre_increment);
+BENCHMARK_MAIN();
 
 // Practical performance practices by Jason Turner
 // aware compiler optimization
@@ -39,7 +64,7 @@ struct Derived : public Base
 	virtual void do_a_thing() override {}
 };
 
-
+/*
 TEST_CASE("rule 0, don't disable move constructor by accident", "[NEW]")
 {
 	Base b;
@@ -155,7 +180,7 @@ TEST_CASE("less branches, test 0", "[NEW]")
 	perfTest("test 0", good);
 	perfTest("test 1", bad);
 }
-
+*/
 // prefer template or factory over runtime polymorphism
 // memory is slow, delete is slow and probably can be done in a separate thread
 // keep cache hot, don't share L3 cache, use one CPU per thread
