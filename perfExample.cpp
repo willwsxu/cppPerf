@@ -26,8 +26,35 @@ static void BM_pre_increment(benchmark::State& state) {
 			a[++i] = 0;
 	}
 }
-BENCHMARK(BM_post_increment);
+
+static void BM_int_div(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		int i=1000;
+		while (i > 0)
+			i /= 10;
+	}
+}
+static void BM_int_no_div(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		int i = 1000;
+		while (i > 0) {
+			if (i == 1000)
+				i = 100;
+			else if (i == 100)
+				i = 10;
+			else if (i == 10)
+				i = 1;
+			else
+				i = 0;
+		}
+	}
+}
+/*BENCHMARK(BM_post_increment);
 BENCHMARK(BM_pre_increment);
+BENCHMARK(BM_int_div);
+BENCHMARK(BM_int_no_div);*/
 BENCHMARK_MAIN();
 
 // Practical performance practices by Jason Turner
@@ -49,30 +76,82 @@ there are no user-declared destructors;
 */
 class Base
 {
+	string _s;
 public:
-	Base() = default;
-	Base(const Base&) = default;
-	//Base(Base&&) = delete;
+	Base(string s) : _s(s) { /*std::cout << "ctor" << endl;*/ }
+	Base(const Base& copy) :_s(copy._s) { /*std::cout << "copy ctor" << endl;*/ }
+	Base(Base&& copy) :_s(move(copy._s)) {/*std::cout << "move ctor" << endl;*/ }
 	virtual ~Base() {};
 	virtual void do_a_thing() {};
-	string _s;
 };
 
 struct Derived : public Base
 {
-	//virtual ~Derived() = default;  not needed
+	Derived(string s) :Base(s) {}
 	virtual void do_a_thing() override {}
 };
 
-/*
-TEST_CASE("rule 0, don't disable move constructor by accident", "[NEW]")
+// rule 0, don't disable move constructor by accident
+struct Derived2 : public Base
 {
-	Base b;
-	Base b2(std::move(b)); // why move constructor is not dead? maybe only c++11 issue
-	Derived d;
-	Derived d2(std::move(d));
-	CHECK(sizeof(b2) >= 4);  // 28 in release mode
+	Derived2(string s) :Base(s) {}
+	virtual ~Derived2() = default;  // destructor prevents implicit move constructor
+	virtual void do_a_thing() override {}
+};
+
+
+static void BM_base_ctor(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		Base b("1234567890");
+	}
 }
+static void BM_move_ctor(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		Base b("1234567890");
+		Base b2(move(b));
+	}
+}
+
+static void BM_copy_ctor(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		Base b("1234567890");
+		Base b2(b);
+	}
+}
+
+static void BM_derived_move_ctor(benchmark::State& state) {
+	static_assert(sizeof(Derived) >= 4, "inheritance with virtual methods"); // 28 in release mode
+	for (auto _ : state)
+	{
+		Derived d("1234567890");
+		Derived d2(move(d));
+	}
+}
+
+static void BM_derived2_failed_move_ctor(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		Derived2 d("1234567890");
+		Derived2 d2(move(d));
+	}
+}
+static void BM_derived_copy_ctor(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		Derived d("1234567890");
+		Derived d2(d);
+	}
+}
+BENCHMARK(BM_base_ctor);//33ns
+BENCHMARK(BM_copy_ctor);//50ns
+BENCHMARK(BM_move_ctor);//47ns
+BENCHMARK(BM_derived_copy_ctor);//67ns
+BENCHMARK(BM_derived_move_ctor);//62ns
+BENCHMARK(BM_derived2_failed_move_ctor);//67ns
+
 
 // const methods should be thread safe
 // don't calculate more than once
@@ -83,7 +162,7 @@ private:
 	int m_i;
 	//string _s; // don't
 };
-
+/*
 struct Str
 {
 	Str(string s) :_s(move(s)) {}
