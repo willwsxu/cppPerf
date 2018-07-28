@@ -8,23 +8,55 @@ using namespace std;
 
 
 static void BM_post_increment(benchmark::State& state) {
+	int a[10];
 	for (auto _ : state)
 	{
 		int i = 0;
-		int a[10];
 		while (i < 10)
 			a[i++] = 0;
 	}
+	//std::cout << a[0] << std::endl;
 }
 
 static void BM_pre_increment(benchmark::State& state) {
+	int a[10];
 	for (auto _ : state)
 	{
 		int i = -1;
-		int a[10];
 		while (i < 9)
 			a[++i] = 0;
 	}
+	//std::cout << a[0] << std::endl;
+}
+
+static void BM_pre_increment2(benchmark::State& state) {
+	int a[10];
+	int b[10];
+	for (auto _ : state)
+	{
+		int i = -1;
+		int j = -1;
+		while (i < 9) {
+			a[++i] = 0;
+			b[++j] = 0;
+		}
+	}
+	//std::cout << a[0] << " " << b[0] << std::endl;
+}
+
+static void BM_post_increment2(benchmark::State& state) {
+	int a[10];
+	int b[10];
+	for (auto _ : state)
+	{
+		int i = 0;
+		int j = 0;
+		while (i < 10) {
+			a[i++] = 0;
+			b[j++] = 0;
+		}
+	}
+	//std::cout << a[0] << " " << b[0] << std::endl;
 }
 
 static void BM_int_div(benchmark::State& state) {
@@ -51,9 +83,11 @@ static void BM_int_no_div(benchmark::State& state) {
 		}
 	}
 }
-/*BENCHMARK(BM_post_increment);
-BENCHMARK(BM_pre_increment);
-BENCHMARK(BM_int_div);
+BENCHMARK(BM_post_increment);  //1
+BENCHMARK(BM_pre_increment);   //6
+BENCHMARK(BM_post_increment2); //1
+BENCHMARK(BM_pre_increment2);  //7
+/*BENCHMARK(BM_int_div);
 BENCHMARK(BM_int_no_div);*/
 BENCHMARK_MAIN();
 
