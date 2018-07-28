@@ -90,22 +90,14 @@ public:
 
 	// 477. Total Hamming Distance, between all pairs of the given numbers
 	int totalHammingDistance(vector<int>& nums) {  // beat 61%
-		int ans = 0;
-		int n = nums.size();
+		int ans = 0; // check last digit and divide num by 2, count num=0 to detect early completion, did not improve performance
 		for (int i = 0; i < 31; i++) { // check each bit set or not set
 			int count[2] = { 0 };
-			int zeroes=0;
+			int mask = 1 << i;
 			for (int& n : nums) {
-				if (n == 0) { 
-					zeroes++;
-					count[0]++;
-				} else
-					count[n&1]++;
-				n >>= 1;
+				count[(n&mask)>0?1:0]++;
 			}
 			ans += count[0] * count[1];  // hamming distance at each bit
-			if (zeroes == n)
-				return ans;
 		}
 		return ans;
 	}
@@ -114,8 +106,8 @@ public:
 	int rangeBitwiseAnd(int m, int n) { // beat 98%
 		if (m == n || m == 0)  // speacial cases
 			return m;
-		int d1 = log2(m);    // find highest bit set
-		int d2 = log2(n);
+		int d1 = (int)log2(m);    // find highest bit set
+		int d2 = static_cast<int>(log2(n));
 		if (d1 != d2)        // 1111 0111 in between there is 1000 so all bit AND is 0
 			return 0;
 		int ans = 1 << d1;
