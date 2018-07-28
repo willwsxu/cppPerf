@@ -228,11 +228,11 @@ public:
 };
 
 
-TEST_CASE("total hamming distance", "[NEW]")
+TEST_CASE("total hamming distance", "[BIT]")
 {
 	CHECK(Bit().totalHammingDistance(vector<int>{4, 14, 2}) == 6);
 }
-TEST_CASE("range bit and", "[NEW]")
+TEST_CASE("range bit and", "[BIT]")
 {
 	CHECK(Bit().rangeBitwiseAnd(1, 2) == 0);
 	CHECK(Bit().rangeBitwiseAnd(0, 0) == 0);
@@ -243,13 +243,13 @@ TEST_CASE("range bit and", "[NEW]")
 	CHECK(Bit().rangeBitwiseAnd(14, 15) == 14);
 }
 
-TEST_CASE("valid UTF", "[NEW]")
+TEST_CASE("valid UTF", "[BIT]")
 {
 	CHECK(Bit().validUtf8(vector<int>{197, 130, 1}) == true);
 	CHECK(Bit().validUtf8(vector<int>{235, 140, 4}) == false);
 }
 
-TEST_CASE("integer replacements", "[NEW]")
+TEST_CASE("integer replacements", "[BIT]")
 {
 	CHECK(Bit().integerReplacement(1) == 0);
 	CHECK(Bit().integerReplacement(2) == 1);
