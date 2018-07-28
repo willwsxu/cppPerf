@@ -160,6 +160,7 @@
     <ClCompile Include="designHeap.cpp" />
     <ClCompile Include="designIterator.cpp" />
     <ClCompile Include="DynamicProgramming.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="hashtable.cpp" />
     <ClCompile Include="leetcode.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
