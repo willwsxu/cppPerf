@@ -113,7 +113,7 @@ public:
 		int ans = 1 << d1;
 		for (int i = d1 - 1; i >= 0; i--) {  // beat 40% without code above to deal with special case
 			int mask = 1 << i;
-			if ((mask&m) && (mask&n))  // each bit from left to right, if both 1, add to answer
+			if ((mask&m) && (mask&n))  // check each bit from left to right, if both 1, add to answer
 				ans |= mask;
 			else if ((mask&m) != (mask&n))  // when we reach a position one bit is 1, another is 0, AND must be 0 for rest of the bits
 				break;
@@ -121,22 +121,23 @@ public:
 		return ans;
 	}
 
-	// 318. Maximum Product of Word Lengths
-	int maxProduct(vector<string>& words) {  // beat 36% O(n^2)
-		vector<int> masks;
+	// 318. Maximum Product of Word Lengths, 2 words must not share any letter. all lower cases
+	int maxProduct(vector<string>& words) {  // beat 98% O(n^2) after not calc size in separate loop
+		vector<int> masks; // mask letters present in a word, using 26 bits, one for each letter
 		vector<int> lens;
 		int n = words.size();
+		if (n == 0)
+			return 0;
 		masks.reserve(n);
 		lens.reserve(n);
 		transform(words.begin(), words.end(), back_inserter(masks), [](const string &w) {
 			return accumulate(w.begin(), w.end(), 0, [](int acc, char c) { return acc | (1 << (c - 'a')); });
 		});
-		transform(words.begin(), words.end(), back_inserter(lens), [](const string &w) {
-			return w.size();
-		});
 		int ans = 0;
-		for (int i = 0; i < n - 1; i++) {
-			for (int j = 0; j < n; j++) {
+		lens.push_back(words[0].size());
+		for (int i = 1; i < n; i++) {
+			lens.push_back(words[i].size());  // cache size within loop, more efficient than using a separate loop
+			for (int j = 0; j < i; j++) {  // check words pair up to i
 				if ((masks[i] & masks[j]) == 0)  // no overlap, watch out for operator precedence
 					ans = max(ans, lens[i] * lens[j]);
 			}
