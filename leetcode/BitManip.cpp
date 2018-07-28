@@ -4,7 +4,6 @@
 #include "myalgo.h"
 using namespace std;
 
-
 class SingleNumber
 {
 public:
@@ -158,23 +157,16 @@ public:
 				if ((n&doubl) != singl)
 					return false;
 				bytes--;
-				continue;
 			}
-			if ((n&singl) == 0)   // 1 byte, start with 0
-				continue;
-			int t = n&tripl; // 1110 3 bytes
-			switch (t) {
-			case doubl:	bytes = 1;		break;
-			case tripl:
-				if ((n&quart) == tripl)
+			else if ((n&singl) != 0) {  // 1 byte, start with 0
+				if ((n&tripl)== doubl)	// 1100 2 bytes
+					bytes = 1;
+				else if ((n&quart)==tripl) // 1110 3 bytes
 					bytes = 2;
 				else if ((n&penta) == quart)
 					bytes = 3;
 				else
 					return false;
-				break;
-			default:
-				return false;
 			}
 		}
 		return bytes == 0;
