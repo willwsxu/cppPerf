@@ -645,7 +645,7 @@ public:
 
 TEST_CASE("string multiply", "[MULT]")
 {
-	CHECK(StringMulptiply().multiply("0", "9193") == "998001");
+	CHECK(StringMulptiply().multiply("0", "9193") == "0");
 	CHECK(StringMulptiply().multiply("999", "999") == "998001");
 	CHECK(StringMulptiply::multiply("323", 4) == "1292");
 	CHECK(StringMulptiply::add("999", "2", 1) == "1019");

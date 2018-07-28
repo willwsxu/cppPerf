@@ -12,20 +12,18 @@ struct BitHashAG
 };
 class BitHashMap
 {
-	using myMap = unordered_map<string, int, BitHashAG>;
+	using myMap = unordered_map<string, string, BitHashAG>;
 	vector<string> generateBottom(const vector<string>& bases, const myMap& base2top)
 	{
 		vector<string> newBottom[2];
 		newBottom[0].push_back("");
 		int from = 0;
 		for (string const & b : bases) {
-			int top = base2top.at(b);
+			const string& top = base2top.at(b);
 			newBottom[1 - from].clear();
-			for (int i = 0; i < 7; i++) {
-				if (top&(1 << i)) {
-					for (string const& partial : newBottom[from])
-						newBottom[1 - from].push_back(partial + (char)('A' + i));
-				}
+			for (char t: top) {
+				for (string const& partial : newBottom[from])
+					newBottom[1 - from].push_back(partial + t);
 			}
 			from = 1 - from;
 		}
@@ -55,8 +53,8 @@ public:
 	// allowed letters: A-G
 	bool pyramidTransition(string bottom, vector<string>& allowed) { // beat 76%
 		myMap base2top;  // allowed top letter from first 2 letter of the triplets
-		for (const auto& s : allowed) {
-			base2top[s.substr(0, 2)] |= (1 << (s[2] - 'A'));  // use 7 bits to store possible top
+		for (const auto& s : allowed) { // no speed difference between using int bits or string for top letters  
+			base2top[s.substr(0, 2)].append(1,s[2]); // third letter of the triplet is at top
 		}
 		return pyramidTransition(bottom, base2top);
 	}
