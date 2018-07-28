@@ -35,6 +35,12 @@ public:
 	int guessNumber(int n) {  // beat 100%
 		return guessNumber(1, n);
 	}
+
+	// 375. Guess Number Higher or Lower II, pay$x if your guess is wrong
+	// find out how much money you need to have to guarantee a win
+	int getMoneyAmount(int n) { // minimax
+
+	}
 };
 
 TEST_CASE("guess a number", "[NEW]")
