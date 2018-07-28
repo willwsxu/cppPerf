@@ -61,22 +61,47 @@ public:
 };
 
 
-TEST_CASE("Pyramid Transition Matrix", "[NEW]")
+TEST_CASE("Pyramid Transition Matrix", "[HT]")
 {
 	CHECK(BitHashMap().pyramidTransition("DB", vector<string>{"BDD", "ACA", "CBA", "BDC", "AAC", "DCB", "ABC", "DDA", "CCB"}) == false);
 }
 
 //535. Encode and Decode TinyURL
 class TinyUrl {
+	unordered_map<string, string> tinyUrlMap;
+	string tinyRoot = "http://tinyurl.com/";
 public:
-
-	// Encodes a URL to a shortened URL.
+	string encode62(size_t h) {
+		char map[] = "abcdefghijklmnopqrstuvwxyzABCDEF"
+			"GHIJKLMNOPQRSTUVWXYZ0123456789";
+		string url;
+		url.reserve(8);
+		while (h) {
+			url.append(1, map[h % 62]);
+			h /= 62;
+		}
+		reverse(url.begin(), url.end());
+		return url;
+	}
+	// Encodes a URL to a shortened URL. http://tinyurl.com/4e9iAk
 	string encode(string longUrl) {
 		size_t h = hash<string>{}(longUrl);
+		string tiny = encode62(h);
+		tinyUrlMap[tiny] = longUrl;
+		return tinyRoot + tiny;
 	}
 
 	// Decodes a shortened URL to its original URL.
 	string decode(string shortUrl) {
-
+		string tiny = shortUrl.substr(tinyRoot.size());
+		return tinyUrlMap[tiny];
 	}
 };
+
+
+TEST_CASE("tiny URL decode", "[NEW]")
+{
+	string url= "https://leetcode.com/problems/design-tinyurl";
+	TinyUrl t;
+	CHECK(t.decode(t.encode(url)) == url);
+}
