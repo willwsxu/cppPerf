@@ -221,7 +221,7 @@ TEST_CASE("parenthesis score", "[paren]")
 }
 
 
-TEST_CASE("find duplicate files", "[NEW]")
+TEST_CASE("find duplicate files", "[STR]")
 {
 	String s;
 	CHECK(s.findDuplicate(vector<string>{ "root/a 1.txt(abcd) 2.txt(efgh)", "root/c 3.txt(abcd)", "root/c/d 4.txt(efgh)", "root 4.txt(efgh)" }) 
@@ -229,7 +229,7 @@ TEST_CASE("find duplicate files", "[NEW]")
 }
 
 
-TEST_CASE("string replacements", "[NEW]")
+TEST_CASE("string replacements", "[STR]")
 {
 	String s;
 	CHECK(s.findReplaceString("abcd", vector<int>{0, 2}, vector<string>{"ab", "ec"}, vector<string>{"eee", "ffff"}) == "eeecd");
@@ -701,7 +701,7 @@ public:
 };
 
 
-TEST_CASE("valid IP", "[NEW]")
+TEST_CASE("valid IP", "[STR]")
 {
 	CHECK(ValidIP().validIPAddress("172.16.254.1")=="IPv4");
 	CHECK(ValidIP().validIPAddress("172.16.254.1.") == "Neither");
@@ -787,7 +787,7 @@ TEST_CASE("version compare", "[VER]")
 	CHECK(v.compareVersion("1.0", "1.1.1") == -1);
 }
 
-TEST_CASE("simplify path", "[NEW]")
+TEST_CASE("simplify path", "[STR]")
 {
 	StringParsing v;
 	CHECK(v.simplifyPath("/home//foo/") == "/home/foo");
@@ -814,7 +814,7 @@ public:
 	}
 };
 
-TEST_CASE("reverse words in a string", "[NEW]")
+TEST_CASE("reverse words in a string", "[STR]")
 {
 	string str{ "the sky is blue" };
 	StringWords().reverseWords(str);

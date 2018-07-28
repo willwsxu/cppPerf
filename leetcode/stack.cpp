@@ -191,7 +191,7 @@ public:
 	}
 };
 
-TEST_CASE("exclusive execution time", "[NEW]")
+TEST_CASE("exclusive execution time", "[STACK]")
 {
 	CHECK(CallStack().exclusiveTime(2, vector<string>{"0:start:0", "1:start:2", "1:end:5", "0:end:6"}) == vector<int>{3, 4});
 	CHECK(CallStack().exclusiveTime(1, vector<string>{"0:start:0", "0:start:2", "0:end:5", "0:start:6", "0:end:6", "0:end:7"}) == vector<int>{8});
@@ -359,7 +359,7 @@ TEST_CASE("decode string", "[DECODE]")
 	CHECK(GeneralStack().decodeString("2[abc]3[cd]ef") == "abcabccdcdcdef");
 }
 
-TEST_CASE("preorder tree valid", "[NEW]")
+TEST_CASE("preorder tree valid", "[STACK]")
 {
 	CHECK(GeneralStack().isValidSerialization("9,3,4,#,#,1,#,#,#,2,#,6,#,#") == false);
 	CHECK(GeneralStack().isValidSerialization("#") == true);
@@ -394,7 +394,7 @@ public:
 };
 
 
-TEST_CASE("car fleet", "[NEW]")
+TEST_CASE("car fleet", "[STACK]")
 {
 	CHECK(NoStack().carFleet(10, vector<int>{0, 4, 2}, vector<int>{2, 1, 3}) == 1);
 	CHECK(NoStack().carFleet(12, vector<int>{10, 8, 0, 5, 3}, vector<int>{2, 4, 1, 1, 3}) == 3);
@@ -439,7 +439,7 @@ public:
 
 };
 
-TEST_CASE("132 pattern", "[NEW]")
+TEST_CASE("132 pattern", "[STACK]")
 {
 	CHECK(Pattern132().find132pattern(vector<int>{1, 0, 1, -4, -3}) == false);
 	CHECK(Pattern132().find132pattern(vector<int>{3, 5, 0, 3, 4}) == true);

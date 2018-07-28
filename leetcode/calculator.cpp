@@ -159,7 +159,7 @@ public:
 };
 
 
-TEST_CASE("calculator I", "[NEW]")
+TEST_CASE("calculator I", "[CALC]")
 {
 	Calculator c;
 	CHECK(c.calculate("1 + 1") == 2);
