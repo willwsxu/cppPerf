@@ -175,7 +175,7 @@ public:
 	// 397. Integer Replacement. What is the minimum number of replacements needed for n to become 1?
 	// If n is even, replace n with n/2.
 	// If n is odd, you can replace n with either n + 1 or n - 1.
-	int integerReplacement(int n) {
+	int integerReplacement(int n) { // beat 100%
 		int ones = 0;  // count 1 from right
 		int ans = 0;
 		while (n > 1) {
@@ -202,21 +202,21 @@ public:
 		int n = s.size();
 		if (n < 10)
 			return{};
-		int lookup[20] = { 0 };  // define ACGT
-		lookup['C' - 'A'] = 1;
-		lookup['G' - 'A'] = 2;
-		lookup['T' - 'A'] = 3;
+		int lookup[85] = { 0 };  // define ACGT
+		lookup['C'] = 1; // use large array and eliminate subtraction did not improve performance
+		lookup['G'] = 2;
+		lookup['T'] = 3;
 		unordered_map<int, int> subDna;  // 10 letter substring key, map to count
 		int key = 0;
 		for (int i = 0; i < 10; i++) {
 			key <<= 2;
-			key |= lookup[s[i] - 'A'];
+			key |= lookup[s[i]];
 		}
 		vector<string> ans;
 		subDna[key] = 1;
 		for (int i = 10; i < n; i++) {
 			key <<= 2;
-			key |= lookup[s[i] - 'A'];
+			key |= lookup[s[i]];
 			key &= 0xFFFFF;  // keep only 20 bits
 			auto& count = subDna[key];
 			if (count == 1)
