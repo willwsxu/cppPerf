@@ -91,14 +91,21 @@ public:
 	// 477. Total Hamming Distance, between all pairs of the given numbers
 	int totalHammingDistance(vector<int>& nums) {  // beat 61%
 		int ans = 0;
-		vector<int> count(2, 0);
+		int n = nums.size();
 		for (int i = 0; i < 31; i++) { // check each bit set or not set
-			int mask = 1 << i;
-			for (int n : nums) {
-				count[(n&mask) ? 1 : 0]++;
+			int count[2] = { 0 };
+			int zeroes=0;
+			for (int& n : nums) {
+				if (n == 0) { 
+					zeroes++;
+					count[0]++;
+				} else
+					count[n&1]++;
+				n >>= 1;
 			}
-			ans += count[0] * count[1];
-			count[0] = count[1] = 0;
+			ans += count[0] * count[1];  // hamming distance at each bit
+			if (zeroes == n)
+				return ans;
 		}
 		return ans;
 	}
