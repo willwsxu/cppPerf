@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <string>
+#include <memory>
 //#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 //#include "catch.hpp"
 #include <benchmark/benchmark.h>
@@ -83,10 +84,12 @@ static void BM_int_no_div(benchmark::State& state) {
 		}
 	}
 }
+/*
 BENCHMARK(BM_post_increment);  //1
 BENCHMARK(BM_pre_increment);   //6
 BENCHMARK(BM_post_increment2); //1
 BENCHMARK(BM_pre_increment2);  //7
+*/
 /*BENCHMARK(BM_int_div);
 BENCHMARK(BM_int_no_div);*/
 BENCHMARK_MAIN();
@@ -156,6 +159,13 @@ static void BM_copy_ctor(benchmark::State& state) {
 	}
 }
 
+static void BM_derived_copy_ctor(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		Derived d("1234567890");
+		Derived d2(d);
+	}
+}
 static void BM_derived_move_ctor(benchmark::State& state) {
 	static_assert(sizeof(Derived) >= 4, "inheritance with virtual methods"); // 28 in release mode
 	for (auto _ : state)
@@ -172,20 +182,14 @@ static void BM_derived2_failed_move_ctor(benchmark::State& state) {
 		Derived2 d2(move(d));
 	}
 }
-static void BM_derived_copy_ctor(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Derived d("1234567890");
-		Derived d2(d);
-	}
-}
+/*
 BENCHMARK(BM_base_ctor);//33ns
 BENCHMARK(BM_copy_ctor);//50ns
 BENCHMARK(BM_move_ctor);//47ns
 BENCHMARK(BM_derived_copy_ctor);//67ns
 BENCHMARK(BM_derived_move_ctor);//62ns
 BENCHMARK(BM_derived2_failed_move_ctor);//67ns
-
+*/
 
 // const methods should be thread safe
 // don't calculate more than once
@@ -196,33 +200,88 @@ private:
 	int m_i;
 	//string _s; // don't
 };
-/*
+
 struct Str
 {
 	Str(string s) :_s(move(s)) {}
 private:
 	string _s;
 };
-TEST_CASE("redundant construction, use const, use initializer", "[NEW]")
-{
-	auto bad = []() {
+
+// use initilizer, use const when possible
+static void BM_redundant_construction(benchmark::State& state) {
+	for (auto _ : state)
+	{
 		string t("test");
-		t += "move";
+		t += "more";
 		Str s(move(t));
-	};
-	auto good = []() {
+	}
+}
+
+static void BM_initializer_construction(benchmark::State& state) {
+	for (auto _ : state)
+	{
 		Str s(string("test") + "more");
-	};
+	}
 }
 
-TEST_CASE("don't pass shared_ptr if no ownership is involved", "[NEW]")
-{
+static void BM_initializer_construction_append(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		Str s(string("test").append("more"));
+	}
+}
+static void BM_initializer_construction_append_move(benchmark::State& state) {
+	for (auto _ : state) 
+	{
+		Str s(move(string("test").append("more")));
+	}
+}
+BENCHMARK(BM_redundant_construction);  // 50ns
+BENCHMARK(BM_initializer_construction);// 56ns (why move not used?)
+BENCHMARK(BM_initializer_construction_append); //53ns (why move not used?)
+BENCHMARK(BM_initializer_construction_append_move); // 48ns
+
+//don't pass shared_ptr if no ownership is involved
+static void BM_pass_shared_ptr_ref(benchmark::State& state) {
+	auto d = make_shared<Derived>("test");
 	auto bad = [](const shared_ptr<Base>&b) {};
-	auto good = [](const Base&b) {};
-	auto d = make_shared<Derived>();
-	good(*d.get());
+	for (auto _ : state) 
+	{
+		bad(d);
+	}
 }
 
+static void BM_pass_shared_ptr_copy(benchmark::State& state) {
+	auto d = make_shared<Derived>("test");
+	auto bad = [](const shared_ptr<Base>b) {};
+	for (auto _ : state)
+	{
+		bad(d);
+	}
+}
+static void BM_pass_unique_ptr(benchmark::State& state) {
+	auto d = make_unique<Derived>("test");
+	auto good = [](const unique_ptr<Base>b) {};
+	for (auto _ : state)
+	{
+		good(move(d));
+	}
+}
+static void BM_pass_raw_reference(benchmark::State& state) {
+	auto d = make_shared<Derived>("test");
+	auto good = [](const Base&b) {};
+	for (auto _ : state)
+	{
+		good(*d.get());
+	}
+}
+BENCHMARK(BM_pass_shared_ptr_copy); // 15ns
+BENCHMARK(BM_pass_shared_ptr_ref);  // 15ns
+BENCHMARK(BM_pass_unique_ptr);		// 1ns
+BENCHMARK(BM_pass_raw_reference);   // 1ns
+
+/*
 TEST_CASE("endl slow down io due to flush", "[NEW]")
 {
 	cout << " good\n good\n";
