@@ -2,9 +2,11 @@
 #include <string>
 #include <memory>
 #include <functional>
-#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
-#include "catch.hpp"
+//#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+//#include "catch.hpp"
 #include <benchmark/benchmark.h>
+
+BENCHMARK_MAIN();
 
 using namespace std;
 
@@ -93,7 +95,6 @@ BENCHMARK(BM_pre_increment2);  //7
 */
 /*BENCHMARK(BM_int_div);
 BENCHMARK(BM_int_no_div);*/
-//BENCHMARK_MAIN();
 
 // Practical performance practices by Jason Turner
 // aware compiler optimization
@@ -390,9 +391,10 @@ static void BM_branch_bad(benchmark::State& state) {
 	}
 }
 
-BENCHMARK(BM_branch_good); // 1ns
+// too fast to show difference here. see test below
+BENCHMARK(BM_branch_good); // 1ns, over 10% more iterations
 BENCHMARK(BM_branch_bad);  // 1ns
-
+/*
 TEST_CASE("branch", "[NEW]")
 {
 	long loops = 1000000000;
@@ -404,13 +406,12 @@ TEST_CASE("branch", "[NEW]")
 		auto end = chrono::high_resolution_clock::now();
 		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
 		cout << name << " nano seconds: " << nanos.count() << " count " << count << endl;
-
 	};
 
 	perfTest("test 0", good);  // 400ns
 	perfTest("test 1", bad);   // 800ns
 }
-
+*/
 // prefer template or factory over runtime polymorphism
 // memory is slow, delete is slow and probably can be done in a separate thread
 // keep cache hot, don't share L3 cache, use one CPU per thread
