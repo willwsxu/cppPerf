@@ -105,3 +105,25 @@ TEST_CASE("tiny URL decode", "[HT]")
 	TinyUrl t;
 	CHECK(t.decode(t.encode(url)) == url);
 }
+
+// 781. Rabbits in Forest
+class Rabbit
+{
+
+public:
+	// a subset of rabbits are asked how many others they saw having same color as his or hers
+	// find minimum total rabbits in a forest
+	// idea: two rabbits provide different answers must not be same color
+	//       rabbits with same answer could have different colors. if answer is a, then at most a+1 
+	// could be of same color.
+	// count same answer, n, ceiling(n/a+1) is # of colors, total=ceiling(n/a+1)*(a+1)
+	int numRabbits(vector<int>& answers) {// beat 89%
+		unordered_map<int, int> count;
+		//int count[1000] = { 0 };  could be faster using array instead of map
+		for (int a : answers)
+			count[a]++;
+		return accumulate(count.begin(), count.end(), 0, [](int prev, const auto& p) {
+			return (p.second + p.first) / (p.first + 1)*(p.first + 1)+prev;
+		});
+	}
+};
