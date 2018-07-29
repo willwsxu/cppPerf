@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include <string>
 #include <memory>
-//#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
-//#include "catch.hpp"
+#include <functional>
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "catch.hpp"
 #include <benchmark/benchmark.h>
 
 using namespace std;
@@ -92,7 +93,7 @@ BENCHMARK(BM_pre_increment2);  //7
 */
 /*BENCHMARK(BM_int_div);
 BENCHMARK(BM_int_no_div);*/
-BENCHMARK_MAIN();
+//BENCHMARK_MAIN();
 
 // Practical performance practices by Jason Turner
 // aware compiler optimization
@@ -276,68 +277,125 @@ static void BM_pass_raw_reference(benchmark::State& state) {
 		good(*d.get());
 	}
 }
+static void BM_pass_raw_pointer(benchmark::State& state) {
+	auto d = make_shared<Derived>("test");
+	auto good = [](const Base*b) {};
+	for (auto _ : state)
+	{
+		good(d.get());
+	}
+}
+/*
 BENCHMARK(BM_pass_shared_ptr_copy); // 15ns
 BENCHMARK(BM_pass_shared_ptr_ref);  // 15ns
 BENCHMARK(BM_pass_unique_ptr);		// 1ns
 BENCHMARK(BM_pass_raw_reference);   // 1ns
-
-/*
-TEST_CASE("endl slow down io due to flush", "[NEW]")
-{
-	cout << " good\n good\n";
-	cout << " bad " << endl << " bad " << endl;
+BENCHMARK(BM_pass_raw_pointer);   // 1ns
+*/
+// endl slow down io due to flush
+static void BM_endl(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		cout << "badd" << endl;
+	}
 }
+static void BM_newline(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		cout << "good\n";
+	}
+}
+//BENCHMARK(BM_endl);
+//BENCHMARK(BM_newline);
 
+// prefer lambda over bind/function object
 string add(const string&lhs, const string&rhs)
 {
 	return lhs + rhs;
 }
-TEST_CASE("prefer lambda over bind/function object", "[NEW]")
-{
+
+static void BM_lambda(benchmark::State& state) {
 	const auto good = [](const string&b) {
 		return add("Hello ", b);
 	};
-	CHECK(good("World") == "Hello World");
-
+	for (auto _ : state)
+	{
+		good("World");
+	}
+}
+static void BM_bind(benchmark::State& state) {
 	const auto bad = bind(add, "Hello ", placeholders::_1);
-	CHECK(bad("World") == "Hello World");
-
-	const function<string (const string&)> worse= bind(add, "Hello ", placeholders::_1);
-	CHECK(worse("World")=="Hello World");
+	for (auto _ : state)
+	{
+		bad("World");
+	}
 }
 
-TEST_CASE("less branches, test 0", "[NEW]")
-{
-	auto good = [](int err) {
-		if (!err) {
-			// do stuff
-			return 1;
-		}
-		else {
-			if (err == 1)		return -1;
-			else if (err == 2)	return -2;
-			else if (err == 3)	return -3;			
-		}
-		return 0;
-	};
-	auto bad = [](int err) {
-		if (err == 1) {
-			return -1;
-		}
-		else if (err == 2) {
-			return -2;
-		}
-		else if (err == 3) {
-			return -3;
-		}
-		else {
-			// do stuff
-			return 1;
-		}
-		return 0;
-	};
+static void BM_function(benchmark::State& state) {
+	const function<string(const string&)> worse = bind(add, "Hello ", placeholders::_1);
+	for (auto _ : state)
+	{
+		worse("World");
+	}
+}
 
-	long loops = 100000000;
+BENCHMARK(BM_lambda); // 76ns
+BENCHMARK(BM_bind);   // 106ns
+BENCHMARK(BM_function);//118ns
+
+int good(int err) {
+	if (!err) {
+		// do stuff
+		return 0;
+	}
+	else {
+		if (err == 1)		return -1;
+		else if (err == 2)	return -2;
+		else if (err == 3)	return -3;
+		else return 1;
+	}
+};
+
+int bad(int err) {
+	if (err == 1) {
+		return -1;
+	}
+	else if (err == 2) {
+		return -2;
+	}
+	else if (err == 3) {
+		return -3;
+	}
+	else if (err == 0) {
+		// do stuff
+		return 0;
+	}
+	else
+		return 1;
+};
+// less branches, test 0
+static void BM_branch_good(benchmark::State& state) {
+	int ret = 0;
+	for (auto _ : state)
+	{
+		ret=good(0);
+	}
+}
+
+static void BM_branch_bad(benchmark::State& state) {
+	int ret = 0;
+	for (auto _ : state)
+	{
+		ret=bad(0);
+	}
+}
+
+BENCHMARK(BM_branch_good); // 1ns
+BENCHMARK(BM_branch_bad);  // 1ns
+
+TEST_CASE("branch", "[NEW]")
+{
+	long loops = 1000000000;
 	auto perfTest = [loops](const char *name, auto func) {
 		auto start = chrono::high_resolution_clock::now();
 		long count = 0;
@@ -349,10 +407,10 @@ TEST_CASE("less branches, test 0", "[NEW]")
 
 	};
 
-	perfTest("test 0", good);
-	perfTest("test 1", bad);
+	perfTest("test 0", good);  // 400ns
+	perfTest("test 1", bad);   // 800ns
 }
-*/
+
 // prefer template or factory over runtime polymorphism
 // memory is slow, delete is slow and probably can be done in a separate thread
 // keep cache hot, don't share L3 cache, use one CPU per thread
