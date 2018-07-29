@@ -823,3 +823,47 @@ TEST_CASE("reverse words in a string", "[STR]")
 	StringWords().reverseWords(str2);
 	CHECK(str2 == "blue is sky the");
 }
+
+
+class MatchLetters
+{
+public:
+	// 748. Shortest Completing Word
+	// find shortest word contain all letters in target
+	// target can have digits, space, upper or lower case letters, len 1 to 7
+	// word dictionary all lower cases, word len [1,15], dictionary size [10, 1000]
+	// if there is multiple matches, return first one
+	string shortestCompletingWord(string licensePlate, vector<string>& words) { // beta 100%
+		int target[26] = { 0 }; // store char count of target
+		int count = 0;
+		for (char c : licensePlate) {
+			if (isalpha(c)) {
+				target[tolower(c) - 'a']++;
+				count++;
+			}
+		}
+		const string *ans = nullptr;
+		for (string const & w : words) {
+			vector<int> t(begin(target), end(target)); // make a copy of target
+			int match = count;
+			for (char c : w) {
+				if (t[c - 'a'] > 0) {  // decrement char count if there is a match
+					t[c - 'a']--;
+					if (match-- == 1)
+						break;
+				}
+			}
+			if (match == 0) {  // complete match
+				if (ans == nullptr || ans->size()>w.size())  // only update anser if len is smalller
+					ans = &w;
+			}
+		}
+		return ans ? *ans : "";
+	}
+};
+
+
+TEST_CASE("Match letters", "[NEW]")
+{
+	CHECK(MatchLetters().shortestCompletingWord("1s3 PSt", vector<string>{"step", "steps", "stripe", "stepple"}) == "steps");
+}

@@ -99,7 +99,7 @@ public:
 };
 
 
-TEST_CASE("tiny URL decode", "[NEW]")
+TEST_CASE("tiny URL decode", "[HT]")
 {
 	string url= "https://leetcode.com/problems/design-tinyurl";
 	TinyUrl t;
