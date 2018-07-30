@@ -107,7 +107,7 @@ TEST_CASE("tiny URL decode", "[HT]")
 }
 
 // 781. Rabbits in Forest
-class Rabbit
+class MapCounter
 {
 
 public:
@@ -125,5 +125,25 @@ public:
 		return accumulate(count.begin(), count.end(), 0, [](int prev, const auto& p) {
 			return (p.second + p.first) / (p.first + 1)*(p.first + 1)+prev;
 		});
+	}
+
+	// 554. Brick Wall, each row represent brick of various len
+	// draw a vertical line and cross least bricks, return # of crossed bricks
+	// line in between bricks is not considered crossed
+	// # of bricks in each row and rows are in range [1,10,000], total bricks won't exceed 20000
+	int leastBricks(vector<vector<int>>& wall) {  // beat 12%
+		unordered_map<int, int> count;  // count position of all bricks from left
+		for (const auto& row : wall) {
+			int pos = 0;
+			for (int width : row) {
+				pos += width;
+				count[pos]++;
+			}
+			count[pos]--; // don't count eight edge
+		}
+		auto result = max_element(count.begin(), count.end(), [](const auto&p1, const auto&p2) {
+			return p1.second < p2.second;
+		});
+		return wall.size() - result->second;
 	}
 };
