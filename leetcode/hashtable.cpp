@@ -133,17 +133,16 @@ public:
 	// # of bricks in each row and rows are in range [1,10,000], total bricks won't exceed 20000
 	int leastBricks(vector<vector<int>>& wall) {  // beat 12%
 		unordered_map<int, int> count;  // count position of all bricks from left
+		int maxAlign = 0; // bricks in alignment
 		for (const auto& row : wall) {
-			int pos = 0;
-			for (int width : row) {
-				pos += width;
-				count[pos]++;
+			for (size_t i = 0, pos = 0; i < row.size() - 1; i++) {  // skip last brick as we can not draw on edge
+				pos += row[i];
+				maxAlign = max(maxAlign, ++count[pos]);
 			}
-			count[pos]--; // don't count eight edge
 		}
-		auto result = max_element(count.begin(), count.end(), [](const auto&p1, const auto&p2) {
-			return p1.second < p2.second;
-		});
-		return wall.size() - result->second;
+		//auto result = max_element(count.begin(), count.end(), [](const auto&p1, const auto&p2) {
+		//	return p1.second < p2.second;
+		//});
+		return wall.size() - maxAlign;  // draw line where bricks align the most
 	}
 };
