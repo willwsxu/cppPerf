@@ -206,6 +206,7 @@ private:
 struct Str
 {
 	Str(string s) :_s(move(s)) {}
+	//Str(string&& s) :_s(move(s)) {}
 private:
 	string _s;
 };
@@ -219,30 +220,39 @@ static void BM_redundant_construction(benchmark::State& state) {
 		Str s(move(t));
 	}
 }
+static void BM_redundant_construction_append(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		string t("test");
+		t.append("more");
+		Str s(move(t));
+	}
+}
+static void BM_initializer_construction_append(benchmark::State& state) {
+	for (auto _ : state)
+	{
+		Str s(move(string("test").append("more")));
+	}
+}
 
 static void BM_initializer_construction(benchmark::State& state) {
 	for (auto _ : state)
 	{
-		Str s(string("test") + "more");
+		Str s(move(string("test") + "more")); // + is more costly then +=
 	}
 }
 
-static void BM_initializer_construction_append(benchmark::State& state) {
+static void BM_initializer_construction_append_no_move(benchmark::State& state) {
 	for (auto _ : state)
 	{
 		Str s(string("test").append("more"));
 	}
 }
-static void BM_initializer_construction_append_move(benchmark::State& state) {
-	for (auto _ : state) 
-	{
-		Str s(move(string("test").append("more")));
-	}
-}
-BENCHMARK(BM_redundant_construction);  // 50ns
-BENCHMARK(BM_initializer_construction);// 56ns (why move not used?)
-BENCHMARK(BM_initializer_construction_append); //53ns (why move not used?)
-BENCHMARK(BM_initializer_construction_append_move); // 48ns
+BENCHMARK(BM_redundant_construction);  // 51ns
+BENCHMARK(BM_redundant_construction_append);  // 50ns
+BENCHMARK(BM_initializer_construction_append); // 49ns
+BENCHMARK(BM_initializer_construction_append_no_move); //55ns
+BENCHMARK(BM_initializer_construction);// 68ns, extra malloc
 
 //don't pass shared_ptr if no ownership is involved
 static void BM_pass_shared_ptr_ref(benchmark::State& state) {
