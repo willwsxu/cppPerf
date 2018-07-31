@@ -349,11 +349,11 @@ static void BM_function(benchmark::State& state) {
 		worse("World");
 	}
 }
-
+/*
 BENCHMARK(BM_lambda); // 76ns
 BENCHMARK(BM_bind);   // 106ns
 BENCHMARK(BM_function);//118ns
-
+*/
 int good(int err) {
 	if (!err) {
 		// do stuff
