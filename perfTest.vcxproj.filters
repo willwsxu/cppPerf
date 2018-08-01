@@ -41,9 +41,6 @@
     <ClCompile Include="perfTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="testString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="listvslist-gc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="perfExample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testStringCopy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
