@@ -11,100 +11,100 @@ string copyString(const char *test)
 	return string(test);
 }
 
-const int STR_SIZE = 11;
-shared_ptr<char[STR_SIZE]> copyShare(const char *test)
+unique_ptr<char[]> copyShare(const char *test)
 {
-	shared_ptr<char[STR_SIZE]> buf = make_shared<char[STR_SIZE]>();
-	strncpy_s(*buf.get(), STR_SIZE, test, _TRUNCATE);
+	size_t sz = strlen(test) + 1;
+	auto buf = make_unique<char[]>(sz);
+	strncpy_s(buf.get(), sz, test, _TRUNCATE);
 	return buf;
 }
 
 #include <benchmark/benchmark.h>
-
+unique_ptr<char[]> memset_char(char x, int64_t c) {
+	size_t count = static_cast<size_t>(c);
+	auto buf = make_unique<char[]>(count);
+	memset(buf.get(), x, count - 1);
+	buf[count - 1] = 0;
+	return buf;
+}
 static void BM_memcpy(benchmark::State& state) {
-	char* src = new char[state.range(0)];
-	char* dst = new char[state.range(0)+1];
-	memset(src, 'x', state.range(0));
+	size_t sz = (size_t)state.range(0);
+	auto s = memset_char('x', sz);
+	char *src = s.get();
+	char* dst = new char[sz];
 	for (auto _ : state) {
-		memcpy(dst, src, state.range(0));
-		dst[state.range(0)] = 0;
+		memcpy(dst, src, sz);
+		dst[sz-1] = 0;
 	}
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-	delete[] src;
 	delete[] dst;
 }
 BENCHMARK(BM_memcpy)->Range(8, 8 << 10);
 static void BM_strncpy(benchmark::State& state) {
-	char* src = new char[state.range(0)];
-	char* dst = new char[state.range(0) + 1];
-	memset(src, 'x', state.range(0));
+	auto s = memset_char('x', state.range(0));
+	char *src = s.get();
+	char* dst = new char[(size_t)state.range(0)];
 	for (auto _ : state) {
-		strncpy_s(dst, state.range(0) + 1, src, _TRUNCATE);
+		strncpy_s(dst, (size_t)state.range(0), src, _TRUNCATE);
 	}
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-	delete[] src;
 	delete[] dst;
 }
 BENCHMARK(BM_strncpy)->Range(8, 8 << 10);
-
+const int MAX_SIZE = 8 << 10;
 static void BM_strncpy_stack(benchmark::State& state) {
-	char src[(8 << 10)];
-	char dest[(8 << 10) + 1];
-	memset(src, 'x', state.range(0));
+	char src[MAX_SIZE] = { 0 };
+	char dest[MAX_SIZE];
+	memset(src, 'x', (size_t)state.range(0)-1);
 	for (auto _ : state)
 	{
-		strncpy_s(dest, (8 << 10) + 1, src, state.range(0));
+		strncpy_s(dest, MAX_SIZE, src, _TRUNCATE);
 	}
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 }
 BENCHMARK(BM_strncpy_stack)->Range(8, 8 << 10);
 
 static void BM_strncpy_new_delete(benchmark::State& state) {
-	char* src = new char[state.range(0)];
-	memset(src, 'x', state.range(0));
+	auto s = memset_char('x', state.range(0));
+	char *src = s.get();
 	for (auto _ : state) {
-		char* dst = new char[state.range(0) + 1];
-		strncpy_s(dst, state.range(0) + 1, src, _TRUNCATE);
+		char* dst = new char[(size_t)state.range(0)];
+		strncpy_s(dst, (size_t)state.range(0), src, _TRUNCATE);
 		delete[] dst;
 	}
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-	delete[] src;
 }
 BENCHMARK(BM_strncpy_new_delete)->Range(8, 8 << 10);
 
 const char *pTestCase = "TEST123456";
-static void BM_strncpy_free_store(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		char* dest=new char[STR_SIZE];
-		strncpy_s(dest, STR_SIZE, pTestCase, _TRUNCATE);
-	}
-}
 static void BM_copy_string(benchmark::State& state) {
+	auto s = memset_char('x', state.range(0));
+	char *src = s.get();
 	for (auto _ : state)
 	{
-		string temp = copyString(pTestCase);
+		string temp = copyString(src);
 	}
 }
+BENCHMARK(BM_copy_string)->Range(8, 8 << 10);
 
 static void BM_create_shared_ptr_char_array(benchmark::State& state) {
 	for (auto _ : state)
 	{
-		shared_ptr<char[STR_SIZE]> buf = make_shared<char[STR_SIZE]>();
+		auto buf = make_unique<char[]>((size_t)state.range(0));
 	}
 }
+BENCHMARK(BM_create_shared_ptr_char_array)->Range(8, 8 << 10);
+
 static void BM_copy_shared_ptr_char_array(benchmark::State& state) {
+	auto s = memset_char('x', state.range(0));
+	char *src = s.get();
 	for (auto _ : state)
 	{
-		auto temp2 = copyShare(pTestCase);
+		auto temp2 = copyShare(src);
 	}
 }
+BENCHMARK(BM_copy_shared_ptr_char_array)->Range(8, 8 << 10);
 
-//BENCHMARK(BM_strncpy_stack);						// 14ns
-BENCHMARK(BM_strncpy_free_store);			// 76ns
-BENCHMARK(BM_copy_string);					// 20ns
-BENCHMARK(BM_create_shared_ptr_char_array); // 107ns
-BENCHMARK(BM_copy_shared_ptr_char_array);	// 121ns
 /*
 BM_memcpy/8                                         6 ns          6 ns  112000000   1.24199GB/s
 BM_memcpy/64                                        7 ns          7 ns  112000000   8.90096GB/s
