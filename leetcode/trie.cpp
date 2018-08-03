@@ -4,19 +4,49 @@
 #include "myalgo.h"
 using namespace std;
 
-// 208. Implement Trie(Prefix Tree). Reuse class with #720. beat 4%
+class Trie
+{
+protected:
+	static const int CHILD = 26;
+	template<typename Label>
+	struct Node
+	{
+		Label val;
+		unique_ptr<Node> child[CHILD];
+		void setLabel(const Label& v) {
+			val = v;
+		}
+	};
+	template<typename Label>
+	void put(Node<Label>& cur, const string& word, int idx)
+	{
+		if (idx == word.size()) {
+			cur.setLabel(word);
+			return;
+		}
+		const int next = word[idx] - 'a';
+		if (!cur.child[next])
+			cur.child[next] = make_unique<Node<Label>>();
+		put(*cur.child[next].get(), word, idx + 1);
+	}
+};
+
 class DictTrie
 {
+	static const int CHILD = 26;
 	struct Node
 	{
 		string val;
-		unique_ptr<Node> child[26];
+		bool   valid;  // valid word
+		unique_ptr<Node> child[CHILD];
 	};
 	Node root;
-	void put(Node& cur, const string& word, int idx)
+	void put(Node& cur, const string& word, int idx, bool store = false)
 	{
 		if (idx == word.size()) {
-			cur.val = word;
+			if (store)
+				cur.val = word;
+			cur.valid = true;
 			return;
 		}
 		const int next = word[idx] - 'a';
@@ -24,7 +54,7 @@ class DictTrie
 			cur.child[next] = make_unique<Node>();
 		put(*cur.child[next].get(), word, idx + 1);
 	}
-	Node * search(Node& cur, const string& word, int idx)
+	Node * search(Node& cur, const string& word, int idx)  // find last node if exist
 	{
 		if (idx == word.size())
 			return &cur;
@@ -32,14 +62,16 @@ class DictTrie
 		return cur.child[next] ? search(*cur.child[next].get(), word, idx + 1) : nullptr;
 	}
 public:
-	void put(const string& word)
+	void put(const string& word, bool store = false)
 	{
-		put(root, word, 0);
+		put(root, word, 0, store);
 	}
 	bool search(string word) {
 		Node *found = search(root, word, 0);
-		return found ? !found->val.empty() : false;
+		return found ? found->valid : false;
 	}
+
+	// 208. Implement Trie(Prefix Tree). Reuse class with #720. beat 5%
 	bool startsWith(string prefix) {
 		return search(root, prefix, 0) != nullptr;
 	}
@@ -48,11 +80,10 @@ public:
 		if (idx == word.size())
 			return true;
 		const int next = word[idx] - 'a';
-		if (!cur.child[next] || cur.child[next]->val.empty())
+		if (!cur.child[next] || !cur.child[next]->valid)
 			return false;
 		return completeAll(*cur.child[next].get(), word, idx + 1);
 	}
-
 	// 720. Longest Word in Dictionary, which can be built one letter at a time
 	string longestWord(vector<string>& words) {  // beat 94%
 		for (const string& w : words)
@@ -71,34 +102,6 @@ public:
 		return ans;
 	}
 
-	const string * findRoot(Node& cur, const string& word, int idx) {
-		if (idx == word.size() || !cur.val.empty())
-			return &cur.val;
-		const int next = word[idx] - 'a';
-		return cur.child[next] ? findRoot(*cur.child[next].get(), word, idx + 1) : nullptr;
-	}
-	const string & findRoot(const string& word) {
-		const string* x = findRoot(root, word, 0);
-		if (!x || x->empty())  // bug source: check null or  empty string
-			return word;
-		return *x;
-	}
-	// 648. Replace Words, replace word with root in dict
-	string replaceWords(vector<string>& dict, string sentence) {  // beat 56%
-		for (const string& w : dict)
-			put(w);  // build trie
-		vector<string> words;
-		stringstream iss(sentence);
-		copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(words));
-		transform(words.begin(), words.end(), words.begin(), [this](const string& word) {
-			return this->findRoot(word);
-		});
-		stringstream oss;
-		copy(words.begin(), words.end(), ostream_iterator<string>(oss, " "));
-		string ret = oss.str();
-		return ret.erase(ret.find_last_of(' '));
-	}
-
 	// allow exact one letter different
 	bool search(Node& cur, const string& word, int idx, int mod)
 	{
@@ -108,7 +111,7 @@ public:
 			Node *found = search(cur, word, idx);  // 1 letter modified, do normal search
 			return found ? !found->val.empty() : false;
 		}
-		for (int i = 0; i < 26; i++) {  // no letter changed, go through each valid child
+		for (int i = 0; i < CHILD; i++) {  // no letter changed, go through each valid child
 			if (cur.child[i]) {
 				if (search(*cur.child[i].get(), word, idx + 1, 'a' + i == word[idx] ? 0 : 1))  // update mod as appropriate
 					return true;
@@ -235,10 +238,46 @@ TEST_CASE("677. Map Sum Pairs", "[NEW]")
 	CHECK(m.sum("a") == 3);
 }
 
-
+class TrieWords : public Trie
+{
+	using Node_Str = Node<string>;
+	Node_Str root;
+	void put(const string& word)
+	{
+		Trie::put(root, word, 0);
+	}
+	const string * findRoot(Node_Str& cur, const string& word, int idx) {
+		if (idx == word.size() || !cur.val.empty())
+			return &cur.val;
+		const int next = word[idx] - 'a';
+		return cur.child[next] ? findRoot(*cur.child[next].get(), word, idx + 1) : nullptr;
+	}
+	const string & findRoot(const string& word) {
+		const string* x = findRoot(root, word, 0);
+		if (!x || x->empty())  // bug source: check null or  empty string
+			return word;
+		return *x;
+	}
+public:
+	// 648. Replace Words, replace word with root in dict
+	string replaceWords(vector<string>& dict, string sentence) {  // beat 56%
+		for (const string& w : dict)
+			put(w);  // build trie
+		vector<string> words;
+		stringstream iss(sentence);
+		copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(words));
+		transform(words.begin(), words.end(), words.begin(), [this](const string& word) {
+			return this->findRoot(word);
+		});
+		stringstream oss;
+		copy(words.begin(), words.end(), ostream_iterator<string>(oss, " "));
+		string ret = oss.str();
+		return ret.erase(ret.find_last_of(' '));
+	}
+};
 TEST_CASE("648. Replace Words", "[NEW]")
 {
-	CHECK(DictTrie().replaceWords(vector<string>{"cat", "bat", "rat", "af"}, "a cattle was rattled by the battery") == "a cat was rat by the bat");
+	CHECK(TrieWords().replaceWords(vector<string>{"cat", "bat", "rat", "af"}, "a cattle was rattled by the battery") == "a cat was rat by the bat");
 }
 
 TEST_CASE("676. Implement Magic Dictionary", "[MAGIC]")
