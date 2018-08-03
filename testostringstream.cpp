@@ -22,19 +22,6 @@ memcmp10 nano seconds:             0
 string==10 nano seconds:     2270000
 */
 
-
-static void BM_memcpy(benchmark::State& state) {
-	char* src = new char[state.range(0)];
-	char* dst = new char[state.range(0)];
-	memset(src, 'x', state.range(0));
-	for (auto _ : state)
-		memcpy(dst, src, state.range(0));
-	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-	delete[] src;
-	delete[] dst;
-}
-//BENCHMARK(BM_memcpy)->Arg(8)->Arg(64)->Arg(512)->Arg(1 << 10)->Arg(8 << 10);
-
 void testStringConcat()
 {
 	int loops = 1000000;
@@ -127,41 +114,38 @@ void testStringConcat()
 }
 
 /*
-new string nano seconds:    53000000
-new char[] nano seconds:    50000000
-memset char[] nano seconds: 0
+new string nano seconds:    171ns / 64 bytes
+new char[] nano seconds:    88ns
+memset char[] nano seconds: 6ns
 */
 string *newStr;
 char *newCstr;
-void testNewDelete()
-{
-	int loops = 1000000;
-	auto start = chrono::high_resolution_clock::now();
-	for (int i = 0; i < loops; i++) {
-		newStr = new string(10, 'x');
+// testNewDelete
+static void BM_new_delete_string(benchmark::State& state) {
+	for (auto _ : state) {
+		newStr = new string(state.range(0), 'X');
 		delete newStr;
 	}
-	auto end = chrono::high_resolution_clock::now();
-	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << "new string nano seconds: " << nanos.count() << endl;
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
+}
+BENCHMARK(BM_new_delete_string)->Range(8, 8 << 10);
 
-	start = chrono::high_resolution_clock::now();
-	for (int i = 0; i < loops; i++) {
-		newCstr = new char[11];
-		memset(newCstr, 0, 11);
+static void BM_new_delete_memset(benchmark::State& state) {
+	for (auto _ : state) {
+		newCstr = new char[state.range(0)];
+		memset(newCstr, 'X', state.range(0));
 		delete newCstr;
 	}
-	end = chrono::high_resolution_clock::now();
-	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << "new char[] nano seconds: " << nanos.count() << endl;
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
+}
+BENCHMARK(BM_new_delete_memset)->Range(8, 8 << 10);
 
-	newCstr = new char[11];
-	start = chrono::high_resolution_clock::now();
-	for (int i = 0; i < loops; i++) {
-		memset(newCstr, 0, 11);
+static void BM_control_memset(benchmark::State& state) {
+	newCstr = new char[state.range(0)];
+	for (auto _ : state) {
+		memset(newCstr, 'X', state.range(0));
 	}
 	delete newCstr;
-	end = chrono::high_resolution_clock::now();
-	nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << "memset char[] nano seconds: " << nanos.count() << endl;
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 }
+BENCHMARK(BM_control_memset)->Range(8, 8 << 10);

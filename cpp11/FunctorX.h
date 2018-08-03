@@ -3,10 +3,10 @@
 #include <iostream>
 using namespace std;
 
-//template<class...T> struct type_list {};
+template<class...T> struct param_list {};
 
 template <typename R, typename...Param>
-struct FunctorImpl
+struct FunctorImpl : param_list<Param...>
 {
 	virtual R operator()(Param&&...args) = 0;  // template function cannot be virtual
 	virtual FunctorImpl* Clone() const = 0;

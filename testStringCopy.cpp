@@ -87,23 +87,25 @@ static void BM_copy_string(benchmark::State& state) {
 }
 BENCHMARK(BM_copy_string)->Range(8, 8 << 10);
 
-static void BM_create_shared_ptr_char_array(benchmark::State& state) {
+static void BM_create_unique_ptr_char_array(benchmark::State& state) {
 	for (auto _ : state)
 	{
 		auto buf = make_unique<char[]>((size_t)state.range(0));
 	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 }
-BENCHMARK(BM_create_shared_ptr_char_array)->Range(8, 8 << 10);
+BENCHMARK(BM_create_unique_ptr_char_array)->Range(8, 8 << 10);
 
-static void BM_copy_shared_ptr_char_array(benchmark::State& state) {
+static void BM_copy_unique_ptr_char_array(benchmark::State& state) {
 	auto s = memset_char('x', state.range(0));
 	char *src = s.get();
 	for (auto _ : state)
 	{
 		auto temp2 = copyShare(src);
 	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 }
-BENCHMARK(BM_copy_shared_ptr_char_array)->Range(8, 8 << 10);
+BENCHMARK(BM_copy_unique_ptr_char_array)->Range(8, 8 << 10);
 
 /*
 BM_memcpy/8                                         6 ns          6 ns  112000000   1.24199GB/s
