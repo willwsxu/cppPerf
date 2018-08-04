@@ -9,25 +9,18 @@ class DictTrie : public Trie
 {
 	using Node_Bool = Node<bool>;
 	Node_Bool root;
-	bool search(Node_Bool& cur, const string& word, int idx, bool match_prefix)  // find last node if exist
-	{
-		if (idx == word.size())
-			return match_prefix || cur.val;  // prefix or complete word
-		const int next = word[idx] - 'a';
-		return cur.child[next] ? search(*cur.child[next].get(), word, idx + 1, match_prefix) : false;
-	}
 public:
 	void put(const string& word)
 	{
-		Trie::put(root, word, 0);
+		root.put(word, 0);
 	}
 	bool search(string word) {
-		return search(root, word, 0, false);
+		return root.find(word, 0);
 	}
 
-	// 208. Implement Trie(Prefix Tree). Reuse class with #720. beat 39%
+	// 208. Implement Trie(Prefix Tree). Reuse class with #720. beat 57%
 	bool startsWith(string prefix) {
-		return search(root, prefix, 0, true);
+		return root.find_prefix(prefix, 0)!=nullptr;
 	}
 
 	bool completeAll(Node_Bool& cur, const string& word, int idx) {
@@ -61,9 +54,8 @@ public:
 	{
 		if (idx == word.size())
 			return mod == 1 && cur.val;  // make sure it ends with word in dict
-		if (mod == 1) {
-			return search(cur, word, idx, false);  // 1 letter modified, do normal search
-		}
+		if (mod == 1)
+			return cur.find(word, idx);  // 1 letter modified, do normal search
 		for (int i = 0; i < CHILD; i++) {  // no letter changed, go through each valid child
 			if (cur.child[i]) {
 				if (magic_search(*cur.child[i].get(), word, idx + 1, 'a' + i == word[idx] ? 0 : 1))  // update mod as appropriate
@@ -75,13 +67,33 @@ public:
 
 	void buildDict(vector<string> dict) {
 		for (const string& w : dict)
-			put(w);  // build trie        
+			root.put(w, 0);  // build trie        
 	}
 	// 676. Implement Magic Dictionary
 	bool magic_search(string word) {  // beat 100%
 		return magic_search(root, word, 0, 0);
 	}
 };
+
+TEST_CASE("676. Implement Magic Dictionary", "[NEW]")
+{
+	DictTrie magic;
+	magic.buildDict(vector<string>{"hello", "leetcode"});
+	CHECK(magic.magic_search("hello") == false);
+	CHECK(magic.magic_search("hhllo") == true);
+	CHECK(magic.magic_search("hell") == false);
+	CHECK(magic.magic_search("leetcoded") == false);
+}
+
+TEST_CASE("676. Implement Magic Dictionary test 2", "[NEW]")
+{
+	DictTrie magic;
+	magic.buildDict(vector<string>{"a", "b", "ab", "abc", "abcabacbababdbadbfaejfoiawfjaojfaojefaowjfoawjfoawj", "abcdefghijawefe", "aefawoifjowajfowafjeoawjfaow", "cba", "cas", "aaewfawi", "babcda", "bcd", "awefj"});
+	CHECK(magic.magic_search("ab") == false);
+	CHECK(magic.magic_search("ba") == false);
+	CHECK(magic.magic_search("abcd") == false);
+}
+
 
 class TrieInt {  // [0, 2^31)
 	struct Node
@@ -166,10 +178,6 @@ class TrieWords : public Trie
 {
 	using Node_Str = Node<string>;
 	Node_Str root;
-	void put(const string& word)
-	{
-		Trie::put(root, word, 0);
-	}
 	const string * findRoot(Node_Str& cur, const string& word, int idx) {
 		if (idx == word.size() || !cur.val.empty())
 			return &cur.val;
@@ -186,7 +194,7 @@ public:
 	// 648. Replace Words, replace word with root in dict
 	string replaceWords(vector<string>& dict, string sentence) {  // beat 56%
 		for (const string& w : dict)
-			put(w);  // build trie
+			root.put(w, 0);  // build trie
 		vector<string> words;
 		stringstream iss(sentence);
 		copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(words));
@@ -202,25 +210,6 @@ public:
 TEST_CASE("648. Replace Words", "[NEW]")
 {
 	CHECK(TrieWords().replaceWords(vector<string>{"cat", "bat", "rat", "af"}, "a cattle was rattled by the battery") == "a cat was rat by the bat");
-}
-
-TEST_CASE("676. Implement Magic Dictionary", "[NEW]")
-{
-	DictTrie magic;
-	magic.buildDict(vector<string>{"hello", "leetcode"});
-	CHECK(magic.magic_search("hello") == false);
-	CHECK(magic.magic_search("hhllo") == true);
-	CHECK(magic.magic_search("hell") == false);
-	CHECK(magic.magic_search("leetcoded") == false);
-}
-
-TEST_CASE("676. Implement Magic Dictionary test 2", "[NEW]")
-{
-	DictTrie magic;
-	magic.buildDict(vector<string>{"a", "b", "ab", "abc", "abcabacbababdbadbfaejfoiawfjaojfaojefaowjfoawjfoawj", "abcdefghijawefe", "aefawoifjowajfowafjeoawjfaow", "cba", "cas", "aaewfawi", "babcda", "bcd", "awefj"});
-	CHECK(magic.magic_search("ab") == false);
-	CHECK(magic.magic_search("ba") == false);
-	CHECK(magic.magic_search("abcd") == false);
 }
 
 class WordDictionary : Trie { // beat 50%

@@ -33,6 +33,11 @@ protected:
 			const int next = prefix[idx] - 'a';
 			return child[next] ? child[next]->find_prefix(prefix, idx + 1) : nullptr;
 		}
+		bool find(const std::string& word, int idx) const
+		{
+			auto * n = find_prefix(word, idx);
+			return n && n->val;
+		}
 		bool find_wild(const std::string& word, int pos)
 		{
 			if (pos == word.size())
@@ -50,20 +55,6 @@ protected:
 			return child[idx] ? child[idx]->find_wild(word, pos + 1) : false;
 		}
 	};
-	//template<typename Label> Node<Label> root;
-
-	template<typename Label>
-	void put(Node<Label>& cur, const std::string& word, int idx, const Label& b = Label{})
-	{
-		if (idx == word.size()) {
-			cur.setLabel(word, b);
-			return;
-		}
-		const int next = word[idx] - 'a';
-		if (!cur.child[next])
-			cur.child[next] = make_unique<Node<Label>>();
-		put(*cur.child[next].get(), word, idx + 1, b);
-	}
 };
 template<>
 void Trie::Node<bool>::setLabel(const std::string& v, bool)
