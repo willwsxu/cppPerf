@@ -8,12 +8,12 @@ protected:
 	template<typename Label>
 	struct Node
 	{
-		Label val{};
+		Label val{};  // support 3 types of labels, string, bool, int
 		std::unique_ptr<Node> child[CHILD];
-		void setLabel(const std::string& v, Label v2 = Label{}) {
+		void setLabel(const std::string& v, Label v2 = Label{}) {  // require specialization for each type
 			val = v;
 		}
-		bool complete() { return false; }  // the node that completes a word
+		bool complete() { return false; }  // the node that completes a word, require specialization for each type
 
 		void put(const std::string& word, int idx, const Label& b = Label{})
 		{
