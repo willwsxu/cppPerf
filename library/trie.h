@@ -26,6 +26,13 @@ protected:
 				child[next] = make_unique<Node>();
 			child[next]->put(word, idx + 1, b);
 		}
+		const Node* find_prefix(const std::string& prefix, int idx) const
+		{
+			if (idx == prefix.size())
+				return this;
+			const int next = prefix[idx] - 'a';
+			return child[next] ? child[next]->find_prefix(prefix, idx + 1) : nullptr;
+		}
 		bool find_wild(const std::string& word, int pos)
 		{
 			if (pos == word.size())
@@ -56,17 +63,6 @@ protected:
 		if (!cur.child[next])
 			cur.child[next] = make_unique<Node<Label>>();
 		put(*cur.child[next].get(), word, idx + 1, b);
-	}
-
-	template<typename Label>
-	const Node<Label>* find(Node<Label>& cur, const std::string& prefix, int idx) const  // find node with prefix
-	{
-		if (idx == prefix.size())
-			return &cur;
-		const int next = prefix[idx] - 'a';
-		if (cur.child[next])
-			return find(*cur.child[next].get(), prefix, idx + 1);
-		return nullptr;
 	}
 };
 template<>

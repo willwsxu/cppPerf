@@ -144,11 +144,11 @@ public:
 	MapSum() {	}
 
 	void insert(string key, int val) {
-		this->put(root, key, 0, val);
+		root.put(key, 0, val);
 	}
 
 	int sum(string prefix) { // beat 100%
-		const auto *found = this->find(root, prefix, 0);
+		const auto *found = root.find_prefix(prefix, 0);
 		return found? sum(*found):0;
 	}
 };
