@@ -13,28 +13,45 @@ protected:
 	{
 		Label val{};
 		unique_ptr<Node> child[CHILD];
-		void setLabel(const string& v) {
+		void setLabel(const string& v, Label v2 = Label{}) {
 			val = v;
 		}
 	};
 	template<typename Label>
-	void put(Node<Label>& cur, const string& word, int idx)
+	void put(Node<Label>& cur, const string& word, int idx, const Label& b = Label{})
 	{
 		if (idx == word.size()) {
-			cur.setLabel(word);
+			cur.setLabel(word, b);
 			return;
 		}
 		const int next = word[idx] - 'a';
 		if (!cur.child[next])
 			cur.child[next] = make_unique<Node<Label>>();
-		put(*cur.child[next].get(), word, idx + 1);
+		put(*cur.child[next].get(), word, idx + 1, b);
+	}
+
+	template<typename Label>
+	const Node<Label>* find(Node<Label>& cur, const string& prefix, int idx) const  // find node with prefix
+	{
+		if (idx == prefix.size())
+			return &cur;
+		const int next = prefix[idx] - 'a';
+		if (cur.child[next])
+			return find(*cur.child[next].get(), prefix, idx + 1);
+		return nullptr;
 	}
 };
 template<>
-void Trie::Node<bool>::setLabel(const string& v)
+void Trie::Node<bool>::setLabel(const string& v, bool)
 {
 	val = true;
 }
+template<>
+void Trie::Node<int>::setLabel(const string&, int v2)
+{
+	val = v2;
+}
+
 class DictTrie : public Trie
 {
 	using Node_Bool = Node<bool>;
@@ -157,15 +174,16 @@ TEST_CASE("421. Maximum XOR of Two Numbers in an Array", "[NEW]")
 	CHECK(TrieInt().findMaximumXOR(vector<int>{3, 10, 5, 25, 2, 8}) == 28);
 }
 
-class MapSum {
-	struct Node
+class MapSum : public Trie {
+	/*struct Node
 	{
-		int val;
+		using value_type = int;
+		value_type val;
 		unique_ptr<Node> child[26];
 		Node() :val(0) {}
 	};
 	Node root;
-	void put(Node& cur, const string& word, int idx, const int v)
+	void put(Node& cur, const string& word, int idx, const Node::value_type v)
 	{
 		if (idx == word.size()) {
 			cur.val = v;
@@ -175,17 +193,10 @@ class MapSum {
 		if (!cur.child[next])
 			cur.child[next] = make_unique<Node>();
 		put(*cur.child[next].get(), word, idx + 1, v);
-	}
-	Node* find(Node& cur, const string& word, int idx)  // find node with prefix
-	{
-		if (idx == word.size())
-			return &cur;
-		const int next = word[idx] - 'a';
-		if (cur.child[next])
-			return find(*cur.child[next].get(), word, idx + 1);
-		return nullptr;
-	}
-	int sum(Node& cur)  // sum all values of all words from this prefix node
+	}*/
+	using Node_Int = Node<int>;
+	Node_Int root;
+	int sum(const Node_Int& cur)  // sum all values of all words from this prefix node
 	{
 		int total = cur.val;
 		for (auto& c : cur.child) {
@@ -201,14 +212,12 @@ public:
 	}
 
 	void insert(string key, int val) {
-		put(root, key, 0, val);
+		this->put(root, key, 0, val);
 	}
 
 	int sum(string prefix) { // beat 100%
-		auto *found = find(root, prefix, 0);
-		if (found)
-			return sum(*found);
-		return 0;
+		const auto *found = this->find(root, prefix, 0);
+		return found? sum(*found):0;
 	}
 };
 
