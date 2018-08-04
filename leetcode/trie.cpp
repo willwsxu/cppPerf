@@ -175,25 +175,6 @@ TEST_CASE("421. Maximum XOR of Two Numbers in an Array", "[NEW]")
 }
 
 class MapSum : public Trie {
-	/*struct Node
-	{
-		using value_type = int;
-		value_type val;
-		unique_ptr<Node> child[26];
-		Node() :val(0) {}
-	};
-	Node root;
-	void put(Node& cur, const string& word, int idx, const Node::value_type v)
-	{
-		if (idx == word.size()) {
-			cur.val = v;
-			return;
-		}
-		const int next = word[idx] - 'a';
-		if (!cur.child[next])
-			cur.child[next] = make_unique<Node>();
-		put(*cur.child[next].get(), word, idx + 1, v);
-	}*/
 	using Node_Int = Node<int>;
 	Node_Int root;
 	int sum(const Node_Int& cur)  // sum all values of all words from this prefix node
@@ -207,9 +188,7 @@ class MapSum : public Trie {
 	}
 public:
 	/** Initialize your data structure here. */
-	MapSum() {
-
-	}
+	MapSum() {	}
 
 	void insert(string key, int val) {
 		this->put(root, key, 0, val);
