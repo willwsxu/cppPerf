@@ -11,9 +11,9 @@ protected:
 	template<typename Label>
 	struct Node
 	{
-		Label val;
+		Label val{};
 		unique_ptr<Node> child[CHILD];
-		void setLabel(const Label& v) {
+		void setLabel(const string& v) {
 			val = v;
 		}
 	};
@@ -30,62 +30,46 @@ protected:
 		put(*cur.child[next].get(), word, idx + 1);
 	}
 };
-
-class DictTrie
+template<>
+void Trie::Node<bool>::setLabel(const string& v)
 {
-	static const int CHILD = 26;
-	struct Node
-	{
-		string val;
-		bool   valid;  // valid word
-		unique_ptr<Node> child[CHILD];
-	};
-	Node root;
-	void put(Node& cur, const string& word, int idx, bool store = false)
-	{
-		if (idx == word.size()) {
-			if (store)
-				cur.val = word;
-			cur.valid = true;
-			return;
-		}
-		const int next = word[idx] - 'a';
-		if (!cur.child[next])
-			cur.child[next] = make_unique<Node>();
-		put(*cur.child[next].get(), word, idx + 1);
-	}
-	Node * search(Node& cur, const string& word, int idx)  // find last node if exist
+	val = true;
+}
+class DictTrie : public Trie
+{
+	using Node_Bool = Node<bool>;
+	Node_Bool root;
+	bool search(Node_Bool& cur, const string& word, int idx, bool match_prefix)  // find last node if exist
 	{
 		if (idx == word.size())
-			return &cur;
+			return match_prefix || cur.val;  // prefix or complete word
 		const int next = word[idx] - 'a';
-		return cur.child[next] ? search(*cur.child[next].get(), word, idx + 1) : nullptr;
+		return cur.child[next] ? search(*cur.child[next].get(), word, idx + 1, match_prefix) : false;
 	}
 public:
-	void put(const string& word, bool store = false)
+	void put(const string& word)
 	{
-		put(root, word, 0, store);
+		Trie::put(root, word, 0);
 	}
 	bool search(string word) {
-		Node *found = search(root, word, 0);
-		return found ? found->valid : false;
+		return search(root, word, 0, false);
 	}
 
-	// 208. Implement Trie(Prefix Tree). Reuse class with #720. beat 5%
+	// 208. Implement Trie(Prefix Tree). Reuse class with #720. beat 39%
 	bool startsWith(string prefix) {
-		return search(root, prefix, 0) != nullptr;
+		return search(root, prefix, 0, true);
 	}
 
-	bool completeAll(Node& cur, const string& word, int idx) {
+	bool completeAll(Node_Bool& cur, const string& word, int idx) {
 		if (idx == word.size())
 			return true;
 		const int next = word[idx] - 'a';
-		if (!cur.child[next] || !cur.child[next]->valid)
+		if (!cur.child[next] || !cur.child[next]->val)
 			return false;
 		return completeAll(*cur.child[next].get(), word, idx + 1);
 	}
 	// 720. Longest Word in Dictionary, which can be built one letter at a time
-	string longestWord(vector<string>& words) {  // beat 94%
+	string longestWord(vector<string>& words) {  // beat 84%
 		for (const string& w : words)
 			put(w);  // build trie
 
@@ -103,17 +87,16 @@ public:
 	}
 
 	// allow exact one letter different
-	bool search(Node& cur, const string& word, int idx, int mod)
+	bool magic_search(Node_Bool& cur, const string& word, int idx, int mod)
 	{
 		if (idx == word.size())
-			return mod == 1 && !cur.val.empty();  // make sure it ends with word in dict
+			return mod == 1 && cur.val;  // make sure it ends with word in dict
 		if (mod == 1) {
-			Node *found = search(cur, word, idx);  // 1 letter modified, do normal search
-			return found ? !found->val.empty() : false;
+			return search(cur, word, idx, false);  // 1 letter modified, do normal search
 		}
 		for (int i = 0; i < CHILD; i++) {  // no letter changed, go through each valid child
 			if (cur.child[i]) {
-				if (search(*cur.child[i].get(), word, idx + 1, 'a' + i == word[idx] ? 0 : 1))  // update mod as appropriate
+				if (magic_search(*cur.child[i].get(), word, idx + 1, 'a' + i == word[idx] ? 0 : 1))  // update mod as appropriate
 					return true;
 			}
 		}
@@ -126,7 +109,7 @@ public:
 	}
 	// 676. Implement Magic Dictionary
 	bool magic_search(string word) {  // beat 100%
-		return search(root, word, 0, 0);
+		return magic_search(root, word, 0, 0);
 	}
 };
 
@@ -280,7 +263,7 @@ TEST_CASE("648. Replace Words", "[NEW]")
 	CHECK(TrieWords().replaceWords(vector<string>{"cat", "bat", "rat", "af"}, "a cattle was rattled by the battery") == "a cat was rat by the bat");
 }
 
-TEST_CASE("676. Implement Magic Dictionary", "[MAGIC]")
+TEST_CASE("676. Implement Magic Dictionary", "[NEW]")
 {
 	DictTrie magic;
 	magic.buildDict(vector<string>{"hello", "leetcode"});
