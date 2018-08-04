@@ -22,7 +22,7 @@ public:
 		}
 		path.pop_back();
 	}
-	vector<vector<int>> allPathsSourceTarget(vector<vector<int>>& graph) {
+	vector<vector<int>> allPathsSourceTarget(vector<vector<int>>& graph) {// beat 20, try dfs and dp later
 		vector<vector<int>> all;
 		vector<int> path{};
 		allPathsSourceTarget(graph, all, path, 0);
