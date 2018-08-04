@@ -2,56 +2,9 @@
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
 #include "myalgo.h"
+#include "trie.h"
+
 using namespace std;
-
-class Trie
-{
-protected:
-	static const int CHILD = 26;
-	template<typename Label>
-	struct Node
-	{
-		Label val{};
-		unique_ptr<Node> child[CHILD];
-		void setLabel(const string& v, Label v2 = Label{}) {
-			val = v;
-		}
-	};
-	template<typename Label>
-	void put(Node<Label>& cur, const string& word, int idx, const Label& b = Label{})
-	{
-		if (idx == word.size()) {
-			cur.setLabel(word, b);
-			return;
-		}
-		const int next = word[idx] - 'a';
-		if (!cur.child[next])
-			cur.child[next] = make_unique<Node<Label>>();
-		put(*cur.child[next].get(), word, idx + 1, b);
-	}
-
-	template<typename Label>
-	const Node<Label>* find(Node<Label>& cur, const string& prefix, int idx) const  // find node with prefix
-	{
-		if (idx == prefix.size())
-			return &cur;
-		const int next = prefix[idx] - 'a';
-		if (cur.child[next])
-			return find(*cur.child[next].get(), prefix, idx + 1);
-		return nullptr;
-	}
-};
-template<>
-void Trie::Node<bool>::setLabel(const string& v, bool)
-{
-	val = true;
-}
-template<>
-void Trie::Node<int>::setLabel(const string&, int v2)
-{
-	val = v2;
-}
-
 class DictTrie : public Trie
 {
 	using Node_Bool = Node<bool>;
@@ -270,89 +223,24 @@ TEST_CASE("676. Implement Magic Dictionary test 2", "[NEW]")
 	CHECK(magic.magic_search("abcd") == false);
 }
 
-class DictTrie2
-{
-	struct Node
-	{
-		char letter;	// lower case only
-		bool complete;  // mark work is complete
-		vector<Node *> next;
-		Node(char c) : next(26, nullptr), letter(c), complete(false) {}
-		Node *& operator [](int idx) {
-			return next[idx];
-		}
-		void put(const string& word, int pos) {
-			int idx = word[pos] - 'a';
-			if (next[idx] == nullptr)
-				next[idx] = new Node(word[pos]);
-			if (pos == word.length() - 1)
-				next[idx]->complete = true;
-			else
-				next[idx]->put(word, pos + 1);
-		}
-		bool find(const string& word, int pos)
-		{
-			if (word[pos] == '.') {  // wild char matching
-				for (Node* c : next) {
-					if (c == nullptr)
-						continue;
-					if (pos == word.length() - 1) {
-						if (c->complete)
-							return true;
-					}
-					else if (c->find(word, pos + 1))
-						return true;
-				}
-				return false;
-			}
-			int idx = word[pos] - 'a';
-			if (next[idx] == nullptr)
-				return false;
-			if (pos == word.length() - 1)
-				return next[idx]->complete;
-			return next[idx]->find(word, pos + 1);
-		}
-	};
-
-	Node root;
-public:
-	DictTrie2() :root(0) {}
-	void put(const string& word)
-	{
-		if (!word.empty())
-			root.put(word, 0);
-	}
-	bool find(const string& word)
-	{
-		if (word.empty())
-			return true;
-		return root.find(word, 0);
-	}
-};
-class WordDictionary {
-	//unordered_set<string> dict;
-	DictTrie2	dict;
+class WordDictionary : Trie { // beat 50%
+	using Node_Bool = Node<bool>;
+	Node_Bool root;
 public:
 	/** Initialize your data structure here. */
-	WordDictionary() {
-
-	}
+	WordDictionary() {	}
 
 	/** Adds a word into the data structure. */
 	void addWord(string word) {
-		//dict.insert(word);
-		dict.put(word);
+		if (!word.empty())
+			root.put(word, 0);
 	}
 
 	/** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
 	bool search(string word) {
-		return dict.find(word);/*
-							   auto pred = [&word](auto item) {
-							   if (item.length() != word.length())
-							   return false;
-							   return equal(begin(item), end(item), begin(word), [](auto a, auto b) {return (b == '.' || a == b);});
-							   };
-							   return find_if(begin(dict), end(dict), pred) !=end(dict);*/
+		if (word.empty())
+			return true;
+		return root.find_wild(word, 0);
 	}
 };
 
