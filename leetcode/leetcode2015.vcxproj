@@ -154,6 +154,7 @@
     <ClInclude Include="TreeNode.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\library\Graph.cpp" />
     <ClCompile Include="backTracking.cpp" />
     <ClCompile Include="BinaryTree.cpp" />
     <ClCompile Include="BitManip.cpp" />
