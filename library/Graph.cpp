@@ -28,4 +28,21 @@ public:
 		allPathsSourceTarget(graph, all, path, 0);
 		return all;
 	}
+
+	void dfs(const vector<vector<int>>& rooms, vector<int>& visited, int v)
+	{
+		if (visited[v])
+			return;
+		visited[v] = true;
+		for (int r : rooms[v]) {
+			dfs(rooms, visited, r);
+		}
+	}
+	// 841. Keys and Rooms, each room may contain keys that open other rooms
+	bool canVisitAllRooms(vector<vector<int>>& rooms) {// a typical dfs
+		int n = rooms.size();
+		vector<int> visited(n, false);
+		dfs(rooms, visited, 0);  // visit from room 0 only
+		return all_of(visited.begin(), visited.end(), [](bool v) { return v; });
+	}
 };
