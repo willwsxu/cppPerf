@@ -29,20 +29,23 @@ public:
 		return all;
 	}
 
+	int count = 0;
 	void dfs(const vector<vector<int>>& rooms, vector<int>& visited, int v)
 	{
 		if (visited[v])
 			return;
 		visited[v] = true;
+		count++;
 		for (int r : rooms[v]) {
 			dfs(rooms, visited, r);
 		}
 	}
 	// 841. Keys and Rooms, each room may contain keys that open other rooms
-	bool canVisitAllRooms(vector<vector<int>>& rooms) {// a typical dfs
+	bool canVisitAllRooms(vector<vector<int>>& rooms) {// a typical dfs, beat 100% after submit again
 		int n = rooms.size();
 		vector<int> visited(n, false);
 		dfs(rooms, visited, 0);  // visit from room 0 only
-		return all_of(visited.begin(), visited.end(), [](bool v) { return v; });
+		//return all_of(visited.begin(), visited.end(), [](bool v) { return v; });
+		return count == n;
 	}
 };
