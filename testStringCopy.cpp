@@ -3,7 +3,8 @@
 #include <string>
 #include <memory>
 using namespace std;
-#include "tests.h"
+
+#include "string_util.h"
 
 // string class performance
 string copyString(const char *test)
@@ -20,13 +21,6 @@ unique_ptr<char[]> copyShare(const char *test)
 }
 
 #include <benchmark/benchmark.h>
-unique_ptr<char[]> memset_char(char x, int64_t c) {
-	size_t count = static_cast<size_t>(c);
-	auto buf = make_unique<char[]>(count);
-	memset(buf.get(), x, count - 1);
-	buf[count - 1] = 0;
-	return buf;
-}
 static void BM_memcpy(benchmark::State& state) {
 	size_t sz = (size_t)state.range(0);
 	auto s = memset_char('x', sz);

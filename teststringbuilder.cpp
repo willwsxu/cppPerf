@@ -5,6 +5,9 @@
 #include <chrono>
 #include <iostream>
 #include <sstream>
+
+#include "string_util.h"
+
 using namespace std;
 
 char cstr[200];
@@ -22,6 +25,23 @@ memcmp10 nano seconds:             0
 string==10 nano seconds:     2270000
 */
 
+static void BM_string_plus(benchmark::State& state) {
+	size_t sz = (size_t)state.range(0);
+	auto s = memset_char('x', sz);
+	char *src = s.get();
+	char* dst = new char[sz];
+	for (auto _ : state) {
+		str = '"';
+		str += "name";
+		str += '"';
+		str += '=';
+		str += '"';
+		str += "value";
+		str += '"';
+	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
+	delete[] dst;
+}
 void testStringConcat()
 {
 	int loops = 1000000;
@@ -123,7 +143,7 @@ char *newCstr;
 // testNewDelete
 static void BM_new_delete_string(benchmark::State& state) {
 	for (auto _ : state) {
-		newStr = new string(state.range(0), 'X');
+		newStr = new string(static_cast<size_t>(state.range(0)), 'X');
 		delete newStr;
 	}
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
@@ -131,9 +151,10 @@ static void BM_new_delete_string(benchmark::State& state) {
 BENCHMARK(BM_new_delete_string)->Range(8, 8 << 10);
 
 static void BM_new_delete_memset(benchmark::State& state) {
+	size_t len = static_cast<size_t>(state.range(0));
 	for (auto _ : state) {
-		newCstr = new char[state.range(0)];
-		memset(newCstr, 'X', state.range(0));
+		newCstr = new char[len];
+		memset(newCstr, 'X', len);
 		delete newCstr;
 	}
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
@@ -141,9 +162,10 @@ static void BM_new_delete_memset(benchmark::State& state) {
 BENCHMARK(BM_new_delete_memset)->Range(8, 8 << 10);
 
 static void BM_control_memset(benchmark::State& state) {
-	newCstr = new char[state.range(0)];
+	size_t len = static_cast<size_t>(state.range(0));
+	newCstr = new char[len];
 	for (auto _ : state) {
-		memset(newCstr, 'X', state.range(0));
+		memset(newCstr, 'X', len);
 	}
 	delete newCstr;
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
