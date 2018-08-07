@@ -53,9 +53,6 @@
     <ClCompile Include="base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="testostringstream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="testLambda.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="testStringCopy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="teststringbuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
