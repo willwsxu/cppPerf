@@ -78,6 +78,7 @@ static void BM_copy_string(benchmark::State& state) {
 	{
 		string temp = copyString(src);
 	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 }
 BENCHMARK(BM_copy_string)->Range(8, 8 << 10);
 
