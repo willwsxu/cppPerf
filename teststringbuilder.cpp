@@ -146,36 +146,3 @@ new string nano seconds:    171ns / 64 bytes
 new char[] nano seconds:    88ns
 memset char[] nano seconds: 6ns
 */
-string *newStr;
-char *newCstr;
-// testNewDelete
-static void BM_new_delete_string(benchmark::State& state) {
-	for (auto _ : state) {
-		newStr = new string(static_cast<size_t>(state.range(0)), 'X');
-		delete newStr;
-	}
-	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-}
-BENCHMARK(BM_new_delete_string)->Range(8, 8 << 10);
-
-static void BM_new_delete_memset(benchmark::State& state) {
-	size_t len = static_cast<size_t>(state.range(0));
-	for (auto _ : state) {
-		newCstr = new char[len];
-		memset(newCstr, 'X', len);
-		delete newCstr;
-	}
-	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-}
-BENCHMARK(BM_new_delete_memset)->Range(8, 8 << 10);
-
-static void BM_control_memset(benchmark::State& state) {
-	size_t len = static_cast<size_t>(state.range(0));
-	newCstr = new char[len];
-	for (auto _ : state) {
-		memset(newCstr, 'X', len);
-	}
-	delete newCstr;
-	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-}
-BENCHMARK(BM_control_memset)->Range(8, 8 << 10);
