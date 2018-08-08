@@ -92,9 +92,7 @@ std::vector<HASH_DATA*> construct(int argc, char *argv[])
 }
 
 template <class Logger, class HASH_DATA, template<typename> class HashFun, template<typename, typename, template<typename> class> class HashTableImpl>
-class HASH_TABLE_FILE_READER_MOCK : public HashTableImpl<Logger, HASH_DATA, HashFun>
-//template <class HASH_DATA, template<typename> typename HashTable>
-//class FH_HASH_TABLE_FILE_READER : public HashTable<HASH_DATA>
+class HASH_TABLE_FILE_READER : public HashTableImpl<Logger, HASH_DATA, HashFun>
 {
 	std::string filepath;
 	std::string	lastSymUpdTime;		// file read time

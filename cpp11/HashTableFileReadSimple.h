@@ -3,7 +3,7 @@
 // simple file reader, HASH_DATA is required to have constructor to take char * 
 // Responsible to read hash table contents from file, and write back content to file after updated
 template <class Logger, class HASH_DATA, template<typename> class HashFun, template<typename, typename, template<typename> class> class HashTableImpl>
-class HASH_TABLE_FILE_READER_MOCK : public HashTableImpl<Logger, HASH_DATA, HashFun>
+class HASH_TABLE_FILE_READER : public HashTableImpl<Logger, HASH_DATA, HashFun>
 {
 	std::string filepath;
 protected:

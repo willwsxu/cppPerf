@@ -3,8 +3,6 @@
 #include "string"
 #include "ConsoleLogger.h"
 #include "HashTableBase.h"
-//#include "HashTableFileRead.h" //"HashTableFileReadSimple.h"
-//#include "FileReadMock.h"
 #include "HashTable.h"
 
 using namespace std;

@@ -7,7 +7,7 @@
 
 // Responsible to figure out file full path
 template <class Logger, class HASH_DATA, template<typename> class HashFun, template<typename, typename, template<typename> class> class HashTableImpl>
-class FileReadMock : public HASH_TABLE_FILE_READER_MOCK<Logger, HASH_DATA, HashFun, HashTableImpl>
+class FileReadMock : public HASH_TABLE_FILE_READER<Logger, HASH_DATA, HashFun, HashTableImpl>
 {
 protected:
 	template<typename...Args>
