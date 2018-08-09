@@ -84,15 +84,15 @@
     <ClInclude Include="..\library\SmallObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HashTableBucketHashing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HashMockTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HashTableBaseTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HashTableBaseFileTest.cpp">
@@ -111,6 +111,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SeanParentTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HashTableBucketTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HashTableBaseTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

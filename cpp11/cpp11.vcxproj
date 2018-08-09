@@ -126,6 +126,7 @@
     <ClInclude Include="HashTableBase.h" />
     <ClInclude Include="hashTableFileRead.h" />
     <ClInclude Include="HashTableFileReadSimple.h" />
+    <ClInclude Include="HashTableBucketHashing.h" />
     <ClInclude Include="HashTableMockImpl.h" />
     <ClInclude Include="MessageConcept.h" />
     <ClInclude Include="ObjectFactory.h" />
@@ -142,6 +143,7 @@
     <ClCompile Include="HashMockTest.cpp" />
     <ClCompile Include="HashTableBaseFileTest.cpp" />
     <ClCompile Include="HashTableBaseTest.cpp" />
+    <ClCompile Include="HashTableBucketTest.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MessageTest.cpp" />
     <ClCompile Include="SeanParentTest.cpp" />
