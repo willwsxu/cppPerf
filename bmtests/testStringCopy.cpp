@@ -85,7 +85,7 @@ static void BM_memcpy_stack(benchmark::State& state) {
 	}
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 }
-BENCHMARK(BM_memcpy)->Range(8, 8 << 10);
+BENCHMARK(BM_memcpy_stack)->Range(8, 8 << 10);
 
 static void BM_strlen(benchmark::State& state) {
 	size_t sz = (size_t)state.range(0);
