@@ -1,10 +1,8 @@
-#include "stdafx.h"
-#include <Windows.h>
 #include <string>
 #include <memory>
 using namespace std;
 
-#include "string_util.h"
+#include "library/string_util.h"
 
 // string class performance
 string copyString(const char *test)
@@ -21,6 +19,7 @@ unique_ptr<char[]> memcpy_unique(const char *test)
 }
 
 #include <benchmark/benchmark.h>
+BENCHMARK_MAIN();
 
 string *newStr;
 char *newCstr;
