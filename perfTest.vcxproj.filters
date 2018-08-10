@@ -62,9 +62,6 @@
     <ClCompile Include="perfExample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="testStringCopy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="teststringbuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
