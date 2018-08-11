@@ -121,7 +121,7 @@ protected:
 		// Default behavior is to ignore this line
 		return false;
 	}
-public:/*
+public:
 	HASH_DATA *find(const HASH_DATA &pData)
 	{
 		if (pElements.empty())
@@ -129,24 +129,17 @@ public:/*
 
 		// get the bucket.
 		size_t hashVal = HashFun<HASH_DATA>()(pData);
-		HASH_ELEMENT *pHashElt = &pElements[hashVal % pElements.size()];
-
-		// spin through the linked list looking for the correct entry.
-		while (pHashElt && (pHashElt->bErased || *pHashElt->pData != pData))
-			pHashElt = pHashElt->pNextElement;
-
-		// if we found the correct entry, update the timestamp, then return the data
-		if (pHashElt) {
+		size_t slot = findSlot(pData, hashVal % buckets * bucket_size, hash); 
+		if (slot == UINT_MAX) // check overflow area
+			slot = findSlot(pData, overflow, hash);
+		if (slot == UINT_MAX || pElements[slot].bErased || !pElements[slot]->pData)
+			return nullptr;
 #ifdef _TIMING
-			pHashElt->tLastAccess = time(0);
+		pHashElt->tLastAccess = time(0);
 #endif
-			return pHashElt->pData;
-		}
-
-		// bad news,  entry not found.
-		return nullptr;
+		return pElements[slot]->pData;
 	}
-	*/
+
 	std::pair<const HASH_DATA *, bool> insert(const HASH_DATA &pData)  // was insert2
 	{
 		return insert(&pData, true);
@@ -268,6 +261,7 @@ protected:
 			return{ nullptr, false };
 		if (slot!=home)
 			iCollisions++;
+		pElements[slot].hash = hash;
 		if (!pElements[slot].pData) {  // create new Item
 			if (bStackObj) {
 				pElements[slot].pData = new HASH_DATA(*pData);
