@@ -129,15 +129,15 @@ public:
 
 		// get the bucket.
 		size_t hashVal = HashFun<HASH_DATA>()(pData);
-		size_t slot = findSlot(pData, hashVal % buckets * bucket_size, hash); 
+		size_t slot = findSlot(&pData, hashVal % buckets * bucket_size, hashVal);
 		if (slot == UINT_MAX) // check overflow area
-			slot = findSlot(pData, overflow, hash);
-		if (slot == UINT_MAX || pElements[slot].bErased || !pElements[slot]->pData)
+			slot = findSlot(&pData, overflow, hashVal);
+		if (slot == UINT_MAX || pElements[slot].bErased || !pElements[slot].pData)
 			return nullptr;
 #ifdef _TIMING
 		pHashElt->tLastAccess = time(0);
 #endif
-		return pElements[slot]->pData;
+		return pElements[slot].pData;
 	}
 
 	std::pair<const HASH_DATA *, bool> insert(const HASH_DATA &pData)  // was insert2
@@ -225,7 +225,7 @@ public:
 	*/
 protected:
 	// return int_max if no slot, or return empty slot, or return existing item
-	size_t findSlot(const HASH_DATA *pData, size_t home, uint32_t hash)
+	size_t findSlot(const HASH_DATA *pData, size_t home, uint32_t hashVal)
 	{
 		size_t mySlot = UINT32_MAX;
 		for (size_t slot = home; slot < home + bucket_size; slot++) {
@@ -235,7 +235,7 @@ protected:
 				if (mySlot == UINT32_MAX)
 					mySlot = slot;
 			}
-			if (pElements[slot].hash == hash && *pElements[slot].pData == *pData)// find existing item
+			if (pElements[slot].hash == hashVal && *pElements[slot].pData == *pData)// find existing item
 				return slot; 
 		}
 		return mySlot;

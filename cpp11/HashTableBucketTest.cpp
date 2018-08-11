@@ -13,4 +13,5 @@ TEST_CASE("Hash table Mock Test", "[MOCK]")
 {
 	HashTableMock t(10);
 	t.insert("test");
+	t.find("test");
 }
