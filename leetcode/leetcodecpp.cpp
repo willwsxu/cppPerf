@@ -2089,3 +2089,26 @@ public:
 		return longest;
 	}
 };
+
+
+class Anagram
+{
+public:
+	// 242. Valid Anagram
+	// You may assume the string contains only lowercase alphabets.
+	bool isAnagram(string s, string t) {
+		sort(begin(s), end(s));
+		sort(t.begin(), t.end());
+		return s == t;
+	}
+	bool isAnagram2(string s, string t) {  // beat 98%
+		int count[26] = { 0 };
+		if (s.size() != t.size())
+			return false;
+		for (int i = 0; i < s.size(); i++) {
+			count[s[i] - 'a']++;  // count chars from one string
+			count[t[i] - 'a']--;  // subtract chars from other
+		}
+		return all_of(count, count + 26, [](int a) {return a == 0; });  // char count is 0 for all letter
+	}
+};

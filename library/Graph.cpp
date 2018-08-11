@@ -49,3 +49,31 @@ public:
 		return count == n;
 	}
 };
+
+
+class ConnectedComponents {
+	vector<bool> visited;
+	void dfs(vector<vector<int>>& M, int i)  // find all people share friendship
+	{
+		if (visited[i])
+			return;
+		visited[i] = true;
+		for (int f = 0; f < M.size(); f++) {  // adjacency matrix define directed friendship
+			if (M[i][f])
+				dfs(M, f);
+		}
+	}
+public:
+	//547. Friend Circles
+	int findCircleNum(vector<vector<int>>& M) {// connected components, beat 98%
+		visited.resize(M.size());
+		int connected = 0;
+		for (int f = 0; f < M.size(); f++) {
+			if (!visited[f]) {
+				connected++;
+				dfs(M, f);
+			}
+		}
+		return connected;
+	}
+};
