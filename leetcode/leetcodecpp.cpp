@@ -2090,7 +2090,6 @@ public:
 	}
 };
 
-
 class Anagram
 {
 public:
@@ -2110,5 +2109,21 @@ public:
 			count[t[i] - 'a']--;  // subtract chars from other
 		}
 		return all_of(count, count + 26, [](int a) {return a == 0; });  // char count is 0 for all letter
+	}
+};
+
+
+// 481. Magical String
+// 1221121221221121122 count of 1 or 2 becomes the sequence
+class Magic {
+public:
+	int magicalString(int n) {  // borrowed idea, beat 98%
+		string seq = "122";
+		seq.reserve(n);
+		int i = 2; // build new seq from "122", from position 2, must be 2 of some digit
+		while (seq.size() < n) {
+			seq.append(seq[i++] - '0', seq.back() ^ 3);//^3 will alternate between 1 and 2
+		}
+		return count(seq.begin(), seq.begin() + n, '1');
 	}
 };
