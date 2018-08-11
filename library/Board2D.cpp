@@ -30,4 +30,56 @@ public:
 		}
 		return count;
 	}
+
+public:
+	// 807. Max Increase to Keep City Skyline
+	// grid dim [2,50]
+	int maxIncreaseKeepingSkyline(vector<vector<int>>& grid) {// same code submit 3 times, 12ms, 8ms, 4ms
+		int R = grid.size();
+		int C = grid[0].size();
+		vector<int> t_d(C, 0); // top down view of skyline
+		vector<int> l_r(R, 0); // left right view of skyline
+		for (int r = 0; r < R; r++) {
+			for (int c = 0; c < C; c++) {
+				t_d[c] = max(t_d[c], grid[r][c]);
+				l_r[r] = max(l_r[r], grid[r][c]);
+			}
+		}
+		int inc = 0;
+		for (int r = 0; r < R; r++) {
+			for (int c = 0; c < C; c++) {
+				inc += min(t_d[c], l_r[r]) - grid[r][c];  // increase must not affect either skyline
+			}
+		}
+		return inc;
+	}
+
+	// 861. Score After Flipping Matrix, dim [1,20], each value id bit 0 or 1
+	// flip all bits in a row or column, find max
+	// idea: for each row, flip if left most is 0
+	//       for each col,  flip if there are more 0s than 1
+	int matrixScore(vector<vector<int>>& A) {
+		int R = A.size();
+		int C = A[0].size();
+		for (int r = 0; r < R; r++) {  // check each row first
+			if (A[r][0])
+				continue;
+			for (int c = 0; c < C; c++) {
+				A[r][c] = 1 - A[r][c];  // flip bit so high bit becomes 1
+			}
+		}
+		int ans = 0;
+		for (int c = 0; c < C; c++) {
+			int count[2] = { 0 };
+			for (int r = 0; r < R; r++)
+				count[A[r][c]]++;
+			//if (count[0] > count[1]) {  //more zero than 1, flip
+			//	for (int r = 0; r < R; r++)
+			//		A[r][c] = 1- A[r][c];
+			//}
+			// directly compute, using higher count as 1 at this position
+			ans = (ans << 1) + max(count[0], count[1]);
+		}
+		return ans;
+	}
 };
