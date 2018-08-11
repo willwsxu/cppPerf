@@ -26,7 +26,7 @@ TEST_CASE("Backet Hashing table Test", "[NEW]")
 	auto f = t.find("test");
 	CHECK(f != t.end());
 	CHECK(*f == "test");
-	t.erase(*t2);
+	CHECK(t.erase(*t2)==1);
 	CHECK(t.size() == 1);
 
 	// test iterators

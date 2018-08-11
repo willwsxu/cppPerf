@@ -140,66 +140,47 @@ public:
 		return iEntries;
 	}
 
-	bool erase(const HASH_DATA &pData)
+	// return # of elements erased
+	size_t erase(const HASH_DATA &pData)
 	{
 		if (pElements.empty() || size()<1)
-			return false;
+			return 0;
 		
 		size_t hashVal = HashFun<HASH_DATA>()(pData);
 		size_t slot = findSlot(&pData, hashVal % buckets * bucket_size, hashVal);
 		if (slot == UINT_MAX) // check overflow area
 			slot = findSlot(&pData, overflow, hashVal);
 		if (slot == UINT_MAX || pElements[slot].bErased || !pElements[slot].pData)
-			return false;
+			return 0;
 
 		RemoveElement(pElements[slot]);
-		return true;
+		return 1;
 	}
-	/*
-	void clear()
+
+	void clear(bool data_erase)
 	{
+		if (pElements.empty())
+			return;
 		int deleted = 0;
-		if (pElements)
+		//traceHashCollision(iMaxDepth, iCounts, iEntries);
+		for (auto x= pElements.begin(); x!= pElements.end(); ++x)
 		{
-			UINT i;
-
-			traceHashCollision(iMaxDepth, iCounts, iEntries);
-			for (i = 0; i < iSize; i++)
-			{
-				HASH_ELEMENT *pNext;
-				HASH_ELEMENT *pStart = pElements[i];
-				HASH_ELEMENT *pFirst = pStart;
-
-				if (pStart)
-				{
-					// Delete only the data portion of the first element
-					if (pStart->pData)
-					{
-						delete(pStart->pData);
-						deleted++;
-					}
-
-					pStart = pStart->pNextElement;
-
-					// Delete both the data portion and the element itself starting 
-					// from the second entry of the row
-					while (pStart)
-					{
-						pNext = pStart->pNextElement;
-						delete(pStart->pData);
-						deleted++;
-						free(pStart);
-						pStart = pNext;
-					}
-					free(pFirst);
-					pElements[i] = NULL;
-				}
+			if (!x->pData)
+				continue;
+			if (data_erase) {
+				delete x->pData;
+				x->pData = nullptr;
 			}
+			x->bErased = true;
+			deleted++;
 		}
-		logger(LOG_INFO, "Clear FH_HASH_TABLE %d items. newed %d, erased %d, entries %d, insert errors %d ", deleted, iNewItems, iErased, iEntries, iInsertErrors);
-		reset();
+		logger(LOG_INFO, "Clear HASH_TABLE %d items. newed %d, erased %d, entries %d, insert errors %d ", deleted, iNewItems, iErased, iEntries, iInsertErrors);
+		resetStats();
 	}
-	*/
+	~HASH_TABLE_BUCKET()
+	{
+		clear(true);
+	}
 protected:
 	// return int_max if no slot, or return empty slot, or return existing item
 	size_t findSlot(const HASH_DATA *pData, size_t home, uint32_t hashVal)
@@ -277,35 +258,6 @@ protected:
 #endif
 		return{ { pElements.begin() + slot, pElements.end() }, false };
 	}
-	/*
-	void traceHashCollision(UINT iMaxDepth, UINT *iCounts, UINT iEntries)
-	{
-		UINT i;
-		UINT iTotal = 0;
-		double dAvg = 0.0;
-		char szAvg[32] = "";
-		if (iEntries < 1)
-			return;
-		for (i = 1; i <= iMaxDepth; i++)
-		{
-			iTotal += i * iCounts[i];
-		}
-		dAvg = (double)iTotal / (double)iEntries;
-		//sprintf(szAvg, "%3.3f", dAvg);
-		logger(LOG_INFO, "Collision(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d; avg = %s)",
-			iCounts[1],
-			iCounts[2],
-			iCounts[3],
-			iCounts[4],
-			iCounts[5],
-			iCounts[6],
-			iCounts[7],
-			iCounts[8],
-			iCounts[9],
-			iCounts[10],
-			szAvg
-		);
-	}*/
 public:
 	class iterator : public std::iterator<std::forward_iterator_tag, HASH_DATA> {
 		using v_iter = typename std::vector<HASH_ELEMENT>::iterator;
