@@ -100,8 +100,8 @@ protected:
 	void RemoveElement(HASH_ELEMENT& pHashElt)
 	{
 		// only erase those not flagged as erased
-		if (!pHashElt->bErased) {
-			pHashElt->bErased = true;
+		if (!pHashElt.bErased) {
+			pHashElt.bErased = true;
 			iErased++;
 			iEntries--;
 		}
@@ -152,33 +152,27 @@ public:
 			delete pData;
 		return ret;
 	}
-	/*
-	bool erase(HASH_DATA *pData)
+	size_t size() const
 	{
-		if (!pElements || !pData || !iSize)
-			return false;
-
-		size_t hashIndex = HashFun<HASH_DATA>{}(*pData) % iSize;
-		HASH_ELEMENT * pHashElt = pElements[hashIndex];
-
-		// More than one element case
-		//HASH_ELEMENT * pPrev = pHashElt;
-		//bool bFirstNode = true;
-		while (pHashElt && pHashElt->pData)
-		{
-			// Check to see if the element matches
-			if (*pHashElt->pData == *pData)
-			{
-				RemoveElement(pHashElt);
-				return true;
-			}
-			//bFirstNode = false;
-			//pPrev = pHashElt;
-			pHashElt = pHashElt->pNextElement;
-		}
-		return false;
+		return iEntries;
 	}
 
+	bool erase(const HASH_DATA &pData)
+	{
+		if (pElements.empty() || size()<1)
+			return false;
+		
+		size_t hashVal = HashFun<HASH_DATA>()(pData);
+		size_t slot = findSlot(&pData, hashVal % buckets * bucket_size, hashVal);
+		if (slot == UINT_MAX) // check overflow area
+			slot = findSlot(&pData, overflow, hashVal);
+		if (slot == UINT_MAX || pElements[slot].bErased || !pElements[slot].pData)
+			return false;
+
+		RemoveElement(pElements[slot]);
+		return true;
+	}
+	/*
 	void clear()
 	{
 		int deleted = 0;
