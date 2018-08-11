@@ -265,44 +265,6 @@ TEST_CASE("Small class Custom", "CUST")
 	VIP  v{ "Boss" };
 	VIP  v2{ v };
 	Cust c7{ v };
-
-	long loops = 100000;
-	auto perfTest = [](const char *name, auto func) {
-		auto start = chrono::high_resolution_clock::now();
-		long count = func();
-		auto end = chrono::high_resolution_clock::now();
-		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-		cout << name << " nano seconds: " << nanos.count() << " count " << count << endl;
-
-	};
-
-	perfTest("forward reference", [loops]() {
-		for (long i = 0; i < loops; i++) {
-			string s("Irina");
-			Cust c1("Joe", "Fix", 42);	// 2 mallocs (2cr)
-			Cust c2(s, "Fix", 42);		// 2 mallocs (1cp + 1cr)
-			Cust c3(move(s), "z");		// 1 mallocs (1mv + 1cr)
-		}
-		return loops;
-	});
-	perfTest("pass by value", [loops]() {
-		for (long i = 0; i < loops; i++) {
-			string s("Irina");
-			Cust1 c1("Joe", "Fix", 42);	// 2 mallocs (2cr+2mv)
-			Cust1 c2(s, "Fix", 42);		// 2 mallocs (1cp + 1cr+2mv)
-			Cust1 c3(move(s), "z");		// 1 mallocs (1mv + 1cr)
-		}
-		return loops;
-	});
-	perfTest("pass by ref", [loops]() {
-		for (long i = 0; i < loops; i++) {
-			string s("Irina");
-			Cust2 c1("Joe", "Fix", 42);	// 2 mallocs (2cr)
-			Cust2 c2(s, "Fix", 42);		// 2 mallocs (1cp + 1cr)
-			Cust2 c3(move(s), "z");		// 1 mallocs (1mv + 1cr)
-		}
-		return loops;
-	});
 }
 
 #include "eraseRemove.h"
