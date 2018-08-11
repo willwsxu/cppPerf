@@ -101,5 +101,8 @@
     <ClCompile Include="..\library\BinarySearch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CircularDataStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
