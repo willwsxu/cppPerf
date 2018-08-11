@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <vector>
 
 inline uint32_t defaultHashFunction(const char *key, size_t size, int prime)
 {
@@ -54,6 +55,7 @@ class HASH_TABLE_BUCKET
 		time_t		tInsert;
 #endif
 	};
+
 protected:
 	Logger	logger;
 	std::vector<HASH_ELEMENT>	pElements;
@@ -72,7 +74,7 @@ protected:
 	uint32_t iInsertErrors;
 
 	bool HashInitialize(size_t iDesiredSize) {
-		InitValues();
+		resetStats();
 		buckets = CalcSize(iDesiredSize);
 		overflow = buckets*bucket_size;
 		if (pElements.size() < overflow + overflow_size)
@@ -80,13 +82,8 @@ protected:
 		return true;
 	}
 
-	void InitValues()
+	void resetStats()
 	{
-		reset();
-	}
-	void reset()
-	{
-		//		iErrors = 0;  reading
 		iInsertErrors = 0;
 		iEntries = 0;
 		iCollisions = 0;
@@ -106,26 +103,12 @@ protected:
 			iEntries--;
 		}
 	}
-
-	virtual void PostInsert(HASH_DATA *pData)
-	{
-		// Derived class will implement this method to do
-		// process with the hash data structure after Insert
-	}
-
-	virtual bool ProcessSpecialLine(char* szLine, int iLine)
-	{
-		// Derived class will implement this function to handle
-		// the lines with special processing 
-		// these lines will beging with ;# format
-		// Default behavior is to ignore this line
-		return false;
-	}
+	class iterator;
 public:
-	HASH_DATA *find(const HASH_DATA &pData)
+	iterator find(const HASH_DATA &pData)
 	{
 		if (pElements.empty())
-			return nullptr;
+			return end();
 
 		// get the bucket.
 		size_t hashVal = HashFun<HASH_DATA>()(pData);
@@ -133,19 +116,19 @@ public:
 		if (slot == UINT_MAX) // check overflow area
 			slot = findSlot(&pData, overflow, hashVal);
 		if (slot == UINT_MAX || pElements[slot].bErased || !pElements[slot].pData)
-			return nullptr;
+			return end();
 #ifdef _TIMING
 		pHashElt->tLastAccess = time(0);
 #endif
-		return pElements[slot].pData;
+		return iterator(pElements.begin()+slot, pElements.end());
 	}
 
-	std::pair<const HASH_DATA *, bool> insert(const HASH_DATA &pData)  // was insert2
+	std::pair<iterator, bool> insert(const HASH_DATA &pData)  // was insert2
 	{
 		return insert(&pData, true);
 	}
 
-	std::pair<const HASH_DATA *, bool> insert(const HASH_DATA *pData)  // was insert2
+	std::pair<iterator, bool> insert(const HASH_DATA *pData)  // was insert2
 	{
 		auto ret = insert(pData, false);
 		if (!ret.second)
@@ -236,32 +219,32 @@ protected:
 	}
 	
 	// return value: first - item in the table, second - inserted
-	std::pair<const HASH_DATA *, bool> insert(const HASH_DATA *pData, bool bStackObj)  // was insert3
+	std::pair<iterator, bool> insert(const HASH_DATA *pData, bool bStackObj)  // was insert3
 	{
 		if (pData == nullptr)
-			return{ nullptr, false };
+			return{ end(), false };
 
 		size_t iDepth = 1;
-		auto hash = HashFun<HASH_DATA>()(*pData);
-		size_t home = hash % buckets * bucket_size;
-		size_t slot = findSlot(pData, home, hash);
+		auto hashVal = HashFun<HASH_DATA>()(*pData);
+		size_t home = hashVal % buckets * bucket_size;
+		size_t slot = findSlot(pData, home, hashVal);
 		if (slot == UINT_MAX) { // bucket is full, look for overflow area
-			slot = findSlot(pData, overflow, hash);
+			slot = findSlot(pData, overflow, hashVal);
 			iDepth = bucket_size;
 		} 
 		else
 			iDepth = slot - home;
 		if (slot == UINT_MAX)
-			return{ nullptr, false };
+			return{ end(), false };
 		if (slot!=home)
 			iCollisions++;
-		pElements[slot].hash = hash;
+		pElements[slot].hash = hashVal;
 		if (!pElements[slot].pData) {  // create new Item
 			if (bStackObj) {
 				pElements[slot].pData = new HASH_DATA(*pData);
 				if (pElements[slot].pData == nullptr) {
 					iInsertErrors++;
-					return{ nullptr, false };
+					return{ end(), false };
 				}
 			}
 			else {
@@ -279,8 +262,7 @@ protected:
 			if (iDepth < sizeof(iCounts) / sizeof(uint32_t))
 				iCounts[iDepth]++;
 
-			// Fill in data
-			return{ pData, true };
+			return{ { pElements.begin() + slot, pElements.end()}, true };
 		}
 		else if (pElements[slot].bErased) {
 			iEntries++;
@@ -293,7 +275,7 @@ protected:
 		pElements[slot].tLastAccess = time(0);
 		pElements[slot].tInsert = pElements[slot].tLastAccess;
 #endif
-		return{ pElements[slot].pData, false };
+		return{ { pElements.begin() + slot, pElements.end() }, false };
 	}
 	/*
 	void traceHashCollision(UINT iMaxDepth, UINT *iCounts, UINT iEntries)
@@ -324,4 +306,36 @@ protected:
 			szAvg
 		);
 	}*/
+public:
+	class iterator : public std::iterator<std::forward_iterator_tag, HASH_DATA> {
+		using v_iter = typename std::vector<HASH_ELEMENT>::iterator;
+		v_iter first;
+		v_iter last;
+		inline void next() {
+			while (first != last) {
+				if (first->pData && !first->bErased)
+					break;
+				++first;
+			}
+		}
+	public:
+		iterator(v_iter begin, v_iter end, bool search=false):first(begin),last(end) {
+			if (search)
+				next();
+		}
+		iterator(v_iter end) :first(end), last(end) {	}
+		friend bool operator==(const iterator& it1, const iterator&it2) {
+			return it1.first == it2.first;
+		}
+		friend bool operator!=(const iterator& it1, const iterator&it2) {
+			return it1.first != it2.first;
+		}
+		iterator& operator++() { ++first; next();  return (*this); }  // prefix
+		iterator operator++(int) { auto temp(*this); ++first; next();  return temp; }  // postfix
+		HASH_DATA& operator*() { return *first->pData; }
+		const HASH_DATA& operator*() const { return *first->pData; }
+		HASH_DATA* operator->() const { return first->pData; }
+	};
+	iterator begin() noexcept { return iterator(pElements.begin(), pElements.end(), true); }
+	iterator end() noexcept { return iterator(pElements.end()); }
 };
