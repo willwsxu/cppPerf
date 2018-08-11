@@ -13,5 +13,7 @@ TEST_CASE("Hash table Mock Test", "[MOCK]")
 {
 	HashTableMock t(10);
 	t.insert("test");
+	string *t2 = new string{ "test2" };
+	t.insert(t2);
 	t.find("test");
 }

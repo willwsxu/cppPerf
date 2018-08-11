@@ -144,15 +144,15 @@ public:
 	{
 		return insert(&pData, true);
 	}
-	/*
-	std::pair<HASH_DATA *, bool> insert(const HASH_DATA *pData)  // was insert2
+
+	std::pair<const HASH_DATA *, bool> insert(const HASH_DATA *pData)  // was insert2
 	{
 		auto ret = insert(pData, false);
 		if (!ret.second)
 			delete pData;
 		return ret;
 	}
-
+	/*
 	bool erase(HASH_DATA *pData)
 	{
 		if (!pElements || !pData || !iSize)
