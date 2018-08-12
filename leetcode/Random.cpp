@@ -66,14 +66,14 @@ TEST_CASE("398. Random Pick Index", "[NEW]")
 
 #include "ListNode.h"
 // 382. Linked List Random Node
-class Solution {  // beat 73%
+class RandomNode {  // beat 73%
 	ListNode *head_;
 	std::random_device rd;  // same idea as ReservoirSampling
 	std::mt19937 g;
 public:
 	/** @param head The linked list's head.
 	Note that the head is guaranteed to be not null, so it contains at least one node. */
-	Solution(ListNode* head):head_(head), g(rd()){	}
+	RandomNode(ListNode* head):head_(head), g(rd()){	}
 
 	/** Returns a random node's value. */
 	int getRandom() {
@@ -85,6 +85,26 @@ public:
 				ret = cur->val;
 			cur = cur->next;
 		}
+		return ret;
+	}
+};
+
+class Random
+{
+	std::random_device rd;
+	std::mt19937 g;
+public:
+	Random() :g(rd()) {}
+
+	int rand7() {  // my own impl of rand7, for testing
+		return uniform_int_distribution<>(1, 7)(g); 
+	}
+	// 470. Implement Rand10() Using Rand7()
+	int rand10() { // borrowed idea
+		int ret;
+		do {
+			ret = 7*(rand7()-1) + rand7();  // generate rand 1 to 49
+		} while (ret > 10);  // only pick first 10
 		return ret;
 	}
 };
