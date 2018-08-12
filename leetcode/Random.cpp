@@ -108,3 +108,24 @@ public:
 		return ret;
 	}
 };
+
+class WeightedPick
+{
+	// 528. Random Pick with Weight
+	// 1 <= w.length <= 10000,1 <= w[i] <= 10^5, pickIndex will be called at most 10000 times.
+	vector<int> weighted;
+	std::random_device rd;
+	std::mt19937 g;
+	unique_ptr<uniform_int_distribution<>> dis;
+public:
+	WeightedPick(vector<int> w): weighted(w), g(rd()){
+		for (int i = 1; i < w.size(); i++)
+			weighted[i] += weighted[i - 1];  // prefix sum
+		dis = make_unique<uniform_int_distribution<>>(1, weighted[weighted.size() - 1]);
+	}
+
+	int pickIndex() {
+		auto x=lower_bound(begin(weighted), end(weighted), (*(dis.get()))(g));
+		return distance(begin(weighted), x);
+	}
+};
