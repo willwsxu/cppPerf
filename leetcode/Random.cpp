@@ -28,3 +28,38 @@ public:
 	}
 };
 
+
+// 398. Random Pick Index
+class ReservoirSampling {  // beat 48%
+	vector<int> reserve;
+	std::random_device rd;  // slow, use as seed for mt19937
+	std::mt19937 g;
+public:
+	ReservoirSampling(vector<int> nums) : reserve(nums), g(rd()) {	}
+
+	// first target, pick 100%
+	// second target, give 50% chance to be picked. 50% chance of first two is picked
+	// 3rd target, 1/3 pick, 2/3 not picked. 1/3 chance any last three is picked
+	int pick(int target) {
+		int ret = -1;
+		int count = 0;  // count of target
+		for (size_t i = 0; i < reserve.size(); i++) {
+			if (reserve[i] == target) {
+				auto x = uniform_int_distribution<>(0, count++)(g);
+				if (x == 0) // new number is picked 1/count chances
+					ret = i;
+			}
+		}
+		return ret;
+	}
+};
+
+
+TEST_CASE("398. Random Pick Index", "[NEW]")
+{
+	ReservoirSampling rs(vector<int>{1});
+	CHECK(rs.pick(1) == 0);
+	CHECK(rs.pick(1) == 0);
+	CHECK(rs.pick(1) == 0);
+	CHECK(rs.pick(1) == 0);
+}
