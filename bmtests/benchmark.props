@@ -11,6 +11,7 @@
     <Link>
       <AdditionalDependencies>benchmark.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\\..\\..\\build\\src\\debug</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
