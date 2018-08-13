@@ -6,9 +6,11 @@
 #include <iostream>
 #include <sstream>
 
-#include "string_util.h"
+#include "library/string_util.h"
 
 using namespace std;
+
+BENCHMARK_MAIN();
 
 static const int MAX_SIZE = (8 << 10)+100;
 char cstr[MAX_SIZE];
