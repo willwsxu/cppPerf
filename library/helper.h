@@ -37,3 +37,8 @@ inline int countDecDigit(int n) {
 	}
 	return c;
 }
+inline void prefix_sum(std::vector<int>& prefix)
+{
+	for (int i = 1; i < prefix.size(); i++)
+		prefix[i] += prefix[i - 1];  // prefix sum
+}

@@ -119,8 +119,7 @@ class WeightedPick
 	unique_ptr<uniform_int_distribution<>> dis;
 public:
 	WeightedPick(vector<int> w): weighted(w), g(rd()){
-		for (int i = 1; i < w.size(); i++)
-			weighted[i] += weighted[i - 1];  // prefix sum
+		prefix_sum(weighted);
 		dis = make_unique<uniform_int_distribution<>>(1, weighted[weighted.size() - 1]);
 	}
 
@@ -129,3 +128,39 @@ public:
 		return distance(begin(weighted), x);
 	}
 };
+
+int Points(const vector<int>& rect) {  // total valid points inside a rectangle, include sides
+	return (rect[2] - rect[0]+1)*(rect[3] - rect[1]+1);
+}
+// 497. Random Point in Non-overlapping Rectangles
+class RectanglesPick {
+	vector<vector<int>> rects_;
+	vector<int> areas;
+	std::random_device rd;
+	std::mt19937 g;
+	unique_ptr<uniform_int_distribution<>> dis;
+public:
+	RectanglesPick(vector<vector<int>> rects):rects_(rects), g(rd()) {  // rect(x1,y1,x2,y2), bottom left, top right
+		transform(begin(rects), end(rects), back_inserter(areas), [](const auto& rect) {
+			return Points(rect);
+		});
+		prefix_sum(areas);
+		dis = make_unique<uniform_int_distribution<>>(1, areas[areas.size() - 1]);
+	}
+
+	vector<int> pick() { // two picks, beat 58%
+		auto x = lower_bound(begin(areas), end(areas), (*(dis.get()))(g));  // pick rect first proportional to its points
+		size_t idx = distance(begin(areas), x);
+		int A = Points(rects_[idx]);
+		uniform_int_distribution<> rect_pick(0, A-1); // uniformly chose any point in a chosen rect
+		int p = rect_pick(g); // second pick
+		int width = rects_[idx][2] - rects_[idx][0]+1;  // points horizontally, add 1
+		return{ rects_[idx][0] + p%width, rects_[idx][1] + p / width };
+	}
+};
+
+TEST_CASE("497. Random Point in Non-overlapping Rectangles", "[NEW]")
+{
+	RectanglesPick rects({ {-2,-2,-1,-1},{1,0,3,0} });
+	auto x=rects.pick();
+}
