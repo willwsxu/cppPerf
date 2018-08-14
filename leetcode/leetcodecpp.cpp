@@ -35,28 +35,6 @@ int findMaxForm(vector<string>& strs, int m, int n) {
 }
 
 
-std::unique_ptr<int[]> dp;
-int combinationSum4Dp(vector<int>& nums, int target) {
-	if (dp[target] >= 0)
-		return dp[target];
-	int total = 0;
-	for (auto val : nums) {
-		if (target >= val)
-			total += combinationSum4Dp(nums, target - val);
-	}
-	dp[target] = total;
-	return total;
-}
-
-int combinationSum4(vector<int>& nums, int target) {
-	dp = make_unique<int[]>(target + 1);
-	std::fill(dp.get(), dp.get() + target + 1, -1);
-	//for (int i=0; i<=target; i++)
-	//    dp[i]=-1;
-	dp[0] = 1;
-	return combinationSum4Dp(nums, target);
-}
-
 class TrianglePath //120. Triangle
 {
 	int minimumTotal(vector<vector<int>>& triangle, int level, int pos, vector<vector<int>>& memo) {
@@ -84,64 +62,6 @@ public:
 		printf("%d", minimumTotal(triangle));
 	}
 };
-
-// 416. Partition Equal Subset Sum
-bool canPartition(vector<int>& nums) {
-	int sum = 0;
-	for (int n : nums)
-		sum += n;
-	if ((sum & 1) > 0)  // odd sum
-		return false;
-	sum /= 2;
-	vector<bool> dp(sum + 1, false);
-	dp[0] = true;
-	for (int n : nums) {
-		if (sum >= n) {
-			dp[sum] = dp[sum] || dp[sum - n];
-			if (dp[sum])
-				return true;
-		}
-		for (int j = sum - 1; j > 0; j--) {
-			if (j >= n)
-				dp[j] = dp[j] || dp[j - n];
-		}
-	}
-	return dp[sum];
-}
-
-
-int findPaths(int m, int n, int N, int i, int j) {
-	vector < vector<vector<int>>> dp3(2, vector<vector<int>>(m, vector<int>(n, 0)));
-	const int MOD = 1000000007;
-	int prev = 0;
-	int current = 0;
-	for (int x = 1; x <= N; x++)
-	{
-		current = 1 - prev;
-		for (int r = 0; r < m; r++)
-		{
-			for (int c = 0; c < n; c++)
-			{
-				dp3[current][r][c] = (r == 0 ? 1 : dp3[prev][r - 1][c]) % MOD;  // up !ERROR don't use i-- etc
-				dp3[current][r][c] += r == m - 1 ? 1 : dp3[prev][r + 1][c];  // down
-				dp3[current][r][c] %= MOD;
-				dp3[current][r][c] += c == 0 ? 1 : dp3[prev][r][c - 1];  // left
-				dp3[current][r][c] %= MOD;
-				dp3[current][r][c] += c == n - 1 ? 1 : dp3[prev][r][c + 1];  // left
-				dp3[current][r][c] %= MOD;
-			}
-		}
-		prev = current; // swap
-	}
-	return dp3[current][i][j];
-}
-
-void testEqualSumPartition()
-{
-	std::cout << canPartition(vector<int>{}) << endl;
-	std::cout << canPartition(vector<int>{1, 5, 11, 5}) << endl;  // true
-	std::cout << canPartition(vector<int>{1, 2, 3, 5}) << endl;   // false
-}
 
 // support negative num[i], even though current requirement is 
 // 1 <= k <= len(nums) <= 16.
@@ -211,35 +131,6 @@ void testKey2()
 	std::cout << (minSteps(8) == 6) << endl;
 	std::cout << (minSteps(9) == 6) << endl;
 	std::cout << (minSteps(12) == 7) << endl;
-}
-
-// prevBuy, last postion of buy, -1 means no
-int maxProfit(vector<int>& prices, int pos, int prevBuy, vector<vector<int>>& dp) {
-	if (pos >= (int)prices.size()) {
-		return 0;
-	}
-	if (dp[pos][prevBuy + 1] >= 0)
-		return dp[pos][prevBuy + 1];
-	int ans = maxProfit(prices, pos + 1, prevBuy, dp);  // no action
-	if (prevBuy >= 0) {
-		if (prices[pos] > prices[prevBuy])   // sell if there is profit
-			ans = std::max(ans, (prices[pos] - prices[prevBuy]) + maxProfit(prices, pos + 2, -1, dp));
-	}
-	else
-		ans = std::max(ans, maxProfit(prices, pos + 1, pos, dp));  // buy
-	dp[pos][prevBuy + 1] = ans;
-	return ans;
-}
-int maxProfit(vector<int>& prices) {
-	int n = prices.size();
-	vector<vector<int>> dp(n, vector<int>(n + 1, -1));
-	return maxProfit(prices, 0, -1, dp);
-}
-
-void testStockBuySell()
-{
-	std::cout << (maxProfit(vector<int> { 1, 2, 3, 0, 2 }) == 3) << endl;
-	std::cout << (maxProfit(vector<int> { 2, 1}) == 0) << endl;
 }
 
 class DirectGraph {
@@ -2104,7 +1995,7 @@ public:
 		int count[26] = { 0 };
 		if (s.size() != t.size())
 			return false;
-		for (int i = 0; i < s.size(); i++) {
+		for (size_t i = 0; i < s.size(); i++) {
 			count[s[i] - 'a']++;  // count chars from one string
 			count[t[i] - 'a']--;  // subtract chars from other
 		}
@@ -2121,7 +2012,7 @@ public:
 		string seq = "122";
 		seq.reserve(n);
 		int i = 2; // build new seq from "122", from position 2, must be 2 of some digit
-		while (seq.size() < n) {
+		while ((int)seq.size() < n) {
 			seq.append(seq[i++] - '0', seq.back() ^ 3);//^3 will alternate between 1 and 2
 		}
 		return count(seq.begin(), seq.begin() + n, '1');
