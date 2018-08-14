@@ -144,3 +144,37 @@ TEST_CASE("delete char to make string same", "[DP]")
 	StringDp s;
 	CHECK(s.minDistance("sea", "eat") == 2);
 }
+
+class CoinChange
+{
+	int coinChange(vector<int>& coins, vector<int>& dp, int amount) {// beat 17%
+		if (amount == 0)
+			return 0;
+		int count = INT_MAX / 2;
+		if (amount < 0)
+			return count;
+		if (dp[amount] >= 0)
+			return dp[amount];
+
+		for (int i = 0; i < coins.size(); i++) {
+			count = min(count, 1 + coinChange(coins, dp,  amount - coins[i]));
+		}
+		dp[amount] = count;
+		return count;
+	}
+
+public:
+	// 322. Coin Change, minimal coins
+	int coinChange(vector<int>& coins, int amount) {
+		vector<int> dp(amount + 1, -1);
+		int ans = coinChange(coins, dp, amount);
+		return ans >= INT_MAX / 2 ? -1 : ans;
+	}
+};
+
+
+TEST_CASE("coin change minimal", "[NEW]")
+{
+	CHECK(CoinChange().coinChange(vector<int>{2, 5, 6}, 10) == 2);
+	CHECK(CoinChange().coinChange(vector<int>{5, 6}, 13) == -1);
+}
