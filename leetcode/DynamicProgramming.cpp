@@ -183,6 +183,26 @@ public:
 		}
 		return dp[amount] > amount ? -1: dp[amount];
 	}
+
+	// 518. Coin Change 2, ways to make change
+	int change(int amount, vector<int>& coins) {
+		const int MAX_AMOUNT = amount + 1;
+		vector<int> dp(MAX_AMOUNT, 0);
+		dp[0] = 1;
+		sort(coins.begin(), coins.end(), greater<>());
+		for (int money = 1; money < MAX_AMOUNT; money++) { // find ans from low to high
+			int count = 0;
+			int mid = (money + 1) / 2;
+			for (int c : coins) { // for each coin, compute count using previous dp
+				if (c == money) {
+					count += dp[money - c];
+				} else if (money - c >= mid)
+					count += dp[money - c] * dp[c];
+			}
+			dp[money] = count;
+		}
+		return dp[amount];
+	}
 };
 
 
@@ -192,4 +212,11 @@ TEST_CASE("coin change minimal", "[NEW]")
 	CHECK(CoinChange().coinChange(vector<int>{5, 6}, 13) == -1);
 	CHECK(CoinChange().coinChange2(vector<int>{2, 5, 6}, 10) == 2);
 	CHECK(CoinChange().coinChange2(vector<int>{5, 6}, 13) == -1);
+}
+
+TEST_CASE("ways to make coin change", "[NEW]")
+{
+	CHECK(CoinChange().change(5, vector<int>{1,2, 5}) == 4);
+	CHECK(CoinChange().change(10, vector<int>{2, 5, 6}) == 3);
+	CHECK(CoinChange().change(13, vector<int>{5, 6}) == 0);
 }
