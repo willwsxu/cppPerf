@@ -156,9 +156,8 @@ class CoinChange
 		if (dp[amount] >= 0)
 			return dp[amount];
 
-		for (size_t i = 0; i < coins.size(); i++) {
-			count = min(count, 1 + coinChange(coins, dp,  amount - coins[i]));
-		}
+		for (int c : coins)
+			count = min(count, 1 + coinChange(coins, dp,  amount - c));
 		dp[amount] = count;
 		return count;
 	}
@@ -170,18 +169,19 @@ public:
 		int ans = coinChange(coins, dp, amount);
 		return ans >= INT_MAX / 2 ? -1 : ans;
 	}
-	int coinChange2(vector<int>& coins, int amount) {
-		vector<int> dp(amount + 1, 0);
+	int coinChange2(vector<int>& coins, int amount) {// iteerative dp, beat 89%
+		const int MAX_AMOUNT = amount + 1;
+		vector<int> dp(MAX_AMOUNT, 0);
 		sort(coins.begin(), coins.end(), greater<>());
-		for (int money = 1; money <= amount; money++) { // find best ans from low to high
-			int count = INT_MAX - 1;
+		for (int money = 1; money < MAX_AMOUNT; money++) { // find best ans from low to high
+			int count = MAX_AMOUNT;
 			for (int c : coins) { // for each coin, compute count using previous dp
 				if (c <= money)
 					count = min(count, 1 + dp[money - c]);
 			}
 			dp[money] = count;
 		}
-		return dp[amount] >= INT_MAX - 1 ? -1: dp[amount];
+		return dp[amount] > amount ? -1: dp[amount];
 	}
 };
 
