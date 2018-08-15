@@ -315,3 +315,46 @@ TEST_CASE("remove erase idiom with predicate", "[NEW]")
 	erase_remove_if(s, even);
 	CHECK(s == set<int>{1, 3, 5});
 }
+
+
+class Base1
+{
+public:
+	int mf1()
+	{
+		return 1;
+	}
+};
+
+class Base2
+{
+public:
+	int mf2()
+	{
+		return 2;
+	}
+};
+
+class Derived : public Base1, public Base2
+{
+public:
+	int mf3()
+	{
+		return 3;
+	}
+};
+
+
+int test(Derived& obj, int (Derived::*mf)())
+{
+	return (obj.*mf)();
+}
+
+TEST_CASE("member fun test", "[MFUN]")
+{
+	Derived obj;
+	CHECK(test(obj, &Derived::mf1) == 1);
+	CHECK(test(obj, &Derived::mf2) == 2);
+	CHECK(test(obj, &Derived::mf3) == 3);
+	CHECK(test(obj, &Base2::mf2) == 2);
+}
