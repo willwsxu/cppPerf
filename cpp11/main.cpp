@@ -319,6 +319,8 @@ TEST_CASE("remove erase idiom with predicate", "[NEW]")
 
 class Base1
 {
+private:
+	int b1=0;
 public:
 	int mf1()
 	{
@@ -328,6 +330,8 @@ public:
 
 class Base2
 {
+private:
+	int b2 = 0;
 public:
 	int mf2()
 	{
@@ -335,8 +339,10 @@ public:
 	}
 };
 
-class Derived : public Base1, public Base2
+class MultiInheritance : public Base1, public Base2
 {
+private:
+	int d = 0;
 public:
 	int mf3()
 	{
@@ -345,16 +351,35 @@ public:
 };
 
 
-int test(Derived& obj, int (Derived::*mf)())
+int test(MultiInheritance& obj, int (MultiInheritance::*mf)())
 {
+	printf("derived %p\n", mf);
 	return (obj.*mf)();
 }
 
-TEST_CASE("member fun test", "[MFUN]")
+int test2(Base2& obj, int (Base2::*mf)())
 {
-	Derived obj;
-	CHECK(test(obj, &Derived::mf1) == 1);
-	CHECK(test(obj, &Derived::mf2) == 2);
-	CHECK(test(obj, &Derived::mf3) == 3);
+	printf("Base2 %p\n", mf);
+	return (obj.*mf)();
+}
+
+TEST_CASE("member fun test multi inheritance pointer offset", "[NEW]")
+{
+	MultiInheritance obj;
+	Base1*pB1 = &obj;
+	Base2*pB2=&obj;    // pB1 address +4
+	MultiInheritance*pD = &obj; // same as pB1 address
+	CHECK((Base1*)pB2 - pB1 == 1);
+	CHECK((Base1*)pD - pB1 == 0);
+
+	// pmf_b==pmf_a, c++ template complete guide ed 1 state adjust is different, but no longer in vs2015 compiler
+	int (MultiInheritance::*pmf_a)() = &MultiInheritance::mf2; // adjustment of +4 recorded
+	int (Base2::*pmf_b)() = (int (Base2::*)())pmf_a; // adjustment changed to 0
+
+	CHECK(test(obj, &MultiInheritance::mf1) == 1);
+	CHECK(test(obj, &MultiInheritance::mf2) == 2);
+	CHECK(test(obj, &MultiInheritance::mf3) == 3);
 	CHECK(test(obj, &Base2::mf2) == 2);
+
+	CHECK(test2(obj, &MultiInheritance::mf2) == 2);
 }
