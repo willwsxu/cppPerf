@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bm_pass_arguments", "bmtest
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bm_string_build", "bmtests\bm_string_build\bm_string_build.vcxproj", "{DB8E1192-80DE-4B6C-BA92-D9DCAB3C6DE6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bm_performance_general", "bmtests\bm_performance_general\bm_performance_general.vcxproj", "{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{DB8E1192-80DE-4B6C-BA92-D9DCAB3C6DE6}.Release|x64.Build.0 = Release|x64
 		{DB8E1192-80DE-4B6C-BA92-D9DCAB3C6DE6}.Release|x86.ActiveCfg = Release|Win32
 		{DB8E1192-80DE-4B6C-BA92-D9DCAB3C6DE6}.Release|x86.Build.0 = Release|Win32
+		{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}.Debug|x64.ActiveCfg = Debug|x64
+		{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}.Debug|x64.Build.0 = Debug|x64
+		{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}.Debug|x86.ActiveCfg = Debug|Win32
+		{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}.Debug|x86.Build.0 = Debug|Win32
+		{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}.Release|x64.ActiveCfg = Release|x64
+		{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}.Release|x64.Build.0 = Release|x64
+		{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}.Release|x86.ActiveCfg = Release|Win32
+		{36CE6EFE-A4BE-46A3-B629-381BF13FE9B8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

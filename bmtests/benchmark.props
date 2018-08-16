@@ -14,5 +14,15 @@
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup  Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> 
+    <Link>
+      <AdditionalLibraryDirectories>..\\..\\..\\build\\src\\debug</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup  Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> 
+    <Link>
+      <AdditionalLibraryDirectories>..\\..\\..\\build\\src\\Release</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
