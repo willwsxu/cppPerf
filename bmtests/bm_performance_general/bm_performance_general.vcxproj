@@ -115,6 +115,7 @@
     <ClCompile Include="..\perfExample.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="pass_pointer.h" />
     <ClInclude Include="pre_post_increment.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

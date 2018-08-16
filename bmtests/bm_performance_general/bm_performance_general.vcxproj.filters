@@ -23,5 +23,8 @@
     <ClInclude Include="pre_post_increment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="pass_pointer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

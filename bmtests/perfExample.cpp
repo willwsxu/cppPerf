@@ -8,7 +8,25 @@ BENCHMARK_MAIN();
 
 using namespace std;
 
-#include "bm_performance_general\pre_post_increment.h"
+class Base
+{
+	string _s;
+public:
+	Base(string s) : _s(s) { /*std::cout << "ctor" << endl;*/ }
+	Base(const Base& copy) :_s(copy._s) { /*std::cout << "copy ctor" << endl;*/ }
+	Base(Base&& copy) :_s(move(copy._s)) {/*std::cout << "move ctor" << endl;*/ }
+	virtual ~Base() {};
+	virtual void do_a_thing() {};
+};
+
+struct Derived : public Base
+{
+	Derived(string s) :Base(s) {}
+	virtual void do_a_thing() override {}
+};
+
+//#include "bm_performance_general\pre_post_increment.h"
+#include "bm_performance_general\pass_pointer.h"
 
 static void BM_int_div(benchmark::State& state) {
 	for (auto _ : state)
@@ -55,22 +73,6 @@ there are no user-declared copy assignment operators;
 there are no user-declared move assignment operators;
 there are no user-declared destructors;
 */
-class Base
-{
-	string _s;
-public:
-	Base(string s) : _s(s) { /*std::cout << "ctor" << endl;*/ }
-	Base(const Base& copy) :_s(copy._s) { /*std::cout << "copy ctor" << endl;*/ }
-	Base(Base&& copy) :_s(move(copy._s)) {/*std::cout << "move ctor" << endl;*/ }
-	virtual ~Base() {};
-	virtual void do_a_thing() {};
-};
-
-struct Derived : public Base
-{
-	Derived(string s) :Base(s) {}
-	virtual void do_a_thing() override {}
-};
 
 // rule 0, don't disable move constructor by accident
 struct Derived2 : public Base
@@ -196,55 +198,6 @@ BENCHMARK(BM_initializer_construction_append); // 49ns
 BENCHMARK(BM_initializer_construction_append_no_move); //55ns
 BENCHMARK(BM_initializer_construction);// 68ns, extra malloc
 
-//don't pass shared_ptr if no ownership is involved
-static void BM_pass_shared_ptr_ref(benchmark::State& state) {
-	auto d = make_shared<Derived>("test");
-	auto bad = [](const shared_ptr<Base>&b) {};
-	for (auto _ : state) 
-	{
-		bad(d);
-	}
-}
-
-static void BM_pass_shared_ptr_copy(benchmark::State& state) {
-	auto d = make_shared<Derived>("test");
-	auto bad = [](const shared_ptr<Base>b) {};
-	for (auto _ : state)
-	{
-		bad(d);
-	}
-}
-static void BM_pass_unique_ptr(benchmark::State& state) {
-	auto d = make_unique<Derived>("test");
-	auto good = [](const unique_ptr<Base>b) {};
-	for (auto _ : state)
-	{
-		good(move(d));
-	}
-}
-static void BM_pass_raw_reference(benchmark::State& state) {
-	auto d = make_shared<Derived>("test");
-	auto good = [](const Base&b) {};
-	for (auto _ : state)
-	{
-		good(*d.get());
-	}
-}
-static void BM_pass_raw_pointer(benchmark::State& state) {
-	auto d = make_shared<Derived>("test");
-	auto good = [](const Base*b) {};
-	for (auto _ : state)
-	{
-		good(d.get());
-	}
-}
-/*
-BENCHMARK(BM_pass_shared_ptr_copy); // 15ns
-BENCHMARK(BM_pass_shared_ptr_ref);  // 15ns
-BENCHMARK(BM_pass_unique_ptr);		// 1ns
-BENCHMARK(BM_pass_raw_reference);   // 1ns
-BENCHMARK(BM_pass_raw_pointer);   // 1ns
-*/
 // endl slow down io due to flush
 static void BM_endl(benchmark::State& state) {
 	for (auto _ : state)
