@@ -201,10 +201,22 @@ public:
 		dp[amount][coin] = count;
 		return count;
 	}
-	int change(int amount, vector<int>& coins) { // beat 13%
+	int change(int amount, vector<int>& coins) { // dp with backtracking, beat 13%
 		sort(coins.begin(), coins.end());
 		vector<vector<int>> dp(amount + 1, vector<int>(coins.size(), -1));
 		return change(amount, coins, 0, dp);
+	}
+
+	int change2(int amount, vector<int>& coins) { // iterative borrowed idea! beat 64%
+		const int MAX_AMOUNT = amount + 1;
+		vector<int> dp(MAX_AMOUNT, 0);
+		dp[0] = 1;
+		for (int c : coins) { // for each coin, compute count using previous dp
+			for (int money = c; money < MAX_AMOUNT; money++) { //from low to high
+				dp[money] += dp[money - c];
+			}
+		}
+		return dp[amount];
 	}
 };
 
@@ -219,10 +231,10 @@ TEST_CASE("coin change minimal", "[COIN]")
 
 TEST_CASE("ways to make coin change", "[NEW]")
 {
-	CHECK(CoinChange().change(0, vector<int>{}) == 1);
-	CHECK(CoinChange().change(5, vector<int>{}) == 0);
-	CHECK(CoinChange().change(5, vector<int>{1,2, 5}) == 4);
-	CHECK(CoinChange().change(10, vector<int>{2, 5, 6}) == 3);
-	CHECK(CoinChange().change(13, vector<int>{5, 6}) == 0);
-	CHECK(CoinChange().change(10, vector<int>{10}) == 1);
+	CHECK(CoinChange().change2(0, vector<int>{}) == 1);
+	CHECK(CoinChange().change2(5, vector<int>{}) == 0);
+	CHECK(CoinChange().change2(5, vector<int>{1,2, 5}) == 4);
+	CHECK(CoinChange().change2(10, vector<int>{2, 5, 6}) == 3);
+	CHECK(CoinChange().change2(13, vector<int>{5, 6}) == 0);
+	CHECK(CoinChange().change2(10, vector<int>{10}) == 1);
 }
