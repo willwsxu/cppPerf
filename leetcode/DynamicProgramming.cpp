@@ -169,7 +169,7 @@ public:
 		int ans = coinChange(coins, dp, amount);
 		return ans >= INT_MAX / 2 ? -1 : ans;
 	}
-	int coinChange2(vector<int>& coins, int amount) {// iteerative dp, beat 89%
+	int coinChange2(vector<int>& coins, int amount) {// iterative dp, beat 89%
 		const int MAX_AMOUNT = amount + 1;
 		vector<int> dp(MAX_AMOUNT, 0);
 		sort(coins.begin(), coins.end(), greater<>());
@@ -188,24 +188,21 @@ public:
 	int change(int amount, vector<int>& coins, int coin, vector<vector<int>>& dp) {
 		if (amount == 0)
 			return 1;
-		if (amount < 0 || coin==coins.size())
-			return INT_MIN;
+		if (coin==coins.size())
+			return 0;
 		if (dp[amount][coin] >= 0)
 			return dp[amount][coin];
 		int count = 0;
-		for (int c = coin; c < coins.size(); c++) { // for each coin, compute count using previous dp
-			int cnt = change(amount - coins[c], coins, c, dp);
-			if (cnt != INT_MIN)
-				count += cnt;
+		for (int c = coin; c < coins.size(); c++) { // recursively give change of coins, forward only
+			if (amount < coins[c])  // coins are sorted so no need to try bigger ones
+				break;
+			count += change(amount - coins[c], coins, c, dp);
 		}
 		dp[amount][coin] = count;
 		return count;
 	}
-	int change(int amount, vector<int>& coins) {
-		if (amount == 0)  // special case
-			return 1;
-		if (coins.empty())
-			return 0;
+	int change(int amount, vector<int>& coins) { // beat 13%
+		sort(coins.begin(), coins.end());
 		vector<vector<int>> dp(amount + 1, vector<int>(coins.size(), -1));
 		return change(amount, coins, 0, dp);
 	}
