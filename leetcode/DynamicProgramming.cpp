@@ -185,28 +185,34 @@ public:
 	}
 
 	// 518. Coin Change 2, ways to make change
-	int change(int amount, vector<int>& coins) {
-		const int MAX_AMOUNT = amount + 1;
-		vector<int> dp(MAX_AMOUNT, 0);
-		dp[0] = 1;
-		sort(coins.begin(), coins.end(), greater<>());
-		for (int money = 1; money < MAX_AMOUNT; money++) { // find ans from low to high
-			int count = 0;
-			int mid = (money + 1) / 2;
-			for (int c : coins) { // for each coin, compute count using previous dp
-				if (c == money) {
-					count += dp[money - c];
-				} else if (money - c >= mid)
-					count += dp[money - c] * dp[c];
-			}
-			dp[money] = count;
+	int change(int amount, vector<int>& coins, int coin, vector<vector<int>>& dp) {
+		if (amount == 0)
+			return 1;
+		if (amount < 0 || coin==coins.size())
+			return INT_MIN;
+		if (dp[amount][coin] >= 0)
+			return dp[amount][coin];
+		int count = 0;
+		for (int c = coin; c < coins.size(); c++) { // for each coin, compute count using previous dp
+			int cnt = change(amount - coins[c], coins, c, dp);
+			if (cnt != INT_MIN)
+				count += cnt;
 		}
-		return dp[amount];
+		dp[amount][coin] = count;
+		return count;
+	}
+	int change(int amount, vector<int>& coins) {
+		if (amount == 0)  // special case
+			return 1;
+		if (coins.empty())
+			return 0;
+		vector<vector<int>> dp(amount + 1, vector<int>(coins.size(), -1));
+		return change(amount, coins, 0, dp);
 	}
 };
 
 
-TEST_CASE("coin change minimal", "[NEW]")
+TEST_CASE("coin change minimal", "[COIN]")
 {
 	CHECK(CoinChange().coinChange(vector<int>{2, 5, 6}, 10) == 2);
 	CHECK(CoinChange().coinChange(vector<int>{5, 6}, 13) == -1);
@@ -216,7 +222,10 @@ TEST_CASE("coin change minimal", "[NEW]")
 
 TEST_CASE("ways to make coin change", "[NEW]")
 {
+	CHECK(CoinChange().change(0, vector<int>{}) == 1);
+	CHECK(CoinChange().change(5, vector<int>{}) == 0);
 	CHECK(CoinChange().change(5, vector<int>{1,2, 5}) == 4);
 	CHECK(CoinChange().change(10, vector<int>{2, 5, 6}) == 3);
 	CHECK(CoinChange().change(13, vector<int>{5, 6}) == 0);
+	CHECK(CoinChange().change(10, vector<int>{10}) == 1);
 }
