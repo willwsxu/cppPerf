@@ -164,3 +164,55 @@ TEST_CASE("497. Random Point in Non-overlapping Rectangles", "[NEW]")
 	RectanglesPick rects({ {-2,-2,-1,-1},{1,0,3,0} });
 	auto x=rects.pick();
 }
+
+// 519. Random Flip Matrix, initially all cells are 0
+class FlipMatrix {
+	int rows, cols;
+	int total;			// # of 0 in matrix
+	vector<int> matrix; // flattened matrix
+	std::random_device rd;
+	std::mt19937 g;
+public:
+	FlipMatrix(int n_rows, int n_cols): rows(n_rows), cols(n_cols),g(rd()) {
+		total = rows*cols;
+		//int i = 0;
+		matrix.resize(total);
+		//generate_n(back_inserter(matrix), total, [&i]() {return i++; });
+		for (int i = 0; i < total; i++)
+			matrix[i] = i;
+	}
+
+	// uniformly flip any cell of 0 to 1, assume flip is not called unless there is 0
+	vector<int> flip() { // Fisher–Yates shuffle
+		auto r = uniform_int_distribution<>(0, --total)(g);  // random position of matrix with values 0
+		swap(matrix[r], matrix[total]);
+		return{ matrix[total] / cols, matrix[total] %cols };
+	}
+
+	void reset() {
+		total = rows*cols;
+	}
+};
+
+TEST_CASE("519. Random Flip Matrix", "[NEW]")
+{
+	FlipMatrix matrix(2, 2);
+	vector<int> ans;
+	for (int i = 0; i < 4; i++) {
+		auto a1 = matrix.flip();
+		ans.push_back(a1[0] * 2 + a1[1]);
+	}
+	sort(ans.begin(), ans.end());
+	CHECK(ans == vector<int>{0,1,2,3});
+	matrix.reset();
+	ans.clear();
+	for (int i = 0; i < 4; i++) {
+		auto a1 = matrix.flip();
+		ans.push_back(a1[0] * 2 + a1[1]);
+	}
+	sort(ans.begin(), ans.end());
+	CHECK(ans == vector<int>{0, 1, 2, 3});
+
+	FlipMatrix large(10000, 10000);
+	large.flip();
+}
