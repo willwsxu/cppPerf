@@ -54,6 +54,16 @@ OutputIt transform_if(InputIt first1, InputIt last1, OutputIt d_first, UnaryOp u
 	return d_first;
 }
 
+// get map value or return default if key does not exist
+template<typename Map, typename Key, typename Value>
+Value map_get_or_default(const Map& m, Key k, Value deft)
+{
+	auto found = m.find(k);
+	if (found == m.end())
+		return deft;
+	return found->second;
+}
+
 // hash function independent of element order
 // unique_hash
 

@@ -165,19 +165,12 @@ TEST_CASE("497. Random Point in Non-overlapping Rectangles", "[NEW]")
 	auto x=rects.pick();
 }
 
-template<typename Map, typename Key, typename Value>
-Value map_get_default(const Map& m, Key k, Value deft)
-{
-	auto found = m.find(k);
-	if (found == m.end())
-		return deft;
-	return found->second;
-}
+
 // 519. Random Flip Matrix, initially all cells are 0
 class FlipMatrix { // beat 100%
 	int rows, cols;
 	int total;			// # of 0 in matrix
-	map<int,int> matrix; // flattened matrix mapping of index to matrix cell
+	map<int,int> matrix; // flattened matrix mapping of index to matrix cell, MLE if use vector
 	std::random_device rd;
 	std::mt19937 g;
 public:
@@ -189,11 +182,11 @@ public:
 	vector<int> flip() { // Fisher–Yates shuffle
 		auto r = uniform_int_distribution<>(0, --total)(g);  // random position of matrix with values 0
 		if (r == total) {  //last value selected
-			r = map_get_default(matrix, r, r); // last value could be mapped to something else
+			r = map_get_or_default(matrix, r, r); // last value could be mapped to something else
 			return { r / cols, r%cols };
 		}
-		int x = map_get_default(matrix, r, r); // look for existing mapping
-		matrix[r]= map_get_default(matrix, total, total); // update random selected cell to last elementas last element will drop out in next call
+		int x = map_get_or_default(matrix, r, r); // look for existing mapping
+		matrix[r]= map_get_or_default(matrix, total, total); // update random selected cell to last elementas last element will drop out in next call
 		return{ x / cols, x%cols };
 	}
 
