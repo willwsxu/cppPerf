@@ -26,5 +26,11 @@
     <ClInclude Include="pass_pointer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="reduandant_construct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="branch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

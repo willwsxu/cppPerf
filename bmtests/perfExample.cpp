@@ -26,7 +26,9 @@ struct Derived : public Base
 };
 
 //#include "bm_performance_general\pre_post_increment.h"
-#include "bm_performance_general\pass_pointer.h"
+//#include "bm_performance_general\pass_pointer.h"
+#include "bm_performance_general\reduandant_construct.h"
+//#include "bm_performance_general\branch.h"
 
 static void BM_int_div(benchmark::State& state) {
 	for (auto _ : state)
@@ -147,57 +149,6 @@ private:
 	//string _s; // don't
 };
 
-struct Str
-{
-	Str(string s) :_s(move(s)) {}
-	//Str(string&& s) :_s(move(s)) {}
-private:
-	string _s;
-};
-
-// use initilizer, use const when possible
-static void BM_redundant_construction(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		string t("test");
-		t += "more";
-		Str s(move(t));
-	}
-}
-static void BM_redundant_construction_append(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		string t("test");
-		t.append("more");
-		Str s(move(t));
-	}
-}
-static void BM_initializer_construction_append(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Str s(move(string("test").append("more")));
-	}
-}
-
-static void BM_initializer_construction(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Str s(move(string("test") + "more")); // + is more costly then +=
-	}
-}
-
-static void BM_initializer_construction_append_no_move(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Str s(string("test").append("more"));
-	}
-}
-BENCHMARK(BM_redundant_construction);  // 51ns
-BENCHMARK(BM_redundant_construction_append);  // 50ns
-BENCHMARK(BM_initializer_construction_append); // 49ns
-BENCHMARK(BM_initializer_construction_append_no_move); //55ns
-BENCHMARK(BM_initializer_construction);// 68ns, extra malloc
-
 // endl slow down io due to flush
 static void BM_endl(benchmark::State& state) {
 	for (auto _ : state)
@@ -248,74 +199,6 @@ static void BM_function(benchmark::State& state) {
 BENCHMARK(BM_lambda); // 76ns
 BENCHMARK(BM_bind);   // 106ns
 BENCHMARK(BM_function);//118ns
-*/
-int good(int err) {
-	if (!err) {
-		// do stuff
-		return 0;
-	}
-	else {
-		if (err == 1)		return -1;
-		else if (err == 2)	return -2;
-		else if (err == 3)	return -3;
-		else return 1;
-	}
-};
-
-int bad(int err) {
-	if (err == 1) {
-		return -1;
-	}
-	else if (err == 2) {
-		return -2;
-	}
-	else if (err == 3) {
-		return -3;
-	}
-	else if (err == 0) {
-		// do stuff
-		return 0;
-	}
-	else
-		return 1;
-};
-// less branches, test 0
-static void BM_branch_good(benchmark::State& state) {
-	int ret = 0;
-	for (auto _ : state)
-	{
-		ret=good(0);
-	}
-}
-
-static void BM_branch_bad(benchmark::State& state) {
-	int ret = 0;
-	for (auto _ : state)
-	{
-		ret=bad(0);
-	}
-}
-
-// too fast to show difference here. see test below
-BENCHMARK(BM_branch_good); // 1ns, over 10% more iterations
-BENCHMARK(BM_branch_bad);  // 1ns
-/*
-TEST_CASE("branch", "[NEW]")
-{
-	long loops = 1000000000;
-	auto perfTest = [loops](const char *name, auto func) {
-		auto start = chrono::high_resolution_clock::now();
-		long count = 0;
-		for (long i = 0; i < loops; i++)
-			count += func(0);
-		auto end = chrono::high_resolution_clock::now();
-		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-		cout << name << " nano seconds: " << nanos.count() << " count " << count << endl;
-	};
-
-	perfTest("test 0", good);  // 400ns
-	perfTest("test 1", bad);   // 800ns
-}
 */
 // prefer template or factory over runtime polymorphism
 // memory is slow, delete is slow and probably can be done in a separate thread
