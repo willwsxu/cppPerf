@@ -55,7 +55,7 @@ public:
 };
 
 
-TEST_CASE("398. Random Pick Index", "[NEW]")
+TEST_CASE("398. Random Pick Index", "[RAND]")
 {
 	ReservoirSampling rs(vector<int>{1});
 	CHECK(rs.pick(1) == 0);
@@ -159,7 +159,7 @@ public:
 	}
 };
 
-TEST_CASE("497. Random Point in Non-overlapping Rectangles", "[NEW]")
+TEST_CASE("497. Random Point in Non-overlapping Rectangles", "[RAND]")
 {
 	RectanglesPick rects({ {-2,-2,-1,-1},{1,0,3,0} });
 	auto x=rects.pick();
@@ -196,7 +196,7 @@ public:
 	}
 };
 
-TEST_CASE("519. Random Flip Matrix", "[NEW]")
+TEST_CASE("519. Random Flip Matrix", "[RAND]")
 {
 	FlipMatrix matrix(2, 2);
 	vector<int> ans;
@@ -217,4 +217,44 @@ TEST_CASE("519. Random Flip Matrix", "[NEW]")
 
 	FlipMatrix large(10000, 10000);
 	large.flip();
+}
+
+// 478. Generate Random Point in a Circle. Given the radius and x-y positions of the center of a circle
+class RandomCircle {
+	std::random_device rd;
+	std::mt19937 g;
+	double r, x, xL, xR, y,r2;
+public:
+	RandomCircle(double radius, double x_center, double y_center):r(radius), x(x_center),y(y_center), g(rd()) {
+		xL = x - r;
+		xR = x + r;
+		r2 = r*r;
+	}
+
+	vector<double> randPoint() {
+		uniform_real_distribution<> dis(xL, xR);
+		double x_ = dis(g);
+		double dx = abs(x_ - x);
+		double dy = sqrt(r2 - dx*dx);
+		uniform_real_distribution<> dis_y(y-dy, y+dy);
+		return{ x_, dis_y(g) };
+	}
+};
+
+
+TEST_CASE("478. Generate Random Point in a Circle", "[NEW]")
+{
+	RandomCircle circ(10, 5, -7.5);
+	auto ans = circ.randPoint();
+	double dx = abs(ans[0] - 5);
+	double dy = abs(ans[1] + 7.5);
+	CHECK(dx*dx + dy*dy <= 100);
+
+	RandomCircle circ2(0.01, -73839.1, -3289891.3);
+	for (int i = 0; i < 10000; i++) {
+		auto ans = circ2.randPoint();
+		double dx = abs(ans[0] + 73839.1);
+		double dy = abs(ans[1] + 3289891.3);
+		CHECK(dx*dx + dy*dy <= 0.0001);
+	}
 }
