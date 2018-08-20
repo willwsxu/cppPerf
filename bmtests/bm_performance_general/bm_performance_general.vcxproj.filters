@@ -32,5 +32,8 @@
     <ClInclude Include="branch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lambda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

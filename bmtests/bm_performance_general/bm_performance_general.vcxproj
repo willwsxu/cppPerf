@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="branch.h" />
+    <ClInclude Include="lambda.h" />
     <ClInclude Include="pass_pointer.h" />
     <ClInclude Include="pre_post_increment.h" />
     <ClInclude Include="reduandant_construct.h" />
