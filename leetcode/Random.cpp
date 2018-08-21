@@ -223,21 +223,18 @@ TEST_CASE("519. Random Flip Matrix", "[RAND]")
 class RandomCircle {
 	std::random_device rd;
 	std::mt19937 g;
-	double r, x, xL, xR, y,r2;
+	double r, x, y;
+	const double PI = 3.14159265358979732384626433832795;
+	uniform_real_distribution<> dis_r;
+	uniform_real_distribution<> dis_t;
 public:
-	RandomCircle(double radius, double x_center, double y_center):r(radius), x(x_center),y(y_center), g(rd()) {
-		xL = x - r;
-		xR = x + r;
-		r2 = r*r;
+	RandomCircle(double radius, double x_center, double y_center):r(radius), x(x_center),y(y_center), g(rd()), dis_r(0,1), dis_t(0, 2 * PI) {
 	}
 
-	vector<double> randPoint() {
-		uniform_real_distribution<> dis(xL, xR);
-		double x_ = dis(g);
-		double dx = abs(x_ - x);
-		double dy = sqrt(r2 - dx*dx);
-		uniform_real_distribution<> dis_y(y-dy, y+dy);
-		return{ x_, dis_y(g) };
+	vector<double> randPoint() {  // polar coordinates, slow
+		double r_ = sqrt(dis_r(g))*r;  // sqrt is key to get correct distribution (not too dense at center)
+		double theta = dis_t(g);
+		return{ x+r_*cos(theta), y+r_*sin(theta) };
 	}
 };
 
@@ -251,10 +248,15 @@ TEST_CASE("478. Generate Random Point in a Circle", "[NEW]")
 	CHECK(dx*dx + dy*dy <= 100);
 
 	RandomCircle circ2(0.01, -73839.1, -3289891.3);
-	for (int i = 0; i < 10000; i++) {
+	int i = 0;
+	int loops = 10000;
+	for (i = 0; i < loops; i++) {
 		auto ans = circ2.randPoint();
 		double dx = abs(ans[0] + 73839.1);
 		double dy = abs(ans[1] + 3289891.3);
+		CHECK(dx <= 0.01);
+		CHECK(dy <= 0.01);
 		CHECK(dx*dx + dy*dy <= 0.0001);
 	}
+	CHECK(i == loops);
 }
