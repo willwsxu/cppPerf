@@ -35,5 +35,8 @@
     <ClInclude Include="lambda.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="constructors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

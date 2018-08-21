@@ -27,9 +27,10 @@ struct Derived : public Base
 
 //#include "bm_performance_general\pre_post_increment.h"
 //#include "bm_performance_general\pass_pointer.h"
-#include "bm_performance_general\reduandant_construct.h"
+//#include "bm_performance_general\reduandant_construct.h"
 //#include "bm_performance_general\branch.h"
 //#include "bm_performance_general\lambda.h"
+#include "bm_performance_general\constructors.h"
 
 static void BM_int_div(benchmark::State& state) {
 	for (auto _ : state)
@@ -70,75 +71,6 @@ BENCHMARK(BM_int_no_div);*/
 // few branches
 // smaller code is faster code, improved cache hit rate
 
-/* Implicitly-declared move constructor is created if 
-there are no user-declared copy constructors;
-there are no user-declared copy assignment operators;
-there are no user-declared move assignment operators;
-there are no user-declared destructors;
-*/
-
-// rule 0, don't disable move constructor by accident
-struct Derived2 : public Base
-{
-	Derived2(string s) :Base(s) {}
-	virtual ~Derived2() = default;  // destructor prevents implicit move constructor
-	virtual void do_a_thing() override {}
-};
-
-
-static void BM_base_ctor(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Base b("1234567890");
-	}
-}
-static void BM_move_ctor(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Base b("1234567890");
-		Base b2(move(b));
-	}
-}
-
-static void BM_copy_ctor(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Base b("1234567890");
-		Base b2(b);
-	}
-}
-
-static void BM_derived_copy_ctor(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Derived d("1234567890");
-		Derived d2(d);
-	}
-}
-static void BM_derived_move_ctor(benchmark::State& state) {
-	static_assert(sizeof(Derived) >= 4, "inheritance with virtual methods"); // 28 in release mode
-	for (auto _ : state)
-	{
-		Derived d("1234567890");
-		Derived d2(move(d));
-	}
-}
-
-static void BM_derived2_failed_move_ctor(benchmark::State& state) {
-	for (auto _ : state)
-	{
-		Derived2 d("1234567890");
-		Derived2 d2(move(d));
-	}
-}
-/*
-BENCHMARK(BM_base_ctor);//33ns
-BENCHMARK(BM_copy_ctor);//50ns
-BENCHMARK(BM_move_ctor);//47ns
-BENCHMARK(BM_derived_copy_ctor);//67ns
-BENCHMARK(BM_derived_move_ctor);//62ns
-BENCHMARK(BM_derived2_failed_move_ctor);//67ns
-*/
 
 // const methods should be thread safe
 // don't calculate more than once
