@@ -160,4 +160,32 @@ public:
 		}
 		return false;
 	}
+	// 219. Contains Duplicate II
+	// contain nums[i]==nums[j], j-i<=k
+	bool containsNearbyDuplicate(vector<int>& nums, int k) { // beat 17%
+		unordered_set<int> s;  // use to track k consecutive numbers
+		s.reserve(k * 2);
+		k = min<int>(nums.size(), k);
+		for (int i = 0; i < k; i++) {
+			if (s.count(nums[i]))
+				return true;
+			s.insert(nums[i]);
+		}
+		for (size_t i = k; i < nums.size(); i++) {// sliding window
+			if (s.count(nums[i]))
+				return true;
+			s.insert(nums[i]);
+			s.erase(nums[i - k]);  // remove first number that is out of window
+		}
+		return false;
+	}
 };
+
+TEST_CASE("219. Contains Duplicate II", "[NEW]")
+{
+	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1,2,3,1}, 3));
+	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1, 2, 3, 1, 2, 3}, 2)==false);
+	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1}, 1)==false);
+	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1}, 2) == false);
+	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 15) == false);
+}
