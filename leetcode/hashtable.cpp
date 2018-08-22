@@ -151,9 +151,13 @@ class Duplicate {
 public:
 	// 217. Contains Duplicate
 	bool containsDuplicate(vector<int>& nums) {
-		set<int> s;
-		for (int n : nums)
+		unordered_set<int> s;
+		s.reserve(nums.size()*2);  // beat 14% after reserve
+		for (int n : nums) {
+			if (s.count(n))
+				return true;
 			s.insert(n);
-		return nums.size() > s.size();
+		}
+		return false;
 	}
 };
