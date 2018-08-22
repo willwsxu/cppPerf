@@ -239,7 +239,7 @@ public:
 };
 
 
-TEST_CASE("478. Generate Random Point in a Circle", "[NEW]")
+TEST_CASE("478. Generate Random Point in a Circle", "[RAND]")
 {
 	RandomCircle circ(10, 5, -7.5);
 	auto ans = circ.randPoint();

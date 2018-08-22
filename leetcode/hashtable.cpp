@@ -146,3 +146,14 @@ public:
 		return wall.size() - maxAlign;  // draw line where bricks align the most
 	}
 };
+
+class Duplicate {
+public:
+	// 217. Contains Duplicate
+	bool containsDuplicate(vector<int>& nums) {
+		set<int> s;
+		for (int n : nums)
+			s.insert(n);
+		return nums.size() > s.size();
+	}
+};
