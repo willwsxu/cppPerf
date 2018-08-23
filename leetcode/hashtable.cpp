@@ -179,13 +179,51 @@ public:
 		}
 		return false;
 	}
+
+	// 220. Contains Duplicate III
+	// contain nums[i]==nums[j], j-i<=k, nums[i]-num[j]<=t
+	bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {// beat 79%
+		set<int> s;  // to sort k+1 values
+		k = min<int>(nums.size(), k);
+		auto almostDup = [t, &s](int64_t n) {
+			int64_t lb = max<int64_t>(n - t, INT_MIN);  // take care of underflow, overflow
+			auto found = s.lower_bound(static_cast<int>(lb)); // look for nums[i]-t, nums[i]+t
+			if (found != s.end() && *found <= n + t)
+				return true;
+			return false;
+		};
+		for (int i = 0; i < k; i++) {
+			if (almostDup(nums[i]))
+				return true;
+			s.insert(nums[i]);
+		}
+		for (size_t i = k; i < nums.size(); i++) {// sliding window
+			if (almostDup(nums[i]))
+				return true;
+			s.insert(nums[i]);
+			s.erase(nums[i - k]);  // remove first number that is out of window
+		}
+		return false;
+	}
 };
 
-TEST_CASE("219. Contains Duplicate II", "[NEW]")
+TEST_CASE("219. Contains Duplicate II", "[DUP]")
 {
 	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1,2,3,1}, 3));
 	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1, 2, 3, 1, 2, 3}, 2)==false);
 	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1}, 1)==false);
 	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1}, 2) == false);
 	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 15) == false);
+}
+
+TEST_CASE("220. Contains Duplicate III", "[NEW]")
+{
+	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1, -2147483646}, 1, 2147483647) == true);
+	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{0, 2147483647}, 1, 2147483647) == true);
+	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1, 2, 3, 1}, 3, 0));
+	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1, 2, 3, 1, 2, 3}, 2, 0) == false);
+	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1, 5, 3, 1, 2, 4}, 2, 1) == true);
+	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1}, 1,0) == false);
+	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1}, 2,0) == false);
+	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 15, 0) == false);
 }
