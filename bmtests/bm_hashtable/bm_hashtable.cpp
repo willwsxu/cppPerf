@@ -104,3 +104,9 @@ BENCHMARK(BM_stl_set);
 BENCHMARK(BM_stl_unordered_set);
 BENCHMARK(BM_stl_myhash);
 BENCHMARK(BM_stl_buckethash);
+/*
+BM_stl_set                  205 ns        207 ns    4072727
+BM_stl_unordered_set        122 ns        122 ns    6400000
+BM_stl_myhash               232 ns        234 ns    3200000
+BM_stl_buckethash           141 ns        141 ns    4977778
+*/
