@@ -11,7 +11,7 @@ class data_type_traits
 
 // improve hash elements locality
 template <class Logger, class HASH_DATA, template<typename> class HashFun >
-class HASH_TABLE_BUCKET_P
+class HASH_TABLE_BUCKET
 {
 	using data_type = HASH_DATA *;
 	using const_data_type = const HASH_DATA *;
@@ -147,7 +147,7 @@ public:
 		//logger(LOG_INFO, "Clear HASH_TABLE %d items. newed %d, erased %d, entries %d, insert errors %d ", deleted, iNewItems, iErased, iEntries, iInsertErrors);
 		resetStats();
 	}
-	~HASH_TABLE_BUCKET_P()
+	~HASH_TABLE_BUCKET()
 	{
 		clear(true);
 	}

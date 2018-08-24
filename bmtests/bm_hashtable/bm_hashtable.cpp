@@ -74,7 +74,7 @@ static void BM_stl_myhash(benchmark::State& state) {
 }
 
 static void BM_stl_buckethash(benchmark::State& state) {
-	using StrHash = HASH_TABLE_NEW<Console, string, HASH_TABLE_BUCKET_P, FileNone, HashFun>;
+	using StrHash = HASH_TABLE_NEW<Console, string, HASH_TABLE_BUCKET, FileNone, HashFun>;
 	StrHash t(10);
 	vector<const char*> simple{ "XXX", "OEU", "OGB", "OGFX", "OGTI", "OEM1", "OEM2", "OEM3", "OEM4","OOAT","OBTP" };
 	for (auto x : simple)
@@ -104,5 +104,3 @@ BENCHMARK(BM_stl_set);
 BENCHMARK(BM_stl_unordered_set);
 BENCHMARK(BM_stl_myhash);
 BENCHMARK(BM_stl_buckethash);
-//BENCHMARK(BM_wait);
-BENCHMARK_MAIN();

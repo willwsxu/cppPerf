@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bm_hashtable.cpp">
+    <ClCompile Include="bm_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
