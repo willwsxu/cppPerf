@@ -2,14 +2,23 @@
 #include <cstdint>
 #include <vector>
 
+template <typename T>
+class data_type_traits
+{
+	using data_type = T *;
+	using const_data_type = const T *;
+};
+
 // improve hash elements locality
 template <class Logger, class HASH_DATA, template<typename> class HashFun >
-class HASH_TABLE_BUCKET
+class HASH_TABLE_BUCKET_P
 {
+	using data_type = HASH_DATA *;
+	using const_data_type = const HASH_DATA *;
 	struct HASH_ELEMENT
 	{
 		uint32_t		hash=0;
-		HASH_DATA *		pData=nullptr;
+		data_type		pData=nullptr;
 		bool			bErased = false;
 #ifdef _TIMING
 		time_t		tLastAccess;
@@ -89,7 +98,7 @@ public:
 		return insert(&pData, true);
 	}
 
-	std::pair<iterator, bool> insert(const HASH_DATA *pData)  // was insert2
+	std::pair<iterator, bool> insert(const_data_type pData)  // was insert2
 	{
 		auto ret = insert(pData, false);
 		if (!ret.second)
@@ -138,13 +147,13 @@ public:
 		//logger(LOG_INFO, "Clear HASH_TABLE %d items. newed %d, erased %d, entries %d, insert errors %d ", deleted, iNewItems, iErased, iEntries, iInsertErrors);
 		resetStats();
 	}
-	~HASH_TABLE_BUCKET()
+	~HASH_TABLE_BUCKET_P()
 	{
 		clear(true);
 	}
 protected:
 	// return int_max if no slot, or return empty slot, or return existing item
-	size_t findSlot(const HASH_DATA *pData, size_t home, uint32_t hashVal)
+	size_t findSlot(const_data_type pData, size_t home, uint32_t hashVal)
 	{
 		size_t mySlot = UINT32_MAX;
 		for (size_t slot = home; slot < home + bucket_size; slot++) {
@@ -161,7 +170,7 @@ protected:
 	}
 	
 	// return value: first - item in the table, second - inserted
-	std::pair<iterator, bool> insert(const HASH_DATA *pData, bool bStackObj)  // was insert3
+	std::pair<iterator, bool> insert(const_data_type pData, bool bStackObj)  // was insert3
 	{
 		if (pData == nullptr)
 			return{ end(), false };
