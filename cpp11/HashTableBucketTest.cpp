@@ -2,8 +2,8 @@
 
 #include "string"
 #include "ConsoleLogger.h"
-#include "HashTableBucketHashing.h"
 #include "HashTable.h"
+#include "HashTableBucketHashing.h"
 
 using namespace std;
 

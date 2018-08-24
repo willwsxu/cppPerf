@@ -2,8 +2,8 @@
 
 #include "string"
 #include "ConsoleLogger.h"
-#include "HashTableBase.h"
 #include "HashTable.h"
+#include "HashTableBase.h"
 
 using namespace std;
 

@@ -2,10 +2,10 @@
 
 #include "string"
 #include "ConsoleLogger.h"
+#include "HashTable.h"
 #include "HashTableBase.h"
 #include "HashTableFileRead.h" // hash table reader based on c style tokenizer
 #include "FileReadMock.h"
-#include "HashTable.h"
 
 using namespace std;
 
