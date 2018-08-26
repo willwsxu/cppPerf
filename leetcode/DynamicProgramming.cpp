@@ -193,7 +193,7 @@ public:
 		if (dp[amount][coin] >= 0)
 			return dp[amount][coin];
 		int count = 0;
-		for (int c = coin; c < coins.size(); c++) { // recursively give change of coins, forward only
+		for (size_t c = coin; c < coins.size(); c++) { // recursively give change of coins, forward only
 			if (amount < coins[c])  // coins are sorted so no need to try bigger ones
 				break;
 			count += change(amount - coins[c], coins, c, dp);
@@ -229,7 +229,7 @@ TEST_CASE("coin change minimal", "[COIN]")
 	CHECK(CoinChange().coinChange2(vector<int>{5, 6}, 13) == -1);
 }
 
-TEST_CASE("ways to make coin change", "[NEW]")
+TEST_CASE("ways to make coin change", "[COIN]")
 {
 	CHECK(CoinChange().change2(0, vector<int>{}) == 1);
 	CHECK(CoinChange().change2(5, vector<int>{}) == 0);
@@ -237,4 +237,71 @@ TEST_CASE("ways to make coin change", "[NEW]")
 	CHECK(CoinChange().change2(10, vector<int>{2, 5, 6}) == 3);
 	CHECK(CoinChange().change2(13, vector<int>{5, 6}) == 0);
 	CHECK(CoinChange().change2(10, vector<int>{10}) == 1);
+}
+
+class ClimbStairs
+{
+	vector<int> dp;
+	int climbStairsDp(int n) {  // beat 100%
+		if (n <= 1)
+			return 1;
+		if (dp[n]<0)
+			dp[n] = climbStairsDp(n - 1) + climbStairsDp(n - 2);
+		return dp[n];
+	}
+public:
+	// 70. Climbing Stairs
+	int climbStairs(int n) {
+		dp = move(vector<int>(n + 1, -1));
+		return climbStairsDp(n);
+	}
+
+	// Once you pay the none negative cost, you can either climb one or two steps. 
+	// find minimum cost to reach top of floor, and you can either start from step with index 0 or  1
+	int minCostClimbingStairs(vector<int>& cost) {
+
+	}
+};
+TEST_CASE("70. Climbing Stairs", "[NEW]")
+{
+	CHECK(ClimbStairs().climbStairs(2) == 2);
+	CHECK(ClimbStairs().climbStairs(3) == 3);
+	CHECK(ClimbStairs().climbStairs(10) == 89);
+}
+TEST_CASE("746. Min Cost Climbing Stairs", "[NEW]")
+{
+}
+
+class Game21
+{
+	double new21Game(int N, int K, int W, int points, vector<double>& dp) {
+		if (points >= K) {
+			return points <= N ? 1.0 : 0;
+		}
+		if (dp[points] >= 0)
+			return dp[points];
+		double ans = 0;
+		for (int i = 1; i <= W; i++) {
+			ans += 1.0 / W * new21Game(N, K, W, points + i, dp);
+		}
+		dp[points] = ans;
+		return ans;
+	}
+public:
+	// 837. New 21 Game, each card has points [1,W]
+	// Alice stops drawing numbers when she gets K or more points.  What is the probability that she has N or less points?
+	// 0 <= K <= N <= 10000, 1 <= W <= 10000
+	double new21Game(int N, int K, int W) {
+		vector<double> dp(K, -1);
+		return new21Game(N, K, W, 0, dp);
+	}
+};
+
+
+TEST_CASE("837. New 21 Game", "[NEW]")
+{
+	//CHECK(Game21().new21Game(9811, 8890, 7719) == Approx(1.0).epsilon(.00001));
+	CHECK(Game21().new21Game(10, 1, 10) == Approx(1.0).epsilon(.00001));
+	CHECK(Game21().new21Game(6, 1, 10) == Approx(0.6).epsilon(.00001));
+	CHECK(Game21().new21Game(21, 17, 10) == Approx(0.73278).epsilon(.00001));
 }
