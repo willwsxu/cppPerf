@@ -267,14 +267,14 @@ public:
 	}
 	// Once you pay the none negative cost, you can either climb one or two steps. 
 	// find minimum cost to reach top of floor, and you can either start from step with index 0 or  1
-	int minCostClimbingStairs(vector<int>& cost) {
-		vector<int> dp(2, 0);
+	int minCostClimbingStairs(vector<int>& cost) {  // bottom up dp, beat 100%
+		int first = 0, second = 0;
 		for (int c : cost) {
-			int minCost = min(dp[0], dp[1]);
-			dp[0] = dp[1];
-			dp[1] = c + minCost;
+			c += min(first, second);
+			first = second;
+			second = c;
 		}
-		return min(dp[1], dp[0]);
+		return min(first, second);  // may skip last step
 	}
 };
 TEST_CASE("70. Climbing Stairs", "[NEW]")
