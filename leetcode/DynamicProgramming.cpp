@@ -256,10 +256,25 @@ public:
 		return climbStairsDp(n);
 	}
 
+	int minCostClimbingStairs(vector<int>& cost, int idx, int c)
+	{
+		if (idx >= (int)cost.size())
+			return 0;
+		int c1 = c + cost[idx] + minCostClimbingStairs(cost, idx + 1, c + cost[idx]);
+		if (idx + 1 < (int)cost.size())
+			c1 = min(c1, c + cost[idx + 1] + minCostClimbingStairs(cost, idx + 2, c + cost[idx+1]));
+		return c1;
+	}
 	// Once you pay the none negative cost, you can either climb one or two steps. 
 	// find minimum cost to reach top of floor, and you can either start from step with index 0 or  1
 	int minCostClimbingStairs(vector<int>& cost) {
-
+		vector<int> dp(2, 0);
+		for (int c : cost) {
+			int minCost = min(dp[0], dp[1]);
+			dp[0] = dp[1];
+			dp[1] = c + minCost;
+		}
+		return min(dp[1], dp[0]);
 	}
 };
 TEST_CASE("70. Climbing Stairs", "[NEW]")
@@ -270,6 +285,8 @@ TEST_CASE("70. Climbing Stairs", "[NEW]")
 }
 TEST_CASE("746. Min Cost Climbing Stairs", "[NEW]")
 {
+	CHECK(ClimbStairs().minCostClimbingStairs(vector<int>{1, 100, 1, 1, 1, 100, 1, 1, 100, 1})==6);
+	CHECK(ClimbStairs().minCostClimbingStairs(vector<int>{0, 0, 0, 1}) == 0);
 }
 
 class Game21
