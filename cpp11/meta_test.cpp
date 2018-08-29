@@ -7,6 +7,8 @@
 #include "dynBuffer.h"
 #include "DynMsg.h"
 #include "matrix2D.h"
+
+#include "meta_math.h"
 using namespace std;
 
 TEST_CASE("Variadic template", "VARIA")
@@ -85,7 +87,6 @@ TEST_CASE("template example from Stroustrup", "example")
 	REQUIRE(find_all(s, 'a').size() == 4);
 }
 
-#include "meta_math.h"
 TEST_CASE("factorial test", "[NEW]")
 {
 	CHECK(Factorial < 3 >::value == 6);
