@@ -9,7 +9,7 @@
 #include <ctime>
 #include <string>
 
-void szCurTime(char szTime[], size_t size)
+inline void szCurTime(char szTime[], size_t size)
 {
 	time_t tim;
 	(void)time(&tim);

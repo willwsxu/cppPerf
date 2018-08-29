@@ -146,6 +146,7 @@
     <ClCompile Include="HashTableBucketTest.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MessageTest.cpp" />
+    <ClCompile Include="meta_test.cpp" />
     <ClCompile Include="SeanParentTest.cpp" />
     <ClCompile Include="slistTest.cpp" />
   </ItemGroup>
