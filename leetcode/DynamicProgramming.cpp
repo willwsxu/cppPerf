@@ -256,18 +256,27 @@ public:
 		return climbStairsDp(n);
 	}
 
-	int minCostClimbingStairs(vector<int>& cost, int idx, int c)
+	int minCostClimbingStairs(vector<int>& cost, int idx, vector<int>& dp)
 	{
-		if (idx >= (int)cost.size())
+		if (idx < 0)
 			return 0;
-		int c1 = c + cost[idx] + minCostClimbingStairs(cost, idx + 1, c + cost[idx]);
-		if (idx + 1 < (int)cost.size())
-			c1 = min(c1, c + cost[idx + 1] + minCostClimbingStairs(cost, idx + 2, c + cost[idx+1]));
-		return c1;
+		int curr = cost[idx];
+		if (dp[idx] < 0) {
+			int c1 = curr + minCostClimbingStairs(cost, idx - 1, dp);  // on step to idx 
+			if (idx > 0)
+				c1 = min(c1, curr + minCostClimbingStairs(cost, idx - 2, dp));  //  two steps
+			dp[idx] = c1;
+		}
+		return dp[idx];
+	}
+	int minCostClimbingStairs(vector<int>& cost) {  // top down dp, beat 40%
+		cost.push_back(0);  // fake the end state
+		vector<int> dp( (int)cost.size(), -1 );
+		return minCostClimbingStairs(cost, cost.size()-1, dp); // from end state
 	}
 	// Once you pay the none negative cost, you can either climb one or two steps. 
 	// find minimum cost to reach top of floor, and you can either start from step with index 0 or  1
-	int minCostClimbingStairs(vector<int>& cost) {  // bottom up dp, beat 100%
+	int minCostClimbingStairs_bottomup(vector<int>& cost) {  // bottom up dp, beat 100%
 		int first = 0, second = 0;
 		for (int c : cost) {
 			c += min(first, second);
@@ -285,6 +294,7 @@ TEST_CASE("70. Climbing Stairs", "[NEW]")
 }
 TEST_CASE("746. Min Cost Climbing Stairs", "[NEW]")
 {
+	CHECK(ClimbStairs().minCostClimbingStairs(vector<int>{1, 0, 0, 0}) == 0);
 	CHECK(ClimbStairs().minCostClimbingStairs(vector<int>{1, 100, 1, 1, 1, 100, 1, 1, 100, 1})==6);
 	CHECK(ClimbStairs().minCostClimbingStairs(vector<int>{0, 0, 0, 1}) == 0);
 }
