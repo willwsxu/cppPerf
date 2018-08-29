@@ -84,3 +84,19 @@ TEST_CASE("template example from Stroustrup", "example")
 		CHECK(*p == 'a');
 	REQUIRE(find_all(s, 'a').size() == 4);
 }
+
+#include "meta_math.h"
+TEST_CASE("factorial test", "[NEW]")
+{
+	CHECK(Factorial < 3 >::value == 6);
+}
+
+TEST_CASE("fibonacci test", "NEW")
+{
+
+}
+
+TEST_CASE("n choose 2 test", "NEW")
+{
+
+}

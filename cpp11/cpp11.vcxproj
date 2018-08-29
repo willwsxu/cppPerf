@@ -113,6 +113,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\library\eraseRemove.h" />
+    <ClInclude Include="..\library\meta_math.h" />
     <ClInclude Include="..\library\SmallObject.h" />
     <ClInclude Include="Alexandrescu.h" />
     <ClInclude Include="courseSchedule.h" />
