@@ -162,6 +162,7 @@
     <ClCompile Include="BitManip.cpp" />
     <ClCompile Include="calculator.cpp" />
     <ClCompile Include="CircularDataStruct.cpp" />
+    <ClCompile Include="designHash.cpp" />
     <ClCompile Include="designHeap.cpp" />
     <ClCompile Include="designIterator.cpp" />
     <ClCompile Include="DynamicProgramming.cpp" />
