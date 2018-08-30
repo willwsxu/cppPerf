@@ -7,6 +7,7 @@
 #include "ConsoleLogger.h"
 #include "HashTableBase.h"
 #include "HashTableBucketHashing.h"
+#include "HashTableProbing.h"
 #include "HashTable.h"
 #include <unordered_set>
 using namespace std;
@@ -19,6 +20,9 @@ struct Large_Data
 	uint64_t	values[3];
 	Large_Data(const char *n) {
 		strncpy_s(name, sizeof(name), n, _TRUNCATE);
+	}
+	Large_Data() {
+		name[0]=0;
 	}
 };
 bool operator==(const Large_Data &lhs, const Large_Data &rhs)
@@ -143,6 +147,27 @@ static void BM_stl_buckethash(benchmark::State& state) {
 	}
 	//	std::cout << found << std::endl;
 }
+
+static void BM_stl_probinghash(benchmark::State& state) {
+	using ProbeHash = HASH_TABLE_NEW<Console, Large_Data, HASH_TABLE_PROBING, FileNone, HashFun>;
+	ProbeHash t(10);
+	vector<Large_Data> simple{ "XXX", "OEU", "OGB", "OGFX", "OGTI", "OEM1", "OEM2", "OEM3", "OEM4","OOAT","OBTP" };
+	for (auto x : simple)
+		t.insert(x);
+	long found = 0;
+	for (auto _ : state)
+	{
+		if (t.find("OGB") != t.end())
+			++found;
+		if (t.find("OGBS") != t.end())
+			++found;
+		if (t.find("OBTP") != t.end())
+			++found;
+		if (t.find("OEM5") != t.end())
+			++found;
+	}
+	//	std::cout << found << std::endl;
+}
 static void BM_wait(benchmark::State& state) {
 	using namespace std::chrono_literals;
 	for (auto _ : state)
@@ -154,6 +179,7 @@ BENCHMARK(BM_stl_set);
 BENCHMARK(BM_stl_unordered_set);
 BENCHMARK(BM_stl_myhash);
 BENCHMARK(BM_stl_buckethash);
+BENCHMARK(BM_stl_probinghash);
 /*
 BM_stl_set                   43 ns         44 ns   16000000
 BM_stl_unordered_set        195 ns        195 ns    3200000

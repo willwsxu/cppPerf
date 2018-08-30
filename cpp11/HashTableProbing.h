@@ -37,7 +37,7 @@ protected:
 	bool HashInitialize(size_t iDesiredSize) {
 		elements=0;
 		bucket_size = CalcSize(iDesiredSize);
-		if (pElements.size() < bucket_size)
+		if (pElements.size() < (size_t)bucket_size)
 			pElements.resize(bucket_size);
 		PROBE_LEN = static_cast<int>(sqrt(bucket_size));
 		return true;
