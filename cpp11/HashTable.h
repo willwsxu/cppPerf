@@ -17,6 +17,13 @@ struct HashFun
 		return std::hash<T>{}(t);
 	}
 };
+template<typename T>
+struct HashFun<T*>
+{
+	size_t operator()(const T* t) {
+		return std::hash<T>{}(*t);
+	}
+};
 
 static size_t CalcSize(size_t iDesiredSize)
 {

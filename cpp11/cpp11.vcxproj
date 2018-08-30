@@ -129,6 +129,7 @@
     <ClInclude Include="HashTableFileReadSimple.h" />
     <ClInclude Include="HashTableBucketHashing.h" />
     <ClInclude Include="HashTableMockImpl.h" />
+    <ClInclude Include="HashTableProbing.h" />
     <ClInclude Include="MessageConcept.h" />
     <ClInclude Include="ObjectFactory.h" />
     <ClInclude Include="SeanParentBetterCode.h" />
