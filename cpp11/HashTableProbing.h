@@ -9,8 +9,8 @@
 template <class Logger, class HASH_DATA, template<typename> class HashFun >
 class HASH_TABLE_PROBING
 {
-	const int bucket_size = 20003;
-	const int PROBE_LEN = 140;
+	int bucket_size = 20003;
+	int PROBE_LEN = 140;
 	struct HASH_ELEMENT {
 		size_t	hash = UINT32_MAX;
 		HASH_DATA		data{};
@@ -36,9 +36,10 @@ class HASH_TABLE_PROBING
 protected:
 	bool HashInitialize(size_t iDesiredSize) {
 		elements=0;
-		auto buckets = CalcSize(iDesiredSize);
-		if (pElements.size() < buckets)
-			pElements.resize(buckets);
+		bucket_size = CalcSize(iDesiredSize);
+		if (pElements.size() < bucket_size)
+			pElements.resize(bucket_size);
+		PROBE_LEN = static_cast<int>(sqrt(bucket_size));
 		return true;
 	}
 	class iterator;
@@ -48,13 +49,19 @@ public:
 	// insert to removed slot, or the first slot
 	std::pair<iterator, bool> insert(const HASH_DATA& value) {
 		auto hasVal = hasher(value);
+		size_t deleted = UINT32_MAX;
 		for (int i = 0; i < PROBE_LEN; i++) {
 			size_t slot = (hasVal + i*i) % bucket_size;
 			auto &elem = pElements[slot];
 			if (elem.empty) {
-				elem.hash = hasVal;
-				elem.data = value;
-				elem.empty = false;
+				auto *elem2 = &elem;
+				if (deleted != UINT32_MAX) {
+					elem2 = &pElements[deleted];
+					slot = deleted;
+				} else
+					elem.empty = false;
+				elem2->hash = hasVal;
+				elem2->data = value;
 				elements++;
 				return{ pElements.begin() + slot, true };
 			}
@@ -62,6 +69,8 @@ public:
 				elem.data = value;
 				return{ pElements.begin()+slot, false };
 			}
+			else if (elem.hash == deleted)  // save first deleted slot
+				deleted = slot;
 		}
 		return{ end(), false };
 		assert(false);  // insert failed

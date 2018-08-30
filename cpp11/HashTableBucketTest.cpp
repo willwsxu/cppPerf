@@ -67,5 +67,12 @@ TEST_CASE("probing Hashing table Test", "[NEW]")
 	ins1 = t.insert("test2");
 	ins1 = t.insert("test3");
 	ins1 = t.insert("test3");
-	CHECK(t.size() == 3);
+	ins1 = t.insert("test4");
+	ins1 = t.insert("test5");
+	ins1 = t.insert("test6");
+	ins1 = t.insert("test7");
+	ins1 = t.insert("test8");
+	ins1 = t.insert("test9");
+	CHECK(t.size() == 9);
+	CHECK(*t.find("test9") == "test9");
 }
