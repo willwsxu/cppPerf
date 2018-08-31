@@ -3,22 +3,25 @@
 #include <string>
 #include "library/string_util.h"
 
+// see str.h
 struct Str
 {
-	//Str(string& s) :_s(move(s)) {}
 	Str(string&& s) :_s(move(s)) {}
 	Str(Str&& s) :_s(move(s._s)) { cout << "move ctor " << _s << this << endl; }
-
+	/*
 	Str& operator=(Str&& s) {
 		_s = move(s._s);
 		return *this;
-	}
+	}*/
 private:
 	string _s;
 };
 Str make_str(const char *s)
 {
-	return Str(s);
+	return Str(s); // need move constructor to compile, but not actually used due to RVO
+}
+void copy_elision(Str s)
+{
 }
 Str g_str("");
 // use initilizer, use const when possible
@@ -59,10 +62,6 @@ static void BM_initializer_construction_cstr(benchmark::State& state) {
 }
 BENCHMARK(BM_initializer_construction_cstr)->Range(8, 8 << 10);
 
-void copy_elision(Str s)
-{
-	//cout << "pas_by_value " << endl;
-}
 static void BM_construction_cstr_copy_elision(benchmark::State& state) {
 	size_t sz = (size_t)state.range(0);
 	auto s = memset_char('x', sz);
