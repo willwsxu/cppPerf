@@ -5,8 +5,8 @@
 
 struct Str
 {
-	Str(string s) :_s(move(s)) {}
-	//Str(string&& s) :_s(move(s)) {}
+	//Str(string s) :_s(move(s)) {}
+	Str(string&& s) :_s(move(s)) {}
 
 	Str& operator=(Str&& s) {
 		_s = move(s._s);
@@ -49,7 +49,6 @@ static void BM_initializer_construction_cstr(benchmark::State& state) {
 	for (auto _ : state)
 	{
 		Str s1(src);
-		//Str s1(string(src));  // why this fails to compile?
 //		g_str = move(s1);
 	}
 }

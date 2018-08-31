@@ -27,10 +27,10 @@ struct Derived : public Base
 
 //#include "bm_performance_general\pre_post_increment.h"
 //#include "bm_performance_general\pass_pointer.h"
-//#include "bm_performance_general\reduandant_construct.h"
+#include "bm_performance_general\reduandant_construct.h"
 //#include "bm_performance_general\branch.h"
 //#include "bm_performance_general\lambda.h"
-#include "bm_performance_general\constructors.h"
+//#include "bm_performance_general\constructors.h"
 
 static void BM_int_div(benchmark::State& state) {
 	for (auto _ : state)
