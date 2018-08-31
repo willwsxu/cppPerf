@@ -5,8 +5,9 @@
 
 struct Str
 {
-	//Str(string s) :_s(move(s)) {}
+	//Str(string& s) :_s(move(s)) {}
 	Str(string&& s) :_s(move(s)) {}
+	Str(Str&& s) :_s(move(s._s)) { cout << "move ctor " << _s << this << endl; }
 
 	Str& operator=(Str&& s) {
 		_s = move(s._s);
@@ -15,6 +16,10 @@ struct Str
 private:
 	string _s;
 };
+Str make_str(const char *s)
+{
+	return Str(s);
+}
 Str g_str("");
 // use initilizer, use const when possible
 static void BM_redundant_construction(benchmark::State& state) {
@@ -53,6 +58,37 @@ static void BM_initializer_construction_cstr(benchmark::State& state) {
 	}
 }
 BENCHMARK(BM_initializer_construction_cstr)->Range(8, 8 << 10);
+
+void copy_elision(Str s)
+{
+	//cout << "pas_by_value " << endl;
+}
+static void BM_construction_cstr_copy_elision(benchmark::State& state) {
+	size_t sz = (size_t)state.range(0);
+	auto s = memset_char('x', sz);
+	char *src = s.get();
+	for (auto _ : state)
+	{
+		copy_elision(Str(src));
+
+		//Str s3(Str (src));  // syntax issue, s1 is a function, instead of object
+		// Str s3(Str("test3 "));// s3 is object
+		// g_str = move(s3);
+	}
+}
+BENCHMARK(BM_construction_cstr_copy_elision)->Range(8, 8 << 10);
+
+static void BM_construction_cstr_copy_elision_rvo(benchmark::State& state) {
+	size_t sz = (size_t)state.range(0);
+	auto s = memset_char('x', sz);
+	char *src = s.get();
+	for (auto _ : state)
+	{
+		Str s3(make_str(src)); // slight worse than copy_elision
+		// g_str = move(s3);
+	}
+}
+BENCHMARK(BM_construction_cstr_copy_elision_rvo)->Range(8, 8 << 10);
 /*
 BENCHMARK(BM_redundant_construction);  // 51ns
 BENCHMARK(BM_redundant_construction_append);  // 50ns
