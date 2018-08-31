@@ -137,6 +137,7 @@
     <ClInclude Include="Matrix2D.h" />
     <ClInclude Include="meta.h" />
     <ClInclude Include="MoveCtor.h" />
+    <ClInclude Include="str.h" />
     <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>

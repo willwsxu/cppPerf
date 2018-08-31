@@ -305,3 +305,44 @@ TEST_CASE("member fun test multi inheritance pointer offset", "[NEW]")
 
 	CHECK(test2(obj, &MultiInheritance::mf2) == 2);
 }
+
+#include "str.h"
+TEST_CASE("test construction", "[NEW]")
+{
+	Str s1("test ");
+	CHECK(s1.state == Str::STRING_MOVE_CTOR);
+	string x("test2 ");
+	Str s2(x);
+	CHECK(s2.state == Str::STRING_CTOR);
+	Str s2a(move(x));
+	CHECK(s2a.state == Str::STRING_MOVE_CTOR);
+	Str s2b(string("test2b "));
+	CHECK(s2b.state == Str::STRING_MOVE_CTOR);
+	Str s3(Str("test3 "));  // elision, one constructor call
+	CHECK(s3.state == Str::STRING_MOVE_CTOR);
+	Str s9 = string("test9 ");
+	CHECK(s9.state == Str::STRING_MOVE_CTOR);
+	Str s10 = "test10 ";  // up to 2 conversions, const char * -> string -> Str
+	CHECK(s10.state == Str::STRING_MOVE_CTOR);
+
+	Str s4(s1);
+	CHECK(s4.state == Str::COPY_CTOR);
+	Str s4a(move(s1));
+	CHECK(s4a.state == Str::MOVE_CTOR);
+
+	copy_elision(make_str("test5 "));  // elision, one constructor call
+	copy_elision(Str("test5a "));
+	Str s6(make_str("test6 "));
+	CHECK(s6.state == Str::STRING_MOVE_CTOR);
+
+	Str s7 = s6;
+	CHECK(s7.state == Str::COPY_CTOR);
+	Str s8 = move(s6);
+	CHECK(s8.state == Str::MOVE_CTOR);
+
+	s9 = move(s10);  // move assignment
+	s8 = s7;  // copy assignment
+
+	Str2 s20 = string("test20 "); // up to 2 conversions, string -> Str -> Str2
+	//Str2 s20 = "test20 ";  can't compile
+}
