@@ -39,8 +39,8 @@ TEST_CASE("Variadic template", "VARIA")
 #include "meta.h"
 TEST_CASE("Meta Programming", "[META]")
 {
-	CHECK(Power<2>::pow == 4);
-	CHECK(Power2<3, 2>::pow == 9);
+	CHECK(PowerOf2<3>::pow == 8);
+	CHECK(PowerX<3, 2>::pow == 9);
 	CHECK(Power3<long, 30>()(2L) == 1073741824);
 	CHECK(Power3<long, 29>()(2L) == 536870912);
 	CHECK(pow1(2, 30) == 1073741824);  // constexpr
@@ -94,10 +94,10 @@ TEST_CASE("factorial test", "[NEW]")
 
 TEST_CASE("fibonacci test", "NEW")
 {
-
+	CHECK(Fibonacci<5>::value == 5);
 }
 
 TEST_CASE("n choose 2 test", "NEW")
 {
-
+	CHECK(nChooseK < 5, 2 >::value == 10);
 }

@@ -1,24 +1,24 @@
 #pragma once
 
 template <int p>
-struct Power
+struct PowerOf2  // 2^p
 {
-	enum { pow = Power<p - 1>::pow * 2 };
+	enum { pow = PowerOf2<p - 1>::pow * 2 };
 };
 
 template <>   // specialization, must be defined after general template
-struct Power<0> {
+struct PowerOf2<0> {
 	enum { pow = 1 };
 };
 
-template <int X, int p>
-struct Power2  // can not overload clas name Power
+template <int X, int p>  // X^p
+struct PowerX  // can not overload clas name Power
 {
-	enum { pow = Power2<X, p - 1>::pow * X };
+	enum { pow = PowerX<X, p - 1>::pow * X };
 };
 
 template <int X>   // specialization, must be defined after general template
-struct Power2<X, 0> {
+struct PowerX<X, 0> {
 	enum { pow = 1 };
 };
 
@@ -103,4 +103,23 @@ template<> struct Factorial<0> {
 template <size_t N> struct Factorial
 {
 	static const int value = N*Factorial<N - 1>::value;
+};
+
+template<size_t N> struct Fibonacci;
+template<> struct Fibonacci<0> { static const int value = 1; };
+template<> struct Fibonacci<1> { static const int value = 1; };
+template<size_t N> struct Fibonacci
+{
+	static const int value = Fibonacci<N - 1>::value + Fibonacci<N - 2>::value;
+};
+//template <size_t N> using fib_v = Fibonacci<N>::value; nontype alias template not supported
+
+template<size_t N, size_t K> struct nChooseK;
+template<size_t N> struct nChooseK<N, 0>
+{
+	static const int value = 1;
+};
+template<size_t N, size_t K> struct nChooseK
+{
+	static const int value = N * nChooseK<N - 1, K - 1>::value/K;
 };
