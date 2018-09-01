@@ -303,6 +303,27 @@ TEST_CASE("746. Min Cost Climbing Stairs", "[NEW]")
 	CHECK(ClimbStairs().minCostClimbingStairs(vector<int>{0, 0, 0, 1}) == 0);
 }
 
+class SpecialDp
+{
+public:
+	int maxSubArray(vector<int>& nums) {  // beat 100%
+		int maxSum = INT32_MIN;  // in case sum is negative!
+		int sum = 0;
+		for (int n : nums) {
+			sum += n;
+			maxSum = max(maxSum, sum);
+			if (sum < 0)  // start subarray anew if sum is negative
+				sum = 0;				
+		}
+		return maxSum;
+	}
+};
+
+TEST_CASE("53. Maximum Subarray", "[NEW]")
+{
+	CHECK(SpecialDp().maxSubArray(vector<int>{-1}) == -1);
+}
+
 class Game21
 {
 	double new21Game(int N, int K, int W, int points, vector<double>& dp) {
