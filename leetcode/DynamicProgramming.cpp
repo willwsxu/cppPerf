@@ -113,7 +113,7 @@ public:
 	int maxProfit1(vector<int>& prices) { // beat 98%
 		if (prices.size() < 2)
 			return 0;
-		for (int i = 0; i < prices.size() - 1; i++)
+		for (int i = 0; i < (int)prices.size() - 1; i++)
 			prices[i] = prices[i+1] - prices[i];
 		return maxSubSum(prices.begin(), prices.end() - 1, 0);
 	}
@@ -336,7 +336,26 @@ TEST_CASE("53. Maximum Subarray", "[NEW]")
 {
 	CHECK(SpecialDp().maxSubArray(vector<int>{-1}) == -1);
 }
+class NumArray {
+	vector<int> nums_;
+public:
+	NumArray(vector<int> nums):nums_(nums) {
+		partial_sum(begin(nums_), end(nums_), begin(nums_));
+	}
 
+	int sumRange(int i, int j) {
+		if (i>0)
+			return nums_[j] - nums_[i-1];
+		return nums_[j];
+	}
+};
+TEST_CASE("303. Range Sum Query - Immutable", "[NEW]")
+{
+	NumArray t({ -2, 0, 3, -5, 2, -1 });
+	CHECK(t.sumRange(0, 2) == 1);
+	CHECK(t.sumRange(2, 5) == -1);
+	CHECK(t.sumRange(0, 5) == -3);
+}
 class Game21
 {
 	double new21Game(int N, int K, int W, int points, vector<double>& dp) {
