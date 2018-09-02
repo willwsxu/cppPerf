@@ -117,12 +117,20 @@ public:
 			prices[i] = prices[i+1] - prices[i];
 		return maxSubSum(prices.begin(), prices.end() - 1, 0);
 	}
+	// 122. Best Time to Buy and Sell Stock II, many transactions, but only one transaction at a time
+	int maxProfit2(vector<int>& prices) { // easy, Gredy, sum up all positive diff prices, beat 98%
+		int sum = 0;
+		for (int i = 0; i < (int)prices.size() - 1; i++)
+			sum += max(prices[i + 1] - prices[i], 0);
+		return sum;
+	}
 };
 
 TEST_CASE("309. Best Time to Buy and Sell Stock with Cooldown", "[NEW]")
 {
 	CHECK (BuyStock().maxProfit(vector<int> { 1, 2, 3, 0, 2 }) == 3);
 	CHECK(BuyStock().maxProfit(vector<int> { 2, 1}) == 0);
+	CHECK(BuyStock().maxProfit2(vector<int> { }) == 0);
 }
 
 class StringDp
@@ -319,15 +327,8 @@ class SpecialDp
 {
 public:
 	int maxSubArray(vector<int>& nums) {  // beat 100%
-		int maxSum = INT32_MIN;  // in case sum is negative!
-		int sum = 0;
-		for (int n : nums) {
-			sum += n;
-			maxSum = max(maxSum, sum);
-			if (sum < 0)  // start subarray anew if sum is negative
-				sum = 0;				
-		}
-		return maxSum;
+		// refactor to a template, slowed 50%???
+		return maxSubSum(nums.begin(), nums.end(), INT32_MIN); // in case sum is negative!
 	}
 };
 
