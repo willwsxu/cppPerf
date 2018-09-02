@@ -115,3 +115,49 @@ protected:
 public:
 	Compose(ARGS ...args) :base(Variant(args...)) {}
 };
+
+// Tuple impl, youtube Tech Talk: C++ Advanced Topics in Templates (Andy Modell)
+// https://voidnish.wordpress.com/2013/07/13/tuple-implementation-via-variadic-templates/
+template <typename...ARGS> class Tuple;  // forward declaration
+template <> class Tuple<> {};  // full specialization, empty class
+
+template<typename First, typename...Rest>
+class Tuple<First, Rest...> : public Tuple<Rest...>
+{
+public:
+	First value;
+};
+
+template<size_t idx, typename Tuple_t> struct TupleElement;
+template<typename First, typename...Rest>
+struct TupleElement<0, Tuple<First, Rest...>> {
+	using value_type = First;
+	using tuple_type = Tuple<First, Rest...>;
+};
+template<size_t idx, typename First, typename...Rest>
+struct TupleElement<idx, Tuple<First, Rest...>> : public TupleElement<idx - 1, Tuple<Rest...>>
+{
+};
+
+template<size_t idx, typename...ARGS>
+typename TupleElement<idx, Tuple<ARGS...>>::value_type& Get(Tuple<ARGS...>& t) {
+	using tuple_type = TupleElement<idx, Tuple<ARGS...>>::tuple_type;
+	return static_cast<tuple_type&>(t).value;
+}
+
+template<size_t idx, typename Tuple_t>
+void FillTuple(Tuple_t& t) {}
+
+template<size_t idx, typename Tuple_t, typename First, typename...Rest>
+void FillTuple(Tuple_t& t, First& f, Rest...rest)
+{
+	Get<idx>(t) = f;
+	FillTuple<idx + 1>(t, rest...);
+}
+
+template<typename ...ARGS>
+Tuple<ARGS...> Make_Tuple(ARGS...args) {
+	Tuple<ARGS...> ans;
+	FillTuple<0>(ans, args...);
+	return ans;
+}

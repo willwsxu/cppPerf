@@ -101,3 +101,11 @@ TEST_CASE("n choose 2 test", "NEW")
 {
 	CHECK(nChooseK < 5, 2 >::value == 10);
 }
+
+TEST_CASE("Tuple test", "NEW")
+{
+	auto t=Make_Tuple( 10, 'x', "tuple");
+	CHECK(Get<0>(t) == 10);
+	CHECK(Get<1>(t) == 'x');
+	CHECK(Get<2>(t) == "tuple");
+}
