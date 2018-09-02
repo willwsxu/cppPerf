@@ -1,39 +1,5 @@
 #pragma once
-/*
-void tprintf(const char *fmt) {
-	cout << fmt << endl;
-}
-template <typename T, typename ... Targs>
-void tprintf(const char *fmt, T val, Targs ...Fargs)
-{
-	while (*fmt) {
-		if (*fmt == '%') {
-			cout << val;
-			tprintf(fmt + 2, Fargs...); // expand parameter pack
-			return;  // must return to avoid repeat
-		}
-		else
-			cout << *fmt++;
-	}
-}
-//tuple piecewise constructor
-/*
-class Console
-{
-public:
-	template<typename... Targs>
-	void operator()(const char *fmt, Targs...Fargs)
-	{
-		tprintf(fmt, Fargs...);
-	}
-	template<typename... Targs>
-	void operator()(int sev, const char *fmt, Targs...Fargs)
-	{
-		cout << "WARN ";
-		tprintf(fmt, Fargs...);
-	}
-};
-*/
+
 template<typename ... Targs, typename = void, typename U>
 void testPattern(U fmt, Targs...targs)
 {
@@ -89,9 +55,9 @@ struct swallow
 	swallow(ARGS&&...) {}
 };
 template <typename... ARGS>
-void expression(ARGS...args)
+void expression(std::stringstream& ostr, ARGS...args)
 {
-	swallow{ (std::cout << args << ' ', unit{})... };  // variadic expression, initializer list force evaluation from left to right
+	swallow{ (ostr << args << ' ', unit{})... };  // variadic expression, initializer list force evaluation from left to right
 }
 
 template <typename...ARGS>

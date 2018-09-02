@@ -1,4 +1,5 @@
 #include <atomic>
+#include <sstream>
 
 #include "..\catch.hpp"
 
@@ -11,15 +12,15 @@
 #include "meta_math.h"
 using namespace std;
 
-TEST_CASE("Variadic template", "VARIA")
+TEST_CASE("Variadic template", "[NEW]")
 {
 	Console c;
 	c(LOG_INFO, "[%p] DynBuffer (from [%p]) resize to max allowed %d", &c, 10, 20);
 
 	int i = 1;
 	float f = 2.0f;
-	testPattern("%f %f", i, f);
-	testPattern2("%f %f", i, f);
+	testPattern("%f %f", i, f);	cout << endl;
+	testPattern2("%p %p", i, f); cout << endl;  // print address
 
 	CHECK(variadicTuple(i, f) == tuple<int, float>{i, f});
 
@@ -29,11 +30,16 @@ TEST_CASE("Variadic template", "VARIA")
 	REQUIRE(oss.str() == string("1,2.0"));*/
 
 	CHECK(Min(2, 3, 4, 1, 6) == 1);
-	std::cout << endl << "variadic expression test: ";
-	expression(1, 2, "bar");
-	std::cout << endl;
+	stringstream ostr;
+	expression(ostr, 1, 2, "bar");
+	CHECK(ostr.str() == "1 2 bar ");
 
 	Compose<int, float, char> test(1, 2.0f, '3');
+	//tuple piecewise constructor
+	pair<vector<int>, vector<string>> p(piecewise_construct, forward_as_tuple(3, 0), forward_as_tuple(2, "TT"));
+	CHECK(p.first.size() == 3);
+	CHECK(p.second.size() == 2);
+	CHECK(p.second[0] == "TT");
 }
 
 #include "meta.h"
