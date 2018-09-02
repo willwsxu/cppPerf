@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
-
+#include "myalgo.h"
 using namespace std;
 
 std::unique_ptr<int[]> dp;
@@ -107,6 +107,15 @@ public:
 		int n = prices.size();
 		vector<vector<int>> dp(n, vector<int>(n + 1, -1));
 		return maxProfit(prices, 0, -1, dp);
+	}
+
+	// 121. Best Time to Buy and Sell Stock, single transaction (1 buy, 1 sell)
+	int maxProfit1(vector<int>& prices) { // beat 98%
+		if (prices.size() < 2)
+			return 0;
+		for (int i = 0; i < prices.size() - 1; i++)
+			prices[i] = prices[i+1] - prices[i];
+		return maxSubSum(prices.begin(), prices.end() - 1, 0);
 	}
 };
 

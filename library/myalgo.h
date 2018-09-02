@@ -104,3 +104,16 @@ int continuousLongestBy(InpI first, InpI last, Pred isGood)  // long substring t
 		max = next - start;
 	return max;
 }
+template<typename RandIter, typename ValueT>
+ValueT maxSubSum(RandIter first, RandIter last, ValueT _max_seed)
+{
+	int sum = 0;
+	while (first != last ) {
+		sum += *first;
+		++first;
+		_max_seed = max(_max_seed, sum);
+		if (sum < 0)  // start subarray anew if sum is negative
+			sum = 0;
+	}
+	return _max_seed;
+}
