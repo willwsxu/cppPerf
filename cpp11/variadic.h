@@ -127,3 +127,7 @@ Tuple<ARGS...> Make_Tuple(ARGS...args) {
 	FillTuple<0>(ans, args...);
 	return ans;
 }
+template<typename tuple_t>
+decltype(auto) get_back(tuple_t& t) {
+	return get<tuple_size_v<tuple_t>-1>(t);
+}

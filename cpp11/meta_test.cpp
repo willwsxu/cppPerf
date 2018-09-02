@@ -24,22 +24,21 @@ TEST_CASE("Variadic template", "[NEW]")
 
 	CHECK(variadicTuple(i, f) == tuple<int, float>{i, f});
 
-	/*ostringstream oss;
-	oss << "test";
-	//cout << variadicTuple(i, f);
-	REQUIRE(oss.str() == string("1,2.0"));*/
-
 	CHECK(Min(2, 3, 4, 1, 6) == 1);
 	stringstream ostr;
 	expression(ostr, 1, 2, "bar");
 	CHECK(ostr.str() == "1 2 bar ");
 
-	Compose<int, float, char> test(1, 2.0f, '3');
+	Compose<int, float, char> test(1, 2.0f, '3');  //?
+
 	//tuple piecewise constructor
 	pair<vector<int>, vector<string>> p(piecewise_construct, forward_as_tuple(3, 0), forward_as_tuple(2, "TT"));
 	CHECK(p.first.size() == 3);
 	CHECK(p.second.size() == 2);
 	CHECK(p.second[0] == "TT");
+	CHECK(get<vector<int>>(p) == vector<int>{0, 0, 0});
+	tuple<int, double,char> x=make_tuple( 1, 1.2,'x' );
+	CHECK(get_back<tuple<int, double,char>>(x) == 'x');
 }
 
 #include "meta.h"
