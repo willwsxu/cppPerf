@@ -83,34 +83,37 @@ void testEqualSumPartition()
 	std::cout << canPartition(vector<int>{1, 5, 11, 5}) << endl;  // true
 	std::cout << canPartition(vector<int>{1, 2, 3, 5}) << endl;   // false
 }
-
-// prevBuy, last postion of buy, -1 means no
-int maxProfit(vector<int>& prices, int pos, int prevBuy, vector<vector<int>>& dp) {
-	if (pos >= (int)prices.size()) {
-		return 0;
-	}
-	if (dp[pos][prevBuy + 1] >= 0)
-		return dp[pos][prevBuy + 1];
-	int ans = maxProfit(prices, pos + 1, prevBuy, dp);  // no action
-	if (prevBuy >= 0) {
-		if (prices[pos] > prices[prevBuy])   // sell if there is profit
-			ans = std::max(ans, (prices[pos] - prices[prevBuy]) + maxProfit(prices, pos + 2, -1, dp));
-	}
-	else
-		ans = std::max(ans, maxProfit(prices, pos + 1, pos, dp));  // buy
-	dp[pos][prevBuy + 1] = ans;
-	return ans;
-}
-int maxProfit(vector<int>& prices) {
-	int n = prices.size();
-	vector<vector<int>> dp(n, vector<int>(n + 1, -1));
-	return maxProfit(prices, 0, -1, dp);
-}
-
-void testStockBuySell()
+class BuyStock
 {
-	std::cout << (maxProfit(vector<int> { 1, 2, 3, 0, 2 }) == 3) << endl;
-	std::cout << (maxProfit(vector<int> { 2, 1}) == 0) << endl;
+	// prevBuy, last postion of buy, -1 means no
+	int maxProfit(vector<int>& prices, int pos, int prevBuy, vector<vector<int>>& dp) {
+		if (pos >= (int)prices.size()) {
+			return 0;
+		}
+		if (dp[pos][prevBuy + 1] >= 0)
+			return dp[pos][prevBuy + 1];
+		int ans = maxProfit(prices, pos + 1, prevBuy, dp);  // no action
+		if (prevBuy >= 0) {
+			if (prices[pos] > prices[prevBuy])   // sell if there is profit
+				ans = std::max(ans, (prices[pos] - prices[prevBuy]) + maxProfit(prices, pos + 2, -1, dp));
+		}
+		else
+			ans = std::max(ans, maxProfit(prices, pos + 1, pos, dp));  // buy
+		dp[pos][prevBuy + 1] = ans;
+		return ans;
+	}
+public:
+	int maxProfit(vector<int>& prices) {
+		int n = prices.size();
+		vector<vector<int>> dp(n, vector<int>(n + 1, -1));
+		return maxProfit(prices, 0, -1, dp);
+	}
+};
+
+TEST_CASE("309. Best Time to Buy and Sell Stock with Cooldown", "[NEW]")
+{
+	CHECK (BuyStock().maxProfit(vector<int> { 1, 2, 3, 0, 2 }) == 3);
+	CHECK(BuyStock().maxProfit(vector<int> { 2, 1}) == 0);
 }
 
 class StringDp

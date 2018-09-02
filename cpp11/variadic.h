@@ -122,7 +122,7 @@ template <typename...ARGS> class Tuple;  // forward declaration
 template <> class Tuple<> {};  // full specialization, empty class
 
 template<typename First, typename...Rest>
-class Tuple<First, Rest...> : public Tuple<Rest...>
+class Tuple<First, Rest...> : public Tuple<Rest...>  // Get fails if using private
 {
 public:
 	First value;
