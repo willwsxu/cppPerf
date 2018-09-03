@@ -967,11 +967,29 @@ public:
 			return dfs(r->left);
 		return dfs(r->right);
 	}
-	bool leafSimilar(TreeNode* root1, TreeNode* root2) {
+	bool leafSimilar(TreeNode* root1, TreeNode* root2) {// beat 19%
 		string leaf1 = dfs(root1);
 		string leaf2 = dfs(root2);
 		return leaf1 == leaf2;
 
+	}
+	//104. Maximum Depth of Binary Tree
+	int maxDepth(TreeNode* root) {  // beat 98%
+		if (!root)
+			return 0;
+		return 1 + max(maxDepth(root->left), maxDepth(root->right));
+	}
+	//111. Minimum Depth of Binary Tree
+	int minDepth(TreeNode* root) {  // beat 20%
+		if (!root)
+			return 0;
+		if (!root->left && !root->right)
+			return 1;
+		if (!root->left)
+			return 1 + minDepth(root->right);
+		if (!root->right)
+			return 1 + minDepth(root->left);
+		return 1 + min(minDepth(root->right), minDepth(root->left));
 	}
 };
 
@@ -981,3 +999,28 @@ TEST_CASE("872. Leaf-Similar Trees", "[NEW]")
 	TreeNode * root2 = TreeNode::CreateBinaryTree(vector<int>{55, INT32_MIN, 84, INT32_MIN, 29, 116, INT32_MIN, 7, 74, INT32_MIN, 70});
 	CHECK(TreeEasy().leafSimilar(root1, root2));
 }
+
+class Node {
+public:
+	int val;
+	vector<Node*> children;
+
+	Node() {}
+
+	Node(int _val, vector<Node*> _children) {
+		val = _val;
+		children = _children;
+	}
+};
+class NaryTree {
+public:
+	// 559. Maximum Depth of N-ary Tree
+	int maxDepth(Node* root) { // beat 10-40%
+		if (!root)
+			return 0;
+		int depth = 0;
+		for (Node * n : root->children)
+			depth = max(depth, maxDepth(n));
+		return 1 + depth;
+	}
+};
