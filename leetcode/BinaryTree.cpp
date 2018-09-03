@@ -945,6 +945,7 @@ TEST_CASE("BST valid", "[BST]")
 class TreeEasy
 {
 public:
+	// 100. Same Tree
 	bool isSameTree(TreeNode* p, TreeNode* q) { // in-order traversal, beat 100%
 		if (p == nullptr && q == nullptr)
 			return true;
@@ -954,4 +955,29 @@ public:
 			return false;
 		return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
 	}
+
+	string dfs(TreeNode* r) {
+		if (r == nullptr)
+			return "";
+		if (!r->left && !r->right)
+			return to_string(r->val).append(1, ',');
+		if (r->left && r->right)
+			return dfs(r->left)+ dfs(r->right);
+		if (r->left)
+			return dfs(r->left);
+		return dfs(r->right);
+	}
+	bool leafSimilar(TreeNode* root1, TreeNode* root2) {
+		string leaf1 = dfs(root1);
+		string leaf2 = dfs(root2);
+		return leaf1 == leaf2;
+
+	}
 };
+
+TEST_CASE("872. Leaf-Similar Trees", "[NEW]")
+{
+	TreeNode * root1 = TreeNode::CreateBinaryTree(vector<int>{41, 62, INT32_MIN, 66, INT32_MIN, INT32_MIN, 21, 96, INT32_MIN, 70, 74});
+	TreeNode * root2 = TreeNode::CreateBinaryTree(vector<int>{55, INT32_MIN, 84, INT32_MIN, 29, 116, INT32_MIN, 7, 74, INT32_MIN, 70});
+	CHECK(TreeEasy().leafSimilar(root1, root2));
+}
