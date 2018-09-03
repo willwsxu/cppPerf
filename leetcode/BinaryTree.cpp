@@ -989,6 +989,10 @@ public:
 			return 1 + minDepth(root->right);
 		if (!root->right)
 			return 1 + minDepth(root->left);
+		if (!root->left->left && !root->left->right) // left is leaf
+			return 2;
+		if (!root->right->left && !root->right->right) // right is leaf
+			return 2; // optimization did not show visible speed up
 		return 1 + min(minDepth(root->right), minDepth(root->left));
 	}
 };
