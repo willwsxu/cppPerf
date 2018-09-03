@@ -77,3 +77,42 @@ public:
 		return connected;
 	}
 };
+
+class DFS
+{
+	int n, m;
+	int dfs(vector<vector<int>>& grid, int r, int c) {
+		if (r < 0 || c < 0 || r >= n || c >= m)
+			return 0;
+		if (grid[r][c] == 0)
+			return 0;
+		int ans = 1;
+		grid[r][c] = 0;
+		static const vector<vector<int>> dir{ {-1, 0 }, {1,0}, {0,-1}, {0,1} };
+		for (const auto& d : dir)
+			ans += dfs(grid, r + d[0], c + d[1]);
+		return ans;
+	}
+public:
+	int maxAreaOfIsland(vector<vector<int>>& grid) {//beat 85% on 3rd submit
+		n = grid.size();
+		if (n == 0)
+			return 0;
+		m = grid[0].size();
+		if (m == 0)
+			return 0;
+		int ans = 0;
+		for (int r = 0; r < n; r++) {
+			for (int c = 0; c < m; c++) {
+				if (grid[r][c])
+					ans = max(ans, dfs(grid, r, c));
+			}
+		}
+		return ans;
+	}
+};
+
+TEST_CASE("695. Max Area of Island", "[NEW]")
+{
+	CHECK(DFS().maxAreaOfIsland(vector<vector<int>>{ {1, 1, 0, 0, 0}, { 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1 }, { 0, 0, 0, 1, 1 }})==4);
+}

@@ -942,3 +942,16 @@ TEST_CASE("BST valid", "[BST]")
 	CHECK(b.isValidBST(r6) == false);
 }
 
+class TreeEasy
+{
+public:
+	bool isSameTree(TreeNode* p, TreeNode* q) { // in-order traversal, beat 100%
+		if (p == nullptr && q == nullptr)
+			return true;
+		else if (p == nullptr || q == nullptr)
+			return false;
+		if (p->val != q->val)
+			return false;
+		return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+	}
+};
