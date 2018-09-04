@@ -995,6 +995,24 @@ public:
 			return 2; // optimization did not show visible speed up
 		return 1 + min(minDepth(root->right), minDepth(root->left));
 	}
+	// 897. Increasing Order Search Tree
+	TreeNode* increasingBST(TreeNode* root) {
+		if (!root)
+			return nullptr;
+		TreeNode *left = root->left;
+		TreeNode *head = increasingBST(root->left);
+		if (!head)
+			head = root;
+		else {
+			while (left->right)
+				left = left->right;  // move to right most leaf node
+			left->right = root;
+		}
+		root->left = nullptr;  // clean up left tree
+		TreeNode *tail = increasingBST(root->right);
+		root->right = tail;
+		return head;
+	}
 };
 
 TEST_CASE("872. Leaf-Similar Trees", "[NEW]")
@@ -1002,6 +1020,12 @@ TEST_CASE("872. Leaf-Similar Trees", "[NEW]")
 	TreeNode * root1 = TreeNode::CreateBinaryTree(vector<int>{41, 62, INT32_MIN, 66, INT32_MIN, INT32_MIN, 21, 96, INT32_MIN, 70, 74});
 	TreeNode * root2 = TreeNode::CreateBinaryTree(vector<int>{55, INT32_MIN, 84, INT32_MIN, 29, 116, INT32_MIN, 7, 74, INT32_MIN, 70});
 	CHECK(TreeEasy().leafSimilar(root1, root2));
+}
+TEST_CASE("897. Increasing Order Search Tree", "[NEW]")
+{
+	TreeNode * root = TreeNode::CreateBinaryTree(vector<int>{5, 3, 6, 2, 4, INT32_MIN, 8, 1, INT32_MIN, INT32_MIN, INT32_MIN, 7, 9});
+	TreeNode *t = TreeEasy().increasingBST(root);
+	CHECK(TreeNode::heightR(t) == 9);
 }
 
 class Node {
