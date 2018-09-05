@@ -149,7 +149,9 @@ public:
 		}
 		return false;
 	}
-
+	size_t size() const {
+		return iEntries;
+	}
 	void clear()
 	{
 		int deleted = 0;

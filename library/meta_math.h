@@ -106,7 +106,7 @@ template <size_t N> struct Factorial
 };
 
 template<size_t N> struct Fibonacci;
-template<> struct Fibonacci<0> { static const int value = 1; };
+template<> struct Fibonacci<0> { static const int value = 0; };
 template<> struct Fibonacci<1> { static const int value = 1; };
 template<size_t N> struct Fibonacci
 {

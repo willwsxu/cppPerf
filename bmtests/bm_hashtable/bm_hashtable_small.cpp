@@ -14,8 +14,8 @@ using namespace std;
 
 struct Large_Data
 {
-	char name[16];  // key
-	char pass[64];
+	char name[8];  // key
+	char pass[8];
 	uint64_t	id;
 	uint64_t	values[3];
 	Large_Data(const char *n) {
@@ -96,6 +96,7 @@ static void BM_stl_set_create(benchmark::State& state) {
 	{
 		set<Large_Data> simple{ "XXX", "OEU", "OGB", "OGFX", "OGTI", "OEM1", "OEM2", "OEM3", "OEM4","OOAT","OBTP" };
 	}
+	cout << ordered.size() << " " << ordered.size() << " " << probHash.size() << " " << buckHash.size() << " " << baseHash.size()<<endl;
 }	
 
 static void BM_stl_set(benchmark::State& state) {
