@@ -68,6 +68,89 @@ public:
 		n = min(n, 3);
 		return min(1 << n, 1 + m*n);
 	}
+
+protected:
+	bool isPerfectSquare(int num, int low, int hi) {// watch out for tricky overflow issues
+		if (low > hi)
+			return false;
+		int64_t mid = ((int64_t)low + hi) / 2;
+		int64_t sq = mid*mid;
+		if (sq == num)
+			return true;
+		if (sq > num)
+			return isPerfectSquare(num, low, (int)mid - 1);
+		return isPerfectSquare(num, (int)mid + 1, hi);
+	}
+public:
+	bool isPerfectSquare(int num) {  // binary search, beat 100%
+		return isPerfectSquare(num, 1, min((num + 1) / 2, 50000));
+	}
+	bool judgeSquareSum_old(int c) { // a few gotcha cases, number can be 0, same, watch for overflow, beat 18%
+		int sq = 0;
+		int ub = min((c + 1) / 2, 50000);
+		for (int i = 0; (sq = i*i) <= c && sq >= 0; i++) {
+			if (c == sq || isPerfectSquare(c - sq, i, ub))
+				return true;
+		}
+		return false;
+	}
+
+	bool judgeSquareSum(int c) { // use hash set to store all perfect square, why it is slower?
+		unordered_set<int> squares;
+		int sq = 0;
+		for (int i = 0; (sq = i*i) <= c && sq >= 0; i++) {
+			squares.insert(sq);
+			if (squares.count(c - sq))
+				return true;
+		}
+		return false;
+	}
+
+	// 67. Add Binary
+	string addBinary(string a, string b) {  // beat 100%
+		string *pA = &a, *pB = &b;
+		if (a.size() < b.size()) {
+			pA = &b;  // pA longer than pB
+			pB = &a;
+		}
+		int carry = 0;
+		transform(pB->rbegin(), pB->rend(), pA->rbegin(), pA->rbegin(), [&carry](char a, char b) {  // compute common part, from back
+			int add = a - '0' + b - '0' + carry;
+			carry = add / 2;
+			return static_cast<char>(add % 2 + '0');
+		});
+		if (!carry)
+			return *pA;
+		if (pA->size() > pB->size()) {  // add carry to longer string
+			auto begin = pA->rbegin() + pB->size();
+			transform(begin, pA->rend(), begin, [&carry](char a) {
+				if (carry == 0)  // just copy
+					return a;
+				int add = a - '0' + carry;
+				carry = add / 2;
+				return static_cast<char>(add % 2 + '0');
+			});
+		}
+		if (carry)
+			pA->insert(0, 1, '1');
+		return *pA;
+	}
+
+	// 66. Plus One, Given a non-empty array of digits representing a non-negative integer, plus one to the integer
+	vector<int> plusOne(vector<int>& digits) { // similar to #67 above, easier, beat 100%
+		int carry = 1;
+		vector<int> ans(digits);
+		transform(ans.rbegin(), ans.rend(), ans.rbegin(), [&carry](int a) {
+			if (carry == 0)  // just copy
+				return a;
+			int add = a + carry;
+			carry = add / 10;
+			return add % 10;
+		});
+		if (carry)
+			ans.insert(ans.begin(), carry);
+		return ans;
+	}
 };
 
 
@@ -124,3 +207,18 @@ TEST_CASE("869. Reordered Power of 2", "[POW]")
 	MathPower p;
 	CHECK(p.reorderedPowerOf2(46));
 }
+
+TEST_CASE("367. Valid Perfect Square", "[NEW]")
+{
+	CHECK(Math().isPerfectSquare(1));
+	CHECK(Math().isPerfectSquare(808201));
+}
+TEST_CASE("633. Sum of Square Numbers", "[NEW]")
+{
+	CHECK(Math().judgeSquareSum(2147483646) == false);
+	CHECK(Math().judgeSquareSum(0));
+	CHECK(Math().judgeSquareSum(1));
+	CHECK(Math().judgeSquareSum(808202));
+	CHECK(Math().judgeSquareSum(3) == false);
+}
+

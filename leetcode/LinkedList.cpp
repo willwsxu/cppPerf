@@ -513,26 +513,12 @@ TEST_CASE("707. Design Linked List", "[NEW]")
 }
 
 class PalindromeList {
-	ListNode *forward(ListNode* head, int n) {
-		while (n-- && head) {
-			head = head->next;
-		}
-		return head;
-	}
-	pair<ListNode *, ListNode*> reverse(ListNode* head) {
-		if (!head || !head->next)  // 0 or 1 node
-			return{ head, head };
-		auto p = reverse(head->next);
-		p.second->next = head;
-		head->next = nullptr;
-		return{ p.first, head };
-	}
 public:
 	bool isPalindrome(ListNode* head) {  // beat 25%
 		int n = ListNode::count(head);
 		int mid = (n + 1) / 2;
-		ListNode *midNode = forward(head, mid);
-		midNode = reverse(midNode).first;
+		ListNode *midNode = ListNode::forward(head, mid);
+		midNode = ListNode::reverse(midNode).first;
 		while (midNode) {
 			if (midNode->val != head->val)
 				return false;
