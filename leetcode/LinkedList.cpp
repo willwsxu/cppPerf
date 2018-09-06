@@ -407,3 +407,107 @@ public:
 		return head;
 	}
 };
+
+
+class MyLinkedList {  // beat 10%
+	struct Node
+	{
+		int val = 0;
+		unique_ptr<Node> next;
+		Node(int v) :val(v) {}
+	};
+	unique_ptr<Node>	head;
+	Node*				tail = nullptr;
+	int					size = 0;
+	Node *find(int idx)
+	{
+		Node *cur = head.get();
+		for (int i = 0; i < idx; i++)
+			cur = cur->next.get();
+		return cur;
+	}
+public:
+	/** Initialize your data structure here. */
+	MyLinkedList() {
+
+	}
+
+	/** Get the value of the index-th node in the linked list. If the index is invalid, return -1. */
+	int get(int index) {
+		if (index < size) {
+			return find(index)->val;
+		}
+		return -1;
+	}
+
+	/** Add a node of value val before the first element of the linked list. After the insertion, the new node will be the first node of the linked list. */
+	void addAtHead(int val) {
+		auto n = make_unique<Node>(val);
+		if (tail) {
+			n->next = move(head);
+			head = move(n);
+		}
+		else {
+			head = move(n);
+			tail = head.get();
+		}
+		size++;
+	}
+
+	/** Append a node of value val to the last element of the linked list. */
+	void addAtTail(int val) {
+		if (size == 0)
+			addAtHead(val);
+		else {
+			tail->next = make_unique<Node>(val);
+			tail = tail->next.get();
+			size++;
+		}
+	}
+
+	/** Add a node of value val before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list.
+	If index is greater than the length, the node will not be inserted. */
+	void addAtIndex(int index, int val) {
+		if (index <= 0)
+			addAtHead(val);
+		else if (index == size)
+			addAtTail(val);
+		else if (index<size) {
+			Node *cur = find(index - 1);
+			unique_ptr<Node> next = move(cur->next);
+			cur->next = make_unique<Node>(val);
+			cur->next->next = move(next);
+			size++;
+		}
+	}
+
+	/** Delete the index-th node in the linked list, if the index is valid. */
+	void deleteAtIndex(int index) {
+		if (size == 0 || index<0 || index >= size)
+			return;
+		size--;
+		if (index == 0) {
+			head = move(head->next);
+			if (size < 1)
+				tail = nullptr;
+		}
+		else {
+			Node *prev = find(index - 1);
+			prev->next = move(prev->next->next);
+			if (index == size)
+				tail = prev;
+		}
+	}
+};
+
+TEST_CASE("707. Design Linked List", "[NEW]")
+{
+	MyLinkedList k;
+	CHECK(k.get(0) == -1);
+	k.addAtIndex(1, 2);  // don't add
+	CHECK(k.get(0) == -1);
+	CHECK(k.get(1) == -1);
+	k.addAtIndex(0, 1);
+	CHECK(k.get(0) == 1);
+	CHECK(k.get(1) == -1);
+}
