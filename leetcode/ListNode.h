@@ -24,4 +24,18 @@ struct ListNode
 		}
 		return count;
 	}
+	ListNode *forward(ListNode* head, int n) {
+		while (n-- && head) {
+			head = head->next;
+		}
+		return head;
+	}
+	pair<ListNode *, ListNode*> reverse(ListNode* head) {
+		if (!head || !head->next)  // 0 or 1 node
+			return{ head, head };
+		auto p = reverse(head->next);
+		p.second->next = head;
+		head->next = nullptr;
+		return{ p.first, head };
+	}
 };

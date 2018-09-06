@@ -227,3 +227,27 @@ TEST_CASE("220. Contains Duplicate III", "[NEW]")
 	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1}, 2,0) == false);
 	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 15, 0) == false);
 }
+
+// 846. Hand of Straights
+class MapStuff {
+public:
+	// 0 <= hand[i] <= 10^9, 1 <= hand.length <= 10000
+	bool isNStraightHand(vector<int>& hand, int W) {  // beat 91%
+		map<int, int> count;  // count cards of same value
+		for (int h : hand)
+			count[h]++;
+		for (const auto& card : count) {  // from lowest card
+			if (card.second) { // start of a new sequence
+				int start = card.second;
+				for (int i = card.first; i < card.first + W; i++) // iterate W sequential cards
+				{
+					auto& found = count[i];
+					if (found < start)  // card in middle of sequence is not sufficient
+						return false;
+					found -= start;
+				}
+			}
+		}
+		return true;
+	}
+};

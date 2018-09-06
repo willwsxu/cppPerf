@@ -511,3 +511,42 @@ TEST_CASE("707. Design Linked List", "[NEW]")
 	CHECK(k.get(0) == 1);
 	CHECK(k.get(1) == -1);
 }
+
+class PalindromeList {
+	ListNode *forward(ListNode* head, int n) {
+		while (n-- && head) {
+			head = head->next;
+		}
+		return head;
+	}
+	pair<ListNode *, ListNode*> reverse(ListNode* head) {
+		if (!head || !head->next)  // 0 or 1 node
+			return{ head, head };
+		auto p = reverse(head->next);
+		p.second->next = head;
+		head->next = nullptr;
+		return{ p.first, head };
+	}
+public:
+	bool isPalindrome(ListNode* head) {  // beat 25%
+		int n = ListNode::count(head);
+		int mid = (n + 1) / 2;
+		ListNode *midNode = forward(head, mid);
+		midNode = reverse(midNode).first;
+		while (midNode) {
+			if (midNode->val != head->val)
+				return false;
+			midNode = midNode->next;
+			head = head->next;
+		}
+		return true;
+	}
+};
+TEST_CASE("234. Palindrome Linked List", "[NEW]")
+{
+	ListNode *head = ListNode::createList(vector<int>{1, 3, 2, 4, 3, 2, 1});
+	PalindromeList p;
+	CHECK(p.isPalindrome(head) == false);
+	ListNode *head2 = ListNode::createList(vector<int>{1, 3, 2, 4, 2, 3, 1});
+	CHECK(p.isPalindrome(head2) == true);
+}
