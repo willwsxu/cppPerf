@@ -260,3 +260,62 @@ TEST_CASE("478. Generate Random Point in a Circle", "[RAND]")
 	}
 	CHECK(i == loops);
 }
+
+
+// average O(1) time
+class RandomizedSet {  // beat 93% after making random engine as data member
+	vector<int> indexMap;
+	unordered_map<int, int> valueMap;
+	std::random_device rd;  //Will be used to obtain a seed for the random number engine
+	std::mt19937 gen; //Standard mersenne_twister_engine seeded with rd()
+
+public:
+	/** Initialize your data structure here. */
+	RandomizedSet() :gen(rd()) {	}
+
+	/** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+	bool insert(int val) {
+		if (valueMap.find(val) != valueMap.end())
+			return false;
+		auto size = valueMap.size();  // solve leetcode compiler bug, valueMap[val]=valueMap.size() didn't work
+		valueMap[val] = size; // map value to last index (0 based)
+		indexMap.emplace_back(val);
+		return true;
+	}
+
+	/** Removes a value from the set. Returns true if the set contained the specified element. */
+	bool remove(int val) {
+		auto found = valueMap.find(val);
+		if (found == valueMap.end())
+			return false;
+		int remIndex = found->second; // index to remove
+		valueMap.erase(found);
+		int last = indexMap.size() - 1;
+		if (remIndex < last)  // remove is not the last one
+		{
+			indexMap[remIndex] = indexMap[last]; // swap value at last
+			valueMap[indexMap[remIndex]] = remIndex;  // update index in value map
+		}
+		indexMap.pop_back();
+		return true;
+	}
+
+	/** Get a random element from the set. */
+	int getRandom() {
+		std::uniform_int_distribution<int> dist(0, indexMap.size() - 1);
+		return indexMap.at(dist(gen));
+	}
+};
+
+
+TEST_CASE("random set O(1) op", "[RAND]")
+{
+	RandomizedSet t;
+	CHECK(t.insert(1) == true);
+	CHECK(t.remove(2) == false);
+	CHECK(t.insert(2) == true);
+	cout << "get random=" << t.getRandom() << endl;
+	CHECK(t.remove(1) == true);
+	CHECK(t.insert(2) == false);
+	CHECK(t.getRandom() == 2);  // fix bug insert
+}
