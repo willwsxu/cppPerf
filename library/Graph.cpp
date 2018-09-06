@@ -110,6 +110,51 @@ public:
 		}
 		return ans;
 	}
+
+	// 463. Island Perimeter
+	int islandPerimeter(vector<vector<int>>& grid) { // no need to use hash table. simple 2D board issue, beat 62%
+		if (grid.empty())
+			return 0;
+		int m = grid.size();
+		if (grid[0].empty())
+			return 0;
+		int n = grid[0].size();
+		int ans = 0;
+		for (int r = 0; r < m; r++) {
+			for (int c = 0; c < n; c++) {
+				if (grid[r][c]) {
+					ans += 4;
+					if (r > 0 && grid[r - 1][c])
+						ans--;
+					if (r <m - 1 && grid[r + 1][c])
+						ans--;
+					if (c > 0 && grid[r][c - 1])
+						ans--;
+					if (c < n - 1 && grid[r][c + 1])
+						ans--;
+				}
+			}
+		}
+		return ans;
+	}
+	void dfs(vector<vector<int>>& image, int sr, int sc, int oldColor, int newColor) {
+		if (sr >= 0 && sc >= 0 && sr < (int)image.size() && sc < (int)image[0].size()) {
+			if (image[sr][sc] != oldColor)
+				return;
+			image[sr][sc] = newColor;
+			static const vector<vector<int>> dir{ { -1,0 },{ 1,0 },{ 0,-1 },{ 0,1 } };
+			for (const auto& d : dir) {
+				dfs(image, sr + d[0], sc + d[1], oldColor, newColor);
+			}
+		}
+	}
+	// 733. Flood Fill, replace cells connected to (sr,sc) in 4 directions (up, down, left, right) of same values to new value
+	vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int newColor) {  // beat 98% on 3rd submit
+		if (image[sr][sc] == newColor)
+			return image;
+		dfs(image, sr, sc, image[sr][sc], newColor);
+		return image;
+	}
 };
 
 TEST_CASE("695. Max Area of Island", "[NEW]")
