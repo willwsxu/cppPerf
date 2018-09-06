@@ -447,3 +447,50 @@ TEST_CASE("132 pattern", "[STACK]")
 	CHECK(Pattern132().find132pattern(vector<int>{8, 5, 7, 4, 8, 7}) == true);
 	CHECK(Pattern132().find132pattern(vector<int>{24, 26, 25, 30, 20}) == true);
 }
+
+// 155. Min Stack, supports push, pop, top, and retrieving the minimum element in constant time
+// idea, when there is a new min, push old min on stack
+class MinStack {  // beat 98%
+	vector<int>  stack;
+	int min_val = INT32_MAX;
+public:
+	/** initialize your data structure here. */
+	MinStack() {
+	}
+
+	void push(int x) {
+		if (x <= min_val) {  // push old min on to stack, borrowed idea
+			stack.push_back(min_val);
+			min_val = x;
+		}
+		stack.push_back(x);
+	}
+
+	void pop() {
+		int last = top();
+		stack.pop_back();
+		if (last == min_val) { // retrieve new min
+			min_val = top();
+			stack.pop_back();
+		}
+	}
+
+	int top() {
+		return stack.back();
+	}
+
+	int getMin() {
+		return min_val;
+	}
+};
+
+TEST_CASE("155. Min Stack", "[NEW]")
+{
+	MinStack ms;
+	ms.push(0);
+	ms.push(1);
+	ms.push(0);
+	CHECK(ms.getMin() == 0);
+	ms.pop();
+	CHECK(ms.getMin() == 0);
+}
