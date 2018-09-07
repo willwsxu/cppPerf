@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
-
+#include <bitset>
 using namespace std;
 
 
@@ -384,7 +384,16 @@ public:
 	// array size, or total candies [2, 10,000]
 	// array value, or candy kind,  [-100,000, 100,000]
 	int distributeCandies(vector<int>& candies) {
-		return min(unordered_set<int>(begin(candies), end(candies)).size(), candies.size() / 2);
+		//return min(unordered_set<int>(begin(candies), end(candies)).size(), candies.size() / 2);  // beat 29%
+		bitset<200001> exist;  // beat 31%
+		size_t count = 0;
+		for (int c : candies) {
+			if (!exist[c + 100000]) {
+				exist[c + 100000] = 1;
+				count++;
+			}
+		}
+		return min(count, candies.size()/2);
 	}
 };
 
