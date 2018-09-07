@@ -388,8 +388,8 @@ public:
 		bitset<200001> exist;  // beat 31%
 		size_t count = 0;
 		for (int c : candies) {
-			if (!exist[c + 100000]) {
-				exist[c + 100000] = 1;
+			if (!exist.test(c + 100000)) {  // much faster to use test and set, than [], beat 89%
+				exist.set(c + 100000, 1);
 				count++;
 			}
 		}
