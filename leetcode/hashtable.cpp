@@ -228,9 +228,9 @@ TEST_CASE("220. Contains Duplicate III", "[NEW]")
 	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 15, 0) == false);
 }
 
-// 846. Hand of Straights
 class MapStuff {
 public:
+	// 846. Hand of Straights
 	// 0 <= hand[i] <= 10^9, 1 <= hand.length <= 10000
 	bool isNStraightHand(vector<int>& hand, int W) {  // beat 91%
 		map<int, int> count;  // count cards of same value
@@ -250,4 +250,162 @@ public:
 		}
 		return true;
 	}
+
+public:
+	//771. Jewels and Stones, (string S)letters represent stones, (string J) some of these are Jewels
+	int numJewelsInStones(string J, string S) {  // beat 98%
+		map<char, int> jewels;
+		transform(J.begin(), J.end(), inserter(jewels, jewels.begin()), [](char c)->pair<char, int> { return{ c,0 }; });  // string to map
+		return count_if(S.begin(), S.end(), [&jewels](char c) { return jewels.count(c); });
+	}
+
+	// 290. Word Pattern, Given a pattern and a string str, find if str follows the same pattern.
+	bool wordPattern(string pattern, string str) {  // 2 hash maps, beat 100%
+		stringstream strm(str);
+		auto p = pattern.begin();
+		unordered_map<string, char> str_p;
+		unordered_map<char, string> p_str;
+		for (auto x = istream_iterator<string>(strm); x != istream_iterator<string>(); ++x)
+		{
+			if (p == pattern.end())  // make sure pattern is not too short
+				return false;
+			auto found1 = str_p.find(*x);
+			auto found2 = p_str.find(*p);
+			if (found1 == str_p.end() && found2 == p_str.end()) {  // new pattern
+				str_p[*x] = *p;        // add pattern
+				p_str[*p] = *x;
+			}
+			else if (found1 == str_p.end() || found2 == p_str.end())  // found old pattern not match
+				return false;
+			else if (found1->second != *p || found2->second != *x)
+				return false;
+			++p;
+		}
+		return p == pattern.end();  // make sure pattern is not too long
+	}
+
+	// Given n points in the plane that are all pairwise distinct, a "boomerang" is a tuple of points (i, j, k) 
+	// such that the distance between i and j equals the distance between i and k
+	// n<=500, points [-10000, 10000]
+	int numberOfBoomerangs(vector<pair<int, int>>& points) {
+		return accumulate(points.begin(), points.end(), 0, [&points](int init, const pair<int, int>& p1) {
+			map<int, int> dist_count;  // count points of same distance from p1
+			for_each(points.begin(), points.end(), [&dist_count, &p1](const pair<int, int>& p2) {
+				auto dist = [](int dx, int dy) { return dx*dx + dy*dy; };
+				dist_count[dist(p1.first - p2.first, p1.second - p2.second)]++;
+			});
+			return init + accumulate(dist_count.begin(), dist_count.end(), 0, [](int init, const pair<int, int>& c) {
+				return init + c.second*(c.second - 1);  // permutation 2 of n
+			});
+		});
+	}
+
+	vector<string> split(const string&s, char sep)
+	{
+		auto next = s.find_first_of(sep);
+		if (next != string::npos) {
+			return{ s.substr(0,next), s.substr(next + 1) };
+		}
+		return{};
+	}
+	// 811. Subdomain Visit Count
+	vector<string> subdomainVisits(vector<string>& cpdomains) { // beat 54%
+		map<string, int> count;
+		for (const string& d : cpdomains) {
+			auto tokens = split(d, ' ');
+			if (!tokens.empty()) {  // 0 or 2
+				int c = stoi(tokens[0]);
+				while (!tokens.empty()) {
+					count[tokens[1]] += c;
+					tokens = split(tokens[1], '.');
+				}
+			}
+		}
+		vector<string> ans;
+		transform(count.begin(), count.end(), back_inserter(ans), [](const auto&p) { return to_string(p.second).append(1, ' ').append(p.first);	});
+		return ans;
+	}
 };
+
+TEST_CASE("290. Word Pattern", "[NEW]")
+{
+	CHECK(MapStuff().wordPattern("ab", "dog cat dog cat") == false);
+	CHECK(MapStuff().wordPattern("abba", "dog cat dog cat") == false);
+	CHECK(MapStuff().wordPattern("abba", "dog cat cat dog") == true);
+	CHECK(MapStuff().wordPattern("abba", "dog dog dog dog") == false);
+	CHECK(MapStuff().wordPattern("abba", "dog cat cat fish") == false);
+	CHECK(MapStuff().wordPattern("aaaa", "dog cat cat dog") == false);
+	CHECK(MapStuff().wordPattern("aaaa", "dog cat cat dog") == false);
+	CHECK(MapStuff().wordPattern("jquery", "jquery") == false);
+}
+TEST_CASE("447. Number of Boomerangs", "[NEW]")
+{
+	vector<pair<int, int>> x{ { 0, 0 },{ 1,0 },{ 2, 0 } };
+	CHECK(MapStuff().numberOfBoomerangs(x) == 2);
+}
+
+
+class SetStuff
+{
+	set<string> str_to_set(string& A, set<string>& dup)
+	{
+		stringstream astr(A);
+		set<string> a;
+		//copy(istream_iterator<string>(astr), istream_iterator<string>(), inserter(a, a.begin()));
+		for_each(istream_iterator<string>(astr), istream_iterator<string>(), [&a, &dup](const string&s) {
+			if (a.count(s))
+				dup.insert(s);
+			else
+				a.insert(s);
+		});
+		for (const string&s : dup)
+			a.erase(s);
+		return a;
+	}
+public:
+	// A word is uncommon if it appears exactly once in one of the sentences, and does not appear in the other sentence
+	vector<string> uncommonFromSentences(string A, string B) {  // beat 40%
+		set<string> dup;
+		set<string> a = str_to_set(A, dup);
+		set<string> b = str_to_set(B, dup);
+		vector<string> ans;
+		std::set_difference(a.begin(), a.end(), b.begin(), b.end(), back_inserter(ans));
+		std::set_difference(b.begin(), b.end(), a.begin(), a.end(), back_inserter(ans));
+		if (!dup.empty()) {
+			vector<string> ans2;
+			sort(ans.begin(), ans.end());
+			std::set_difference(ans.begin(), ans.end(), dup.begin(), dup.end(), back_inserter(ans2));  // ans-dup
+			return ans2;
+		}
+		return ans;
+	}
+};
+
+TEST_CASE("884. Uncommon Words from Two Sentences", "[NEW]")
+{
+	CHECK(SetStuff().uncommonFromSentences("abcd def abcd xyz", "ijk def ijk") == vector<string>{"xyz"});
+	CHECK(SetStuff().uncommonFromSentences("s z z z s", "s z ejt") == vector<string>{"ejt"});
+	CHECK(SetStuff().uncommonFromSentences("apple apple", "banana") == vector<string>{"banana"});
+	CHECK(SetStuff().uncommonFromSentences("this apple is sweet", "this apple is sour") == vector<string>{"sweet", "sour"});
+}
+
+class ArrayMap  // use array to map
+{
+public:
+	vector<string> findWords(vector<string>& words) { // beat 100%
+		static const int rows[] = { 1,2,2,1,0,1,1,1,0,1,1,1,2,2,0,0,0,0,1,0,0,2,0,2,0,2 };  // row of alphabet on keyboard
+		auto same_row = [](const string&s) {  // each letter is at same row of keyboard
+			if (s.empty())
+				return true;
+			return all_of(s.begin(), s.end(), [target = rows[toupper(s[0]) - 'A']](char c){return rows[toupper(c) - 'A'] == target; });
+		};
+		vector<string> ans;
+		copy_if(words.begin(), words.end(), back_inserter(ans), [same_row](const string&s) { return same_row(s); });
+		return ans;
+	}
+};
+TEST_CASE("500. Keyboard Row", "[NEW]")
+{
+	CHECK(ArrayMap().findWords(vector<string>{"Hello", "Alaska", "Dad", "Peace"}) == vector<string>{"Alaska", "Dad"});
+}
+
