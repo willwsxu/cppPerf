@@ -151,6 +151,17 @@ public:
 			ans.insert(ans.begin(), carry);
 		return ans;
 	}
+
+	// 492. Construct the Rectangle, W*L=area, W<=L, W+L is minimal, area <=10^7
+	vector<int> constructRectangle(int area) { // greedy method, beat 100%
+		int MaxW = static_cast<int>(sqrt(area));
+		for (int i = MaxW; i > 1; i--) {
+			if (area%i == 0) {
+				return{ area / i, i };
+			}
+		}
+		return{ area, 1 };
+	}
 };
 
 

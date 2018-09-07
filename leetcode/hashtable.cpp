@@ -379,6 +379,13 @@ public:
 		}
 		return ans;
 	}
+
+	// 575. Distribute Candies, evenly to 2 sibling, number represent kind of candies
+	// array size, or total candies [2, 10,000]
+	// array value, or candy kind,  [-100,000, 100,000]
+	int distributeCandies(vector<int>& candies) {
+		return min(unordered_set<int>(begin(candies), end(candies)).size(), candies.size() / 2);
+	}
 };
 
 TEST_CASE("884. Uncommon Words from Two Sentences", "[NEW]")
