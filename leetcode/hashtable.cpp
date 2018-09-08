@@ -393,7 +393,7 @@ public:
 				count++;
 			}
 		}
-		return min(count, candies.size()/2);
+		return min(count, candies.size()/2); // array is faster than bitset
 	}
 };
 

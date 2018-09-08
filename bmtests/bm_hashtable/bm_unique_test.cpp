@@ -253,7 +253,7 @@ static void BM_unordered_set(benchmark::State& state) {
 }
 BENCHMARK(BM_unordered_set);
 
-/*
+/* test on Hp laptop, 4 core
 BM_vector_int_temp         832909 ns     837054 ns        896   6.51042k items/s
 BM_vector_char_temp         25788 ns      25670 ns      28000   6.79348k items/s
 BM_vector_char              25531 ns      25495 ns      26353   7.26744k items/s
@@ -278,4 +278,26 @@ BM_bitset                   52649 ns      53013 ns      11200   8.22368k items/s
 BM_bitset_bracket          127244 ns     125558 ns       5600   6.94444k items/s
 
 BM_unordered_set          1672872 ns    1650799 ns        407   7.26744k items/s
+*/
+/*  test at work 8 core
+BM_vector_int_temp         263993 ns
+BM_vector_char_temp         20246 ns
+BM_vector_char              20292 ns
+BM_vector_bool_temp         28216 ns
+BM_vector_bool              30810 ns
+BM_vector_bool_at           28711 ns
+
+BM_array_cls_int_temp       39698 ns
+BM_array_cls_char_temp      20498 ns
+BM_array_cls_bool_temp      20388 ns
+BM_array_cls_bool           20359 ns
+BM_array_cls_bool_at        21075 ns
+
+BM_array_c_temp             20306 ns
+BM_array_c_2                20276 ns
+
+BM_bitset                   42620 ns
+BM_bitset_bracket          101382 ns
+
+BM_unordered_set          1329005 ns
 */
