@@ -161,3 +161,39 @@ TEST_CASE("695. Max Area of Island", "[NEW]")
 {
 	CHECK(DFS().maxAreaOfIsland(vector<vector<int>>{ {1, 1, 0, 0, 0}, { 1, 1, 0, 0, 0 }, { 0, 0, 0, 1, 1 }, { 0, 0, 0, 1, 1 }})==4);
 }
+
+
+class Employee {
+public:
+	// It's the unique ID of each node.
+	// unique id of this employee
+	int id;
+	// the importance value of this employee
+	int importance;
+	// the id of direct subordinates
+	vector<int> subordinates;
+};
+
+class DfsMap{  // Dfs on map
+	vector<char> visited;	
+	int dfsHelper(const map<int, Employee*>& employees, int id) {
+		int ans = employees.at(id)->importance;
+		for (auto e : employees.at(id)->subordinates)
+			ans += dfsHelper(employees, e);
+		return ans;
+	}
+public:
+	int getImportance(vector<Employee*> employees, int id) {
+		map<int, Employee*> emp_map;
+		for (auto e : employees)
+			emp_map[e->id] = e;
+		return dfsHelper(emp_map, id);
+	}
+};
+
+TEST_CASE("690. Employee Importance", "[NEW]")
+{
+	CHECK(DfsMap().getImportance({ new Employee{ 2,5,{} } }, 2) == 5);
+	CHECK(DfsMap().getImportance({ new Employee{1,2,{2}}, new Employee{2,3,{}} }, 2) == 3);
+	CHECK(DfsMap().getImportance({ new Employee{ 1,5,{ 2,3 } }, new Employee{ 2,3,{} }, new Employee{ 3,3,{} } }, 1) == 11);
+}
