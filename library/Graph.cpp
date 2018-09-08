@@ -175,18 +175,14 @@ public:
 };
 
 class DfsMap{  // Dfs on map
-	vector<char> visited;	
 	int dfsHelper(const map<int, Employee*>& employees, int id) {
-		int ans = employees.at(id)->importance;
-		for (auto e : employees.at(id)->subordinates)
-			ans += dfsHelper(employees, e);
-		return ans;
+		return accumulate(begin(employees.at(id)->subordinates), end(employees.at(id)->subordinates), employees.at(id)->importance, [&](int init, int id2) {
+			return init + dfsHelper(employees, id2); });
 	}
 public:
-	int getImportance(vector<Employee*> employees, int id) {
+	int getImportance(vector<Employee*> employees, int id) { // beat 66%, no need to keep if visited
 		map<int, Employee*> emp_map;
-		for (auto e : employees)
-			emp_map[e->id] = e;
+		transform(begin(employees), end(employees), inserter(emp_map, emp_map.begin()), [](Employee*e)->pair<int, Employee*> { return { e->id, e }; });
 		return dfsHelper(emp_map, id);
 	}
 };
