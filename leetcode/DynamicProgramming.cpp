@@ -375,9 +375,16 @@ public:
 	// 837. New 21 Game, each card has points [1,W]
 	// Alice stops drawing numbers when she gets K or more points.  What is the probability that she has N or less points?
 	// 0 <= K <= N <= 10000, 1 <= W <= 10000
-	double new21Game(int N, int K, int W) {
+	double new21Game(int N, int K, int W) {//TLE on large test
 		vector<double> dp(K, -1);
 		return new21Game(N, K, W, 0, dp);
+	}
+	double new21Game_bottomup(int N, int K, int W) {
+		vector<double> dp(K+W);
+		for (int i = 1; i <= N; i++) { // bottom up to calculate probability from N=1;
+
+		}
+		return 0;
 	}
 };
 
