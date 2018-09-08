@@ -1,5 +1,22 @@
 #pragma once
 #include <cassert>
+
+// 108. Convert Sorted Array to Binary Search Tree (beat100% in 4th submission)
+template<typename RandIter>
+TreeNode * buildBSTinorder(RandIter first, RandIter last)  // input: sorted vector of int
+{
+	int size = distance(first, last);
+	if (size == 0)
+		return nullptr;
+	else if (size==1)
+		return new TreeNode(*first);
+	int mid = size / 2;
+	TreeNode *r = new TreeNode(*(first+mid));
+	r->left = buildBSTinorder(first, first + mid);
+	r->right = buildBSTinorder(first + mid + 1, last);
+	return r;
+}
+
 struct TreeNode {
 	int val;
 	TreeNode *left;
