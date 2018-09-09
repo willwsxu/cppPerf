@@ -1013,6 +1013,29 @@ public:
 		root->right = tail;
 		return head;
 	}
+
+	void dfsPaths(TreeNode* root, string target, vector<string>& result)
+	{
+		if (!root)
+			return;
+		if (!target.empty())
+			target.append("->");
+		target.append(to_string(root->val));
+		if (!root->left && !root->right) {
+			result.push_back(target);
+			return;
+		}
+		if (root->left)
+			dfsPaths(root->left, target, result);
+		if (root->right)
+			dfsPaths(root->right, target, result);
+	}
+	// 257. Binary Tree Paths
+	vector<string> binaryTreePaths(TreeNode* root) {
+		vector<string> res;
+		dfsPaths(root, "", res);
+		return res;
+	}
 };
 
 TEST_CASE("872. Leaf-Similar Trees", "[NEW]")
