@@ -1046,9 +1046,29 @@ public:
 	bool isBalanced(TreeNode* root) { // beat 100%
 		return height(root) != INT32_MAX;
 	}
+	
+	bool isSymmetric(TreeNode* left, TreeNode *right) {
+		if (left == nullptr && right == nullptr)
+			return true;
+		else if (left == nullptr || right == nullptr)
+			return false;
+		return left->val==right->val && isSymmetric(left->left, right->right) && isSymmetric(left->right, right->left); // subtree is symmetric
+	}
+
+	// 101. Symmetric Tree, node value symmetric around center
+	bool isSymmetric(TreeNode* root) {
+		return root?isSymmetric(root->left, root->right):true;
+	}
 };
 
-TEST_CASE("110. Balanced Binary Tree", "[NEW]")
+TEST_CASE("101. Symmetric Tree", "[NEW]")
+{
+	TreeNode * r2 = TreeNode::CreateBinaryTree(vector<int>{1,2,2, INT32_MIN,3,3});
+	CHECK(TreeEasy().isSymmetric(r2) == true);
+	TreeNode * r1 = TreeNode::CreateBinaryTree(vector<int>{1, 2, 3});
+	CHECK(TreeEasy().isSymmetric(r1) == false);
+}
+TEST_CASE("110. Balanced Binary Tree", "[TREE]")
 {
 	TreeNode * r1 = TreeNode::CreateBinaryTree(vector<int>{3, 9, 20, INT32_MIN, INT32_MIN, 15, 7});
 	CHECK(TreeEasy().isBalanced(r1) == true);
@@ -1056,13 +1076,13 @@ TEST_CASE("110. Balanced Binary Tree", "[NEW]")
 	CHECK(TreeEasy().isBalanced(r)==false);
 }
 
-TEST_CASE("872. Leaf-Similar Trees", "[NEW]")
+TEST_CASE("872. Leaf-Similar Trees", "[TREE]")
 {
 	TreeNode * root1 = TreeNode::CreateBinaryTree(vector<int>{41, 62, INT32_MIN, 66, INT32_MIN, INT32_MIN, 21, 96, INT32_MIN, 70, 74});
 	TreeNode * root2 = TreeNode::CreateBinaryTree(vector<int>{55, INT32_MIN, 84, INT32_MIN, 29, 116, INT32_MIN, 7, 74, INT32_MIN, 70});
 	CHECK(TreeEasy().leafSimilar(root1, root2));
 }
-TEST_CASE("897. Increasing Order Search Tree", "[NEW]")
+TEST_CASE("897. Increasing Order Search Tree", "[TREE]")
 {
 	TreeNode * root = TreeNode::CreateBinaryTree(vector<int>{5, 3, 6, 2, 4, INT32_MIN, 8, 1, INT32_MIN, INT32_MIN, INT32_MIN, 7, 9});
 	TreeNode *t = TreeEasy().increasingBST(root);

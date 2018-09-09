@@ -68,16 +68,18 @@ struct TreeNode {
 		int idx = 0;
 		while (!level.empty() && idx<(int)nodes.size()-1) {
 			int old_size = level.size();
-			while (old_size-- && idx + 2 < (int)nodes.size()) { // allow trailing null nodes
+			for (int i=0; i<old_size; i++) {
 				TreeNode * r = level.front();
 				level.pop_front();
 				if (nodes[++idx] != INT32_MIN) {
 					r->left = new TreeNode(nodes[idx]);
 					level.push_back(r->left);
 				}
-				if (nodes[++idx] != INT32_MIN) {
-					r->right = new TreeNode(nodes[idx]);
-					level.push_back(r->right);
+				if (idx+1 < (int)nodes.size()) {  // allow trailing null nodes
+					if (nodes[++idx] != INT32_MIN) {
+						r->right = new TreeNode(nodes[idx]);
+						level.push_back(r->right);
+					}
 				}
 			}
 		}
