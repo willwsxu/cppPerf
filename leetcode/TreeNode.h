@@ -5,12 +5,9 @@
 template<typename RandIter>
 TreeNode * buildBSTinorder(RandIter first, RandIter last)  // input: sorted vector of int
 {
-	int size = distance(first, last);
-	if (size == 0)
+	if (first == last)
 		return nullptr;
-	else if (size==1)
-		return new TreeNode(*first);
-	int mid = size / 2;
+	int mid = distance(first, last) / 2;
 	TreeNode *r = new TreeNode(*(first+mid));
 	r->left = buildBSTinorder(first, first + mid);
 	r->right = buildBSTinorder(first + mid + 1, last);
