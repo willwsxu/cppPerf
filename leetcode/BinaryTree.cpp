@@ -117,10 +117,6 @@ public:
 		return buildTree(postorder, inorder, true);  // beat 84% after refactoring out common code between preorder and postorder
 	}
 
-	int getHeight(TreeNode* r)
-	{
-		return r == nullptr ? 0 : max(getHeight(r->left), getHeight(r->right)) + 1;
-	}
 	// 655. Print Binary Tree
 	void printTree(TreeNode* root, int level, vector<vector<string>>&ans, int L, int R) {
 		if (root == nullptr)	return;
@@ -132,7 +128,7 @@ public:
 	vector<vector<string>> printTree(TreeNode* root) {  // beat 63%
 		if (root == nullptr)
 			return vector<vector<string>>{};
-		size_t h = getHeight(root);  // rows
+		size_t h = TreeNode::getHeight(root);  // rows
 		size_t w = size_t(pow(2, h) - 1);
 		vector<vector<string>> ans{ h, vector<string>{w, ""} };
 		printTree(root, 0, ans, 0, w - 1);
@@ -1036,7 +1032,29 @@ public:
 		dfsPaths(root, "", res);
 		return res;
 	}
+
+	int height(TreeNode* root) {
+		if (!root)
+			return 0;
+		int left = height(root->left);
+		int right = height(root->right);
+		if (left== INT32_MAX || right== INT32_MAX || abs(left - right) > 1) // INT32_MAX indicates not balanced
+			return INT32_MAX;
+		return max(left, right)+1;
+	}
+	// 110. Balanced Binary Tree
+	bool isBalanced(TreeNode* root) { // beat 100%
+		return height(root) != INT32_MAX;
+	}
 };
+
+TEST_CASE("110. Balanced Binary Tree", "[NEW]")
+{
+	TreeNode * r1 = TreeNode::CreateBinaryTree(vector<int>{3, 9, 20, INT32_MIN, INT32_MIN, 15, 7});
+	CHECK(TreeEasy().isBalanced(r1) == true);
+	TreeNode * r = TreeNode::CreateBinaryTree(vector<int>{1, 2, 2, 3, INT32_MIN, INT32_MIN, 3, 4, INT32_MIN, INT32_MIN, 4});
+	CHECK(TreeEasy().isBalanced(r)==false);
+}
 
 TEST_CASE("872. Leaf-Similar Trees", "[NEW]")
 {
