@@ -1048,16 +1048,31 @@ public:
 	}
 	
 	bool isSymmetric(TreeNode* left, TreeNode *right) {
-		if (left == nullptr && right == nullptr)
-			return true;
-		else if (left == nullptr || right == nullptr)
-			return false;
+		if (left == nullptr || right == nullptr)
+			return left==right;
 		return left->val==right->val && isSymmetric(left->left, right->right) && isSymmetric(left->right, right->left); // subtree is symmetric
 	}
 
 	// 101. Symmetric Tree, node value symmetric around center
 	bool isSymmetric(TreeNode* root) {
-		return root?isSymmetric(root->left, root->right):true;
+		//return root?isSymmetric(root->left, root->right):true; beat 13% recursive solution
+		if (root == nullptr)  // iterative solution, beat 98%
+			return true;
+		deque<pair<TreeNode*, TreeNode*>> nodes;
+		nodes.push_back({ root->left, root->right });
+		while (!nodes.empty()) {
+			auto p = nodes.front(); 
+			nodes.pop_front();
+			if (p.first == nullptr && p.second == nullptr)
+				continue;
+			if (p.first == nullptr || p.second == nullptr)
+				return false;
+			if (p.first->val != p.second->val)
+				return false;
+			nodes.push_back({ p.first->left,p.second->right });
+			nodes.push_back({ p.first->right,p.second->left });
+		}
+		return true;
 	}
 };
 
