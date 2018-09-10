@@ -1098,7 +1098,38 @@ public:
 		reverse(begin(ans), end(ans));
 		return ans;
 	}
+	// 637. Average of Levels in Binary Tree, compute average at each level
+	vector<double> averageOfLevels(TreeNode* root) { // similar to #107, watch for overflow
+		vector<double> ans;
+		if (root == nullptr)
+			return ans;
+		deque<TreeNode*> dq;
+		dq.push_back(root);
+		while (!dq.empty()) {
+			size_t oldSize = dq.size();
+			int64_t  total=accumulate(begin(dq), end(dq), (int64_t)0, [](int64_t init, const TreeNode* n) {
+				return init+n->val;
+			});
+			ans.push_back((double)total/ oldSize);
+			for (size_t i = 0; i < oldSize; i++) {
+				TreeNode * r = dq.front();
+				dq.pop_front();
+				if (r->left)
+					dq.push_back(r->left);
+				if (r->right)
+					dq.push_back(r->right);
+			}
+		}
+		return ans;
+	}
 };
+
+TEST_CASE("637. Average of Levels in Binary Tree", "[NEW]")
+{
+	TreeNode * r1 = TreeNode::CreateBinaryTree(vector<int>{2147483647, 2147483647, 2147483647});
+	CHECK(TreeEasy().averageOfLevels(r1) == vector<double>{2147483647.0, 2147483647.0});
+}
+
 TEST_CASE("107. Binary Tree Level Order Traversal II", "[NEW]")
 {
 	TreeNode * r1 = TreeNode::CreateBinaryTree(vector<int>{3, 9, 20, INT32_MIN, INT32_MIN, 15, 7});
