@@ -952,22 +952,24 @@ public:
 		return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
 	}
 
-	string dfs(TreeNode* r) {
+	void dfs(TreeNode* r, vector<int>& leaf) {
 		if (r == nullptr)
-			return "";
+			return;
 		if (!r->left && !r->right)
-			return to_string(r->val).append(1, ',');
-		if (r->left && r->right)
-			return dfs(r->left)+ dfs(r->right);
-		if (r->left)
-			return dfs(r->left);
-		return dfs(r->right);
+			leaf.push_back(r->val);
+		else if (r->left && r->right) {
+			dfs(r->left, leaf);
+			dfs(r->right, leaf);
+		}
+		else if (r->left)
+			return dfs(r->left, leaf);
+		else
+			dfs(r->right, leaf);
 	}
 	bool leafSimilar(TreeNode* root1, TreeNode* root2) {// beat 19%
-		string leaf1 = dfs(root1);
-		string leaf2 = dfs(root2);
+		vector<int> leaf1;	dfs(root1, leaf1);
+		vector<int> leaf2;	dfs(root2, leaf2);
 		return leaf1 == leaf2;
-
 	}
 	//104. Maximum Depth of Binary Tree
 	int maxDepth(TreeNode* root) {  // beat 98%
