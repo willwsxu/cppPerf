@@ -113,8 +113,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\perfExample.cpp" />
+    <ClCompile Include="bm_general_test_driver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bm_call_once.h" />
     <ClInclude Include="branch.h" />
     <ClInclude Include="constructors.h" />
     <ClInclude Include="lambda.h" />

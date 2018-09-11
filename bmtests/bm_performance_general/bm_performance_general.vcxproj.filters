@@ -18,6 +18,9 @@
     <ClCompile Include="..\perfExample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bm_general_test_driver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pre_post_increment.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="constructors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bm_call_once.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
