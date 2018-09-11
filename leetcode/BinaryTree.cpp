@@ -1075,7 +1075,7 @@ public:
 		return true;
 	}
 	// 107. Binary Tree Level Order Traversal II
-	vector<vector<int>> levelOrderBottom(TreeNode* root) {
+	vector<vector<int>> levelOrderBottom(TreeNode* root) { // BFS
 		vector<vector<int>> ans;
 		if (root == nullptr)
 			return ans;
@@ -1085,6 +1085,7 @@ public:
 			vector<int> v;
 			transform(begin(dq), end(dq), back_inserter(v), [](const TreeNode* n) { return n->val; });
 			ans.push_back(v);
+
 			size_t oldSize = dq.size();
 			for (size_t i = 0; i < oldSize; i++) {
 				TreeNode * r = dq.front();
@@ -1187,5 +1188,24 @@ public:
 		for (Node * n : root->children)
 			depth = max(depth, maxDepth(n));
 		return 1 + depth;
+	}
+	// 429. N-ary Tree Level Order Traversal
+	vector<vector<int>> levelOrder(Node* root) {
+		vector<vector<int>> ans;
+		if (root == nullptr)
+			return ans;
+		deque<Node*> dq{ root };
+		while (!dq.empty()) {
+			ans.push_back({});
+			transform(begin(dq), end(dq), back_inserter(ans.back()), [](const Node* n) { return n->val; });
+
+			size_t oldSize = dq.size();
+			for (size_t i = 0; i < oldSize; i++) {
+				for (Node * n : dq.front()->children)
+					dq.push_back(n);
+				dq.pop_front();
+			}
+		}
+		return ans;
 	}
 };
