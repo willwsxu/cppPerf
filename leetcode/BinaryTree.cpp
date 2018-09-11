@@ -1074,27 +1074,29 @@ public:
 		}
 		return true;
 	}
+
+	void bfs(deque<TreeNode*>& dq, size_t oldSize)
+	{
+		for (size_t i = 0; i < oldSize; i++) {
+			TreeNode * r = dq.front();
+			if (r->left)
+				dq.push_back(r->left);
+			if (r->right)
+				dq.push_back(r->right);
+			dq.pop_front();
+		}
+	}
 	// 107. Binary Tree Level Order Traversal II
-	vector<vector<int>> levelOrderBottom(TreeNode* root) { // BFS
+	vector<vector<int>> levelOrderBottom(TreeNode* root) { // BFS, beat 98%
 		vector<vector<int>> ans;
 		if (root == nullptr)
 			return ans;
-		deque<TreeNode*> dq;
-		dq.push_back(root);
+		deque<TreeNode*> dq{ root };
 		while (!dq.empty()) {
-			vector<int> v;
-			transform(begin(dq), end(dq), back_inserter(v), [](const TreeNode* n) { return n->val; });
-			ans.push_back(v);
+			ans.push_back({});
+			transform(begin(dq), end(dq), back_inserter(ans.back()), [](const TreeNode* n) { return n->val; });
 
-			size_t oldSize = dq.size();
-			for (size_t i = 0; i < oldSize; i++) {
-				TreeNode * r = dq.front();
-				dq.pop_front();
-				if (r->left)
-					dq.push_back(r->left);
-				if (r->right)
-					dq.push_back(r->right);
-			}
+			bfs(dq, dq.size() );
 		}
 		reverse(begin(ans), end(ans));
 		return ans;
@@ -1104,40 +1106,32 @@ public:
 		vector<double> ans;
 		if (root == nullptr)
 			return ans;
-		deque<TreeNode*> dq;
-		dq.push_back(root);
+		deque<TreeNode*> dq{ root };
 		while (!dq.empty()) {
 			size_t oldSize = dq.size();
 			int64_t  total=accumulate(begin(dq), end(dq), (int64_t)0, [](int64_t init, const TreeNode* n) {
 				return init+n->val;
 			});
 			ans.push_back((double)total/ oldSize);
-			for (size_t i = 0; i < oldSize; i++) {
-				TreeNode * r = dq.front();
-				dq.pop_front();
-				if (r->left)
-					dq.push_back(r->left);
-				if (r->right)
-					dq.push_back(r->right);
-			}
+			bfs(dq, oldSize);
 		}
 		return ans;
 	}
 };
 
-TEST_CASE("637. Average of Levels in Binary Tree", "[NEW]")
+TEST_CASE("637. Average of Levels in Binary Tree", "[TREE]")
 {
 	TreeNode * r1 = TreeNode::CreateBinaryTree(vector<int>{2147483647, 2147483647, 2147483647});
 	CHECK(TreeEasy().averageOfLevels(r1) == vector<double>{2147483647.0, 2147483647.0});
 }
 
-TEST_CASE("107. Binary Tree Level Order Traversal II", "[NEW]")
+TEST_CASE("107. Binary Tree Level Order Traversal II", "[TREE]")
 {
 	TreeNode * r1 = TreeNode::CreateBinaryTree(vector<int>{3, 9, 20, INT32_MIN, INT32_MIN, 15, 7});
 	CHECK(TreeEasy().levelOrderBottom(r1) == vector<vector<int>>{ {15, 7}, { 9,20 }, { 3 }});
 }
 
-TEST_CASE("101. Symmetric Tree", "[NEW]")
+TEST_CASE("101. Symmetric Tree", "[TREE]")
 {
 
 	TreeNode * r2 = TreeNode::CreateBinaryTree(vector<int>{1,2,2, INT32_MIN,3,3});
