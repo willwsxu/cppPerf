@@ -28,6 +28,9 @@ TEST_CASE("type conversion check", "[NEW]")
 	using yy = decltype(declval<Base&>() = declval<Derived&>());
 	CHECK(type_convertable<Derived, Base>::value == true);  // Derived can be converted to Base
 	CHECK(type_convertable<Base, Derived>::value == false);
+
+	CHECK(IsConvertibleT<Derived, Base>::value == true);
+	CHECK(IsConvertibleT<Base, Derived>::value == false);
 }
 
 TEST_CASE("Variadic template", "[META]")

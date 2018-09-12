@@ -15,11 +15,27 @@ public:
 	enum { result = sizeof(convert(makeT())) == sizeof(Small) };  // can only call static methods
 };
 
+// type conversion using mordern c++
 template <typename T, typename U>  // convert T to U
-using conversion_t = decltype(declval<U&>() = declval<T>());
+using conversion_t = decltype(declval<U>() = declval<T>());
 
 template<typename T, typename U, class = void>  // primary template, default arg is essential
 struct type_convertable : false_type {};
 
 template <typename T, typename U>
-struct type_convertable<T, U, void_t<conversion_t<T,U>>> : true_type {};
+struct type_convertable<T, U, void_t<conversion_t<T,U>>> : true_type {};  // void_t is necessary here
+
+// Vandevoorde book, page 428. example has one mistake
+template <typename FROM, typename TO>
+struct IsConvertibleHelper {
+private:
+	static void aux(TO);
+	template <typename F, typename=decltype(aux(declval<F>()))>
+	static true_type test(void *);
+	template <typename>
+	static false_type test(...);
+public:
+	using Type = decltype(test<FROM>(nullptr));
+};
+template <typename FROM, typename TO>
+struct IsConvertibleT : IsConvertibleHelper<FROM, TO>::Type {};
