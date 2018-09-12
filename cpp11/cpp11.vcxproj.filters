@@ -27,9 +27,6 @@
     <ClInclude Include="meta.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Alexandrescu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="courseSchedule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -94,6 +91,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="str.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="meta_book_example.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

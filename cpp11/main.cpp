@@ -126,7 +126,7 @@ TEST_CASE("Matrix 2", "[MATRIX]")
 struct Base {};
 struct Derived : public Base {};
 
-#include "Alexandrescu.h"
+#include "meta_book_example.h"
 TEST_CASE("type conversion check", "[CONV]")
 {
 	using dyn_msg_t = CDynMsg<Console, char>;

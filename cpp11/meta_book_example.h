@@ -1,6 +1,8 @@
 #pragma once
+
+// from Alexandrescu book
 template <typename T, typename U>
-class Conversion
+class Conversion  // from T to U
 {
 	typedef char Small;
 	//typedef char Big[2];  // won't work
