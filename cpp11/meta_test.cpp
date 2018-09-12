@@ -12,7 +12,25 @@
 #include "meta_math.h"
 using namespace std;
 
-TEST_CASE("Variadic template", "[NEW]")
+struct Base {
+	Base(int) {}
+};
+struct Derived : public Base {
+	Derived(int x):Base(x) {}
+};
+
+#include "meta_book_example.h"
+TEST_CASE("type conversion check", "[NEW]")
+{
+	CHECK(Conversion<Derived, Base>::result == 1);
+	CHECK(Conversion<Base, Derived>::result == 0);
+
+	using yy = decltype(declval<Base&>() = declval<Derived&>());
+	CHECK(type_convertable<Derived, Base>::value == true);  // Derived can be converted to Base
+	CHECK(type_convertable<Base, Derived>::value == false);
+}
+
+TEST_CASE("Variadic template", "[META]")
 {
 	Console c;
 	c(LOG_INFO, "[%p] DynBuffer (from [%p]) resize to max allowed %d", &c, 10, 20);
@@ -92,17 +110,17 @@ TEST_CASE("template example from Stroustrup", "example")
 	REQUIRE(find_all(s, 'a').size() == 4);
 }
 
-TEST_CASE("factorial test", "[NEW]")
+TEST_CASE("factorial test", "[META]")
 {
 	CHECK(Factorial < 3 >::value == 6);
 }
 
-TEST_CASE("fibonacci test", "NEW")
+TEST_CASE("fibonacci test", "META")
 {
 	CHECK(Fibonacci<5>::value == 5);
 }
 
-TEST_CASE("n choose 2 test", "NEW")
+TEST_CASE("n choose 2 test", "META")
 {
 	CHECK(nChooseK < 5, 2 >::value == 10);
 }

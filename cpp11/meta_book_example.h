@@ -9,7 +9,7 @@ class Conversion  // from T to U
 	class Big { char dummy[2]; };
 	static Small convert(U u);
 	static Big convert(...);
-	static T makeT();
+	static T makeT();  // or use declval
 
 public:
 	enum { result = sizeof(convert(makeT())) == sizeof(Small) };  // can only call static methods
