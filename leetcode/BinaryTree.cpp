@@ -1119,6 +1119,17 @@ public:
 		}
 		return ans;
 	}
+
+	// 617. Merge Two Binary Trees
+	TreeNode* mergeTrees(TreeNode* t1, TreeNode* t2) {
+		if (t1 == nullptr || t2 == nullptr) {
+			return t1 == nullptr ? t2 : t1;
+		}
+		TreeNode * r = new TreeNode(t1->val + t2->val);
+		r->left = mergeTrees(t1->left, t2->left);
+		r->right = mergeTrees(t1->right, t2->right);
+		return r;
+	}
 };
 
 TEST_CASE("637. Average of Levels in Binary Tree", "[TREE]")
@@ -1204,4 +1215,9 @@ public:
 		}
 		return ans;
 	}
+};
+
+class BST
+{
+
 };
