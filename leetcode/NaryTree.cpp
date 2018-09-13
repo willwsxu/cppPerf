@@ -45,4 +45,19 @@ public:
 		}
 		return ans;
 	}
+
+	vector<int>  preTrav;
+	void preorderHelper(Node* root) {
+		if (!root)
+			return;
+		preTrav.push_back(root->val);
+		for (Node *n : root->children)
+			preorderHelper(n);
+
+	}
+
+	// 589. N-ary Tree Preorder Traversal
+	vector<int> preorder(Node* root) {
+
+	}
 };
