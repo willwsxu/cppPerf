@@ -113,5 +113,11 @@
     <ClCompile Include="designHash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NaryTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BinarySearchTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

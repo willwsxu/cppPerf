@@ -158,6 +158,7 @@
     <ClCompile Include="..\library\Board2D.cpp" />
     <ClCompile Include="..\library\Graph.cpp" />
     <ClCompile Include="backTracking.cpp" />
+    <ClCompile Include="BinarySearchTree.cpp" />
     <ClCompile Include="BinaryTree.cpp" />
     <ClCompile Include="BitManip.cpp" />
     <ClCompile Include="calculator.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="LinkedList.cpp" />
+    <ClCompile Include="NaryTree.cpp" />
     <ClCompile Include="OtherTree.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="stack.cpp" />
