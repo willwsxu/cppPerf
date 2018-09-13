@@ -46,18 +46,27 @@ public:
 		return ans;
 	}
 
-	vector<int>  preTrav;
-	void preorderHelper(Node* root) {
+	void preorderHelper(Node* root, vector<int>&  preTrav) {
 		if (!root)
 			return;
 		preTrav.push_back(root->val);
 		for (Node *n : root->children)
-			preorderHelper(n);
-
+			preorderHelper(n, preTrav);
 	}
 
 	// 589. N-ary Tree Preorder Traversal
-	vector<int> preorder(Node* root) {
-
+	vector<int> preorder(Node* root) { // beat 23%
+		vector<int>  preTrav;
+		//preorderHelper(root, preTrav);
+		if (!root)
+			return preTrav;
+		deque<Node*> nodes{ root };  // use deque instead of stack for easy algorithm
+		while (!nodes.empty()) {
+			root = nodes.back();
+			preTrav.push_back(root->val);
+			nodes.pop_back();
+			copy(rbegin(root->children), rend(root->children), back_inserter(nodes));
+		}
+		return preTrav;
 	}
 };
