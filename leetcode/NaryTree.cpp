@@ -69,4 +69,23 @@ public:
 		}
 		return preTrav;
 	}
+	// N-ary Tree Postorder Traversal
+	vector<int> postorder(Node* root) { // harder than preorder, beat 33%
+		vector<int>  postTrav;
+		if (!root)
+			return postTrav;
+		deque<pair<Node*, bool>> nodes{ {root,false} };  // need to mark if a node's children is visited
+		while (!nodes.empty()) {
+			auto& p = nodes.back();
+			if (p.second) {  // already visited
+				postTrav.push_back(p.first->val);
+				nodes.pop_back();
+			}
+			else {
+				transform(rbegin(p.first->children), rend(p.first->children), back_inserter(nodes), [](Node*n) {return make_pair( n,false ); });
+				p.second = true;// mark as visited
+			}
+		}
+		return postTrav;
+	}
 };
