@@ -1053,6 +1053,25 @@ public:
 		}
 		return sum;
 	}
+	// 543. Diameter of Binary Tree
+	// The diameter of a binary tree is the length of the longest path between any two nodes in a tree. 
+	// This path may or may not pass through the root
+	int maxDim = 0;
+	int height_543(TreeNode* root)
+	{
+		if (!root)
+			return 0;
+		int left = height_543(root->left);
+		int right = height_543(root->right);
+		maxDim = max(left + right, maxDim);
+		return max(left, right) + 1;
+	}
+	// idea: diameter at each root=sum of left and right height
+	int diameterOfBinaryTree(TreeNode* root) { // beat 100%
+		maxDim = 0;
+		height_543(root);
+		return maxDim;
+	}
 };
 
 TEST_CASE("637. Average of Levels in Binary Tree", "[TREE]")
