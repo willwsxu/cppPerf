@@ -329,10 +329,29 @@ public:
 			return good;
 		};
 		int ans = 0;
-		vector<char> dp(N + 1, 0); // try dp later!!!!!!!!!!!!!!!!
+		vector<char> dp(N + 1, 0);
 		for (int i = 1; i <= N; i++) {
 			if (valid(i))
 				ans++;
+		}
+		return ans;
+	}
+	int rotatedDigits_dp(int N) {  // beat 100%
+		int ans = 0;
+		vector<char> dp(N + 1, 0);
+		vector<char> first10{ 1,1,0,2,2,0,0,2,1,0 };//  0-success, 2 - invalid, 1 - valid but not good
+		copy(begin(first10), end(first10), begin(dp));
+		for (int i = 1; i <= N; i++) {  // each number can be computed from prev dp
+			int p1 = i / 10;
+			int p2 = i % 10;
+			if (dp[p1] == 2 || dp[p2] == 2) // invalid in either part is invalid
+				dp[i] = 2;
+			else if (dp[p1] == 0 || dp[p2] == 0) { // success in either part is success
+				ans++;
+				dp[i] = 0;
+			}
+			else  // both part is valid but not good
+				dp[i] = 1;
 		}
 		return ans;
 	}
