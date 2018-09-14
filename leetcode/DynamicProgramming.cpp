@@ -309,6 +309,33 @@ public:
 		}
 		return min(first, second);  // may skip last step
 	}
+	// 788. Rotated Digits, rotate digit by 180 degree. only 2 and 5, 6 and 9 rotate to each other
+	// 0,1,8 rotate to themselves, other digit rotate to invalid
+	// given a positive number N, how many numbers X from 1 to N are good?>
+	// i.e. a number is good if it consists of some 2,5,6,9 and don't consists of 3,4,7
+	int rotatedDigits(int N) {  // beat 38% without dp
+		const static set<int> must{ 2,5,6,9 };
+		const static set<int> mustNot{ 3,4,7 };
+		auto valid = [](int n) {
+			bool good = false;
+			while (n > 0) {
+				int digit = n % 10;
+				if (mustNot.count(digit))
+					return false;
+				if (must.count(digit))
+					good = true;
+				n /= 10;
+			}
+			return good;
+		};
+		int ans = 0;
+		vector<char> dp(N + 1, 0); // try dp later!!!!!!!!!!!!!!!!
+		for (int i = 1; i <= N; i++) {
+			if (valid(i))
+				ans++;
+		}
+		return ans;
+	}
 };
 TEST_CASE("70. Climbing Stairs", "[NEW]")
 {
