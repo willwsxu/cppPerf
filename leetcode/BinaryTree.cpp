@@ -1025,6 +1025,34 @@ public:
 		InvertHelp(root);
 		return root;
 	}
+	// 404. Sum of Left Leaves
+	bool isLeaf(TreeNode* r)
+	{
+		return r && r->left == nullptr && r->right == nullptr;
+	}
+	int sumOfLeftLeaves(TreeNode* root) { // beat 69%
+		if (!root)
+			return 0;
+		if (isLeaf(root->left))
+			return root->left->val + sumOfLeftLeaves(root->right);
+		return sumOfLeftLeaves(root->left) + sumOfLeftLeaves(root->right);
+	}
+	int sumOfLeftLeaves_iterative(TreeNode* root) { // beat 69%
+		deque<TreeNode*> dq{ root };
+		int sum = 0;
+		while (!dq.empty()) {
+			TreeNode *n = dq.front();
+			dq.pop_front();
+			if (!n)
+				continue;
+			if (isLeaf(n->left))
+				sum += n->left->val;
+			else
+				dq.push_back(n->left);
+			dq.push_back(n->right);
+		}
+		return sum;
+	}
 };
 
 TEST_CASE("637. Average of Levels in Binary Tree", "[TREE]")
