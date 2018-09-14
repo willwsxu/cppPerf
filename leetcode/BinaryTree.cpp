@@ -1012,6 +1012,19 @@ public:
 		r->right = mergeTrees(t1->right, t2->right);
 		return r;
 	}
+	// 226. Invert Binary Tree
+	void InvertHelp(TreeNode* root)
+	{
+		if (!root)
+			return;
+		swap(root->left, root->right);
+		InvertHelp(root->left);
+		InvertHelp(root->right);
+	}
+	TreeNode* invertTree(TreeNode* root) {
+		InvertHelp(root);
+		return root;
+	}
 };
 
 TEST_CASE("637. Average of Levels in Binary Tree", "[TREE]")
