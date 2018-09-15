@@ -22,7 +22,7 @@ public:
 	}
 	void push_front(T&& t)
 	{
-		auto n = make_shared<Node>(t);
+		auto n = std::make_shared<Node>(t);
 		n->next = head;
 		head = n;
 	}
@@ -123,7 +123,7 @@ public:
 	}
 	void push_front(T&& t)
 	{
-		auto n = make_unique<Node>(t);
+		auto n = std::make_unique<Node>(t);
 		n->next = move(head);
 		head = move(n);
 	}
