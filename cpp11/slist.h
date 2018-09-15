@@ -8,13 +8,19 @@ class slist
 	struct Node {
 		T	data;
 		std::shared_ptr<Node>	next;
-		Node(const T&& d) :data(move(d)) {}
-		Node(const T& d) :data(move(d)) {}
+		Node(T&& d) :data(move(d)) {}
+		Node(const T& d) :data(d) {}
 	};
 	std::shared_ptr<Node>	head;
 
 public:
-	void push_front(const T& t)  // cannot use &&
+	void push_front(const T& t)
+	{
+		auto n = make_shared<Node>(t);
+		n->next = head;
+		head = n;
+	}
+	void push_front(T&& t)
 	{
 		auto n = make_shared<Node>(t);
 		n->next = head;
@@ -35,15 +41,15 @@ public:
 	}
 };
 
-
+// raw pointer list, no lock or use atomic
 template <bool atom, typename T>
 class slist_r
 {
 	struct Node {
 		T	data;
 		Node*	next;
-		Node(const T&& d) :data(move(d)), next(nullptr){}
-		Node(const T& d) :data(move(d)), next(nullptr) {}
+		Node(T&& d) :data(move(d)), next(nullptr){}
+		Node(const T& d) :data(d), next(nullptr) {}
 		~Node() { delete next; }
 	};
 	using NodeType = typename std::conditional<atom, std::atomic<Node*>, Node *>::type;
@@ -67,9 +73,15 @@ public:
 		head = n;
 	}
 
-	void push_front(const T& t)  // cannot use &&
+	void push_front(const T& t)
 	{
 		auto n =new Node(t);
+		n->next = head;
+		exchange(n);
+	}
+	void push_front(T&& t)
+	{
+		auto n = new Node(t);
 		n->next = head;
 		exchange(n);
 	}
@@ -97,13 +109,19 @@ class slist_u
 	struct Node {
 		T	data;
 		std::unique_ptr<Node>	next;
-		Node(const T&& d) :data(move(d)) {}
-		Node(const T& d) :data(move(d)) {}
+		Node(T&& d) :data(move(d)) {}
+		Node(const T& d) :data(d) {}
 	};
 	std::unique_ptr<Node>	head;
 
 public:
-	void push_front(const T& t)  // cannot use &&
+	void push_front(const T& t)
+	{
+		auto n = make_unique<Node>(t);
+		n->next = move(head);
+		head = move(n);
+	}
+	void push_front(T&& t)
 	{
 		auto n = make_unique<Node>(t);
 		n->next = move(head);

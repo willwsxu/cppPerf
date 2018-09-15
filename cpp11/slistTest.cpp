@@ -22,7 +22,10 @@ struct MemoryTracker
 	MemoryTracker() {
 		count++;
 	}
-	MemoryTracker(const MemoryTracker&&) {
+	MemoryTracker(const MemoryTracker&) {
+		count++;
+	}
+	MemoryTracker(MemoryTracker&&) {
 		count++;
 	}
 	~MemoryTracker()
