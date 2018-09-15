@@ -250,26 +250,20 @@ public:
 	// 606. Construct String from Binary Tree
 	// construct a string consists of parenthesis and integers from a binary tree with the preorder traversing way
 	// remove all unnecessary ()
-	void tree2strHelper(TreeNode* t, string& result) {
-		if (!t)
-			return;
-		result.append(to_string(t->val));
-		if (t->left || t->right) {// always add () to left subtree
-			result.append(1, '(');
-			tree2strHelper(t->left, result);
-			result.append(1, ')');
-		}
-		if (t->right) {
-			result.append(1, '(');
-			tree2strHelper(t->right, result);
-			result.append(1, ')');
-		}
-	}
 	string tree2str(TreeNode* t) {
-		string res;
-		tree2strHelper(t, res);
-		return res;
+		if (!t)
+			return "";
+		string left = tree2str(t->left);
+		string right = tree2str(t->right);
+		if (left.empty() && right.empty())
+			return to_string(t->val);
+		string result = to_string(t->val);
+		result.append(1, '(').append(left).append(1, ')');
+		if (!right.empty())
+			result.append(1, '(').append(right).append(1, ')');
+		return result;
 	}
+
 	void addOneRow(TreeNode *root, int v, int depth, int level)
 	{
 		if (root == nullptr)
