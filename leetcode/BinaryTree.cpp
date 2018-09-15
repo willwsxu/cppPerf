@@ -253,14 +253,12 @@ public:
 	string tree2str(TreeNode* t) {
 		if (!t)
 			return "";
-		string left = tree2str(t->left);
-		string right = tree2str(t->right);
-		if (left.empty() && right.empty())
+		if (!t->left && !t->right)
 			return to_string(t->val);
 		string result = to_string(t->val);
-		result.append(1, '(').append(left).append(1, ')');
-		if (!right.empty())
-			result.append(1, '(').append(right).append(1, ')');
+		result.append(1, '(').append(tree2str(t->left)).append(1, ')');
+		if (t->right)
+			result.append(1, '(').append(tree2str(t->right)).append(1, ')');
 		return result;
 	}
 
