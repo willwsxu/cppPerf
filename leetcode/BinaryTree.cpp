@@ -1087,8 +1087,28 @@ public:
 		height_543(root);
 		return maxDim;
 	}
+
+	tuple<int, int> findTiltHelp(TreeNode* root) {  // return {sum of at root, total_tilt}
+		if (!root)
+			return{ 0,0 };
+		auto left = findTiltHelp(root->left);
+		auto right = findTiltHelp(root->right);
+		return{ root->val + get<0>(left) + get<0>(right), abs(get<0>(left) - get<0>(right))+ get<1>(left) + get<1>(right) };
+	}
+	// 563. Binary Tree Tilt, sum of all difference of left and right subtree
+	int findTilt(TreeNode* root) {
+		auto x= findTiltHelp(root);
+		return get<1>(x);
+	}
 };
 
+TEST_CASE("563. Binary Tree Tilt", "[NEW]")
+{
+	auto *x = TreeNode::CreateBinaryTree({ 1,2,3 });
+	CHECK(TreeEasy().findTilt(x)==1);
+	auto *x2 = TreeNode::CreateBinaryTree({ 5,5,8,3,5,8,10 });
+	CHECK(TreeEasy().findTilt(x2) == 17);
+}
 TEST_CASE("637. Average of Levels in Binary Tree", "[TREE]")
 {
 	TreeNode * r1 = TreeNode::CreateBinaryTree(vector<int>{2147483647, 2147483647, 2147483647});
