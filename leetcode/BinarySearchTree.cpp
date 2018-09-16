@@ -96,25 +96,24 @@ public:
 		return root;
 	}
 
-	bool findTargetP2(TreeNode* root, TreeNode* p1, int p2) {
+	bool BinarySearchTargetP2(TreeNode* root, TreeNode* p1, int p2) {
 		if (root == nullptr)
 			return false;
 		if (root != p1 && root->val == p2)
 			return true;
-		if (findTargetP2(root->left, p1, p2))
+		if (p2<root->val && BinarySearchTargetP2(root->left, p1, p2))
 			return true;
-		return findTargetP2(root->right, p1, p2);
+		return p2 > root->val && BinarySearchTargetP2(root->right, p1, p2);
 	}
 	TreeNode* origRoot;
 	// 653. Two Sum IV - Input is a BST
 	bool findTargetHelp(TreeNode* root, int k) {
 		if (root == nullptr)
 			return false;
-		if (findTargetP2(origRoot, root, k - root->val)) // pick root as part 1 of target, find target-p1
+		if (BinarySearchTargetP2(origRoot, root, k - root->val)) // pick root as part 1 of target, find target-p1
 			return true;
-		if (findTargetHelp(root->left, k))  // try left and right
-			return true;
-		return findTargetHelp(root->right, k);
+		// try left and right
+		return findTargetHelp(root->left, k) || findTargetHelp(root->right, k);
 	}
 	bool findTarget(TreeNode* root, int k) {  // beat 34%
 		origRoot = root;  // save original tree root, then go through all node as first part of sum, find sum-p1 in the tree
