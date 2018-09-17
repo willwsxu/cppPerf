@@ -842,9 +842,7 @@ public:
 	bool isSameTree(TreeNode* p, TreeNode* q) { // in-order traversal, beat 100%
 		if (p == nullptr && q == nullptr)
 			return true;
-		else if (p == nullptr || q == nullptr)
-			return false;
-		if (p->val != q->val)
+		if (p == nullptr || q == nullptr || p->val != q->val)
 			return false;
 		return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
 	}
@@ -1124,17 +1122,13 @@ public:
 		return minSecond == INT32_MAX ? -1 : minSecond;
 	}
 
-	bool isSubtreeHelp(TreeNode* s, TreeNode* t)
-	{
-		if (t == nullptr && s == nullptr)
-			return true;
-		if (s == nullptr || t == nullptr || s->val != t->val)
-			return false;
-		return isSubtreeHelp(s->left, t->left) && isSubtreeHelp(s->right, t->right);
-	}
 	// 572. Subtree of Another Tree, t is same as a subtree of s
 	bool isSubtree(TreeNode* s, TreeNode* t) {
-		return isSubtreeHelp(s, t) || isSubtree(s->left, t) || isSubtree(s->right, t);
+		if (t == nullptr)
+			return true;
+		if (s == nullptr)
+			return false;
+		return isSameTree(s, t) || isSubtree(s->left, t) || isSubtree(s->right, t);
 	}
 };
 
