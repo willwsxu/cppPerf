@@ -1101,33 +1101,27 @@ public:
 		return get<1>(x);
 	}
 
-	pair<int,int> findSecondMinimumValueHelp(TreeNode* root) { // {min, second min}
-		if (!root)
-			return{ -1, INT32_MAX };
-		if (root->left == nullptr||root->right==nullptr)
-			return{ root->val, INT32_MAX };
-		int minVal = root->val;
-		int minSecond = INT32_MAX;
-		if (root->right->val > minVal)
-			minSecond = root->right->val;
-		else {
-			auto x = findSecondMinimumValueHelp(root->right);
-			minSecond = min(minSecond, x.second);
-		}
-		if (root->left->val > minVal)
-			minSecond = root->left->val;
-		else {
-			auto x = findSecondMinimumValueHelp(root->left);
-			minSecond = min(minSecond, x.second);
-		}
-		return{ minVal, minSecond };
-	}
 	// 671. Second Minimum Node In a Binary Tree, all values >=0
 	// a node with has no or 2 children. if 2, root=min(left,right child)
 	// means values of nodes at lower level is no less than the parent node
 	int findSecondMinimumValue(TreeNode* root) {
-		auto x = findSecondMinimumValueHelp(root);
-		return x.second == INT32_MAX ? -1 : x.second;
+		if (!root || root->left == nullptr || root->right == nullptr)
+			return -1;
+		int minSecond = INT32_MAX;
+		if (root->right->val == root->val) {
+			int x = findSecondMinimumValue(root->right);
+			if (x > 0)
+				minSecond = min(minSecond, x);
+		}
+		if (root->left->val == root->val) {
+			int x = findSecondMinimumValue(root->left);
+			if (x > 0)
+				minSecond = min(minSecond, x);
+		}
+		if (root->left->val != root->right->val) {
+			minSecond = min(minSecond, max(root->left->val, root->right->val));
+		}
+		return minSecond == INT32_MAX ? -1 : minSecond;
 	}
 };
 
