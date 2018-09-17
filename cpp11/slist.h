@@ -45,6 +45,7 @@ public:
 template <bool atom, typename T>
 class slist_r
 {
+protected:
 	struct Node {
 		T	data;
 		Node*	next;
