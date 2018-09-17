@@ -1123,6 +1123,19 @@ public:
 		}
 		return minSecond == INT32_MAX ? -1 : minSecond;
 	}
+
+	bool isSubtreeHelp(TreeNode* s, TreeNode* t)
+	{
+		if (t == nullptr && s == nullptr)
+			return true;
+		if (s == nullptr || t == nullptr || s->val != t->val)
+			return false;
+		return isSubtreeHelp(s->left, t->left) && isSubtreeHelp(s->right, t->right);
+	}
+	// 572. Subtree of Another Tree, t is same as a subtree of s
+	bool isSubtree(TreeNode* s, TreeNode* t) {
+		return isSubtreeHelp(s, t) || isSubtree(s->left, t) || isSubtree(s->right, t);
+	}
 };
 
 TEST_CASE("671. Second Minimum Node In a Binary Tree", "[NEW]")
