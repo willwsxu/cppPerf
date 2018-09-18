@@ -1130,7 +1130,39 @@ public:
 			return false;
 		return isSameTree(s, t) || isSubtree(s->left, t) || isSubtree(s->right, t);
 	}
+
+	// at each node, calculate left and right, and compute max of left+right
+	int DfsLength(TreeNode* root, int& maxPath) { // adapt calculating tree length
+		if (!root)
+			return 0;
+		int left = 0, right = 0;
+		if (root->left) {
+			if (root->left->val == root->val)
+				left = 1 + DfsLength(root->left, maxPath);  // same value
+			else
+				DfsLength(root->left, maxPath);  // different value, 
+		}
+		if (root->right) {
+			if (root->right->val == root->val)
+				right = 1 + DfsLength(root->right, maxPath);
+			else
+				DfsLength(root->right, maxPath);
+		}
+		maxPath = max(maxPath, left+right); // max path at root node
+		return max(left, right); // max length of this subtree
+	}
+	// 687. Longest Univalue Path, similar to 543. Diameter of Binary Tree
+	int longestUnivaluePath(TreeNode* root) {// beat 42%
+		int longest = 0;
+		DfsLength(root, longest);
+		return longest;
+	}
 };
+TEST_CASE("687. Longest Univalue Path", "[NEW]")
+{
+	auto *x = TreeNode::CreateBinaryTree({ 1,4,5,4,4,5 });
+	CHECK(TreeEasy().longestUnivaluePath(x) == 2);
+}
 
 TEST_CASE("671. Second Minimum Node In a Binary Tree", "[NEW]")
 {
