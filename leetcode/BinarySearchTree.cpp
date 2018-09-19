@@ -119,7 +119,43 @@ public:
 		origRoot = root;  // save original tree root, then go through all node as first part of sum, find sum-p1 in the tree
 		return findTargetHelp(root, k);  // O(NlogN)
 	}
+
+	int convertBSThelp(TreeNode *root, TreeNode * parent, int extra) {
+		if (!root)
+			return 0;
+		if (root->left == nullptr && root->right == nullptr) { // leaf node
+			if (parent && root->val > parent->val) { // rigth subtree
+				root->val += extra;
+				return extra + root->val;
+			}
+			else { // left subtree
+				if (parent && root->val < parent->val)
+					root->val += parent->val;
+				root->val += extra;
+				return extra;
+			}
+		}
+		int greater = convertBSThelp(root->right, root, extra);
+		(void)convertBSThelp(root->left, root, greater); //
+		int new_greater = greater;
+		if (parent && root->val > parent->val)
+			new_greater += root->val;
+		root->val += greater;
+		return new_greater;
+	}
+	// 38. Convert BST to Greater Tree
+	// add to each node of sum of all node whose values are greater than current node
+	TreeNode* convertBST(TreeNode* root) {
+		convertBSThelp(root, nullptr, 0);
+		return root;
+	}
+
 };
+TEST_CASE("38. Convert BST to Greater Tree", "[NEW]")
+{
+	TreeNode *r = TreeNode::CreateBinaryTree({ 5,2,13 });
+	r = BST().convertBST(r);
+}
 
 TEST_CASE("BST valid", "[BST]")
 {
