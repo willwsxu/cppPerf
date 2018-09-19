@@ -90,7 +90,7 @@ TEST_CASE("Meta Programming", "[META]")
 //	CHECK(Is_copy_assignable<vii_col_iter>{}() == true);
 
 	CHECK(enable_if_test<std::atomic<int*>>() == 0);
-	//	CHECK(enable_if_test<int[]>() == 1);
+	CHECK(enable_if_test<int[]>() == 1);
 	CHECK(enable_if_test<int *>() == 2);
 }
 

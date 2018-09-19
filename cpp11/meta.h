@@ -63,12 +63,10 @@ template<class T, std::enable_if_t < is_class_v<T>, int > = 0 >
 int enable_if_test() {
 	return 0;
 }
-/* cannot coexist with is_pointer_v
-template<class T, typename = std::enable_if_t<std::is_array_v<T>> >
-int enable_if_test() {
+template<class T>
+std::enable_if_t<std::is_array_v<T>, int> enable_if_test() {
 	return 1;
 }
-*/
 template<class T, typename = std::enable_if_t<std::is_pointer_v<T>> >
 int enable_if_test() {
 	return 2;
