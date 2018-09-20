@@ -135,13 +135,15 @@ public:
 				return extra;
 			}
 		}
-		int greater = convertBSThelp(root->right, root, extra);
-		(void)convertBSThelp(root->left, root, greater); //
-		int new_greater = greater;
-		if (parent && root->val > parent->val)
-			new_greater += root->val;
+		int greater = convertBSThelp(root->right, root, extra); // visit right side, find sum of node greater than root
+		// evaluate values to add before visit left subtree
+		if (root->left) {
+			if (root->left->val < root->val)
+				extra = greater + root->val;
+			(void)convertBSThelp(root->left, root, extra); //
+		}
 		root->val += greater;
-		return new_greater;
+		return greater;
 	}
 	// 38. Convert BST to Greater Tree
 	// add to each node of sum of all node whose values are greater than current node
@@ -153,8 +155,18 @@ public:
 };
 TEST_CASE("38. Convert BST to Greater Tree", "[NEW]")
 {
+	TreeNode *r2 = TreeNode::CreateBinaryTree({ 2,0,3,-4,1 });
+	r2 = BST().convertBST(r2);
+	CHECK(r2->val == 5);
+	CHECK(r2->left->val == 6);
+	CHECK(r2->right->val == 3);
+	CHECK(r2->left->left->val == 2);
+	CHECK(r2->left->right->val == 6);
 	TreeNode *r = TreeNode::CreateBinaryTree({ 5,2,13 });
 	r = BST().convertBST(r);
+	CHECK(r->val == 18);
+	CHECK(r->left->val == 20);
+	CHECK(r->right->val == 13);
 }
 
 TEST_CASE("BST valid", "[BST]")
