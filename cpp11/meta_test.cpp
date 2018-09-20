@@ -92,6 +92,8 @@ TEST_CASE("Meta Programming", "[META]")
 	CHECK(enable_if_test<std::atomic<int*>>() == 0);
 	CHECK(enable_if_test<int[]>() == 1);
 	CHECK(enable_if_test<int *>() == 2);
+
+	//CHECK(Enable_If_Test<std::atomic<int*>>().enable_if_test() == 0);
 }
 
 template <typename C, typename V>

@@ -72,6 +72,23 @@ int enable_if_test() {
 	return 2;
 }
 
+template<typename T>
+struct Enable_If_Test
+{
+	template<std::enable_if_t < is_class_v<T>, int > = 0 >
+	int enable_if_test() {
+		return 0;
+	}
+
+	std::enable_if_t<std::is_array_v<T>, int> enable_if_test() {
+		return 1;
+	}
+	template<typename = std::enable_if_t<std::is_pointer_v<T>> >
+	int enable_if_test() {
+		return 2;
+	}
+};
+
 namespace Test
 {
 	template <bool b>
