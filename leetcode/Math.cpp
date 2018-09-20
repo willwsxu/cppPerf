@@ -233,3 +233,42 @@ TEST_CASE("633. Sum of Square Numbers", "[NEW]")
 	CHECK(Math().judgeSquareSum(3) == false);
 }
 
+
+class MathEasy
+{
+public:
+	// 728. Self Dividing Numbers, divisible by all of its digits
+	vector<int> selfDividingNumbers(int left, int right) {
+		auto good = [](int n) {
+			int orig = n;
+			while (n > 0) {
+				int digit = n % 10;
+				if (digit == 0)
+					return false;
+				if (orig%digit != 0)
+					return false;
+				n /= 10;
+			}
+			return true;
+		};
+		vector<int> ans;
+		ans.reserve(200);
+		for (int i = left; i <= right; i++) {
+			if (good(i))
+				ans.push_back(i);
+		}
+		return ans;
+	}
+	// 507. Perfect Number, =sum of all its factors, except itself
+	bool checkPerfectNumber(int num) {
+		if (num <= 1)
+			return false;
+		int total = 1;
+		for (int i = 2; i*i < num; i++) {
+			if (num%i == 0) {
+				total += (i + num / i);
+			}
+		}
+		return total == num;
+	}
+};
