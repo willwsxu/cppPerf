@@ -85,16 +85,14 @@ TEST_CASE("slist single thread memory tracker", "SLIST")
 		}
 		return MemoryTracker::count;
 	});
-
-	using slistTrackerR = slist_r<false, MemoryTracker>;
-	perfTest("slist raw ptr", [loops]() {
-		slistTrackerR simple;
-		for (long i = 0; i < loops; i++) {
-			simple.push_front(MemoryTracker());
-			simple.pop_front();
-		}
-		return MemoryTracker::count;
-	});
-
-	using slistTrackerRAtomic = slist_r<true, MemoryTracker>;
+	
+	using slistTrackerR = slist_r<MemoryTracker, bool*>;
+	slistTrackerR raw;
+	raw.push_front(MemoryTracker());
+	raw.pop_front();
+	
+	using slistTrackerRAtomic = slist_r<MemoryTracker, std::atomic<bool>>;
+	slistTrackerRAtomic x;
+	x.push_front(MemoryTracker());
+	x.pop_front();
 }

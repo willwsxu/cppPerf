@@ -42,7 +42,7 @@ public:
 };
 
 // raw pointer list, no lock or use atomic
-template <bool atom, typename T>
+template <typename T, typename head_type>
 class slist_r
 {
 protected:
@@ -53,7 +53,7 @@ protected:
 		Node(const T& d) :data(d), next(nullptr) {}
 		~Node() { delete next; }
 	};
-	using NodeType = typename std::conditional<atom, std::atomic<Node*>, Node *>::type;
+	using NodeType = typename std::conditional<std::is_class_v<head_type>, std::atomic<Node*>, Node *>::type;
 	NodeType head;
 
 public:
@@ -61,44 +61,47 @@ public:
 	{}
 	~slist_r()
 	{
-		delete head;
+		while (peek())
+			pop_front();
 	}
 	
-	template<typename=std::enable_if_t<!Is_copy_assignable<NodeType>>>  // template signature must be different from next overload func
+	template<typename U, typename=std::enable_if_t<!is_class_v<U>>>  // template signature must be different from next overload func
 	void exchange(Node *n) {
 		head = n;
 	}
 
-	template<std::enable_if_t<std::is_pointer_v<NodeType>, NodeType> = 0>  // must add space > =, must use none void as second type
+	template<typename U, std::enable_if_t<std::is_class_v<U>, int> = 0>  // must add space > =, must use none void as second type
 	void exchange(Node *n) {
-		head = n;
+		while (!head.compare_exchange_weak(n->next, n))
+		{
+		}
 	}
-
+	
 	void push_front(const T& t)
 	{
 		auto n =new Node(t);
 		n->next = head;
-		exchange(n);
+		exchange<head_type>(n);
 	}
 	void push_front(T&& t)
 	{
 		auto n = new Node(t);
 		n->next = head;
-		exchange(n);
+		exchange<head_type>(n);
 	}
 	void pop_front()
 	{
-		if (head) {
-			auto old = head;
-			head = head->next;
+		if ((Node*)head!=nullptr) {
+			auto old = (Node *)head;
+			exchange<head_type>(old->next);
 			delete old;
 		}
 	}
 
 	const T* peek()
 	{
-		if (head)
-			return &head->data;
+		if ((Node*)head)
+			return &((Node*)head)->data;
 		return nullptr;
 	}
 };
