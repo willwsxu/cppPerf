@@ -73,7 +73,7 @@ int enable_if_test() {
 }
 
 template<typename T>
-struct Enable_If_Test
+struct Enable_If_Test_SFINAE_NOT_WORKING  // correct impl is the class below
 {
 	template<std::enable_if_t < is_class_v<T>, int > = 0 >
 	int enable_if_test() {
@@ -84,6 +84,27 @@ struct Enable_If_Test
 		return 1;
 	}
 	template<typename = std::enable_if_t<std::is_pointer_v<T>> >
+	int enable_if_test() {
+		return 2;
+	}
+};
+
+template<typename T>
+struct Enable_If_Test
+{
+	int enable_if_test() {
+		return enable_if_test<T>(); // SFINAE dispatch to correct overloads
+	}
+private:
+	template<typename U, std::enable_if_t < is_class_v<U>, int > = 0 >
+	int enable_if_test() {
+		return 0;
+	}
+	template<typename U>
+	std::enable_if_t<std::is_array_v<U>, int> enable_if_test() {
+		return 1;
+	}
+	template<typename U, typename = std::enable_if_t<std::is_pointer_v<U>> >
 	int enable_if_test() {
 		return 2;
 	}
