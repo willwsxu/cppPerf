@@ -35,4 +35,31 @@ public:
 		assert(nums.size() % 2 == 1);// odd size
 		return binary_search(nums, 0, nums.size() - 1);
 	}
+
+	int mySqrt_bs(int x, int lo, int hi) {
+		long long mid = ((long long)lo + hi) / 2;
+		long long sq = mid*mid;
+		if (sq == x)
+			return static_cast<int>(mid);
+		if (sq > x)
+			return mySqrt_bs(x, lo, static_cast<int>(mid) - 1);
+		if (mid == lo)  // catch special case to avoid inifite loop
+		{			
+			return hi*hi>x?lo:hi;
+		}
+		return mySqrt_bs(x, static_cast<int>(mid), hi);
+	}
+	// 69. Sqrt(x), x>=0
+	int mySqrt(int x) { // beat 50%, watch overflow
+		return mySqrt_bs(x, 0, x);
+	}
 };
+TEST_CASE("69. Sqrt(x)", "[NEW]")
+{
+	CHECK(BinarySearch().mySqrt(0) == 0);
+	CHECK(BinarySearch().mySqrt(1) == 1);
+	CHECK(BinarySearch().mySqrt(2) == 1);
+	CHECK(BinarySearch().mySqrt(3) == 1);
+	CHECK(BinarySearch().mySqrt(4) == 2);
+	CHECK(BinarySearch().mySqrt(2147395599) == 46339);
+}

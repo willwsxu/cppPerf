@@ -326,7 +326,27 @@ public:
 		}
 		return num == 1;
 	}
+	// 204. Count Primes, less than a non-negative number, n.
+	int countPrimes(int n) { // beat 68%
+		if (n < 2)
+			return 0;
+		vector<bool> sieve(n, true);
+		int count = 0;
+		for (int i = 2; i < n; i++) {
+			if (!sieve[i])
+				continue;
+			count++;
+			for (int j = i + i; j < n; j += i)
+				sieve[j] = false;
+		}
+		return count;
+	}
 };
+TEST_CASE("204. Count Primes", "[NEW]")
+{
+	CHECK(MathEasy().countPrimes(20000000) == 11078937);
+}
+
 TEST_CASE("883. Projection Area of 3D Shapes", "[NEW]")
 {
 	CHECK(MathEasy().projectionArea(vector<vector<int>>{ {1, 1, 1}, { 1,0,1 }, { 1,1,1 }})==14);
