@@ -271,4 +271,49 @@ public:
 		}
 		return total == num;
 	}
+	// 883. Projection Area of 3D Shapes
+	int projectionArea(vector<vector<int>>& grid) { // beat 99%
+		if (grid.empty())
+			return 0;
+		int n = grid.size();
+		int xy = n*n; // XY projection
+		int yz = 0;
+		for (const auto& r : grid)
+			yz += *max_element(begin(r), end(r));
+		int xz = 0;
+		int zero = 0;
+		for (int c = 0; c < n; c++) {
+			int tall = grid[0][c];
+			if (tall == 0)
+				zero++;
+			for (int r = 1; r < n; r++) {
+				if (grid[r][c] == 0)
+					zero++;
+				else
+					tall = max(tall, grid[r][c]);
+			}
+			xz += tall;
+		}
+		return xy - zero + yz + xz;
+	}
+	// 868. Binary Gap, largest distance between 2 consecutive 1, in binary form
+	int binaryGap(int N) { // beat 97%
+		int dist = -1;
+		int maxDist = 0;
+		while (N) {
+			if (N & 1) {
+				maxDist = max(maxDist, ++dist);
+				dist = 0;
+			}
+			else if (dist>=0)  // don't count initial 0
+				dist++;
+			N >>= 1;
+		}
+		return maxDist;
+	}
 };
+
+TEST_CASE("883. Projection Area of 3D Shapes", "[NEW]")
+{
+	CHECK(MathEasy().projectionArea(vector<vector<int>>{ {1, 1, 1}, { 1,0,1 }, { 1,1,1 }})==14);
+}
