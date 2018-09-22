@@ -1123,18 +1123,18 @@ public:
 		return longest;
 	}
 };
-TEST_CASE("687. Longest Univalue Path", "[NEW]")
+TEST_CASE("687. Longest Univalue Path", "[TREE]")
 {
 	auto *x = TreeNode::CreateBinaryTree({ 1,4,5,4,4,5 });
 	CHECK(TreeEasy().longestUnivaluePath(x) == 2);
 }
 
-TEST_CASE("671. Second Minimum Node In a Binary Tree", "[NEW]")
+TEST_CASE("671. Second Minimum Node In a Binary Tree", "[TREE]")
 {
 	auto *x = TreeNode::CreateBinaryTree({ 1, 1, 3, 1, 1, 3, 4, 3, 1, 1, 1, 3, 8, 4, 8, 3, 3, 1, 6, 2, 1 });
 	CHECK(TreeEasy().findSecondMinimumValue(x) == 2);
 }
-TEST_CASE("563. Binary Tree Tilt", "[NEW]")
+TEST_CASE("563. Binary Tree Tilt", "[TREE]")
 {
 	auto *x = TreeNode::CreateBinaryTree({ 1,2,3 });
 	CHECK(TreeEasy().findTilt(x)==1);

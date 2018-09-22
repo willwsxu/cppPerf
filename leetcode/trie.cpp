@@ -75,7 +75,7 @@ public:
 	}
 };
 
-TEST_CASE("676. Implement Magic Dictionary", "[NEW]")
+TEST_CASE("676. Implement Magic Dictionary", "[TRIE]")
 {
 	DictTrie magic;
 	magic.buildDict(vector<string>{"hello", "leetcode"});
@@ -85,7 +85,7 @@ TEST_CASE("676. Implement Magic Dictionary", "[NEW]")
 	CHECK(magic.magic_search("leetcoded") == false);
 }
 
-TEST_CASE("676. Implement Magic Dictionary test 2", "[NEW]")
+TEST_CASE("676. Implement Magic Dictionary test 2", "[TRIE]")
 {
 	DictTrie magic;
 	magic.buildDict(vector<string>{"a", "b", "ab", "abc", "abcabacbababdbadbfaejfoiawfjaojfaojefaowjfoawjfoawj", "abcdefghijawefe", "aefawoifjowajfowafjeoawjfaow", "cba", "cas", "aaewfawi", "babcda", "bcd", "awefj"});
@@ -134,7 +134,7 @@ public:
 };
 
 
-TEST_CASE("421. Maximum XOR of Two Numbers in an Array", "[NEW]")
+TEST_CASE("421. Maximum XOR of Two Numbers in an Array", "[TRIE]")
 {
 	CHECK(TrieInt().findMaximumXOR(vector<int>{3, 10, 5, 25, 2, 8}) == 28);
 }
@@ -165,7 +165,7 @@ public:
 	}
 };
 
-TEST_CASE("677. Map Sum Pairs", "[NEW]")
+TEST_CASE("677. Map Sum Pairs", "[TRIE]")
 {
 	MapSum m;
 	m.insert("a", 3);
@@ -207,7 +207,7 @@ public:
 		return ret.erase(ret.find_last_of(' '));
 	}
 };
-TEST_CASE("648. Replace Words", "[NEW]")
+TEST_CASE("648. Replace Words", "[TRIE]")
 {
 	CHECK(TrieWords().replaceWords(vector<string>{"cat", "bat", "rat", "af"}, "a cattle was rattled by the battery") == "a cat was rat by the bat");
 }
@@ -239,7 +239,7 @@ public:
 * obj.addWord(word);
 * bool param_2 = obj.search(word);
 */
-TEST_CASE("211. Add and Search Word - Data structure design", "[NEW]")
+TEST_CASE("211. Add and Search Word - Data structure design", "[TRIE]")
 {
 	WordDictionary d;
 	d.addWord("bad");

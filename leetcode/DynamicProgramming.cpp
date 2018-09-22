@@ -126,7 +126,7 @@ public:
 	}
 };
 
-TEST_CASE("309. Best Time to Buy and Sell Stock with Cooldown", "[NEW]")
+TEST_CASE("309. Best Time to Buy and Sell Stock with Cooldown", "[DYN]")
 {
 	CHECK (BuyStock().maxProfit(vector<int> { 1, 2, 3, 0, 2 }) == 3);
 	CHECK(BuyStock().maxProfit(vector<int> { 2, 1}) == 0);
@@ -356,13 +356,13 @@ public:
 		return ans;
 	}
 };
-TEST_CASE("70. Climbing Stairs", "[NEW]")
+TEST_CASE("70. Climbing Stairs", "[DYN]")
 {
 	CHECK(ClimbStairs().climbStairs(2) == 2);
 	CHECK(ClimbStairs().climbStairs(3) == 3);
 	CHECK(ClimbStairs().climbStairs(10) == 89);
 }
-TEST_CASE("746. Min Cost Climbing Stairs", "[NEW]")
+TEST_CASE("746. Min Cost Climbing Stairs", "[DYN]")
 {
 	CHECK(ClimbStairs().minCostClimbingStairs(vector<int>{1, 0, 0, 0}) == 0);
 	CHECK(ClimbStairs().minCostClimbingStairs(vector<int>{1, 100, 1, 1, 1, 100, 1, 1, 100, 1})==6);
@@ -378,7 +378,7 @@ public:
 	}
 };
 
-TEST_CASE("53. Maximum Subarray", "[NEW]")
+TEST_CASE("53. Maximum Subarray", "[DYN]")
 {
 	CHECK(SpecialDp().maxSubArray(vector<int>{-1}) == -1);
 }
@@ -395,7 +395,7 @@ public:
 		return nums_[j];
 	}
 };
-TEST_CASE("303. Range Sum Query - Immutable", "[NEW]")
+TEST_CASE("303. Range Sum Query - Immutable", "[DYN]")
 {
 	NumArray t({ -2, 0, 3, -5, 2, -1 });
 	CHECK(t.sumRange(0, 2) == 1);
@@ -435,7 +435,7 @@ public:
 };
 
 
-TEST_CASE("837. New 21 Game", "[NEW]")
+TEST_CASE("837. New 21 Game", "[DYN]")
 {
 	//CHECK(Game21().new21Game(9811, 8890, 7719) == Approx(1.0).epsilon(.00001));
 	CHECK(Game21().new21Game(10, 1, 10) == Approx(1.0).epsilon(.00001));

@@ -216,7 +216,7 @@ TEST_CASE("219. Contains Duplicate II", "[DUP]")
 	CHECK(Duplicate().containsNearbyDuplicate(vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 15) == false);
 }
 
-TEST_CASE("220. Contains Duplicate III", "[NEW]")
+TEST_CASE("220. Contains Duplicate III", "[HASH]")
 {
 	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{1, -2147483646}, 1, 2147483647) == true);
 	CHECK(Duplicate().containsNearbyAlmostDuplicate(vector<int>{0, 2147483647}, 1, 2147483647) == true);
@@ -327,7 +327,7 @@ public:
 	}
 };
 
-TEST_CASE("290. Word Pattern", "[NEW]")
+TEST_CASE("290. Word Pattern", "[HASH]")
 {
 	CHECK(MapStuff().wordPattern("ab", "dog cat dog cat") == false);
 	CHECK(MapStuff().wordPattern("abba", "dog cat dog cat") == false);
@@ -338,7 +338,7 @@ TEST_CASE("290. Word Pattern", "[NEW]")
 	CHECK(MapStuff().wordPattern("aaaa", "dog cat cat dog") == false);
 	CHECK(MapStuff().wordPattern("jquery", "jquery") == false);
 }
-TEST_CASE("447. Number of Boomerangs", "[NEW]")
+TEST_CASE("447. Number of Boomerangs", "[HASH]")
 {
 	vector<pair<int, int>> x{ { 0, 0 },{ 1,0 },{ 2, 0 } };
 	CHECK(MapStuff().numberOfBoomerangs(x) == 2);
@@ -397,7 +397,7 @@ public:
 	}
 };
 
-TEST_CASE("884. Uncommon Words from Two Sentences", "[NEW]")
+TEST_CASE("884. Uncommon Words from Two Sentences", "[HASH]")
 {
 	CHECK(SetStuff().uncommonFromSentences("abcd def abcd xyz", "ijk def ijk") == vector<string>{"xyz"});
 	CHECK(SetStuff().uncommonFromSentences("s z z z s", "s z ejt") == vector<string>{"ejt"});
@@ -420,7 +420,7 @@ public:
 		return ans;
 	}
 };
-TEST_CASE("500. Keyboard Row", "[NEW]")
+TEST_CASE("500. Keyboard Row", "[HASH]")
 {
 	CHECK(ArrayMap().findWords(vector<string>{"Hello", "Alaska", "Dad", "Peace"}) == vector<string>{"Alaska", "Dad"});
 }

@@ -133,7 +133,7 @@ public:
 	}
 };
 
-TEST_CASE("remove c++ comment", "[NEW]")
+TEST_CASE("remove c++ comment", "[BT]")
 {
 	CHECK(CppComments().removeComments(vector<string>{ "struct Node{",
 		"    /*/ declare members;/**/",
@@ -195,7 +195,7 @@ public:
 	}
 };
 
-TEST_CASE("Valid Parenthesis", "[NEW]")
+TEST_CASE("Valid Parenthesis", "[BT]")
 {
 	StringParenthesis p;
 	CHECK(p.checkValidString2("(*()())") == true);
