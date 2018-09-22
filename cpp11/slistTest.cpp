@@ -2,12 +2,24 @@
 #include <chrono>
 #include <iostream>
 #include "slist.h"
-using slist_shared_ptr = slist<int, std::shared_ptr>;
+using slist_shared_ptr = slist<int>;
 using namespace std;
 
-TEST_CASE("slist single thread shared_ptr", "SLIST")
+TEST_CASE("slist single thread shared_ptr", "NEW")
 {
 	slist_shared_ptr simple;
+	simple.push_front(1);
+	simple.push_front(2);
+	simple.push_front(3);
+	CHECK(*simple.peek() == 3);
+	simple.pop_front();
+	CHECK(*simple.peek() == 2);
+}
+
+TEST_CASE("slist single thread unique_ptr", "NEW")
+{
+	using slist_unique_ptr = slist<int, false>;
+	slist_unique_ptr simple;
 	simple.push_front(1);
 	simple.push_front(2);
 	simple.push_front(3);
@@ -46,9 +58,9 @@ slist unique_ptr nano seconds:  81200800 count 2
 slist raw ptr nano seconds:     67407500 count 2
 */
 
-TEST_CASE("slist single thread memory tracker", "SLIST")
+TEST_CASE("slist single thread memory tracker", "NEW")
 {
-	using slistTracker = slist<MemoryTracker, std::shared_ptr>;
+	using slistTracker = slist<MemoryTracker>;
 	slistTracker simple;
 	simple.push_front(MemoryTracker());  // copy constructor, move constructor
 	simple.push_front(MemoryTracker());
@@ -57,7 +69,7 @@ TEST_CASE("slist single thread memory tracker", "SLIST")
 	simple.pop_front();
 	CHECK(MemoryTracker::count == 2);
 
-	using slistTrackerU = slist_u<MemoryTracker>;
+	using slistTrackerU = slist<MemoryTracker, false>;
 	slistTrackerU unique;
 	unique.push_front(MemoryTracker());
 	unique.pop_front();

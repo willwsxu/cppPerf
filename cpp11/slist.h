@@ -2,45 +2,44 @@
 #include <memory>
 #include <atomic>
 
-template <typename T, template<typename> class NodeType>
+template <typename T, bool use_share_ptr=true>
 class slist
 {
 	struct Node {
 		T	data;
-		NodeType<Node>	next;
+		using NodeType = typename std::conditional<use_share_ptr, std::shared_ptr<Node>, std::unique_ptr<Node>>::type;
+		NodeType	next;
 		Node(T&& d) :data(move(d)) {}
 		Node(const T& d) :data(d) {}
 	};
-	NodeType<Node>	head;
+	typename Node::NodeType	head;
 
-	template<template<typename> class Node_t, typename U, 
-		typename = std::enable_if_t<std::is_same_v<Node_t<Node>, std::shared_ptr<Node>>>>
+	template<bool share, typename U, typename = std::enable_if_t<share>>
 	auto create(U&& t) {
 		return make_shared<Node>(forward<U>(t));
 	}
 
-	template<template<typename> class Node_t, typename U,
-		std::enable_if_t<std::is_same_v<Node_t<Node>, std::unique_ptr<Node>>, int> = 0>
-		auto create(U&& t) {
+	template<bool share, typename U, std::enable_if_t<!share, int> = 0>
+	auto create(U&& t) {
 		return make_unique<Node>(forward<U>(t));
 	}
 public:
 	void push_front(const T& t)
 	{
-		auto n = create<NodeType>(t);
-		n->next = head;
-		head = n;
+		auto n = create<use_share_ptr>(t);
+		n->next = move(head);  // move is required for unique_ptr, harmless for shared_ptr
+		head = move(n);
 	}
 	void push_front(T&& t)
 	{
-		auto n = create<NodeType>(t);
-		n->next = head;
-		head = n;
+		auto n = create<use_share_ptr>(t);
+		n->next = move(head);
+		head = move(n);
 	}
 	void pop_front()
 	{
 		if (head) {
-			head = head->next;
+			head = move(head->next);
 		}
 	}
 
@@ -118,7 +117,7 @@ public:
 	}
 };
 
-
+/* replaced by the slist class which support both shared_ptr and unique_ptr
 template <typename T>
 class slist_u
 {
@@ -157,3 +156,4 @@ public:
 		return nullptr;
 	}
 };
+*/
