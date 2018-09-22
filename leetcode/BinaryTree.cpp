@@ -247,21 +247,6 @@ public:
 		return ans;
 	}
 
-	// 606. Construct String from Binary Tree
-	// construct a string consists of parenthesis and integers from a binary tree with the preorder traversing way
-	// remove all unnecessary ()
-	string tree2str(TreeNode* t) {
-		if (!t)
-			return "";
-		if (!t->left && !t->right)
-			return to_string(t->val);
-		string result = to_string(t->val);
-		result.append(1, '(').append(tree2str(t->left)).append(1, ')');
-		if (t->right)
-			result.append(1, '(').append(tree2str(t->right)).append(1, ')');
-		return result;
-	}
-
 	void addOneRow(TreeNode *root, int v, int depth, int level)
 	{
 		if (root == nullptr)
@@ -972,29 +957,9 @@ public:
 		return true;
 	}
 
-	void bfs(deque<TreeNode*>& dq, size_t oldSize)
-	{
-		for (size_t i = 0; i < oldSize; i++) {
-			TreeNode * r = dq.front();
-			if (r->left)
-				dq.push_back(r->left);
-			if (r->right)
-				dq.push_back(r->right);
-			dq.pop_front();
-		}
-	}
 	// 107. Binary Tree Level Order Traversal II
 	vector<vector<int>> levelOrderBottom(TreeNode* root) { // BFS, beat 98%
-		vector<vector<int>> ans;
-		if (root == nullptr)
-			return ans;
-		deque<TreeNode*> dq{ root };
-		while (!dq.empty()) {
-			ans.push_back({});
-			transform(begin(dq), end(dq), back_inserter(ans.back()), [](const TreeNode* n) { return n->val; });
-
-			bfs(dq, dq.size() );
-		}
+		vector<vector<int>> ans = TreeNode::levelOrder(root);
 		reverse(begin(ans), end(ans));
 		return ans;
 	}
@@ -1010,7 +975,7 @@ public:
 				return init+n->val;
 			});
 			ans.push_back((double)total/ oldSize);
-			bfs(dq, oldSize);
+			TreeNode::bfs(dq, oldSize);
 		}
 		return ans;
 	}

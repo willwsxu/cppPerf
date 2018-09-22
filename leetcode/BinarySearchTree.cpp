@@ -120,53 +120,31 @@ public:
 		return findTargetHelp(root, k);  // O(NlogN)
 	}
 
-	int convertBSThelp(TreeNode *root, TreeNode * parent, int extra) {
+	int sum_of_larger_nodes = 0;
+	void convertBSThelp(TreeNode *root) {
 		if (!root)
-			return 0;
-		if (root->left == nullptr && root->right == nullptr) { // leaf node
-			if (parent && root->val > parent->val) { // rigth subtree
-				root->val += extra;
-				return extra + root->val;
-			}
-			else { // left subtree
-				if (parent && root->val < parent->val)
-					root->val += parent->val;
-				root->val += extra;
-				return extra;
-			}
-		}
-		int greater = convertBSThelp(root->right, root, extra); // visit right side, find sum of node greater than root
+			return;
+		convertBSThelp(root->right); // visit right side, find sum of node greater than root
+		root->val = sum_of_larger_nodes = root->val + sum_of_larger_nodes;
 		// evaluate values to add before visit left subtree
-		if (root->left) {
-			if (root->left->val < root->val)
-				extra = greater + root->val;
-			(void)convertBSThelp(root->left, root, extra); //
-		}
-		root->val += greater;
-		return greater;
+		convertBSThelp(root->left);
 	}
 	// 38. Convert BST to Greater Tree
 	// add to each node of sum of all node whose values are greater than current node
-	TreeNode* convertBST(TreeNode* root) {
-		convertBSThelp(root, nullptr, 0);
+	TreeNode* convertBST(TreeNode* root) { // beat 32%
+		sum_of_larger_nodes = 0;
+		convertBSThelp(root);
 		return root;
 	}
-
 };
 TEST_CASE("38. Convert BST to Greater Tree", "[NEW]")
 {
 	TreeNode *r2 = TreeNode::CreateBinaryTree({ 2,0,3,-4,1 });
 	r2 = BST().convertBST(r2);
-	CHECK(r2->val == 5);
-	CHECK(r2->left->val == 6);
-	CHECK(r2->right->val == 3);
-	CHECK(r2->left->left->val == 2);
-	CHECK(r2->left->right->val == 6);
+	CHECK(TreeNode::levelOrder(r2) == vector<vector<int>>{ {5}, { 6,3 }, {2, 6}});
 	TreeNode *r = TreeNode::CreateBinaryTree({ 5,2,13 });
 	r = BST().convertBST(r);
-	CHECK(r->val == 18);
-	CHECK(r->left->val == 20);
-	CHECK(r->right->val == 13);
+	CHECK(TreeNode::levelOrder(r) == vector<vector<int>>{ {18}, { 20,13 }});
 }
 
 TEST_CASE("BST valid", "[BST]")

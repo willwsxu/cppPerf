@@ -84,6 +84,47 @@ struct TreeNode {
 		}
 		return root;
 	}
+	// 606. Construct String from Binary Tree
+	// construct a string consists of parenthesis and integers from a binary tree with the preorder traversing way
+	// remove all unnecessary ()
+	static string tree2str(TreeNode* t) {
+		if (!t)
+			return "";
+		if (!t->left && !t->right)
+			return to_string(t->val);
+		string result = to_string(t->val);
+		result.append(1, '(').append(tree2str(t->left)).append(1, ')');
+		if (t->right)
+			result.append(1, '(').append(tree2str(t->right)).append(1, ')');
+		return result;
+	}
+
+	// from all parent node in deque, fill all child node
+	static void bfs(deque<TreeNode*>& dq, size_t oldSize)
+	{
+		for (size_t i = 0; i < oldSize; i++) {
+			TreeNode * r = dq.front();
+			if (r->left)
+				dq.push_back(r->left);
+			if (r->right)
+				dq.push_back(r->right);
+			dq.pop_front();
+		}
+	}
+	// 102. Binary Tree Level Order Traversal
+	static vector<vector<int>> levelOrder(TreeNode* root) {
+		vector<vector<int>> ans;
+		if (root == nullptr)
+			return ans;
+		deque<TreeNode*> dq{ root };
+		while (!dq.empty()) {
+			ans.push_back({});
+			transform(begin(dq), end(dq), back_inserter(ans.back()), [](const TreeNode* n) { return n->val; });
+
+			bfs(dq, dq.size());
+		}
+		return ans;
+	}
 };
 
 // 108. Convert Sorted Array to Binary Search Tree (beat100% in 4th submission)
