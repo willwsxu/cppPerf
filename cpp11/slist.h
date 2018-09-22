@@ -2,27 +2,38 @@
 #include <memory>
 #include <atomic>
 
-template <typename T>
+template <typename T, template<typename> class NodeType>
 class slist
 {
 	struct Node {
 		T	data;
-		std::shared_ptr<Node>	next;
+		NodeType<Node>	next;
 		Node(T&& d) :data(move(d)) {}
 		Node(const T& d) :data(d) {}
 	};
-	std::shared_ptr<Node>	head;
+	NodeType<Node>	head;
 
+	template<template<typename> class Node_t, typename U, 
+		typename = std::enable_if_t<std::is_same_v<Node_t<Node>, std::shared_ptr<Node>>>>
+	auto create(U&& t) {
+		return make_shared<Node>(forward<U>(t));
+	}
+
+	template<template<typename> class Node_t, typename U,
+		std::enable_if_t<std::is_same_v<Node_t<Node>, std::unique_ptr<Node>>, int> = 0>
+		auto create(U&& t) {
+		return make_unique<Node>(forward<U>(t));
+	}
 public:
 	void push_front(const T& t)
 	{
-		auto n = make_shared<Node>(t);
+		auto n = create<NodeType>(t);
 		n->next = head;
 		head = n;
 	}
 	void push_front(T&& t)
 	{
-		auto n = std::make_shared<Node>(t);
+		auto n = create<NodeType>(t);
 		n->next = head;
 		head = n;
 	}
@@ -40,6 +51,7 @@ public:
 		return nullptr;
 	}
 };
+
 
 // raw pointer list, no lock or use atomic
 template <typename T, typename head_type>

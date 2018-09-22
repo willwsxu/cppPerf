@@ -2,12 +2,12 @@
 #include <chrono>
 #include <iostream>
 #include "slist.h"
-using slistSimple = slist<int>;
+using slist_shared_ptr = slist<int, std::shared_ptr>;
 using namespace std;
 
-TEST_CASE("slist single thread", "SLIST")
+TEST_CASE("slist single thread shared_ptr", "SLIST")
 {
-	slistSimple simple;
+	slist_shared_ptr simple;
 	simple.push_front(1);
 	simple.push_front(2);
 	simple.push_front(3);
@@ -48,7 +48,7 @@ slist raw ptr nano seconds:     67407500 count 2
 
 TEST_CASE("slist single thread memory tracker", "SLIST")
 {
-	using slistTracker = slist<MemoryTracker>;
+	using slistTracker = slist<MemoryTracker, std::shared_ptr>;
 	slistTracker simple;
 	simple.push_front(MemoryTracker());  // copy constructor, move constructor
 	simple.push_front(MemoryTracker());
@@ -57,34 +57,10 @@ TEST_CASE("slist single thread memory tracker", "SLIST")
 	simple.pop_front();
 	CHECK(MemoryTracker::count == 2);
 
-	long loops = 100000;
-	auto perfTest = [](const char *name, auto func) {
-		auto start = chrono::high_resolution_clock::now();
-		long count = func();
-		auto end = chrono::high_resolution_clock::now();
-		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-		cout << name << " nano seconds: " << nanos.count() << " count " << count << endl;
-
-	};
-
-	perfTest("slist shared_ptr", [loops]() {
-		slistTracker simple;
-		for (long i = 0; i < loops; i++) {
-			simple.push_front(MemoryTracker());
-			simple.pop_front();
-		}
-		return MemoryTracker::count;
-	});
-
 	using slistTrackerU = slist_u<MemoryTracker>;
-	perfTest("slist unique_ptr", [loops]() {
-		slistTrackerU simple;
-		for (long i = 0; i < loops; i++) {
-			simple.push_front(MemoryTracker());
-			simple.pop_front();
-		}
-		return MemoryTracker::count;
-	});
+	slistTrackerU unique;
+	unique.push_front(MemoryTracker());
+	unique.pop_front();
 	
 	using slistTrackerR = slist_r<MemoryTracker, bool*>;
 	slistTrackerR raw;
