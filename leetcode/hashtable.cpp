@@ -395,8 +395,29 @@ public:
 		}
 		return min(count, candies.size()/2); // array is faster than bitset
 	}
+	// 202. Happy Number, repeat sum of square of digits, till ==1
+	bool isHappy(int n) {  // beat 100%
+		set<int> numbers;
+		numbers.insert(n);
+		while (n > 1) {
+			int total = 0;
+			while (n > 0) {
+				total += (n % 10)*(n % 10);
+				n /= 10;
+			}
+			if (numbers.count(total)) // number repeated
+				return false;
+			numbers.insert(total);
+			n = total;
+		}
+		return n == 1;
+	}
 };
 
+TEST_CASE("202. Happy Number", "[NEW]")
+{
+	CHECK(SetStuff().isHappy(358) == false);
+}
 TEST_CASE("884. Uncommon Words from Two Sentences", "[HASH]")
 {
 	CHECK(SetStuff().uncommonFromSentences("abcd def abcd xyz", "ijk def ijk") == vector<string>{"xyz"});

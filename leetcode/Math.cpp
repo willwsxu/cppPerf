@@ -311,8 +311,22 @@ public:
 		}
 		return maxDist;
 	}
+	// 263. Ugly Number, Ugly numbers are positive numbers whose prime factors only include 2, 3, 5
+	bool isUgly(int num) { // beat 98%
+		if (num < 1)
+			return false;
+		while (num % 2 == 0) {
+			num /= 2;
+		}
+		while (num % 3 == 0) {
+			num /= 3;
+		}
+		while (num % 5 == 0) {
+			num /= 5;
+		}
+		return num == 1;
+	}
 };
-
 TEST_CASE("883. Projection Area of 3D Shapes", "[NEW]")
 {
 	CHECK(MathEasy().projectionArea(vector<vector<int>>{ {1, 1, 1}, { 1,0,1 }, { 1,1,1 }})==14);
