@@ -406,6 +406,14 @@ public:
 			}
 		}
 	}
+	// 598. Range Addition II
+	int maxCount(int m, int n, vector<vector<int>>& ops) { // beat 38%
+		for (const auto& v : ops) {
+			m = min(m, v[0]);  // overlapping rows and cols
+			n = min(n, v[1]);
+		}
+		return m*n;
+	}
 };
 
 TEST_CASE("generate matrix", "[GEN]")

@@ -442,6 +442,14 @@ public:
 		auto found = find(nums.begin(), nums.end(), -1);
 		return{ dup, distance(nums.begin(), found) + 1 };
 	}
+	// 628. Maximum Product of Three Numbers
+	int maximumProduct(vector<int>& nums) { // beat 48%
+		sort(begin(nums), end(nums));
+		int n = nums.size();
+		if (nums[0] >= 0 || nums[n - 1] <= 0 || n == 3)  // all positive or negative
+			return nums[n - 1] * nums[n - 2] * nums[n - 3];
+		return nums[n - 1] * max(nums[0] * nums[1], nums[n - 2] * nums[n - 3]); // pick right most, then compare prod of left 2 and right 2
+	}
 };
 TEST_CASE("645. Set Mismatch", "[NEW]")
 {
