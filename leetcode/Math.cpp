@@ -408,7 +408,26 @@ public:
 		}
 		return area;
 	}
+	// 171. Excel Sheet Column Number, A->Z, AA->ZZ, ...
+	int titleToNumber(string s) { // beat 98%
+		return accumulate(begin(s), end(s), 0, [](int init, char c) { return init * 26 + c - 'A' + 1; });
+	}
+	// 168. Excel Sheet Column Title
+	string convertToTitle(int n) {
+		string ans;
+		while (n > 0) {
+			ans.append(1, (n-1) % 26 + 'A');
+			n = (n-1)/26;
+		}
+		reverse(ans.begin(), ans.end());
+		return ans;
+	}
 };
+TEST_CASE("168. Excel Sheet Column Title", "[NEW]")
+{
+	CHECK(MathEasy().convertToTitle(26) == "Z");
+	CHECK(MathEasy().convertToTitle(701) == "ZY");
+}
 TEST_CASE("400. Find the nth digit", "[NEW]")
 {
 	CHECK(MathEasy().findNthDigit(298954297) == 5);
