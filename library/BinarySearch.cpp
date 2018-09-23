@@ -51,7 +51,20 @@ public:
 	}
 	// 69. Sqrt(x), x>=0
 	int mySqrt(int x) { // beat 50%, watch overflow
-		return mySqrt_bs(x, 0, x);
+		if (x <= 1)  // iterative method, same speed
+			return x;
+		int L=0, R=x;
+		while (L <= R) {
+			int mid = L + (R - L) / 2;
+			if (mid > x / mid)
+				R = mid - 1;
+			else {
+				if (mid + 1 > x / (mid + 1))  // try mid+1
+					return mid;
+				L = mid + 1;
+			}
+		}
+		return L;
 	}
 };
 TEST_CASE("69. Sqrt(x)", "[NEW]")

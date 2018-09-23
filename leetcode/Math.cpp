@@ -344,7 +344,7 @@ public:
 };
 TEST_CASE("204. Count Primes", "[NEW]")
 {
-	CHECK(MathEasy().countPrimes(20000000) == 11078937);
+	CHECK(MathEasy().countPrimes(20000000) == 1270607);
 }
 
 TEST_CASE("883. Projection Area of 3D Shapes", "[NEW]")
