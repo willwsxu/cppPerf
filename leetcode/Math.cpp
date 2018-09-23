@@ -363,7 +363,41 @@ public:
 		}
 		return count;
 	}
+	// 400. Find the nth digit of the infinite integer sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+	int findNthDigit(int n) {  // beat 100%, watch overflow
+		const static int pow_[] = { 1,10,100,1000,10000,100000,1000000,10000000,100000000,1000000000 };
+		int digits = 0;
+		int i = 1;
+		for (; i < 9; i++)  // group number by digit, overflow if i==9
+		{
+			int digits_new = digits + (pow_[i] - pow_[i - 1])*i;
+			if (n <= digits_new)   // compute  which int is the target
+				break;
+			else
+				digits = digits_new;
+		}
+		int count = n - digits;  // e.g n=11, count==2, num=10
+		int num = pow_[i - 1] + count / i - 1;
+		if (count%i == 0) {  // last digit of this number
+			return num % 10;
+		}
+		else {
+			num++;
+			count = i - count%i;
+			while (count-- > 0)
+				num /= 10;
+			return num % 10;
+		}
+	}
 };
+TEST_CASE("400. Find the nth digit", "[NEW]")
+{
+	CHECK(MathEasy().findNthDigit(298954297) == 5);
+	CHECK(MathEasy().findNthDigit(1000000000) == 1);
+	CHECK(MathEasy().findNthDigit(11) == 0);
+	CHECK(MathEasy().findNthDigit(12) == 1);
+	CHECK(MathEasy().findNthDigit(200) == 0);
+}
 TEST_CASE("204. Count Primes", "[PRIM]")
 {
 	CHECK(MathEasy().countPrimes(20000000) == 1270607);
