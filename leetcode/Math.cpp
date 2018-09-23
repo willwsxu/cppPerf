@@ -413,7 +413,7 @@ public:
 		return accumulate(begin(s), end(s), 0, [](int init, char c) { return init * 26 + c - 'A' + 1; });
 	}
 	// 168. Excel Sheet Column Title
-	string convertToTitle(int n) {
+	string convertToTitle(int n) { // beat 100%
 		string ans;
 		while (n > 0) {
 			ans.append(1, (n-1) % 26 + 'A');
@@ -422,7 +422,31 @@ public:
 		reverse(ans.begin(), ans.end());
 		return ans;
 	}
+	// 645. Set Mismatch, given [1,n], one of the numbers in the set got duplicated to another number in the set, which results in repetition of one number and loss of another number
+	// firstly find the number occurs twice and then find the number that is missing
+	vector<int> findErrorNums(vector<int>& nums) {  // beat 89%
+		int dup = -1;
+		for (size_t i = 0; i < nums.size(); i++) {
+			if (nums[i] == i + 1)
+				continue;
+			int mover = nums[i]; // number in wrong position
+			nums[i] = -1; // blank slot
+			while (nums[mover - 1] != mover && nums[mover - 1] != -1) {
+				swap(mover, nums[mover - 1]); // swap number to right position until dup is found or blank
+			}
+			if (nums[mover - 1] == -1)
+				nums[mover - 1] = mover;
+			else
+				dup = mover;
+		}
+		auto found = find(nums.begin(), nums.end(), -1);
+		return{ dup, distance(nums.begin(), found) + 1 };
+	}
 };
+TEST_CASE("645. Set Mismatch", "[NEW]")
+{
+	CHECK(MathEasy().findErrorNums(vector<int>{ 1, 2, 2, 4 }) == vector<int>{2, 3});
+}
 TEST_CASE("168. Excel Sheet Column Title", "[NEW]")
 {
 	CHECK(MathEasy().convertToTitle(26) == "Z");
