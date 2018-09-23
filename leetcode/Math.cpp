@@ -219,12 +219,12 @@ TEST_CASE("869. Reordered Power of 2", "[POW]")
 	CHECK(p.reorderedPowerOf2(46));
 }
 
-TEST_CASE("367. Valid Perfect Square", "[NEW]")
+TEST_CASE("367. Valid Perfect Square", "[MATH]")
 {
 	CHECK(Math().isPerfectSquare(1));
 	CHECK(Math().isPerfectSquare(808201));
 }
-TEST_CASE("633. Sum of Square Numbers", "[NEW]")
+TEST_CASE("633. Sum of Square Numbers", "[MATH]")
 {
 	CHECK(Math().judgeSquareSum(2147483646) == false);
 	CHECK(Math().judgeSquareSum(0));
@@ -296,6 +296,28 @@ public:
 		}
 		return xy - zero + yz + xz;
 	}
+	// 892. Surface Area of 3D Shapes
+	int surfaceArea(vector<vector<int>>& grid) { // beat 99%
+		if (grid.empty())
+			return 0;
+		int n = grid.size();
+		int areatotal = 0;
+		int areahidden = 0;
+		for (int r = 0; r < n; r++) {
+			areatotal += ((grid[r][0]>0?2:0) + grid[r][0] * 4); // total surface area
+			for (int c = 1; c < n; c++)
+			{
+				areatotal += ((grid[r][c]>0 ? 2 : 0) + grid[r][c] * 4); // total surface area
+				areahidden -= 2 * min(grid[r][c], grid[r][c - 1]); //hidden bettween left and right
+			}
+		}
+		for (int c = 0; c < n; c++) {
+			for (int r = 1; r < n; r++) {
+				areahidden -= 2 * min(grid[r][c], grid[r-1][c]);  // hidden between top and bottom
+			}
+		}
+		return areatotal+areahidden;
+	}
 	// 868. Binary Gap, largest distance between 2 consecutive 1, in binary form
 	int binaryGap(int N) { // beat 97%
 		int dist = -1;
@@ -342,12 +364,16 @@ public:
 		return count;
 	}
 };
-TEST_CASE("204. Count Primes", "[NEW]")
+TEST_CASE("204. Count Primes", "[PRIM]")
 {
 	CHECK(MathEasy().countPrimes(20000000) == 1270607);
 }
 
-TEST_CASE("883. Projection Area of 3D Shapes", "[NEW]")
+TEST_CASE("892. Surface Area of 3D Shapes", "[NEW]")
+{
+	CHECK(MathEasy().surfaceArea(vector<vector<int>>{ {1, 1, 1}, { 1,0,1 }, { 1,1,1 }}) == 32);
+}
+TEST_CASE("883. Projection Area of 3D Shapes", "[MATH]")
 {
 	CHECK(MathEasy().projectionArea(vector<vector<int>>{ {1, 1, 1}, { 1,0,1 }, { 1,1,1 }})==14);
 }

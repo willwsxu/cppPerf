@@ -67,7 +67,7 @@ public:
 		return L;
 	}
 };
-TEST_CASE("69. Sqrt(x)", "[NEW]")
+TEST_CASE("69. Sqrt(x)", "[BS]")
 {
 	CHECK(BinarySearch().mySqrt(0) == 0);
 	CHECK(BinarySearch().mySqrt(1) == 1);
