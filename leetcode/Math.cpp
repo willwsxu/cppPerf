@@ -484,7 +484,24 @@ public:
 			pLong->insert(0, 1, '1');
 		return *pLong;
 	}
+	// 172. Factorial Trailing Zeroes
+	int trailingZeroes(int n) { // same count of factor 5. beat 100%
+		int total = 0;
+		int divisor = 5;
+		int count = 0;
+		while (count=n / divisor) {
+			total += count;
+			if (divisor > INT32_MAX / 5) // avoid overflow
+				break;
+			divisor *= 5; // e.g. 25 has 2 factor 5
+		}
+		return total;
+	}
 };
+TEST_CASE("172. Factorial Trailing Zeroes", "[NEW]")
+{
+	CHECK(MathEasy().trailingZeroes(1808548329) == 452137076);
+}
 TEST_CASE("645. Set Mismatch", "[NEW]")
 {
 	CHECK(MathEasy().findErrorNums(vector<int>{ 1, 2, 2, 4 }) == vector<int>{2, 3});

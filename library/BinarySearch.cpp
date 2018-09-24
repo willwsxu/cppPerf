@@ -66,6 +66,27 @@ public:
 		}
 		return L;
 	}
+	// 441. Arranging Coins, in rows, return last row that is complete
+	// *
+	// **
+	// ***
+	int arrangeCoins(int n) { // similar to #69, beat 68%
+		if (n < 2)
+			return n;
+		int lo = 1, hi = n;
+		while (lo <= hi) {
+			int mid = lo + (hi - lo) / 2;
+			long long total = (long long)(mid + 1)*mid / 2;
+			if (total > n)
+				hi = mid - 1;
+			else {
+				if ((long long)(mid + 2)*(mid+1) / 2>n)
+					return mid;
+				lo = mid + 1;
+			}
+		}
+		return lo;
+	}
 };
 TEST_CASE("69. Sqrt(x)", "[BS]")
 {
