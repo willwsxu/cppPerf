@@ -16,7 +16,7 @@ TEST_CASE("slist single thread shared_ptr", "NEW")
 	CHECK(*simple.peek() == 2);
 }
 
-TEST_CASE("slist single thread unique_ptr", "NEW")
+TEST_CASE("slist single thread unique_ptr", "[NEW]")
 {
 	using slist_unique_ptr = slist<int, false>;
 	slist_unique_ptr simple;
@@ -31,15 +31,14 @@ TEST_CASE("slist single thread unique_ptr", "NEW")
 struct MemoryTracker
 {
 	static int count;
-	MemoryTracker() {
-		count++;
+	const int myCount;
+	MemoryTracker():myCount(++count){	
 	}
-	MemoryTracker(const MemoryTracker&) {
-		count++;
+	MemoryTracker(const MemoryTracker&) :myCount(++count) {	
 	}
-	MemoryTracker(MemoryTracker&&) {
-		count++;
-	}
+	MemoryTracker(MemoryTracker&& x) :myCount(x.myCount) { 
+		count++; 
+	}  // move ctor take the ID, old temp still calls destructor after move
 	~MemoryTracker()
 	{
 		--count;
@@ -58,29 +57,61 @@ slist unique_ptr nano seconds:  81200800 count 2
 slist raw ptr nano seconds:     67407500 count 2
 */
 
-TEST_CASE("slist single thread memory tracker", "NEW")
+TEST_CASE("slist single thread memory tracker share_ptr", "[NEW]")
 {
 	using slistTracker = slist<MemoryTracker>;
 	slistTracker simple;
-	simple.push_front(MemoryTracker());  // copy constructor, move constructor
+	MemoryTracker mt;  // 
+	simple.push_front(mt);  // pass by ref
+	CHECK(simple.peek()->myCount == 2);
+	simple.push_front(MemoryTracker());  // move
+	CHECK(simple.peek()->myCount == 3);
 	simple.push_front(MemoryTracker());
-	simple.push_front(MemoryTracker());
-	CHECK(MemoryTracker::count == 3);
+	CHECK(MemoryTracker::count == 4);
+	CHECK(simple.peek()->myCount == 4);
 	simple.pop_front();
-	CHECK(MemoryTracker::count == 2);
-
+	CHECK(simple.peek()->myCount == 3);
+	CHECK(MemoryTracker::count == 3);
+}
+TEST_CASE("slist single thread memory tracker unique_ptr", "[NEW]")
+{
 	using slistTrackerU = slist<MemoryTracker, false>;
 	slistTrackerU unique;
+	MemoryTracker mt;
+	unique.push_front(mt);  // pass by ref
+	unique.push_front(MemoryTracker());  // move
 	unique.push_front(MemoryTracker());
+	CHECK(MemoryTracker::count == 4);
+	CHECK(unique.peek()->myCount == 4);
 	unique.pop_front();
-	
+	CHECK(unique.peek()->myCount == 3);
+	CHECK(MemoryTracker::count == 3);
+}
+TEST_CASE("slist single thread memory tracker raw ptr", "[NEW]")
+{
 	using slistTrackerR = slist_r<MemoryTracker, bool*>;
 	slistTrackerR raw;
+	MemoryTracker mt;
+	raw.push_front(mt);  // pass by ref
+	raw.push_front(MemoryTracker());  // move
 	raw.push_front(MemoryTracker());
+	CHECK(MemoryTracker::count == 4);
+	CHECK(raw.peek()->myCount == 4);
 	raw.pop_front();
-	
+	CHECK(raw.peek()->myCount == 3);
+	CHECK(MemoryTracker::count == 3);
+}
+TEST_CASE("slist single thread memory tracker atomic raw ptr", "[NEW]")
+{
 	using slistTrackerRAtomic = slist_r<MemoryTracker, std::atomic<bool>>;
 	slistTrackerRAtomic x;
+	MemoryTracker mt;
+	x.push_front(mt);  // pass by ref
+	x.push_front(MemoryTracker());  // move
 	x.push_front(MemoryTracker());
+	CHECK(MemoryTracker::count == 4);
+	CHECK(x.peek()->myCount == 4);
 	x.pop_front();
+	CHECK(x.peek()->myCount == 3);
+	CHECK(MemoryTracker::count == 3);
 }

@@ -132,7 +132,7 @@ TEST_CASE("n choose 2 test", "META")
 	CHECK(nChooseK < 5, 2 >::value == 10);
 }
 
-TEST_CASE("Tuple test", "NEW")
+TEST_CASE("Tuple test", "[META]")
 {
 	auto t=Make_Tuple( 10, 'x', "tuple");
 	CHECK(Get<0>(t) == 10);
