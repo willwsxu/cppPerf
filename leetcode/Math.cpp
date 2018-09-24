@@ -450,6 +450,40 @@ public:
 			return nums[n - 1] * nums[n - 2] * nums[n - 3];
 		return nums[n - 1] * max(nums[0] * nums[1], nums[n - 2] * nums[n - 3]); // pick right most, then compare prod of left 2 and right 2
 	}
+	// 836. Rectangle Overlap, bottom-left, top-right points
+	bool isRectangleOverlap(vector<int>& rec1, vector<int>& rec2) { // beat 100%
+		if (rec1[1] >= rec2[3] || rec2[1] >= rec1[3])  // no overlap top to bottom
+			return false;
+		if (rec1[2] <= rec2[0] || rec2[2] <= rec1[0])  // no overlap lrft to right,
+			return false;
+		return true;
+	}
+	// 415. Add Strings
+	string addStrings(string num1, string num2) { // beat 99%
+		string *pLong = &num1;
+		string *pShort = &num2;
+		if (num1.size() < num2.size()) {
+			pShort = &num1;
+			pLong = &num2;
+		}
+		int carry = 0;
+		transform(pShort->rbegin(), pShort->rend(), pLong->rbegin(), pLong->rbegin(), [&carry](char c1, char c2) {
+			int sum = c1 + c2 - '0' - '0' + carry;
+			carry = sum / 10;
+			return sum % 10 + '0';
+		});
+		if (carry && pLong->size() > pShort->size()) {
+			auto start = pLong->rbegin() + pShort->size();
+			transform(start, pLong->rend(), start, [&carry](char c1) {
+				int sum = c1 - '0' + carry;
+				carry = sum / 10;
+				return sum % 10 + '0';
+			});
+		}
+		if (carry)
+			pLong->insert(0, 1, '1');
+		return *pLong;
+	}
 };
 TEST_CASE("645. Set Mismatch", "[NEW]")
 {
