@@ -20,7 +20,7 @@ BM_forward_list         84 ns         85 ns    8960000   11.1607M items/s
 BM_slist_raw            80 ns         80 ns    8960000   11.8886M items/s
 most of time BM_slist_raw uses is new and delete
 */
-static void BM_slist_shared(benchmark::State& state) {  // call_once use 25ns comparing 1ns in other tests
+static void BM_slist_shared(benchmark::State& state) {  // shared_ptr, 40ns overhead
 	using TestSlist = slist<Slist_Tester>;
 	int count = 0;
 	TestSlist simple;
@@ -33,8 +33,8 @@ static void BM_slist_shared(benchmark::State& state) {  // call_once use 25ns co
 }
 BENCHMARK(BM_slist_shared);
 
-static void BM_slist_unique(benchmark::State& state) {  // call_once use 25ns comparing 1ns in other tests
-	using TestSlist = slist_u<Slist_Tester>;
+static void BM_slist_unique(benchmark::State& state) {  // unique_ptr a few ns overhead
+	using TestSlist = slist<Slist_Tester, false>;
 	int count = 0;
 	TestSlist simple;
 	for (auto _ : state) {
@@ -46,7 +46,7 @@ static void BM_slist_unique(benchmark::State& state) {  // call_once use 25ns co
 }
 BENCHMARK(BM_slist_unique);
 
-static void BM_forward_list(benchmark::State& state) {  // call_once use 25ns comparing 1ns in other tests
+static void BM_forward_list(benchmark::State& state) {  // better than unique_ptr
 	using TestSlist = std::forward_list<Slist_Tester>;
 	int count = 0;
 	TestSlist simple;
@@ -58,9 +58,9 @@ static void BM_forward_list(benchmark::State& state) {  // call_once use 25ns co
 	state.SetItemsProcessed(count);
 }
 BENCHMARK(BM_forward_list);
-
-static void BM_slist_raw(benchmark::State& state) {  // call_once use 25ns comparing 1ns in other tests
-	using TestSlist = slist_r<false, Slist_Tester>;
+/*
+static void BM_slist_raw(benchmark::State& state) {  // best, all time is used for memory alloc
+	using TestSlist = slist_r<Slist_Tester, bool*>;
 	int count = 0;
 	TestSlist simple;
 	for (auto _ : state) {
@@ -71,9 +71,22 @@ static void BM_slist_raw(benchmark::State& state) {  // call_once use 25ns compa
 	state.SetItemsProcessed(count);
 }
 BENCHMARK(BM_slist_raw);
-
+*/
+static void BM_slist_atomic(benchmark::State& state) {
+	using TestSlist = slist_r<Slist_Tester, std::atomic<bool>>;
+	int count = 0;
+	TestSlist simple;
+	for (auto _ : state) {
+		simple.push_front(Slist_Tester());
+		simple.pop_front();
+		count++;
+	}
+	state.SetItemsProcessed(count);
+}
+BENCHMARK(BM_slist_atomic);
+/*
 template<typename T>
-class Slist_Test : public slist_r<false, T>
+class Slist_Test : public slist_r<T, bool*>
 {
 public:
 	void test(T&& t)
@@ -87,7 +100,7 @@ public:
 		return Node(t);
 	}
 };
-static void BM_slist_raw_base(benchmark::State& state) {  // call_once use 25ns comparing 1ns in other tests
+static void BM_slist_raw_base(benchmark::State& state) {  // measure Node new and delete
 	int count = 0;
 	Slist_Test<Slist_Tester> simple;
 	for (auto _ : state) {
@@ -98,7 +111,7 @@ static void BM_slist_raw_base(benchmark::State& state) {  // call_once use 25ns 
 }
 BENCHMARK(BM_slist_raw_base);
 
-static void BM_slist_copy_base(benchmark::State& state) {  // call_once use 25ns comparing 1ns in other tests
+static void BM_slist_copy_base(benchmark::State& state) {  // copy Node
 	int count = 0;
 	Slist_Test<Slist_Tester> simple;
 	for (auto _ : state) {
@@ -108,3 +121,4 @@ static void BM_slist_copy_base(benchmark::State& state) {  // call_once use 25ns
 	state.SetItemsProcessed(count);
 }
 BENCHMARK(BM_slist_copy_base);
+*/

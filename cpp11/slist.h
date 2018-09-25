@@ -2,6 +2,9 @@
 #include <memory>
 #include <atomic>
 
+using std::move;
+using std::forward;
+
 template <typename T, bool use_share_ptr=true>
 class slist
 {
@@ -16,12 +19,12 @@ class slist
 
 	template<bool share, typename U, typename = std::enable_if_t<share>>
 	auto create(U&& t) {
-		return make_shared<Node>(forward<U>(t));
+		return std::make_shared<Node>(forward<U>(t));
 	}
 
 	template<bool share, typename U, std::enable_if_t<!share, int> = 0>
 	auto create(U&& t) {
-		return make_unique<Node>(forward<U>(t));
+		return std::make_unique<Node>(forward<U>(t));
 	}
 public:
 	void push_front(const T& t)
