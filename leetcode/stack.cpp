@@ -344,6 +344,19 @@ public:
 		}
 		return childCount.empty();  //
 	}
+	// 682. Baseball, C: last scrore invalid, D: double last, +: add last two valid
+	int calPoints(vector<string>& ops) { // beat 98%
+		vector<int> scores;
+		for (const string& s : ops) {
+			switch (s[0]) {
+			case 'C':	scores.pop_back();	break;
+			case 'D':	scores.push_back(scores.back() * 2);	break;
+			case '+':	scores.push_back(scores.back() + scores[scores.size() - 2]);	break;
+			default:	scores.push_back(stoi(s));
+			}
+		}
+		return accumulate(begin(scores), end(scores), 0);
+	}
 };
 
 TEST_CASE("asteroidCollision", "[AST]")
