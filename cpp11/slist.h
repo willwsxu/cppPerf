@@ -86,7 +86,7 @@ public:
 		pop_front();
 	}
 	
-	template<typename U, typename=std::enable_if_t<!is_class_v<U>>>  // template signature must be different from next overload func
+	template<typename U, typename=std::enable_if_t<!std::is_class_v<U>>>  // template signature must be different from next overload func
 	void exchange(Node *, Node *n) {
 		head = n;
 	}
