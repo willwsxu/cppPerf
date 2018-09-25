@@ -11,4 +11,13 @@ public:
 		partition(A.begin(), A.end(), [](int n) { return n % 2 == 0; });
 		return A;
 	}
+
+	// 832. Flipping an Image, slip horizontally, then invert values
+	vector<vector<int>> flipAndInvertImage(vector<vector<int>>& A) { // beat 100%
+		for (auto& v : A) {
+			reverse(begin(v), end(v));
+			transform(begin(v), end(v), begin(v), [](int i) {return 1 - i; });
+		}
+		return A;
+	}
 };
