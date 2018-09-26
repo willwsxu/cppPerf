@@ -532,6 +532,20 @@ public:
 		auto m = max_element(count.begin(), count.end(), [](auto&a, auto&b) {return a.second < b.second; });
 		return m == count.end() ? 0 : m->second;
 	}
+	// 867. Transpose Matrix
+	vector<vector<int>> transpose(vector<vector<int>>& A) {
+		if (A.empty() || A[0].empty())
+			return{};
+		int R = A.size();
+		int C = A[0].size();
+		vector<vector<int>> ans(C, vector<int>());
+		for (int c = 0; c < C; c++) {
+			ans[c].reserve(R);
+			for (int r = 0; r < R; r++)
+				ans[c].push_back(A[r][c]);
+		}
+		return ans;
+	}
 };
 
 TEST_CASE("set zero", "[ZERO]")
