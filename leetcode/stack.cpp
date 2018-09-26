@@ -507,3 +507,45 @@ TEST_CASE("155. Min Stack", "[NEW]")
 	ms.pop();
 	CHECK(ms.getMin() == 0);
 }
+
+// 232. Implement Queue using Stacks
+class MyQueue {  // beat 100%
+	stack<int>	stack_push; // for push ops
+	stack<int>	stack_pop;	// for pop ops
+	void transfer_stack()
+	{
+		if (stack_pop.empty()) {
+			while (!stack_push.empty()) { // move push stack to pop stack, reverse order
+				stack_pop.push(stack_push.top());
+				stack_push.pop();
+			}
+		}
+	}
+public:
+	/** Initialize your data structure here. */
+	MyQueue() {	}
+
+	/** Push element x to the back of queue. */
+	void push(int x) {
+		stack_push.push(x);
+	}
+
+	/** Removes the element from in front of queue and returns that element. */
+	int pop() {
+		transfer_stack();
+		int x = stack_pop.top();
+		stack_pop.pop();
+		return x;
+	}
+
+	/** Get the front element. */
+	int peek() {
+		transfer_stack();
+		return stack_pop.top();
+	}
+
+	/** Returns whether the queue is empty. */
+	bool empty() {
+		return stack_pop.empty()&& stack_push.empty();
+	}
+};
