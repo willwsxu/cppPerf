@@ -546,6 +546,26 @@ public:
 		}
 		return ans;
 	}
+	// 766. Toeplitz Matrix
+	// A matrix is Toeplitz if every diagonal from top-left to bottom-right has the same element.
+	bool isToeplitzMatrix(vector<vector<int>>& matrix) { // beat 71%
+		if (matrix.empty() || matrix[0].empty())
+			return true;
+		int row = matrix.size();
+		int col = matrix[0].size();
+		for (int c = 0; c < col-1; c++) {  // check all diagonals from first row
+			for (int r = 1; r < row&&r + c < col; r++)
+				if (matrix[r][r + c] != matrix[0][c])
+					return false;
+		}
+		for (int r = 1; r < row-1; r++) // check all diagonals from first row, except (0,0)
+		{
+			for (int c = 1; c < col&&r + c < row; c++)
+				if (matrix[r + c][c] != matrix[r][0])
+					return false;
+		}
+		return true;
+	}
 };
 
 TEST_CASE("set zero", "[ZERO]")
