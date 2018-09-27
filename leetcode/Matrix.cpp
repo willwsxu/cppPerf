@@ -561,6 +561,31 @@ public:
 		}
 		return true;
 	}
+	// 566. Reshape the Matrix
+	// Reshaped matrix need to be filled with all elements of original matrix in same row-traversing order as they were
+	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {  // beat 40%
+		if (nums.empty() || nums[0].empty())
+			return{};
+		int row = nums.size();
+		int col = nums[0].size();
+		if (row*col != r*c)
+			return nums;
+		vector<vector<int>> ans(r, vector<int>{});
+		for (auto& v : ans)
+			v.reserve(c);
+		int i = 0, j = 0;
+		for (const auto& vi : nums) {
+			for (int v : vi) {
+				if (j == c) {  // next line
+					i++;
+					j = 0;
+				}
+				ans[i].push_back( v );
+				j++;
+			}
+		}
+		return ans;
+	}
 };
 
 TEST_CASE("set zero", "[ZERO]")
