@@ -549,3 +549,38 @@ public:
 		return stack_pop.empty()&& stack_push.empty();
 	}
 };
+
+// 225. Implement Stack using Queues
+class MyStack {  // beat 100%
+	queue<int>	q;  // push back, pop front
+public:
+	/** Initialize your data structure here. */
+	MyStack() {	}
+
+	/** Push element x onto stack. */
+	void push(int x) {  // push is slow O(n), so pop and top are fast O(1)
+		q.push(x);
+		int n = q.size() - 1;
+		while (n--) {  // move last to front
+			q.push(q.front());
+			q.pop();
+		}
+	}
+
+	/** Removes the element on top of the stack and returns that element. */
+	int pop() {
+		int x = q.front();
+		q.pop();
+		return x;
+	}
+
+	/** Get the top element. */
+	int top() {
+		return q.front();
+	}
+
+	/** Returns whether the stack is empty. */
+	bool empty() {
+		return q.empty();
+	}
+};
