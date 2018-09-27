@@ -563,27 +563,16 @@ public:
 	}
 	// 566. Reshape the Matrix
 	// Reshaped matrix need to be filled with all elements of original matrix in same row-traversing order as they were
-	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {  // beat 40%
+	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {  // beat 100%, faster than vopy row by row
 		if (nums.empty() || nums[0].empty())
 			return{};
-		int row = nums.size();
-		int col = nums[0].size();
-		if (row*col != r*c)
+		int total = nums.size()*nums[0].size();
+		if (total != r*c)
 			return nums;
-		vector<vector<int>> ans(r, vector<int>{});
-		for (auto& v : ans)
-			v.reserve(c);
-		int i = 0, j = 0;
-		for (const auto& vi : nums) {
-			for (int v : vi) {
-				if (j == c) {  // next line
-					i++;
-					j = 0;
-				}
-				ans[i].push_back( v );
-				j++;
-			}
-		}
+		vector<vector<int>> ans(r, vector<int>(c,0));
+		int col = nums[0].size();
+		for (int i = 0; i < total; i++)
+			ans[i / c][i%c] = nums[i / col][i%col];
 		return ans;
 	}
 };
