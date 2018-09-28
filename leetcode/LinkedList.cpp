@@ -536,3 +536,18 @@ TEST_CASE("234. Palindrome Linked List", "[NEW]")
 	ListNode *head2 = ListNode::createList(vector<int>{1, 3, 2, 4, 2, 3, 1});
 	CHECK(p.isPalindrome(head2) == true);
 }
+
+class LinkedListEasy
+{
+public:
+	// 876. Middle of the Linked List
+	// If there are two middle nodes, return the second middle node
+	ListNode* middleNode(ListNode* head) {
+		int size = ListNode::count(head);
+		size /= 2; // middle
+		while (size-- > 0) {
+			head = head->next;
+		}
+		return head;
+	}
+};
