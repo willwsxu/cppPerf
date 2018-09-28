@@ -1989,22 +1989,12 @@ class BaseConv
 {
 public:
 	// 504. Base 7
-	string convertToBase7(int num) {  // beat 97%
-		if (num == 0)
-			return "0";  // special case
-		string ans;
-		auto start = ans.begin();
-		if (num < 0) {
-			num = -num;
-			ans.append(1,'-');
-			++start;
-		}
-		while (num != 0) {
-			ans.append(1, num % 7 + '0');
-			num /= 7;
-		}
-		reverse(start, ans.end());
-		return ans;
+	string convertToBase7(int num) {  // beat 97%, recursive version is same as iterative
+		if (num < 0)
+			return "-"+convertToBase7(-num);
+		if (num < 7)
+			return to_string(num);
+		return convertToBase7(num / 7).append(1,num%7+'0');
 	}
 };
 TEST_CASE("504. Base 7", "[NEW]")
