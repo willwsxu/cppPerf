@@ -87,10 +87,12 @@ void consumer2(int total)
 	auto start = chrono::high_resolution_clock::now();
 	MySlistGetter getter;
 	int count = 0;
+	int sleep_count = 0;
 	while (count < total) {
 		stringList.GetItems(getter);
 		if (getter.empty()) {
 			Sleep(0);
+			sleep_count++;
 			continue;
 		}
 		for (auto riter = getter.rbegin(); riter != getter.rend(); riter++)
@@ -106,6 +108,7 @@ void consumer2(int total)
 	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
 	cout << span.count() << endl;
 	cout << nanos.count() << endl;
+	cout << "consumer2 sleep count " << sleep_count << "\n";
 }
 
 void testSlist()
@@ -116,6 +119,50 @@ void testSlist()
 	prod.join();
 	cons.join();
 }
+
+#include "..\cpp11\slist.h"
+slist_r<string, atomic<bool*>> atomic_str_list;
+void producer3(int total)
+{
+	for (int i = 0; i < total; i++)
+	{
+		atomic_str_list.push_front( to_string(i) + " " + test);
+	}
+	cout << "producer3 count " << total << "\n";
+}
+
+void consumer3(int total)
+{
+	auto start = chrono::high_resolution_clock::now();
+	int count = 0;
+	int sleep_count = 0;
+	while (count < total) {
+		if (atomic_str_list.peek()) {
+			(void)atomic_str_list.pop_front();
+			count++;
+		} else {
+			Sleep(0);
+			sleep_count++;
+			continue;
+		}
+	}
+	auto end = chrono::high_resolution_clock::now();
+	chrono::duration<double> span = end - start;
+	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+	cout << nanos.count()/count << " ns\n";
+	cout << "consumer3 sleep count " << sleep_count << "\n";
+}
+
+void testAtomicSlist()
+{
+	thread prod(producer3, ITEMS);
+	thread cons(consumer3, ITEMS);
+
+	prod.join();
+	cons.join();
+}
+
+
 long long millisec[32] = { 0 };
 void worker(int id, int loops)
 {
