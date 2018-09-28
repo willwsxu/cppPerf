@@ -36,4 +36,12 @@ public:
 		});
 		return ans;
 	}
+	// 908. Smallest Range I, add x to each element, |x|<=K
+	// Return the smallest possible difference between the maximum value of B and the minimum value of B
+	int smallestRangeI(vector<int>& A, int K) { // beat 99%
+		auto x = minmax_element(A.begin(), A.end());
+		int maxDiff = *x.second - *x.first;  // diff between min and max
+		maxDiff -= 2 * K; // diff can be compensated by K in either direction
+		return maxDiff < 0 ? 0 : maxDiff;
+	}
 };

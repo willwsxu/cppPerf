@@ -1984,3 +1984,31 @@ public:
 		return max(maxEnd, (maxZ + 1) / 2);
 	}
 };
+
+class BaseConv
+{
+public:
+	// 504. Base 7
+	string convertToBase7(int num) {  // beat 97%
+		if (num == 0)
+			return "0";  // special case
+		string ans;
+		auto start = ans.begin();
+		if (num < 0) {
+			num = -num;
+			ans.append(1,'-');
+			++start;
+		}
+		while (num != 0) {
+			ans.append(1, num % 7 + '0');
+			num /= 7;
+		}
+		reverse(start, ans.end());
+		return ans;
+	}
+};
+TEST_CASE("504. Base 7", "[NEW]")
+{
+	CHECK(BaseConv().convertToBase7(-7) == "-10");
+	CHECK(BaseConv().convertToBase7(0) == "0");
+}
