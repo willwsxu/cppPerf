@@ -87,12 +87,12 @@ public:
 	}
 	
 	template<typename U, typename=std::enable_if_t<!std::is_class_v<U>>>  // template signature must be different from next overload func
-	void exchange(Node *, Node *n) {
+	void exchange(Node *&, Node *n) {
 		head = n;
 	}
 
 	template<typename U, std::enable_if_t<std::is_class_v<U>, int> = 0>  // must add space > =, must use none void as second type
-	void exchange(Node *expected, Node *desired) {
+	void exchange(Node *&expected, Node *desired) {
 		while (!head.compare_exchange_weak(expected, desired))
 		{
 		}
@@ -118,6 +118,15 @@ public:
 			old->next = nullptr;
 			delete old;
 		}
+	}
+
+	Node * pop_all()
+	{
+		Node *old = (Node *)head;
+		if (old != nullptr) {
+			exchange<head_type>(old, nullptr);
+		}
+		return old;
 	}
 
 	const T* peek()

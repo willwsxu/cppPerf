@@ -22,18 +22,22 @@ void producer1()
 		std::lock_guard<mutex> lock(m);
 		queue.push_back(to_string(i) + " " + test);
 	}
+	cout << "producer1 count " << ITEMS << "\n";
 }
 
 void consumer1(int total)
 {
 	auto start = chrono::high_resolution_clock::now();
 	int count = 0;
+	int sleep_count = 0;
 	while (count < total) {
 		list<string>  queue2;
 		{
 			std::lock_guard<mutex> lock(m);
-			if (queue.empty())
+			if (queue.empty()) {
+				sleep_count++;
 				continue;
+			}
 			queue2.assign(begin(queue), end(queue));
 			queue.clear();
 		}
@@ -46,8 +50,8 @@ void consumer1(int total)
 	auto end = chrono::high_resolution_clock::now();
 	chrono::duration<double> span = end - start;
 	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << span.count() << endl;
-	cout << nanos.count() << endl;
+	cout << nanos.count()/ count << endl;
+	cout << "std double list consumer1 sleep count " << sleep_count << "\n";
 }
 
 void testList1()
@@ -80,6 +84,7 @@ void producer2()
 		stringList.PushItem(pItem);
 		pItem = nullptr;
 	}
+	cout << "producer2 count " << ITEMS << "\n";
 }
 
 void consumer2(int total)
@@ -102,13 +107,13 @@ void consumer2(int total)
 			assert(id == count);
 			count++;
 		}
+		getter.clear();
 	}
 	auto end = chrono::high_resolution_clock::now();
 	chrono::duration<double> span = end - start;
 	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << span.count() << endl;
-	cout << nanos.count() << endl;
-	cout << "consumer2 sleep count " << sleep_count << "\n";
+	cout << nanos.count()/count << endl;
+	cout << "MS slist consumer2 sleep count " << sleep_count << "\n";
 }
 
 void testSlist()
@@ -136,21 +141,25 @@ void consumer3(int total)
 	auto start = chrono::high_resolution_clock::now();
 	int count = 0;
 	int sleep_count = 0;
-	while (count < total) {
+	while (count < total && sleep_count<total) {
 		if (atomic_str_list.peek()) {
-			(void)atomic_str_list.pop_front();
-			count++;
+			//(void)atomic_str_list.pop_front();
+			auto *head = atomic_str_list.pop_all();
+			auto *node = head;
+			while (node) {
+				count++;
+				node = node->next;
+			}
 		} else {
 			Sleep(0);
 			sleep_count++;
-			continue;
 		}
 	}
 	auto end = chrono::high_resolution_clock::now();
 	chrono::duration<double> span = end - start;
 	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
 	cout << nanos.count()/count << " ns\n";
-	cout << "consumer3 sleep count " << sleep_count << "\n";
+	cout << "atomic slist consumer3 sleep count " << sleep_count << " count=" << count << "\n";
 }
 
 void testAtomicSlist()
