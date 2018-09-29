@@ -440,6 +440,22 @@ public:
 		copy_if(words.begin(), words.end(), back_inserter(ans), [same_row](const string&s) { return same_row(s); });
 		return ans;
 	}
+	// 205. Isomorphic Strings, apply letter mapping so s can be transformed to t
+	// assume both s and t have the same length.
+	bool isIsomorphic(string s, string t) { // beat 99%
+		vector<int> map_s_t(128,0), map_t_s(128,0);
+		for (int i = 0; i < s.size(); i++) {
+			if (map_s_t[s[i]] == 0 && map_t_s[t[i]] == 0) {  // map letter between t ans s
+				map_s_t[s[i]] = t[i];
+				map_t_s[t[i]] = s[i];
+			}
+			else if (map_s_t[s[i]] == 0 || map_t_s[t[i]] == 0)  // inconsistant mapping
+				return false;
+			if (map_s_t[s[i]] != t[i])
+				return false;
+		}
+		return true;
+	}
 };
 TEST_CASE("500. Keyboard Row", "[HASH]")
 {
