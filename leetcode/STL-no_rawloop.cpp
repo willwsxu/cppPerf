@@ -61,4 +61,9 @@ public:
 			return false;
 		return true; // [2, 3, 3, 2, 4]
 	}
+	void rotate(vector<int>& nums, int k) { // beat 100%
+		k %= nums.size();
+		if (k>0)
+			std::rotate(nums.begin(), nums.end()-k, nums.end());
+	}
 };
