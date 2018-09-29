@@ -44,4 +44,21 @@ public:
 		maxDiff -= 2 * K; // diff can be compensated by K in either direction
 		return maxDiff < 0 ? 0 : maxDiff;
 	}
+	// 665. Non-decreasing Array
+	// check if it could become non-decreasing by modifying at most 1 element
+	bool checkPossibility(vector<int>& nums) {  // beat 98%
+		auto dec = adjacent_find(nums.begin(), nums.end(), greater<>());
+		if (dec == nums.end()) // no decrease
+			return true;
+		auto dec2 = adjacent_find(dec+1, nums.end(), greater<>()); 
+		if (dec2 != nums.end()) // two decrease
+			return false;
+		// one decrease
+		if (dec == nums.begin() || dec == nums.end() - 2)  // decrease at first pair or last pair
+			return true;
+		// trick condition
+		if (*dec > *(dec + 2) && *(dec - 1) > *(dec + 1)) //[3, 4, 2, 3], 50 60 5 49
+			return false;
+		return true; // [2, 3, 3, 2, 4]
+	}
 };
