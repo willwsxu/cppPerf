@@ -575,7 +575,37 @@ public:
 			ans[i / c][i%c] = nums[i / col][i%col];
 		return ans;
 	}
+	// 661. Image Smoother
+	vector<vector<int>> imageSmoother(vector<vector<int>>& M) {
+		if (M.empty() || M[0].empty())
+			return{};
+		const static vector<vector<int>> dir{ {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };
+		int m = M.size();
+		int n = M[0].size();
+		vector<vector<int>> ans(m, vector<int>(n,0));
+		for (int r = 0; r < m; r++) {
+			for (int c = 0; c < n; c++) {
+				ans[r][c] = M[r][c];
+				int count = 1;
+				for (const auto& d : dir) {
+					int i = r + d[0];
+					int j = c + d[1];
+					if (i < 0 || j < 0 || i >= m || j >= n)
+						continue;
+					ans[r][c] += M[i][j];
+					count++;
+				}
+				ans[r][c] /= count;
+			}
+		}
+		return ans;
+	}
 };
+TEST_CASE("661. Image Smoother", "[NEW]")
+{
+	CHECK(Solution().imageSmoother(vector<vector<int>>{ { 2, 3, 4 },{ 5, 6, 7 },{ 8, 9, 10 },{ 11, 12, 13 },{ 14, 15, 16 } }) == vector<vector<int>>{ {4, 4, 5}, { 5,6,6 }, { 8,9,9 }, { 11,12,12 }, { 13,13,14 }});
+}
+
 
 TEST_CASE("set zero", "[ZERO]")
 {
