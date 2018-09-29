@@ -407,29 +407,35 @@ public:
 		}
 	}
 	// 661. Image Smoother
+	// The value in the given matrix is in the range of [0, 255].  only 8 bits needed to store value
 	vector<vector<int>> imageSmoother(vector<vector<int>>& M) {
 		if (M.empty() || M[0].empty())
 			return{};
 		const static vector<vector<int>> dir{ { -1,-1 },{ -1,0 },{ -1,1 },{ 0,-1 },{ 0,1 },{ 1,-1 },{ 1,0 },{ 1,1 } };
 		int m = M.size();
 		int n = M[0].size();
-		vector<vector<int>> ans(m, vector<int>(n, 0));
+		//vector<vector<int>> ans(m, vector<int>(n, 0)); // use high 8 bits instead of extra memory, beat 66%
 		for (int r = 0; r < m; r++) {
 			for (int c = 0; c < n; c++) {
-				ans[r][c] = M[r][c];
+				int sum = M[r][c];
 				int count = 1;
 				for (const auto& d : dir) {
 					int i = r + d[0];
 					int j = c + d[1];
 					if (i < 0 || j < 0 || i >= m || j >= n)
 						continue;
-					ans[r][c] += M[i][j];
+					sum +=( M[i][j]&0xFF);
 					count++;
 				}
-				ans[r][c] /= count;
+				M[r][c] |= ((sum / count)<<8);
 			}
 		}
-		return ans;
+		for (int r = 0; r < m; r++) {
+			for (int c = 0; c < n; c++) {
+				M[r][c] >>= 8;
+			}
+		}
+		return M;
 	}
 	// 598. Range Addition II
 	int maxCount(int m, int n, vector<vector<int>>& ops) { // beat 38%
