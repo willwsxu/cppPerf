@@ -143,7 +143,7 @@ void consumer3(int total)
 	int sleep_count = 0;
 	while (count < total && sleep_count<total) {
 		if (atomic_str_list.peek()) {
-			//(void)atomic_str_list.pop_front();
+			//auto x=atomic_str_list.pop_front();  // lost some items
 			auto *head = atomic_str_list.pop_all();
 			auto *node = head;
 			while (node) {
@@ -164,8 +164,8 @@ void consumer3(int total)
 
 void testAtomicSlist()
 {
-	thread prod(producer3, ITEMS);
-	thread cons(consumer3, ITEMS);
+	thread prod(producer3, 1000000);
+	thread cons(consumer3, 1000000);
 
 	prod.join();
 	cons.join();

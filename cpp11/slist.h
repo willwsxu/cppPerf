@@ -110,14 +110,15 @@ public:
 		n->next = (Node *)head;
 		exchange<head_type>(n->next, n);
 	}
-	void pop_front()
+	std::unique_ptr<Node> pop_front()
 	{
 		Node *old = (Node *)head;
 		if (old!=nullptr) {
 			exchange<head_type>(old, old->next);
 			old->next = nullptr;
-			delete old;
+			//delete old;
 		}
+		return std::unique_ptr<Node>(old);
 	}
 
 	Node * pop_all()
