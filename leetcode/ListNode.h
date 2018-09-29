@@ -39,4 +39,14 @@ struct ListNode
 		head->next = nullptr;
 		return{ p.first, head };
 	}
+	
+	static void deleteCurrentNode(ListNode* node) {  // delete current node. take next node value, delete next node
+		if (node->next) {
+			node->val = node->next->val;
+			ListNode *next = node->next;
+			node->next = node->next->next;
+			next->next = nullptr;
+			delete next;
+		}
+	}
 };

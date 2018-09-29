@@ -30,12 +30,6 @@ public:
 		return components;
 	}
 
-	void deleteNode(ListNode* node) {  // delete current node. take next node value, delete next node
-		if (node->next) {
-			node->val = node->next->val;
-			node->next = node->next->next;
-		}
-	}
 	// split into k parts, k can be larger than list size, size difference<=1
 	vector<ListNode*> splitListToParts(ListNode* root, int k) {
 		vector<ListNode*> ans(k, nullptr);
@@ -548,6 +542,35 @@ public:
 		while (size-- > 0) {
 			head = head->next;
 		}
+		return head;
+	}
+
+	// if next node match value, remove it
+	void removeNextElements(ListNode* head, int val)
+	{
+		if (head &&head->next) {
+			if (head->next->val == val) {
+				ListNode *next = head->next;
+				head->next = next->next;
+				next->next = nullptr;
+				delete next;
+				removeNextElements(head, val);
+			} else
+				removeNextElements(head->next, val);
+		}
+
+	}
+	// 203. Remove Linked List Elements
+	ListNode* removeElements(ListNode* head, int val) { // beat 100%
+		if (head == nullptr)
+			return head;
+		while (head->val == val && head->next)
+			ListNode::deleteCurrentNode(head);
+		if (head->val == val) {
+			delete head;
+			return nullptr;
+		}
+		removeNextElements(head, val);
 		return head;
 	}
 };
