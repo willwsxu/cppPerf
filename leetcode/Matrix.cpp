@@ -445,8 +445,56 @@ public:
 		}
 		return m*n;
 	}
+
+	bool magic(vector<vector<int>>& g, int r, int c)
+	{
+		static const string valid_grid = "123456789";
+		string grid;
+		grid.reserve(9);
+		for (int i=0; i<3; i++)
+			for (int j=0; j<3; j++)
+				grid.append(1,g[i+r][j+c]+'0');
+		sort(begin(grid), end(grid));
+		if (grid != valid_grid)
+			return false;
+		int sum = accumulate(begin(g[r])+c, begin(g[r])+c+3, 0);
+		if (sum != 15)
+			return false;
+		if (accumulate(begin(g[r + 1])+c, begin(g[r + 1])+c+3, 0) != sum || accumulate(begin(g[r + 2]) + c, begin(g[r + 2]) + c +3, 0) != sum)
+			return false;
+		auto accumu_col = [&](int col) { return g[r][col] + g[r+1][col] + g[r+2][col]; };
+		for (int col = c; col < c + 3; col++)
+			if (accumu_col(col) != sum)
+				return false;
+		if (g[r][c] + g[r + 1][c + 1] + g[r + 2][c + 2] != sum)
+			return false;
+		if (g[r][c+2] + g[r + 1][c + 1] + g[r + 2][c] != sum)
+			return false;
+		return true;
+	}
+	// 840. Magic Squares In Grid
+	// 3x3 grid is magic if sum of row, col, or diagonal are all same
+	// grid dim <=10, grid value [1,9]
+	int numMagicSquaresInside(vector<vector<int>>& grid) {// brute force, tedius, beat 100%
+		if (grid.size() < 3 || grid[0].size() < 3)
+			return 0;
+		int m = grid.size() - 2;
+		int n = grid[0].size() - 2;
+		int ans = 0;
+		for (int r = 0; r < m; r++) {
+			for (int c = 0; c < n; c++) {
+				if (magic(grid, r, c))
+					ans++;
+			}
+		}
+		return ans;
+	}
 };
 
+TEST_CASE("840. Magic Squares In Grid", "[NEW]")
+{
+	CHECK(Array2D().numMagicSquaresInside(vector<vector<int>>{ {3, 10, 2, 3, 4}, { 4,5,6,8,1 }, { 8,8,1,6,8 }, { 1,3,5,7,1 }, { 9,4,9,2,9 }})==1);
+}
 TEST_CASE("generate matrix", "[GEN]")
 {
 	Array2D t;
