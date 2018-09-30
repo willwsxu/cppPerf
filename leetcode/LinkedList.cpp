@@ -116,18 +116,8 @@ public:
 	}
 
 	// 206. Reverse Linked List
-	auto reverseHelper(ListNode* head)
-	{
-		if (head == nullptr || head->next == nullptr)
-			return std::make_tuple(head, head);
-		auto trailer = reverseHelper(head->next); // recursively compute rest of the list
-		std::get<1>(trailer)->next = head;		  // append current head after last node
-		head->next = nullptr;                     // head become tail
-		return std::make_tuple(std::get<0>(trailer), head);  // return both head and tail of list
-	}
-
 	ListNode* reverseList(ListNode* head) {//beat 98%, recursion
-		auto ans = reverseHelper(head);
+		auto ans = ListNode::reverseHelper(head);
 		return std::get<0>(ans);
 	}
 	// 92. Reverse Linked List II	
@@ -573,4 +563,43 @@ public:
 		removeNextElements(head, val);
 		return head;
 	}
+	// 160. Intersection of Two Linked Lists
+	ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) { // 87%
+		if (headA == nullptr || headB == nullptr)
+			return nullptr;
+		if (headA == headB)
+			return headA;
+		int countA = ListNode::count(headA); // a->b->c->x->y->z
+		int countB = ListNode::count(headB); // d->e->f->x->y->z
+		if (countA > countB) {
+			swap(countA, countB);
+			swap(headA, headB);
+		}
+		int diff = countB - countA;
+		while (diff-- > 0)
+			headB = headB->next;
+		while (headA && headA!=headB) {
+			headA = headA->next;
+			headB = headB->next;
+		}
+		return headA;
+	}
 };
+TEST_CASE("160. Intersection of Two Linked Lists", "[NEW]")
+{
+	ListNode *common = new ListNode(4);
+	common->next = new ListNode(5);
+	common->next->next = new ListNode(6);
+	ListNode *headA = new ListNode(1);
+	headA->next = new ListNode(2);
+	headA->next->next = new ListNode(3);
+	headA->next->next->next = common;
+	ListNode *headB = new ListNode(7);
+	headB->next = new ListNode(8);
+	headB->next->next = new ListNode(9);
+	headB->next->next->next = common;
+	CHECK(LinkedListEasy().getIntersectionNode(headA, common) == common);
+	CHECK(LinkedListEasy().getIntersectionNode(common, common) == common);
+	CHECK(LinkedListEasy().getIntersectionNode(headA, headB) == common);
+	CHECK(LinkedListEasy().getIntersectionNode(common, headB) == common);
+}

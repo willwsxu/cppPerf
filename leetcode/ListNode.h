@@ -39,6 +39,16 @@ struct ListNode
 		head->next = nullptr;
 		return{ p.first, head };
 	}
+	static auto reverseHelper(ListNode* head)  // same as reverse above
+	{
+		if (head == nullptr || head->next == nullptr)
+			return std::make_tuple(head, head);
+		auto trailer = reverseHelper(head->next); // recursively compute rest of the list
+		std::get<1>(trailer)->next = head;		  // append current head after last node
+		head->next = nullptr;                     // head become tail
+		return std::make_tuple(std::get<0>(trailer), head);  // return both head and tail of list
+	}
+
 	
 	static void deleteCurrentNode(ListNode* node) {  // delete current node. take next node value, delete next node
 		if (node->next) {
