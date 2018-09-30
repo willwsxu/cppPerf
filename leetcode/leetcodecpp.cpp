@@ -1943,6 +1943,28 @@ public:
 		}
 		return all_of(count, count + 26, [](int a) {return a == 0; });  // char count is 0 for all letter
 	}
+	// 438. Find All Anagrams in a String, all lower cases
+	vector<int> findAnagrams(string s, string p) {  // beat 99%
+		vector<int> p_count(26, 0);
+		for (char c : p)
+			p_count[c - 'a']++;
+		vector<int> count(26, 0);
+		size_t p_len = p.size();
+		size_t s_len = s.size();
+		if (p_len > s_len)
+			return{};
+		p_len--;  // pattern len -1, convenient for later
+		for (int i = 0; i < p_len; i++) // computer count for pattern len -1
+			count[s[i] - 'a']++;
+		vector<int> ans;
+		for (int i = p_len; i < s_len; i++) {
+			count[s[i] - 'a']++; // completing matching of p
+			if (count == p_count)
+				ans.push_back(i - p_len);
+			count[s[i - p_len] - 'a']--;  // subtract count fo first letter so count is for p_len letters
+		}
+		return ans;
+	}
 };
 
 
