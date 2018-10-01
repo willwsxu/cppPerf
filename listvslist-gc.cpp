@@ -13,7 +13,12 @@ using namespace std;
 list<string>  queue;
 std::mutex m;
 
-static const long ITEMS = 10000;
+/* performance comparison
+   ITEMS	10000	100000	1000000	10000000
+   SlistEx	342		389		497
+   slist_r	388		418		383
+*/
+static const long ITEMS = 10000000;
 string test = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHIIIIIIIIIIJJJJJJJJJJ";
 void producer1()
 {
@@ -71,9 +76,9 @@ typedef SListEx<string, MyRecycler> MySlist;
 typedef std::list<MySListItem *> MySlistGetter;
 
 MySlist stringList;
-void producer2()
+void producer2(int total)
 {
-	for (int i = 0; i < ITEMS; i++)
+	for (int i = 0; i < total; i++)
 	{
 		MySListItem *pItem = stringList.getGC().GetNewItem();
 		if (!pItem) {
@@ -84,7 +89,7 @@ void producer2()
 		stringList.PushItem(pItem);
 		pItem = nullptr;
 	}
-	cout << "producer2 count " << ITEMS << "\n";
+	cout << "producer2 count " << total << "\n";
 }
 
 void consumer2(int total)
@@ -118,7 +123,7 @@ void consumer2(int total)
 
 void testSlist()
 {
-	thread prod(producer2);
+	thread prod(producer2, ITEMS);
 	thread cons(consumer2, ITEMS);
 
 	prod.join();
@@ -131,7 +136,7 @@ void producer3(int total)
 {
 	for (int i = 0; i < total; i++)
 	{
-		atomic_str_list.push_front( to_string(i) + " " + test);
+		atomic_str_list.push_front( to_string(i+1) + " " + test);
 	}
 	cout << "producer3 count " << total << "\n";
 }
@@ -145,11 +150,14 @@ void consumer3(int total)
 		if (atomic_str_list.peek()) {
 			//auto x=atomic_str_list.pop_front();  // lost some items
 			auto *head = atomic_str_list.pop_all();
+			head = slist_r<string, atomic<bool*>>::reverse(head).first;
 			auto *node = head;
 			while (node) {
-				count++;
+				if (++count != stoi(node->data))
+					cout << node->data << " expect " << count << "\n";;
 				node = node->next;
 			}
+			delete head;
 		} else {
 			Sleep(0);
 			sleep_count++;
@@ -164,8 +172,8 @@ void consumer3(int total)
 
 void testAtomicSlist()
 {
-	thread prod(producer3, 1000000);
-	thread cons(consumer3, 1000000);
+	thread prod(producer3, ITEMS);
+	thread cons(consumer3, ITEMS);
 
 	prod.join();
 	cons.join();

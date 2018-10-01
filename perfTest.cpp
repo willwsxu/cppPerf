@@ -85,9 +85,9 @@ extern int testNum();
 //extern void testmain();
 int main(int argc, char* argv[])
 {
-	testList1();
-	testSlist();
+//	testList1();
 	testAtomicSlist();
+	testSlist();
 	//testArrayVector(1000000000);
 
 	//HttpListener www;

@@ -136,6 +136,14 @@ public:
 			return &((Node*)head)->data;
 		return nullptr;
 	}
+	static std::pair<Node *, Node*> reverse(Node* head) {
+		if (!head || !head->next)  // 0 or 1 node
+			return{ head, head };
+		auto p = reverse(head->next);
+		p.second->next = head;
+		head->next = nullptr;
+		return{ p.first, head };
+	}
 };
 
 /* replaced by the slist class which support both shared_ptr and unique_ptr
