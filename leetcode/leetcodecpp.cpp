@@ -1954,10 +1954,10 @@ public:
 		if (p_len > s_len)
 			return{};
 		p_len--;  // pattern len -1, convenient for later
-		for (int i = 0; i < p_len; i++) // computer count for pattern len -1
+		for (size_t i = 0; i < p_len; i++) // computer count for pattern len -1
 			count[s[i] - 'a']++;
 		vector<int> ans;
-		for (int i = p_len; i < s_len; i++) {
+		for (size_t i = p_len; i < s_len; i++) {
 			count[s[i] - 'a']++; // completing matching of p
 			if (count == p_count)
 				ans.push_back(i - p_len);

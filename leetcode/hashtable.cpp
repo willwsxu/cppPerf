@@ -444,7 +444,7 @@ public:
 	// assume both s and t have the same length.
 	bool isIsomorphic(string s, string t) { // beat 99%
 		vector<int> map_s_t(128,0), map_t_s(128,0);
-		for (int i = 0; i < s.size(); i++) {
+		for (size_t i = 0; i < s.size(); i++) {
 			if (map_s_t[s[i]] == 0 && map_t_s[t[i]] == 0) {  // map letter between t ans s
 				map_s_t[s[i]] = t[i];
 				map_t_s[t[i]] = s[i];
@@ -456,7 +456,30 @@ public:
 		}
 		return true;
 	}
+	// 914. X of a Kind in a Deck of Cards
+	// separate into groups of X same cards, X>=2
+	// 0 <= deck[i] < 10000
+	bool hasGroupsSizeX(vector<int>& deck) {
+		if (deck.size() < 2)
+			return false;
+		vector<int> count(10000, 0);
+		for (int d : deck)
+			count[d]++;
+		count.erase(remove(count.begin(), count.end(), 0), count.end());
+		sort(count.begin(), count.end());
+		if (count[0] < 2)
+			return false;
+		for (int factor = 2; factor <= count[0]; factor++) {
+			if (all_of(count.begin(), count.end(), [&count, factor](int i) { return i%factor == 0; }))
+				return true;
+		}
+		return false;
+	}
 };
+TEST_CASE("914. X of a Kind in a Deck of Cards", "[NEW]")
+{
+	CHECK(ArrayMap().hasGroupsSizeX(vector<int>{1, 1, 1, 1, 2, 2, 2, 2, 2, 2}) == true);
+}
 TEST_CASE("500. Keyboard Row", "[HASH]")
 {
 	CHECK(ArrayMap().findWords(vector<string>{"Hello", "Alaska", "Dad", "Peace"}) == vector<string>{"Alaska", "Dad"});
