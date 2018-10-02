@@ -66,4 +66,42 @@ public:
 		if (k>0)
 			std::rotate(nums.begin(), nums.end()-k, nums.end());
 	}
+
+	// 414. Third Maximum Number, O(n)
+	// Given a non-empty array of integers, return the third maximum number. If it does not exist, return the maximum number. 
+	int thirdMax(vector<int>& nums) { // beat 99%
+		vector<int> counter(3, 0); // counter for top 3
+		if (nums.size() < 3) {
+			return *max_element(nums.begin(), nums.end());
+		}
+		nth_element(nums.begin(), nums.begin() + 2, nums.end(), greater<>());
+		sort(nums.begin(), nums.begin() + 2, greater<>()); // sort first 2, could use partial_sort
+		int rank = 0;
+		counter[0] = 1;
+		if (nums[0] > nums[1])
+			rank++;
+		counter[rank]++;
+		if (nums[1] > nums[2])
+			rank++;
+		counter[rank]++;
+		int No3 = 2; //
+		while (rank < 2) {
+			counter[rank++] = count(nums.begin(), nums.end(), nums[No3]);
+			No3 = accumulate(counter.begin(), counter.begin() + rank, 0);
+			if (No3 == nums.size())
+				return nums[0];
+			nth_element(nums.begin(), nums.begin() + No3, nums.end(), greater<>());
+		}
+		return nums[No3];
+	}
 };
+
+TEST_CASE("414. Third Maximum Number", "[NEW]")
+{
+	CHECK(STL().thirdMax(vector<int>{2, 2, 3, 1}) == 1);
+	CHECK(STL().thirdMax(vector<int>{1, 2}) == 2);
+	CHECK(STL().thirdMax(vector<int>{1, 1, 2}) == 2);
+	CHECK(STL().thirdMax(vector<int>{2, 2, 3, 3, 3, 2, 1}) == 1);
+	CHECK(STL().thirdMax(vector<int>{2, 2, 3, 3, 3, 2}) == 3);
+	CHECK(STL().thirdMax(vector<int>{3, 3, 3}) == 3);
+}
