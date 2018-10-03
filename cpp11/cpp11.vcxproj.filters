@@ -96,6 +96,9 @@
     <ClInclude Include="meta_book_example.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\library\RingBufferAtomic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

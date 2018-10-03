@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include "slist.h"
+#include "RingBufferAtomic.h"
 using slist_shared_ptr = slist<int>;
 using namespace std;
 
@@ -114,4 +115,30 @@ TEST_CASE("slist single thread memory tracker atomic raw ptr", "[NEW]")
 	x.pop_front();
 	CHECK(x.peek()->myCount == 3);
 	CHECK(MemoryTracker::count == 3);
+}
+
+
+TEST_CASE("atomic queue", "[NEW]")
+{
+	RingBuffer<size_t, 3> lrQ; // lock free queue
+	CHECK(lrQ.push(1));
+	CHECK(lrQ.push(2));
+	CHECK(lrQ.push(3));
+	CHECK(lrQ.push(4)==false);
+	CHECK(lrQ.size()==3);
+	CHECK(lrQ.pop() == pair<size_t,bool>{1, true});
+	CHECK(lrQ.push(4) == true);
+	CHECK(lrQ.push(5) == false);
+	CHECK(lrQ.size() == 3);
+	CHECK(lrQ.pop() == pair<size_t, bool>{2, true});
+	CHECK(lrQ.push(5) == true);  // wrap writer to position 0
+	CHECK(lrQ.size() == 3);
+	CHECK(lrQ.pop() == pair<size_t, bool>{3, true});
+	CHECK(lrQ.pop() == pair<size_t, bool>{4, true});
+	CHECK(lrQ.size() == 1);
+	CHECK(lrQ.pop() == pair<size_t, bool>{5, true});
+	CHECK(lrQ.empty() == true);
+	CHECK(lrQ.size() == 0);
+	CHECK(lrQ.pop() == pair<size_t, bool>{0, false});
+	CHECK(lrQ.push(6) == true);
 }

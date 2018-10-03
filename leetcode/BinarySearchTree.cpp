@@ -156,6 +156,8 @@ public:
 		minDiffInBSTHelp(root);
 		return minDiff;
 	}
+	// 530. Minimum Absolute Difference in BT, none negative
+	// exact same as #783, beat 88%
 };
 TEST_CASE("783. Minimum Difference Between any BST Nodes", "[NEW]")
 {
