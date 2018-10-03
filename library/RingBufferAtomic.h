@@ -19,7 +19,7 @@ public:
 		size_t next_write = (write_pos+1) % RING_SIZE;
 		if (next_write == read.load())
 			return false;  // full
-		_queue[write_pos] = val;
+		_queue[write_pos] = move(val);
 		write.store(next_write);
 		return true;
 	}
@@ -27,9 +27,8 @@ public:
 		size_t read_pos = read.load();
 		if (write.load()==read_pos)
 			return{ T{}, false };
-		T x = std::move(_queue[read_pos]);
-		read.store(++read_pos%RING_SIZE);
-		return{ x, true };
+		read.store((read_pos+1)%RING_SIZE);
+		return{ std::move(_queue[read_pos]), true };
 	}
 	// pop all
 	// pop range

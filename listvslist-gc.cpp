@@ -18,7 +18,7 @@ std::mutex m;
    SlistEx	342		389		497		cannot finish
    slist_r	388		418		383		382
 */
-static const long ITEMS = 10000000;
+static const long ITEMS = 10000;
 string test = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHIIIIIIIIIIJJJJJJJJJJ";
 void producer1()
 {
@@ -154,7 +154,7 @@ void consumer3(int total)
 			auto *node = head;
 			while (node) {
 				if (++count != stoi(node->data))
-					cout << node->data << " expect " << count << "\n";;
+					cout << node->data << " expect " << count << "\n";
 				node = node->next;
 			}
 			delete head;
@@ -174,6 +174,54 @@ void testAtomicSlist()
 {
 	thread prod(producer3, ITEMS);
 	thread cons(consumer3, ITEMS);
+
+	prod.join();
+	cons.join();
+}
+
+#include "RingBufferAtomic.h"
+RingBuffer<string, 1024> lfQ;
+void producer4(int total)
+{
+	int sleep_count = 0;
+	for (int i = 0; i < total; i++)
+	{
+		while (lfQ.push(to_string(i + 1) + " " + test) == false) {
+			Sleep(0);
+			sleep_count++;
+		}
+	}
+	cout << "producer4 count " << total << " sleep count " << sleep_count<< "\n";
+}
+
+
+void consumer4(int total)
+{
+	auto start = chrono::high_resolution_clock::now();
+	int count = 0;
+	int sleep_count = 0;
+	while (count < total && sleep_count<total) {
+		auto x = lfQ.pop();
+		if (x.second) {
+			if (++count != stoi(x.first))
+				std::cout << x.first << " expect " << count << "\n";
+		}
+		else {
+			Sleep(0);
+			sleep_count++;
+		}
+	}
+	auto end = chrono::high_resolution_clock::now();
+	chrono::duration<double> span = end - start;
+	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+	std::cout << nanos.count() / count << " ns\n";
+	std::cout << "atomic queue consumer4 sleep count " << sleep_count << " count=" << count << "\n";
+}
+
+void testAtomicQueue()
+{
+	thread prod(producer4, ITEMS);
+	thread cons(consumer4, ITEMS);
 
 	prod.join();
 	cons.join();

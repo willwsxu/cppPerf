@@ -87,7 +87,8 @@ int main(int argc, char* argv[])
 {
 //	testList1();
 	testAtomicSlist();
-	testSlist();
+	testAtomicQueue();
+//	testSlist();
 	//testArrayVector(1000000000);
 
 	//HttpListener www;
