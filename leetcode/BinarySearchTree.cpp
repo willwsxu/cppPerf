@@ -136,8 +136,35 @@ public:
 		convertBSThelp(root);
 		return root;
 	}
+	int minDiff = INT32_MAX;
+	pair<pair<bool,int>,pair<bool,int>> minDiffInBSTHelp(TreeNode* root)  // return min and max of sub tree
+	{
+		if (root == nullptr)
+			return{ {false,INT32_MAX}, {false,INT32_MIN} };  // mark value invalid, good place to use optional
+		auto left = minDiffInBSTHelp(root->left);
+		auto right = minDiffInBSTHelp(root->right);
+		// find difference to max of left, or min of right
+		if (left.second.first) // check if valid
+			minDiff = min(minDiff, abs(root->val - left.second.second));
+		if (right.first.first)
+			minDiff = min(minDiff, abs(root->val - right.first.second));
+		return{ {true,min(left.first.second, root->val)}, {true,max(right.second.second, root->val)} };
+	}
+	// 783. Minimum Difference Between any BST Nodes, value are unique
+	int minDiffInBST(TreeNode* root) { // beat 100%
+		minDiff = INT32_MAX;
+		minDiffInBSTHelp(root);
+		return minDiff;
+	}
 };
-TEST_CASE("38. Convert BST to Greater Tree", "[NEW]")
+TEST_CASE("783. Minimum Difference Between any BST Nodes", "[NEW]")
+{
+	TreeNode *r1 = TreeNode::CreateBinaryTree({ 1, 0, 48, INT32_MIN, INT32_MIN, 12, 49 });
+	CHECK(BST().minDiffInBST(r1) == 1);
+	TreeNode *r2 = TreeNode::CreateBinaryTree({ 27, INT32_MIN, 34, INT32_MIN, 58, 50, INT32_MIN, 44, INT32_MIN, INT32_MIN, INT32_MIN });
+	CHECK(BST().minDiffInBST(r2) == 6);
+}
+TEST_CASE("38. Convert BST to Greater Tree", "[BST]")
 {
 	TreeNode *r2 = TreeNode::CreateBinaryTree({ 2,0,3,-4,1 });
 	r2 = BST().convertBST(r2);
