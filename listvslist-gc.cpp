@@ -17,8 +17,9 @@ std::mutex m;
    ITEMS	10000	100000	1000000	10000000
    SlistEx	342		389		497		cannot finish
    slist_r	388		418		383		382
+   circ_queue				292		294
 */
-static const long ITEMS = 10000;
+static const long ITEMS = 10000000;
 string test = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHIIIIIIIIIIJJJJJJJJJJ";
 void producer1()
 {
@@ -180,7 +181,7 @@ void testAtomicSlist()
 }
 
 #include "RingBufferAtomic.h"
-RingBuffer<string, 1024> lfQ;
+RingBuffer<string, 8096> lfQ;
 void producer4(int total)
 {
 	int sleep_count = 0;
