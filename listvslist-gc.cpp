@@ -19,16 +19,15 @@ std::mutex m;
    slist_r	388		418		383		382
    circ_queue				292		294
 */
-static const long ITEMS = 10000000;
 string test = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHIIIIIIIIIIJJJJJJJJJJ";
-void producer1()
+void producer1(int total)
 {
-	for (int i = 0; i < ITEMS; i++)
+	for (int i = 0; i < total; i++)
 	{
 		std::lock_guard<mutex> lock(m);
 		queue.push_back(to_string(i) + " " + test);
 	}
-	cout << "producer1 count " << ITEMS << "\n";
+	cout << "producer1 count " << total << "\n";
 }
 
 void consumer1(int total)
@@ -60,10 +59,12 @@ void consumer1(int total)
 	cout << "std double list consumer1 sleep count " << sleep_count << "\n";
 }
 
-void testList1()
+template<typename Producer, typename Consumer>
+void test_producer_consumer_single(Producer producer, Consumer consumer)
 {
-	thread prod(producer1);
-	thread cons(consumer1, ITEMS);
+	static const long ITEMS = 1000000;
+	thread prod(producer, ITEMS);
+	thread cons(consumer, ITEMS);
 
 	prod.join();
 	cons.join();
@@ -122,15 +123,6 @@ void consumer2(int total)
 	cout << "MS slist consumer2 sleep count " << sleep_count << "\n";
 }
 
-void testSlist()
-{
-	thread prod(producer2, ITEMS);
-	thread cons(consumer2, ITEMS);
-
-	prod.join();
-	cons.join();
-}
-
 #include "..\cpp11\slist.h"
 slist_r<string, atomic<bool*>> atomic_str_list;
 void producer3(int total)
@@ -171,14 +163,6 @@ void consumer3(int total)
 	cout << "atomic slist consumer3 sleep count " << sleep_count << " count=" << count << "\n";
 }
 
-void testAtomicSlist()
-{
-	thread prod(producer3, ITEMS);
-	thread cons(consumer3, ITEMS);
-
-	prod.join();
-	cons.join();
-}
 
 #include "RingBufferAtomic.h"
 RingBuffer<string, 8096> lfQ;
@@ -219,13 +203,21 @@ void consumer4(int total)
 	std::cout << "atomic queue consumer4 sleep count " << sleep_count << " count=" << count << "\n";
 }
 
-void testAtomicQueue()
+void testList1()  // std::list with mutex
 {
-	thread prod(producer4, ITEMS);
-	thread cons(consumer4, ITEMS);
-
-	prod.join();
-	cons.join();
+	test_producer_consumer_single(producer1, consumer1);
+}
+void testSlist()  // SlistEx, with gc, lock free
+{
+	test_producer_consumer_single(producer2, consumer2);
+}
+void testAtomicSlist()  // atomic slist
+{
+	test_producer_consumer_single(producer3, consumer3);
+}
+void testAtomicQueue()  // stomic queue circular
+{
+	test_producer_consumer_single(producer4, consumer4);
 }
 
 
