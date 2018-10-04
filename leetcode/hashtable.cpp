@@ -3,6 +3,7 @@
 #include <bitset>
 using namespace std;
 
+#include "..\library\myalgo.h"
 
 struct BitHashAG
 {
@@ -323,6 +324,27 @@ public:
 		}
 		vector<string> ans;
 		transform(count.begin(), count.end(), back_inserter(ans), [](const auto&p) { return to_string(p.second).append(1, ' ').append(p.first);	});
+		return ans;
+	}
+	// 599. Minimum Index Sum of Two Lists, return all ties
+	vector<string> findRestaurant(vector<string>& list1, vector<string>& list2) {
+		map<string, int> index_map;
+		int i = 0;
+		for (const string &s2 : list2)
+			index_map[s2] = i++;
+		vector<pair<string, int>> index_sum;
+		i = 0;
+		for (const string& s1 : list1) {
+			auto x = index_map.find(s1);
+			if (x != index_map.end()) // find string match
+				index_sum.emplace_back(x->first, i + x->second);  // sum up index
+			i++;
+		}
+		if (index_sum.empty())
+			return{};
+		auto minSum = min_element(begin(index_sum), end(index_sum), [](const auto&p1, const auto&p2) {return p1.second < p2.second; });
+		vector < string> ans;
+		transform_if(begin(index_sum), end(index_sum), back_inserter(ans), [](const auto&p) {return p.first; }, [min_sum = minSum->second](const auto&p) { return p.second == min_sum; });
 		return ans;
 	}
 };
