@@ -30,33 +30,44 @@ void producer1(int total)
 	cout << "producer1 count " << total << "\n";
 }
 
-void consumer1(int total)
-{
+template<typename Fun>
+void benchmark_simple(Fun test, const char * fun_name, int total) {
+
 	auto start = chrono::high_resolution_clock::now();
-	int count = 0;
-	int sleep_count = 0;
-	while (count < total) {
-		list<string>  queue2;
-		{
-			std::lock_guard<mutex> lock(m);
-			if (queue.empty()) {
-				sleep_count++;
-				continue;
-			}
-			queue2.assign(begin(queue), end(queue));
-			queue.clear();
-		}
-		for (auto iter=queue2.begin(); iter != queue2.end(); iter++) {
-			int id = atol(iter->c_str());
-			assert(id == count);
-			count++;
-		}
-	}
+
+	int sleep_count = test(total);
+
 	auto end = chrono::high_resolution_clock::now();
 	chrono::duration<double> span = end - start;
 	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << nanos.count()/ count << endl;
-	cout << "std double list consumer1 sleep count " << sleep_count << "\n";
+	std::cout << nanos.count() / total << endl;
+	std::cout << fun_name << " sleep count " << sleep_count << " count=" << total << "\n";
+}
+void consumer1(int total)
+{
+	auto test = [](int total) {
+		int count = 0;
+		int sleep_count = 0;
+		while (count < total) {
+			list<string>  queue2;
+			{
+				std::lock_guard<mutex> lock(m);
+				if (queue.empty()) {
+					sleep_count++;
+					continue;
+				}
+				queue2.assign(begin(queue), end(queue));
+				queue.clear();
+			}
+			for (auto iter = queue2.begin(); iter != queue2.end(); iter++) {
+				int id = atol(iter->c_str());
+				assert(id == count);
+				count++;
+			}
+		}
+		return sleep_count;
+	};
+	benchmark_simple(test, "std double list consumer1", total);
 }
 
 template<typename Producer, typename Consumer>
@@ -96,31 +107,29 @@ void producer2(int total)
 
 void consumer2(int total)
 {
-	auto start = chrono::high_resolution_clock::now();
-	MySlistGetter getter;
-	int count = 0;
-	int sleep_count = 0;
-	while (count < total) {
-		stringList.GetItems(getter);
-		if (getter.empty()) {
-			Sleep(0);
-			sleep_count++;
-			continue;
+	auto test = [](int total) {
+		MySlistGetter getter;
+		int count = 0;
+		int sleep_count = 0;
+		while (count < total) {
+			stringList.GetItems(getter);
+			if (getter.empty()) {
+				Sleep(0);
+				sleep_count++;
+				continue;
+			}
+			for (auto riter = getter.rbegin(); riter != getter.rend(); riter++)
+			{
+				MySListItem *pItem = *riter;
+				int id = atol(pItem->data.c_str());
+				assert(id == count);
+				count++;
+			}
+			getter.clear();
 		}
-		for (auto riter = getter.rbegin(); riter != getter.rend(); riter++)
-		{
-			MySListItem *pItem = *riter;
-			int id = atol(pItem->data.c_str());
-			assert(id == count);
-			count++;
-		}
-		getter.clear();
-	}
-	auto end = chrono::high_resolution_clock::now();
-	chrono::duration<double> span = end - start;
-	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << nanos.count()/count << endl;
-	cout << "MS slist consumer2 sleep count " << sleep_count << "\n";
+		return sleep_count;
+	};
+	benchmark_simple(test, "MS slist consumer2", total);
 }
 
 #include "..\cpp11\slist.h"
@@ -136,31 +145,30 @@ void producer3(int total)
 
 void consumer3(int total)
 {
-	auto start = chrono::high_resolution_clock::now();
-	int count = 0;
-	int sleep_count = 0;
-	while (count < total && sleep_count<total) {
-		if (atomic_str_list.peek()) {
-			//auto x=atomic_str_list.pop_front();  // lost some items
-			auto *head = atomic_str_list.pop_all();
-			head = slist_r<string, atomic<bool*>>::reverse(head).first;
-			auto *node = head;
-			while (node) {
-				if (++count != stoi(node->data))
-					cout << node->data << " expect " << count << "\n";
-				node = node->next;
+	auto test = [](int total) {
+		int count = 0;
+		int sleep_count = 0;
+		while (count < total && sleep_count < total) {
+			if (atomic_str_list.peek()) {
+				//auto x=atomic_str_list.pop_front();  // lost some items
+				auto *head = atomic_str_list.pop_all();
+				head = slist_r<string, atomic<bool*>>::reverse(head).first;
+				auto *node = head;
+				while (node) {
+					if (++count != stoi(node->data))
+						cout << node->data << " expect " << count << "\n";
+					node = node->next;
+				}
+				delete head;
 			}
-			delete head;
-		} else {
-			Sleep(0);
-			sleep_count++;
+			else {
+				Sleep(0);
+				sleep_count++;
+			}
 		}
-	}
-	auto end = chrono::high_resolution_clock::now();
-	chrono::duration<double> span = end - start;
-	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	cout << nanos.count()/count << " ns\n";
-	cout << "atomic slist consumer3 sleep count " << sleep_count << " count=" << count << "\n";
+		return sleep_count;
+	};
+	benchmark_simple(test, "atomic slist consumer3", total);
 }
 
 
@@ -182,25 +190,23 @@ void producer4(int total)
 
 void consumer4(int total)
 {
-	auto start = chrono::high_resolution_clock::now();
-	int count = 0;
-	int sleep_count = 0;
-	while (count < total && sleep_count<total) {
-		auto x = lfQ.pop();
-		if (x.second) {
-			if (++count != stoi(x.first))
-				std::cout << x.first << " expect " << count << "\n";
+	auto test = [](int total) {
+		int count = 0;
+		int sleep_count = 0;
+		while (count < total && sleep_count < total) {
+			auto x = lfQ.pop();
+			if (x.second) {
+				if (++count != stoi(x.first))
+					std::cout << x.first << " expect " << count << "\n";
+			}
+			else {
+				Sleep(0);
+				sleep_count++;
+			}
 		}
-		else {
-			Sleep(0);
-			sleep_count++;
-		}
-	}
-	auto end = chrono::high_resolution_clock::now();
-	chrono::duration<double> span = end - start;
-	auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-	std::cout << nanos.count() / count << " ns\n";
-	std::cout << "atomic queue consumer4 sleep count " << sleep_count << " count=" << count << "\n";
+		return sleep_count;
+	};
+	benchmark_simple(test, "atomic queue consumer4", total);
 }
 
 void testList1()  // std::list with mutex
