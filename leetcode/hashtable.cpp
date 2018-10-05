@@ -504,6 +504,20 @@ public:
 		}
 		return false;
 	}
+	// 594. Longest Harmonious Subsequence, exactly max-min=1
+	int findLHS(vector<int>& nums) { // beat 54%
+		map<int, int> num_count;
+		for (int n : nums)
+			num_count[n]++;
+		int max_count = 0;
+		for (const auto& c : num_count) {
+			auto x = num_count.find(c.first + 1);
+			if (x == num_count.end())
+				continue;
+			max_count = max(max_count, c.second + x->second);
+		}
+		return max_count;
+	}
 };
 TEST_CASE("914. X of a Kind in a Deck of Cards", "[NEW]")
 {
