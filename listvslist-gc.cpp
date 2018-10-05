@@ -173,7 +173,7 @@ void consumer3(int total)
 
 
 #include "RingBufferAtomic.h"
-RingBuffer<string, 8096> lfQ;
+circular_queue<string, 8096> lfQ;
 void producer4(int total)
 {
 	int sleep_count = 0;

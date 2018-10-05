@@ -8,7 +8,7 @@ using std::atomic;
 
 // single reader, single writer
 template<typename T, size_t BUF_SIZE>
-class RingBuffer
+class circular_queue
 {
 public:
 	// push range

@@ -120,7 +120,7 @@ TEST_CASE("slist single thread memory tracker atomic raw ptr", "[NEW]")
 
 TEST_CASE("atomic queue", "[NEW]")
 {
-	RingBuffer<size_t, 3> lrQ; // lock free queue
+	circular_queue<size_t, 3> lrQ; // lock free queue
 	CHECK(lrQ.push(1));
 	CHECK(lrQ.push(2));
 	CHECK(lrQ.push(3));
