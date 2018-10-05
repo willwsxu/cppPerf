@@ -233,7 +233,7 @@ void testAtomicQueue()  // atomic queue circular
 
 void testBaseline()  // string allocation
 {
-	auto tester = [](int total) {
+	auto baseline = [](int total) {
 		int count = 0;
 		while (count < total ) {
 			string x = to_string(count + 1) + " " + test;
@@ -242,7 +242,44 @@ void testBaseline()  // string allocation
 		}
 		return 0;
 	};
-	benchmark_simple(tester, "string op baseline", 1000000);
+	benchmark_simple(baseline, "string op baseline", 1000000);  // 262 ns
+
+	auto baseline_copy = [](int total) {
+		int count = 0;
+		while (count < total) {
+			string x = to_string(count + 1) + " " + test;
+			string y = x;
+			if (++count != stoi(y))
+				std::cout << x << " expect " << count << "\n";
+		}
+		return 0;
+	};
+	benchmark_simple(baseline_copy, "string op baseline+copy", 1000000);  // 367.5 ns
+
+	auto baseline_move = [](int total) {
+		int count = 0;
+		while (count < total) {
+			string x = to_string(count + 1) + " " + test;
+			string y = move(x);
+			if (++count != stoi(y))
+				std::cout << x << " expect " << count << "\n";
+		}
+		return 0;
+	};
+	benchmark_simple(baseline_move, "string op baseline+move", 1000000);  // 265.5
+
+
+	auto baseline_queue = [](int total) {
+		int count = 0;
+		array<string, 2> queue;
+		while (count < total) {
+			queue[0] = move(to_string(count + 1) + " " + test);
+			if (++count != stoi(queue[0]))
+				std::cout << queue[0] << " expect " << count << "\n";
+		}
+		return 0;
+	};
+	benchmark_simple(baseline_queue, "single thread queue push", 1000000);  // 267
 }
 
 long long millisec[32] = { 0 };
