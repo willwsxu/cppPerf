@@ -19,6 +19,11 @@ std::mutex m;
    slist_r	388		418		383		382
    circ_queue				292		294
 */
+/* test with 1000000 iteration, repeat 4 time
+   Baseline		259		263		256		258		259.0
+   Atom Slist	366		381		380		353		370.0
+   Atom queue	282		303		295		279		289.8
+*/
 string test = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFFGGGGGGGGGGHHHHHHHHHHIIIIIIIIIIJJJJJJJJJJ";
 void producer1(int total)
 {
@@ -221,11 +226,24 @@ void testAtomicSlist()  // atomic slist
 {
 	test_producer_consumer_single(producer3, consumer3);
 }
-void testAtomicQueue()  // stomic queue circular
+void testAtomicQueue()  // atomic queue circular
 {
 	test_producer_consumer_single(producer4, consumer4);
 }
 
+void testBaseline()  // string allocation
+{
+	auto tester = [](int total) {
+		int count = 0;
+		while (count < total ) {
+			string x = to_string(count + 1) + " " + test;
+			if (++count != stoi(x))
+				std::cout << x << " expect " << count << "\n";
+		}
+		return 0;
+	};
+	benchmark_simple(tester, "string op baseline", 1000000);
+}
 
 long long millisec[32] = { 0 };
 void worker(int id, int loops)

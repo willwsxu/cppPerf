@@ -6,3 +6,4 @@ void testThreads();
 void testNewDelete();
 void testLocks();
 void testLamda();
+void testBaseline();
