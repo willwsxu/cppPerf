@@ -42,3 +42,28 @@ inline void prefix_sum(std::vector<int>& prefix)
 	for (size_t i = 1; i < prefix.size(); i++)
 		prefix[i] += prefix[i - 1];  // prefix sum
 }
+
+class mode_calc  // modes of a sequence
+{
+public:
+	void try_new_mode(int prev, int same_count)
+	{
+		if (modes.empty()) {
+			mode_count = same_count;
+		}
+		else if (mode_count > same_count) // not a mode
+			return;
+		else if (mode_count < same_count) {
+			modes.clear();
+			mode_count = same_count;
+		}
+		modes.push_back(prev);
+	}
+	std::vector<int> move()
+	{
+		return std::move(modes);
+	}
+private:
+	std::vector<int> modes;
+	int mode_count = 0;
+};

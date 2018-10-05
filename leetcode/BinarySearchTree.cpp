@@ -3,6 +3,7 @@
 
 using namespace std;
 #include "TreeNode.h"
+#include "..\library\helper.h"
 
 class BST
 {
@@ -158,7 +159,41 @@ public:
 	}
 	// 530. Minimum Absolute Difference in BT, none negative
 	// exact same as #783, beat 88%
+
+	// 501. Find Mode in Binary Search Tree
+	int same_count = 0;
+	mode_calc	mode_;
+
+	void inorder_mode(TreeNode* node, TreeNode* &prev) {
+		if (node == nullptr) return;
+		inorder_mode(node->left, prev);
+		if (!prev) {
+			same_count = 1;
+		}else if ( prev->val == node->val)
+			same_count++;
+		else {
+			mode_.try_new_mode(prev->val, same_count);
+			same_count = 1;
+		}
+		prev = node;
+		return inorder_mode(node->right, prev);
+	}
+	vector<int> findMode(TreeNode* root) {
+		if (!root)
+			return{};
+		TreeNode* prev = nullptr;
+		inorder_mode(root, prev);
+		mode_.try_new_mode(prev->val, same_count);
+		return mode_.move();
+	}
 };
+
+TEST_CASE("501. Find Mode in Binary Search Tree", "[NEW]")
+{
+	TreeNode *r1 = TreeNode::CreateBinaryTree({ 1, INT32_MIN, 2, 2 });
+	CHECK(BST().findMode(r1) == vector<int>{2});
+	CHECK(BST().findMode(nullptr) == vector<int>{});
+}
 TEST_CASE("783. Minimum Difference Between any BST Nodes", "[NEW]")
 {
 	TreeNode *r1 = TreeNode::CreateBinaryTree({ 1, 0, 48, INT32_MIN, INT32_MIN, 12, 49 });
