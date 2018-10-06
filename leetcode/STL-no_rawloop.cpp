@@ -126,6 +126,18 @@ public:
 		}
 		return shortest+1;
 	}
+	// 888. Fair Candy Swap, swap one candy so they have same total size
+	vector<int> fairCandySwap(vector<int>& A, vector<int>& B) {  // beat 95%
+		int ta = accumulate(A.begin(), A.end(), 0);
+		int tb = accumulate(B.begin(), B.end(), 0);
+		int diff = (ta - tb) / 2;
+		unordered_set<int> b_set{ begin(B),end(B) };
+		for (int a : A) {
+			if (b_set.count(a - diff))  // look for a-diff in B
+				return{ a, a - diff };
+		}
+		return{ 0,0 };
+	}
 };
 
 TEST_CASE("697. Degree of an Array", "[NEW]")

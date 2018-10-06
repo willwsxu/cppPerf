@@ -2005,8 +2005,146 @@ public:
 			maxEnd = max(maxEnd, zero);
 		return max(maxEnd, (maxZ + 1) / 2);
 	}
+
+	// 821. Shortest Distance to a Character
+	// separate into 3 parts, beginning, middle, and ending
+	vector<int> shortestToChar(string S, char C) {  // beat 100%
+		auto c_pos = find(S.begin(), S.end(), C);
+		if (c_pos == S.end())
+			return{};//not possible per requirement
+		vector<int> ans(S.size(), 0);
+		size_t len = distance(S.begin(), c_pos);
+		if (len>0)
+			generate_n(ans.begin(), len, [n = len]()mutable {return n--; });
+		while (c_pos != S.end() && ++c_pos != S.end()) {
+			auto next_pos = find(c_pos, S.end(), C);
+			if (next_pos == S.end()) {
+				std::generate(ans.begin() + distance(S.begin(), c_pos), ans.end(), [n = 1]()mutable{return n++; });
+				break;
+			}
+			int dist = 0;
+			if (c_pos != next_pos) {
+				auto first = ans.begin() + distance(S.begin(), c_pos);
+				auto last = ans.begin() + distance(S.begin(), next_pos);  // [first, last)
+				while (first != last) {
+					*first = ++dist;
+					if (++first != last) {
+						*(--last) = dist;
+					}
+				}
+				c_pos = next_pos;  // move to next target C
+			}
+		}
+		return ans;
+	}
+	// 448. Find All Numbers Disappeared in an Array
+	vector<int> findDisappearedNumbers(vector<int>& nums) { // beat 93% 
+		for (size_t i = 0; i < nums.size(); i++) {
+			if (nums[i] == i + 1)  // number in place
+				continue;
+			int out_of_place = nums[i];
+			nums[i] = -1;
+			while (out_of_place>0 && nums[out_of_place - 1] != out_of_place) {
+				swap(out_of_place, nums[out_of_place - 1]);
+			}
+		}
+		vector<int> ans;
+		for (size_t i = 0; i < nums.size(); i++) {
+			if (nums[i] < 0)
+				ans.push_back(i + 1);
+		}
+		return ans;
+	}
+	// 442. Find All Duplicates in an Array
+	vector<int> findDuplicates(vector<int>& nums) {  // beat 91%, similar to #448
+		vector<int> ans;
+		for (size_t i = 0; i < nums.size(); i++) {
+			if (nums[i] == i + 1)  // number in place
+				continue;
+			int out_of_place = nums[i];
+			nums[i] = -1;
+			while (out_of_place>0 && nums[out_of_place - 1] != out_of_place) {
+				swap(out_of_place, nums[out_of_place - 1]);
+			}
+			if (out_of_place > 0)
+				ans.push_back(out_of_place);
+		}
+		return ans;
+	}
+	// 605. Can Place Flowers, cannot be planted in adjacent plots
+	bool canPlaceFlowers(vector<int>& flowerbed, int n) {  // beat 97%
+		auto start1 = find(begin(flowerbed), end(flowerbed), 1);
+		if (start1 == end(flowerbed))
+			return ((int)flowerbed.size() + 1) / 2 >= n;
+		int plants = distance(begin(flowerbed), start1) / 2;
+		auto last1 = find(rbegin(flowerbed), rend(flowerbed), 1);
+		plants += distance(rbegin(flowerbed), last1) / 2;
+		auto end = last1.base();
+		int count_zero = 0;
+		for (auto cur = start1 + 1; cur != end; ++cur) {
+			if (*cur == 0) {
+				count_zero++;
+			}
+			else if (count_zero>0) {
+				plants += (count_zero - 1) / 2;
+				count_zero = 0;
+			}
+		}
+		return plants >= n;
+	}
+	// 118. Pascal's Triangle
+	vector<vector<int>> generate(int numRows) {  // beat 100%
+		if (numRows == 0)
+			return{};
+		if (numRows == 1)
+			return{ { 1 } };
+		vector<vector<int>> triangle(numRows, vector<int>{});
+		triangle[0].push_back(1);
+		for (int r = 1; r < numRows; r++) {
+			const auto& prev = triangle[r - 1];
+			triangle[r].push_back(1);
+			for (int i = 1; i < r; i++) {
+				triangle[r].push_back(prev[i - 1] + prev[i]);
+			}
+			triangle[r].push_back(1);
+		}
+		return triangle;
+	}
+	// 119. Pascal's Triangle II, rowIndex>=0
+	vector<int> getRow(int rowIndex) {  // beat 100%
+		if (rowIndex == 0)
+			return{ 1 };
+		if (rowIndex == 1)
+			return{ 1,1 };
+		vector<vector<int>> triangle(2, vector<int>{1, 1});  // just keep 2 rows
+		for (int r = 2; r <= rowIndex; r++) {
+			const auto& prev = triangle[(r - 1) % 2];  // starting with row index 1 on triangle[1];
+			auto& cur = triangle[r % 2];
+			cur.resize(r);
+			for (int i = 1; i < r; i++) {
+				cur[i] = (prev[i - 1] + prev[i]);
+			}
+			cur.push_back(1);
+		}
+		return triangle[rowIndex % 2];
+	}
 };
 
+TEST_CASE("119. Pascal's Triangle II", "[NEW]")
+{
+	CHECK(ArrayStuff().getRow(3) == vector<int>{1, 3, 3, 1});
+}
+TEST_CASE("605. Can Place Flowers", "[NEW]")
+{
+	CHECK(ArrayStuff().canPlaceFlowers(vector<int>{0, 0, 1, 0, 0}, 2) == true);
+	CHECK(ArrayStuff().canPlaceFlowers(vector<int>{0, 0, 0, 0, 0}, 3) == true);
+	CHECK(ArrayStuff().canPlaceFlowers(vector<int>{1, 0, 0, 0, 1}, 1) == true);
+}
+TEST_CASE("821. Shortest Distance to a Character", "[NEW]")
+{
+	CHECK(ArrayStuff().shortestToChar("loveleetcod", 'e') == vector<int>{3, 2, 1, 0, 1, 0, 0, 1, 2, 3, 4});
+	CHECK(ArrayStuff().shortestToChar("loveleetcode", 'e') == vector<int>{3, 2, 1, 0, 1, 0, 0, 1, 2, 2, 1, 0});
+}
 class BaseConv
 {
 public:
