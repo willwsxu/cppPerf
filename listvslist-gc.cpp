@@ -214,14 +214,18 @@ void consumer4(int total)
 	benchmark_simple(test, "atomic queue consumer4", total);
 }
 
-
-circular_queue<long, 8096> lfQi;
+/*
+ queue_len=8096*2, producer sleep count=1200, no consumer sleep count, time 90 ns
+ queue_len=8096*16, producer o to some sleep count, consumer sleep count 1000, time 83 ns
+ performance about same for int or pair of 64 bit int
+*/
+circular_queue<pair<int64_t,int64_t>, 8096*16> lfQi;
 void producer5(int total)
 {
 	int sleep_count = 0;
 	for (int i = 0; i < total; i++)
 	{
-		while (lfQi.push(i+1) == false) {
+		while (lfQi.push({ i + 1, i + 1 }) == false) {
 			Sleep(0);
 			sleep_count++;
 		}
@@ -238,8 +242,8 @@ void consumer5(int total)
 		while (count < total && sleep_count < total) {
 			auto x = lfQi.pop();
 			if (x.second) {
-				if (++count != x.first)
-					std::cout << x.first << " expect " << count << "\n";
+				if (++count != x.first.first)
+					std::cout << x.first.first << " expect " << count << "\n";
 			}
 			else {
 				Sleep(0);
