@@ -122,5 +122,8 @@
     <ClCompile Include="STL-no_rawloop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="twopointers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -193,6 +193,7 @@
     <ClCompile Include="STL-no_rawloop.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="trie.cpp" />
+    <ClCompile Include="twopointers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
