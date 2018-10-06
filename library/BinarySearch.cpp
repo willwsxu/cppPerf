@@ -87,7 +87,95 @@ public:
 		}
 		return lo;
 	}
+
+	int peakIndexInMountainArray(vector<int>& A, int lo, int hi) {
+		int mid = (lo + hi) / 2;
+		if (mid == lo)
+			return hi;
+		if (A[mid] > A[mid - 1] && A[mid] > A[mid + 1])
+			return mid;
+		if (A[mid] > A[mid - 1] && A[mid] < A[mid + 1])
+			return peakIndexInMountainArray(A, mid, hi);
+		return peakIndexInMountainArray(A, lo, mid);
+	}
+	// 852. Peak Index in a Mountain Array
+	int peakIndexInMountainArray(vector<int>& A) {  // beat 98%
+		return peakIndexInMountainArray(A, 0, A.size() - 1);
+	}
+	// 744. Find Smallest Letter Greater Than Target
+	char nextGreatestLetter(vector<char>& letters, char target) {  // beat 96% on 3rd submit
+		auto ans = upper_bound(begin(letters), end(letters), target);
+		if (ans == end(letters))  // wrap around if all letter < target
+			ans = begin(letters);
+		return *ans;
+	}
+	// 704. Binary Search. If target exists, then return its index, otherwise return -1
+	int search(vector<int>& nums, int target) {  // beat 96% on 2nd submit
+		auto found = lower_bound(nums.begin(), nums.end(), target);
+		if (found == nums.end() || *found != target)
+			return -1;
+		return distance(nums.begin(), found);
+	}
+	// 35. Search Insert Position. return the index if the target is found. If not, return the index where it would be if it were inserted in order
+	int searchInsert(vector<int>& nums, int target) {  // beat 98%
+		return distance(nums.begin(), lower_bound(nums.begin(), nums.end(), target));
+	}
+
+	// 475. Heaters, given positions of houses and heaters, find the min heating radius to warm all houses
+	// idea: find max distance of any 2 neighboring heaters, find distance of first house to first heater, last house to last heater
+	int findRadius(vector<int>& houses, vector<int>& heaters) { // beat 97%
+		if (houses.empty() || heaters.empty())
+			return 0;
+		sort(begin(heaters), end(heaters)); // question did not mention sorted, don't assume
+		int maxDist = 0;
+		int h_size = heaters.size();
+		for (int h : houses) {
+			auto R_H = lower_bound(begin(heaters), end(heaters), h);
+			if (R_H == end(heaters))
+				maxDist = max(maxDist, h - heaters[h_size - 1]);  // left heater only
+			else if (R_H == begin(heaters))
+				maxDist = max(maxDist, *R_H - h);  // right heater only
+			else {
+				auto L_H = R_H - 1;
+				maxDist = max(maxDist, min(*R_H - h, h - *L_H));
+			}
+		}
+		return maxDist;
+	}
+
+	bool isBadVersion(int version)  // function given by tester
+	{
+		return version >= 7;  // test case
+	}
+	// 278. First Bad Version, [1,n], all the versions after a bad version are also bad
+	int firstBadVersion(int lo, int hi) { // beat 100%
+		if (isBadVersion(lo))
+			return lo;
+		int mid = lo + (hi - lo) / 2;  // trick to avoid overflow
+		if (isBadVersion(mid))
+			return firstBadVersion(lo, mid);
+		else
+			return firstBadVersion(mid + 1, hi);
+	}
+	int firstBadVersion(int n) {
+		return firstBadVersion(1, n);
+	}
 };
+TEST_CASE("475. Heaters", "[NEW]")
+{
+	CHECK(BinarySearch().findRadius(vector<int>{282475249, 622650073, 984943658, 144108930, 470211272, 101027544, 457850878, 458777923}, vector<int>{823564440, 115438165, 784484492, 74243042, 114807987, 137522503, 441282327, 16531729, 823378840, 143542612}) == 161834419);
+	CHECK(BinarySearch().findRadius(vector<int>{3, 5}, vector<int>{1}) == 4);
+	CHECK(BinarySearch().findRadius(vector<int>{1, 5}, vector<int>{2}) == 3);
+	CHECK(BinarySearch().findRadius(vector<int>{1, 2, 3}, vector<int>{2}) == 1);
+	CHECK(BinarySearch().findRadius(vector<int>{1, 2, 3}, vector<int>{1}) == 2);
+	CHECK(BinarySearch().findRadius(vector<int>{1, 2, 3}, vector<int>{3}) == 2);
+	CHECK(BinarySearch().findRadius(vector<int>{1, 2, 3, 4}, vector<int>{1, 4}) == 1);
+}
+TEST_CASE("852. Peak Index in a Mountain Array", "[NEW]")
+{
+	CHECK(BinarySearch().peakIndexInMountainArray(vector<int>{24, 69, 100, 99, 79, 78, 67, 36, 26, 19}) == 2);
+}
+
 TEST_CASE("69. Sqrt(x)", "[BS]")
 {
 	CHECK(BinarySearch().mySqrt(0) == 0);
