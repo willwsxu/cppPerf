@@ -535,19 +535,20 @@ public:
 	//	- 1 : turn right 90 degrees
 	//	1 <= x <= 9 : move forward x units
 	// 0 <= commands.length <= 10000, 0 <= obstacles.length <= 10000, obstacle[i,j]
-	int robotSim(vector<int>& commands, vector<vector<int>>& obstacles) {
+	int robotSim(vector<int>& commands, vector<vector<int>>& obstacles) {  // beat 79%
 		map<char, pair<char, char>> direction_change{ {'N',{'W','E'}},{'S',{'E','W'}},{'W',{'S','N'}},{'E',{'N','S'}} };
 		char dir = 'N';
 		int x = 0;
 		int y = 0;
-		auto find_obst = [&obstacles](int x1, int y1)
+		set<pair<int, int>> obst{};
+		for (const auto&v : obstacles) {
+			obst.emplace(v[0],v[1]);
+		}
+		auto find_obst = [&obst](int x1, int y1)
 		{
-			for (const auto&v : obstacles) {
-				if (x1 == v[0] && y1 == v[1])
-					return true;
-			}
-			return false;
+			return obst.count({ x1,y1 })>0;
 		};
+		int result = 0;
 		for (int cmd : commands) {
 			if (cmd < 0) {
 				const auto& change = direction_change[dir];
@@ -575,8 +576,15 @@ public:
 				}
 				break;
 			}
+			result = max(result, x*x + y*y);  // find max of euclidean distance
 		}
-		return x*x + y*y;
+		return result;
 	}
 };
 
+
+TEST_CASE("874. Walking Robot Simulation", "[NEW]")
+{
+	CHECK(Greedy().robotSim(vector<int>{4, -1, 4, -1, 4, -1, 3}, vector<vector<int>>{ {2, 4}}) == 17);
+	CHECK(Greedy().robotSim(vector<int>{4, -1, 4, -2, 4}, vector<vector<int>>{ {2,4}})==65);
+}
