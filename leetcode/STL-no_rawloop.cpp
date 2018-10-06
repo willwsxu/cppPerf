@@ -94,6 +94,29 @@ public:
 		}
 		return nums[No3];
 	}
+
+	// 697. Degree of an Array.  maximum frequency of any one of its elements
+	// nums.length will be between 1 and 50, 000.
+	//nums[i] will be an integer between 0 and 49, 999.
+	int findShortestSubArray(vector<int>& nums) {  // TLE, need to use map
+		vector<vector<int>> count(50001, vector<int>(3, 0));  // count, start, end index
+		int i = 0;
+		for (int n:  nums) {
+			if (count[nums[i]][0]++ == 0)  // first one
+				count[nums[i]][1] = i;  // start index
+			else
+				count[nums[i]][2] = i;  // end index
+			i++;
+		}
+		auto max_elem = max_element(begin(count), end(count), [](const auto&v1, const auto&v2) {return v1[0] < v2[0]; });
+		int max_cnt = (*max_elem)[0];
+		if (max_cnt == 1)  // special case, degree is 1
+			return 1;
+		auto not_max = remove_if(begin(count), end(count), [max_cnt](const auto&v1) { return v1[0] != max_cnt; });
+		count.erase(not_max, end(count));
+		auto shortest = min_element(begin(count), end(count), [](const auto&v1, const auto&v2) {return v1[2] - v1[1] < v2[2] - v2[1]; });
+		return (*shortest)[2] - (*shortest)[1] + 1;
+	}
 };
 
 TEST_CASE("414. Third Maximum Number", "[NEW]")
