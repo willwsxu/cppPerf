@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
 	testBaseline();
 	testAtomicSlist();
 	testAtomicQueue();
+	testAtomicQueueInt();
 //	testSlist();
 	//testArrayVector(1000000000);
 

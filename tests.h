@@ -1,5 +1,6 @@
 void testAtomicSlist();
 void testAtomicQueue();
+void testAtomicQueueInt();
 void testList1();
 void testSlist();
 void testThreads();

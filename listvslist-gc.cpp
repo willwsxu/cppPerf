@@ -214,6 +214,42 @@ void consumer4(int total)
 	benchmark_simple(test, "atomic queue consumer4", total);
 }
 
+
+circular_queue<long, 8096> lfQi;
+void producer5(int total)
+{
+	int sleep_count = 0;
+	for (int i = 0; i < total; i++)
+	{
+		while (lfQi.push(i+1) == false) {
+			Sleep(0);
+			sleep_count++;
+		}
+	}
+	cout << "producer5 count " << total << " sleep count " << sleep_count << "\n";
+}
+
+
+void consumer5(int total)
+{
+	auto test = [](int total) {
+		int count = 0;
+		int sleep_count = 0;
+		while (count < total && sleep_count < total) {
+			auto x = lfQi.pop();
+			if (x.second) {
+				if (++count != x.first)
+					std::cout << x.first << " expect " << count << "\n";
+			}
+			else {
+				Sleep(0);
+				sleep_count++;
+			}
+		}
+		return sleep_count;
+	};
+	benchmark_simple(test, "atomic queue consumer5 long", total);
+}
 void testList1()  // std::list with mutex
 {
 	test_producer_consumer_single(producer1, consumer1);
@@ -229,6 +265,10 @@ void testAtomicSlist()  // atomic slist
 void testAtomicQueue()  // atomic queue circular
 {
 	test_producer_consumer_single(producer4, consumer4);
+}
+void testAtomicQueueInt()  // atomic queue circular
+{
+	test_producer_consumer_single(producer5, consumer5);
 }
 
 void testBaseline()  // string allocation
