@@ -86,7 +86,7 @@ extern int testNum();
 int main(int argc, char* argv[])
 {
 //	testList1();
-//	testBaseline();
+	testBaseline();
 //	testAtomicSlist();
 //	testAtomicQueue();
 	testAtomicQueueInt();

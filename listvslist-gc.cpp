@@ -312,18 +312,25 @@ void testBaseline()  // string allocation
 	};
 	benchmark_simple(baseline_move, "string op baseline+move", 1000000);  // 265.5
 
+	int count_total = 8096;
+	circular_queue<string, 8096> q;
+	auto baseline_push = [&q](int total) {
+		for (int i = 0; i < total; i++)
+			q.push(to_string(i + 1) + " " + test);
+		return total;
+	};
+	benchmark_simple(baseline_push, "single thread queue push", count_total);  // 250
 
-	auto baseline_queue = [](int total) {
+	auto baseline_pop = [&q](int total) {
 		int count = 0;
-		array<string, 2> queue;
 		while (count < total) {
-			queue[0] = move(to_string(count + 1) + " " + test);
-			if (++count != stoi(queue[0]))
-				std::cout << queue[0] << " expect " << count << "\n";
+			auto x = q.pop();
+			if (!x.second || ++count != stoi(x.first))
+				std::cout << x.first << " expect " << count << "\n";
 		}
 		return 0;
 	};
-	benchmark_simple(baseline_queue, "single thread queue push", 1000000);  // 267
+	benchmark_simple(baseline_pop, "single thread queue consume", count_total);  // 155
 }
 
 long long millisec[32] = { 0 };
