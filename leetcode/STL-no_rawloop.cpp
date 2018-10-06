@@ -98,27 +98,40 @@ public:
 	// 697. Degree of an Array.  maximum frequency of any one of its elements
 	// nums.length will be between 1 and 50, 000.
 	//nums[i] will be an integer between 0 and 49, 999.
-	int findShortestSubArray(vector<int>& nums) {  // TLE, need to use map
-		vector<vector<int>> count(50001, vector<int>(3, 0));  // count, start, end index
+	struct triple_int
+	{
+		int count=0;
+		int start=0;
+		int end=0;
+	};
+	int findShortestSubArray(vector<int>& nums) {  // beat 88%, using map
+		map<int, triple_int> freq_count;
 		int i = 0;
 		for (int n:  nums) {
-			if (count[nums[i]][0]++ == 0)  // first one
-				count[nums[i]][1] = i;  // start index
+			if (freq_count[n].count++ == 0)  // first one
+				freq_count[n].start = i;
 			else
-				count[nums[i]][2] = i;  // end index
+				freq_count[n].end = i;
 			i++;
 		}
-		auto max_elem = max_element(begin(count), end(count), [](const auto&v1, const auto&v2) {return v1[0] < v2[0]; });
-		int max_cnt = (*max_elem)[0];
+		auto max_elem = max_element(begin(freq_count), end(freq_count), 
+			[](const auto&v1, const auto&v2) {return v1.second.count < v2.second.count; });
+		int max_cnt = max_elem->second.count;
 		if (max_cnt == 1)  // special case, degree is 1
 			return 1;
-		auto not_max = remove_if(begin(count), end(count), [max_cnt](const auto&v1) { return v1[0] != max_cnt; });
-		count.erase(not_max, end(count));
-		auto shortest = min_element(begin(count), end(count), [](const auto&v1, const auto&v2) {return v1[2] - v1[1] < v2[2] - v2[1]; });
-		return (*shortest)[2] - (*shortest)[1] + 1;
+		int shortest = INT32_MAX;
+		for (const auto& p : freq_count) {
+			if (p.second.count == max_cnt)
+				shortest = min(shortest, p.second.end - p.second.start);
+		}
+		return shortest+1;
 	}
 };
 
+TEST_CASE("697. Degree of an Array", "[NEW]")
+{
+	CHECK(STL().findShortestSubArray(vector<int>{1, 2, 2, 3, 1}) == 2);
+}
 TEST_CASE("414. Third Maximum Number", "[NEW]")
 {
 	CHECK(STL().thirdMax(vector<int>{2, 2, 3, 1}) == 1);
