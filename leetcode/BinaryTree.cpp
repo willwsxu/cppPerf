@@ -803,6 +803,27 @@ public:
 	}
 };
 
+class LCA_BST
+{
+public:
+	// 235. Lowest Common Ancestor of a Binary Search Tree
+	// 236 is more general
+	// find a node that is between p and 1, per definition of BST
+	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+		if (p->val > q->val)
+			return lowestCommonAncestor(root, q, p);
+		if (root->val >= p->val && root->val <= q->val)
+			return root;
+		if (root->val > q->val)
+			return lowestCommonAncestor(root->left, q, p);
+		return lowestCommonAncestor(root->right, q, p);
+	}
+};
+TEST_CASE("235. Lowest Common Ancestor of BST", "[NEW]")
+{
+	TreeNode *r = TreeNode::CreateBinaryTree(vector<int>{2,1});
+	CHECK(LCA_BST().lowestCommonAncestor(r, r, r->left)==r);
+}
 TEST_CASE("Lowest Common Ancestor", "[LCA]")
 {
 	TreeNode *r = new TreeNode(3);
