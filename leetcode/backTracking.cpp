@@ -193,6 +193,37 @@ public:
 		}
 		return lb == 0;
 	}
+
+	//784. Letter Case Permutation, transform every letter individually to be lowercase or uppercase to create another string
+	// Len <= 12
+	void letterCasePermutation(const string& S, size_t pos, string target, vector<string>&result) {
+		if (pos == S.size()) {
+			result.push_back(target);
+			return;
+		}
+		for (size_t i = pos; i < S.size(); i++) {
+			if (!isdigit(S[i])) {
+				string newString = target + S.substr(pos, i - pos + 1);
+				if (i > pos)
+					target.append(S.begin() + pos, S.begin() + i);
+				if (isupper(S[i]))
+					target.append(1, tolower(S[i]));
+				else
+					target.append(1, toupper(S[i]));
+				letterCasePermutation(S, i + 1, newString, result);
+				letterCasePermutation(S, i + 1, target, result);
+				return;
+			}
+		}
+		result.push_back(target.append(S.begin() + pos, S.end()));
+	}
+
+public:
+	vector<string> letterCasePermutation(string S) {  // beat 100%, could revise to use S in place, eliminate 3rd param
+		vector<string> result;
+		letterCasePermutation(S, 0, "", result);
+		return result;
+	}
 };
 
 TEST_CASE("Valid Parenthesis", "[BT]")
