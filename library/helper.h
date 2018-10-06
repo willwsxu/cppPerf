@@ -67,3 +67,34 @@ private:
 	std::vector<int> modes;
 	int mode_count = 0;
 };
+
+//  method returns Nth power of A 
+inline double nthRoot(int A, int N)
+{
+	// intially guessing a random number between 
+	// 0 and 9 
+	double xPre = rand() % 10;
+
+	//  smaller eps, denotes more accuracy 
+	double eps = 1e-3;
+
+	// initializing difference between two 
+	// roots by INT_MAX 
+	double delX = INT_MAX;
+
+	//  xK denotes current value of x 
+	double xK;
+
+	//  loop untill we reach desired accuracy 
+	while (delX > eps)
+	{
+		//  calculating current value from previous 
+		// value by newton's method 
+		xK = ((N - 1.0) * xPre +
+			(double)A / pow(xPre, N - 1)) / (double)N;
+		delX = abs(xK - xPre);
+		xPre = xK;
+	}
+
+	return xK;
+}

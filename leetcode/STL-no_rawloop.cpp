@@ -220,7 +220,31 @@ public:
 		sorted_back = lower_bound(sorted_back, nums.end(), *max_elem);
 		return distance(sorted, sorted_back);
 	}
+
+	// 455. Assign Cookies, each child can have one cookie with a minimum size
+	int findContentChildren(vector<int>& g, vector<int>& s) {  // beat 93%, greedy method
+		sort(begin(g), end(g));  // minimal required cookie size
+		sort(begin(s), end(s));  // actual cookie size
+		auto cookie = s.begin();
+		int ans = 0;
+		for (int child : g) {
+			auto found = lower_bound(cookie, end(s), child); // find the smalles cookie that satisfy the child
+			if (found != end(s)) {
+				ans++;
+				cookie = found + 1;
+			}
+			else
+				break;
+		}
+		return ans;
+	}
 };
+
+TEST_CASE("455. Assign Cookies", "[NEW]")
+{
+	CHECK(STL().findContentChildren(vector<int>{1, 2, 3}, vector<int>{1, 1}) == 1);
+	CHECK(STL().findContentChildren(vector<int>{1, 2}, vector<int>{1, 2, 3}) == 2);
+}
 TEST_CASE("581. Shortest Unsorted Continuous Subarray", "[NEW]")
 {
 	CHECK(STL().findUnsortedSubarray(vector<int>{1, 3, 2, 3, 3}) == 2);
