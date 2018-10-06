@@ -810,13 +810,11 @@ public:
 	// 236 is more general
 	// find a node that is between p and 1, per definition of BST
 	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-		if (p->val > q->val)
-			return lowestCommonAncestor(root, q, p);
-		if (root->val >= p->val && root->val <= q->val)
-			return root;
-		if (root->val > q->val)
+		if (root->val > q->val && root->val > p->val)
 			return lowestCommonAncestor(root->left, q, p);
-		return lowestCommonAncestor(root->right, q, p);
+		if (root->val < q->val && root->val < p->val)
+			return lowestCommonAncestor(root->right, q, p);
+		return root;
 	}
 };
 TEST_CASE("235. Lowest Common Ancestor of BST", "[NEW]")
