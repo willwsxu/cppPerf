@@ -1200,3 +1200,72 @@ TEST_CASE("897. Increasing Order Search Tree", "[TREE]")
 	TreeNode *t = TreeEasy().increasingBST(root);
 	CHECK(TreeNode::heightR(t) == 9);
 }
+
+// 427. Construct Quad Tree
+class Node {
+public:
+	bool val;
+	bool isLeaf;
+	Node* topLeft;
+	Node* topRight;
+	Node* bottomLeft;
+	Node* bottomRight;
+
+	Node() {}
+
+	Node(bool _val, bool _isLeaf, Node* _topLeft, Node* _topRight, Node* _bottomLeft, Node* _bottomRight) {
+		val = _val;
+		isLeaf = _isLeaf;
+		topLeft = _topLeft;
+		topRight = _topRight;
+		bottomLeft = _bottomLeft;
+		bottomRight = _bottomRight;
+	}
+};
+class QuadTree {
+	// return -1 grid mixed value, 0 - grid all 0, 1 - grid all 1
+	int eval(vector<vector<int>>& grid, int top, int left, int bottom, int right)
+	{
+		int topleft = grid[top][left];
+		for (int r = top; r < bottom; r++) {
+			for (int c = left; c < right; c++)
+				if (grid[r][c] != topleft)
+					return -1;
+		}
+		return topleft;
+	}
+	Node* construct(vector<vector<int>>& grid, int top, int left, int bottom, int right) {
+		if (bottom - top <= 1 && right - left <= 1) {
+			return new Node(grid[top][left]?true:false, true, nullptr, nullptr, nullptr, nullptr);
+		}
+		int width = (right - left) / 2;
+		int depth = (bottom - top) / 2;
+		int val = eval(grid, top, left, bottom, right);
+		Node *root = new Node();
+		if (val==-1) {
+			root->isLeaf = false;
+			root->topLeft = construct(grid, top, left, top + depth, left + width);
+			root->topRight = construct(grid, top, left + width, top + depth, right);
+			root->bottomLeft = construct(grid, top + depth, left, bottom, left + width);
+			root->bottomRight = construct(grid, top + depth, left + width, bottom, right);
+		}
+		else {
+			root->isLeaf = true;
+			root->val = val?true:false;
+			root->topLeft = nullptr;  // crash if nullptr were not assigned
+			root->topRight = nullptr;
+			root->bottomLeft = nullptr;
+			root->bottomRight = nullptr;
+		}
+		return root;
+	}
+
+public:
+	Node* construct(vector<vector<int>>& grid) {
+		return construct(grid, 0, 0, grid.size(), grid.size());
+	}
+};
+TEST_CASE("427. Construct Quad Tree", "[NEW]")
+{
+	Node *root=QuadTree().construct(vector<vector<int>>{ { 1,1,1,1,0,0,0,0 },{ 1,1,1,1,0,0,0,0 },{ 1,1,1,1,1,1,1,1 },{ 1,1,1,1,1,1,1,1 },{ 1,1,1,1,0,0,0,0 },{ 1,1,1,1,0,0,0,0 },{ 1,1,1,1,0,0,0,0 },{ 1,1,1,1,0,0,0,0 } });
+}
