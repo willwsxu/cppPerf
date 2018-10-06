@@ -2162,3 +2162,32 @@ TEST_CASE("504. Base 7", "[NEW]")
 	CHECK(BaseConv().convertToBase7(-7) == "-10");
 	CHECK(BaseConv().convertToBase7(0) == "0");
 }
+
+// 703. Kth Largest Element in a Stream
+class KthLargest {  // beat 64%
+	int K;
+	priority_queue<int, vector<int>, greater<int>> elems;
+public:
+	KthLargest(int k, vector<int> nums) :elems(greater<int>(), nums), K(k) {
+		while ((int)elems.size() > k) {  // just keep k elements
+			elems.pop();
+		}
+	}
+
+	int add(int val) {
+		if ((int)elems.size()<K || val > elems.top()) {
+			elems.push(val);
+			if ((int)elems.size() > K)
+				elems.pop();
+		}
+		return elems.top();
+	}
+};
+
+TEST_CASE("703. Kth Largest Element in a Stream", "[NEW]")
+{
+	KthLargest heap(3, vector<int>{4, 5, 8, 2});
+	CHECK(heap.add(3) == 4);
+	KthLargest heap2(1, vector<int>{});
+	CHECK(heap2.add(-3) == -3);
+}
