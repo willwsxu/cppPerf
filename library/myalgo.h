@@ -117,3 +117,30 @@ ValueT maxSubSum(RandIter first, RandIter last, ValueT _max_seed)
 	}
 	return _max_seed;
 }
+
+// 344. Reverse String
+template<typename Iter>
+void reverse_string(Iter first, Iter last)
+{
+	while (first != last && first != --last)
+		iter_swap(first++, last);
+}
+
+template<typename Iter, typename Pred>
+void reverse_string_if(Iter first, Iter last, Pred cond)
+{
+	if (first == last)
+		return;
+	--last;
+	while (first != last) {
+		if (!cond(*first))
+			++first;
+		else if (!cond(*last))
+			--last;
+		else {
+			iter_swap(first++, last);
+			if (first == last--)
+				break;
+		}
+	}
+}

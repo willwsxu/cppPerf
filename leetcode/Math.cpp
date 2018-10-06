@@ -419,7 +419,7 @@ public:
 			ans.append(1, (n-1) % 26 + 'A');
 			n = (n-1)/26;
 		}
-		reverse(ans.begin(), ans.end());
+		std::reverse(ans.begin(), ans.end());
 		return ans;
 	}
 	// 645. Set Mismatch, given [1,n], one of the numbers in the set got duplicated to another number in the set, which results in repetition of one number and loss of another number
@@ -496,6 +496,24 @@ public:
 			divisor *= 5; // e.g. 25 has 2 factor 5
 		}
 		return total;
+	}
+
+	// 326. Power of Three
+	bool isPowerOfThree(int n) {  // beat 5 to 94%
+		static const int max_power_3 = 1162261467;//static_cast<int>(pow(3, 19));
+		return n>0 && max_power_3%n == 0;
+	}
+	// 7. Reverse Integer
+	int reverse(int x) {  // beat 97%
+		string s = to_string(abs(x));
+
+		// why std::reverse don't work on string?
+		reverse_string(s.begin(), s.end());
+		int sign = x >= 0 ? 1 : -1;
+		long ans = stol(s)*sign;
+		if (ans > INT32_MAX || ans < INT32_MIN)
+			return 0;
+		return ans;
 	}
 };
 TEST_CASE("172. Factorial Trailing Zeroes", "[NEW]")
