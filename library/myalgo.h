@@ -104,18 +104,19 @@ int continuousLongestBy(InpI first, InpI last, Pred isGood)  // long substring t
 		max = next - start;
 	return max;
 }
+
 template<typename RandIter, typename ValueT>
-ValueT maxSubSum(RandIter first, RandIter last, ValueT _max_seed)
+std::pair<ValueT, ValueT> maxSubSum(RandIter first, RandIter last, ValueT _max_seed, ValueT init_sum=0)
 {
-	int sum = 0;
-	while (first != last ) {
-		sum += *first;
+	while (first != last) {
+		init_sum += *first;
 		++first;
-		_max_seed = max(_max_seed, sum);
-		if (sum < 0)  // start subarray anew if sum is negative
-			sum = 0;
+		_max_seed = max(_max_seed, init_sum);
+		if (init_sum < 0) { // start subarray anew if sum is negative
+			init_sum = 0;
+		}
 	}
-	return _max_seed;
+	return{ _max_seed,init_sum };
 }
 
 // 344. Reverse String

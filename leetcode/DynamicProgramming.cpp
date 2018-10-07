@@ -115,7 +115,7 @@ public:
 			return 0;
 		for (int i = 0; i < (int)prices.size() - 1; i++)
 			prices[i] = prices[i+1] - prices[i];
-		return maxSubSum(prices.begin(), prices.end() - 1, 0);
+		return maxSubSum(prices.begin(), prices.end() - 1, 0).first;
 	}
 	// 122. Best Time to Buy and Sell Stock II, many transactions, but only one transaction at a time
 	int maxProfit2(vector<int>& prices) { // easy, Gredy, sum up all positive diff prices, beat 98%
@@ -374,10 +374,39 @@ class SpecialDp
 public:
 	int maxSubArray(vector<int>& nums) {  // beat 100%
 		// refactor to a template, slowed 50%???
-		return maxSubSum(nums.begin(), nums.end(), INT32_MIN); // in case sum is negative!
+		return maxSubSum(nums.begin(), nums.end(), INT32_MIN).first; // in case sum is negative!
+	}
+
+	//918. Maximum Sum Circular Subarray
+	int maxSubarraySumCircular(vector<int>& A) {
+		int max_sum = INT32_MIN;
+		int min_sum = INT32_MAX;
+		int sum_pos = 0;
+		int sum_neg = 0;
+		for (int a : A) {
+			sum_pos += a;
+			sum_neg += a;
+			max_sum = max(max_sum, sum_pos);
+			min_sum = min(min_sum, sum_neg);
+			if (sum_pos < 0)
+				sum_pos = 0;
+			if (sum_neg > 0)
+				sum_neg = 0;
+		}
+		if (max_sum < 0 || min_sum >= 0) // number all negative, or none negative
+			return max_sum;
+		return max(max_sum, std::accumulate(begin(A), end(A), 0) - min_sum);
 	}
 };
 
+TEST_CASE("918. Maximum Sum Circular Subarray", "[NEW]")
+{
+	CHECK(SpecialDp().maxSubarraySumCircular(vector<int>{-2, -3, -1}) == -1);
+	CHECK(SpecialDp().maxSubarraySumCircular(vector<int>{-1, -3, -2}) == -1);
+	CHECK(SpecialDp().maxSubarraySumCircular(vector<int>{1,-2,3,-2}) == 3);
+	CHECK(SpecialDp().maxSubarraySumCircular(vector<int>{5,-3, 5}) == 10);
+	CHECK(SpecialDp().maxSubarraySumCircular(vector<int>{1, -2, 3, -2, 5}) == 7);
+}
 TEST_CASE("53. Maximum Subarray", "[DYN]")
 {
 	CHECK(SpecialDp().maxSubArray(vector<int>{-1}) == -1);
