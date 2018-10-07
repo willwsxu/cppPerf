@@ -1,9 +1,10 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
 #include "myalgo.h"
 
 using namespace std;
+#include "eraseRemove.h"
 
 //384. Shuffle an Array
 class Shuffle {  // beat 98%
@@ -179,7 +180,7 @@ public:
 	}
 
 	// uniformly flip any cell of 0 to 1, assume flip is not called unless there is 0
-	vector<int> flip() { // Fisher�Yates shuffle
+	vector<int> flip() { // Fisher–Yates shuffle
 		auto r = uniform_int_distribution<>(0, --total)(g);  // random position of matrix with values 0
 		if (r == total) {  //last value selected
 			r = map_get_or_default(matrix, r, r); // last value could be mapped to something else
@@ -319,3 +320,61 @@ TEST_CASE("random set O(1) op", "[RAND]")
 	CHECK(t.insert(2) == false);
 	CHECK(t.getRandom() == 2);  // fix bug insert
 }
+
+class HeavyHitter
+{
+	vector<int> majorityElements(vector<int>& nums, int k) { // elements appears > n/(k+1)
+		map<int, int> maj;
+		for (int n : nums) {
+			if ((int)maj.size() < k || maj.count(n))
+				maj[n]++;
+			else {  // K+1 different values, time to cancel out 
+				erase_remove_if(maj, [](const auto&p) { return p.second == 1; });
+				for (auto& p : maj)
+					p.second--;
+			}
+		}
+		// verify if those retained in map are actually majority
+		for_each(begin(maj), end(maj), [](auto&p) {p.second = 0; });
+		for (int n : nums) {
+			if (maj.count(n))
+				maj[n]++;
+		}
+		vector<int> ans;
+		const int threshold = nums.size() / (k + 1);
+		transform_if(begin(maj), end(maj), back_inserter(ans), [](const auto& p) { return p.first; }, [threshold](const auto& p) { return p.second>threshold; });
+		return ans;
+	}
+
+public:
+	// 169. Majority Element, return value appears > n/2
+	int majorityElement(vector<int>& nums) {  // beat 97%
+		int maj = nums[0];
+		int count = 1;
+		for (size_t i = 1; i < nums.size(); i++) {
+			if (count == 0) {
+				count = 1;
+				maj = nums[i]; // new majority
+			}
+			else if (nums[i] == maj)
+				count++;
+			else
+				count--;  // cancel out when numbers are different
+		}
+		return maj;
+	}
+	// 229. Majority Element II, find all elements that appear more than ⌊ n/3 ⌋ times
+	vector<int> majorityElements(vector<int>& nums) {// beat 98%
+		return majorityElements(nums, 2);
+	}
+};
+
+
+
+TEST_CASE("229. Majority Element II", "[NEW]")
+{
+	CHECK(HeavyHitter().majorityElements(vector<int>{3, 2, 3}) == vector<int>{3});
+	CHECK(HeavyHitter().majorityElements(vector<int>{1, 1, 1, 3, 3, 2, 2, 2}) == vector<int>{1, 2});
+	CHECK(HeavyHitter().majorityElements(vector<int>{1, 1, 1, 3, 3, 2, 2, 2, 2, 2}) == vector<int>{2});
+}
+
