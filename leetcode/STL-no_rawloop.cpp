@@ -252,6 +252,11 @@ public:
 	}
 };
 
+TEST_CASE("345. Reverse Vowels of a String", "[NEW]")
+{
+	CHECK(STL().reverseVowels("aA") == "Aa");
+	CHECK(STL().reverseVowels("hello") == "holle");
+}
 TEST_CASE("455. Assign Cookies", "[NEW]")
 {
 	CHECK(STL().findContentChildren(vector<int>{1, 2, 3}, vector<int>{1, 1}) == 1);

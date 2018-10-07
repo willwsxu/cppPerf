@@ -1295,3 +1295,53 @@ TEST_CASE("427. Construct Quad Tree", "[NEW]")
 {
 	Node *root=QuadTree().construct(vector<vector<int>>{ { 1,1,1,1,0,0,0,0 },{ 1,1,1,1,0,0,0,0 },{ 1,1,1,1,1,1,1,1 },{ 1,1,1,1,1,1,1,1 },{ 1,1,1,1,0,0,0,0 },{ 1,1,1,1,0,0,0,0 },{ 1,1,1,1,0,0,0,0 },{ 1,1,1,1,0,0,0,0 } });
 }
+
+class CBTInserter {
+	TreeNode *myRoot;
+	deque<TreeNode*>	parents;
+	deque<TreeNode*>	leaf_nodes;
+
+public:
+	CBTInserter(TreeNode* root):myRoot(root) {
+		if (!root)
+			return;
+		parents.push_back(root);
+		while (true) {
+			for (const auto& p : parents) {  // traverse by level
+				if (p->left)
+					leaf_nodes.push_back(p->left);
+				else
+					return;
+				if (p->right)
+					leaf_nodes.push_back(p->right);
+				else
+					return;
+			}
+			parents.assign(begin(leaf_nodes), end(leaf_nodes));
+			leaf_nodes.clear();
+		}
+	}
+
+	int insert(int v) { // returns the value of the parent of the inserted
+		if (myRoot == nullptr) {
+			myRoot = new TreeNode(v);
+			parents.push_back(myRoot);
+			return -1;
+		}
+		if (leaf_nodes.size() == 2 * parents.size()) {
+			parents.assign(begin(leaf_nodes), end(leaf_nodes));
+			leaf_nodes.clear();
+		}
+		TreeNode * parent = parents.at(leaf_nodes.size() / 2);
+		leaf_nodes.push_back(new TreeNode(v));
+		if (leaf_nodes.size() % 2 == 0)
+			parent->right = leaf_nodes.back();
+		else
+			parent->left = leaf_nodes.back();
+		return parent->val;
+	}
+
+	TreeNode* get_root() {
+		return myRoot;
+	}
+};
