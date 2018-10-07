@@ -867,3 +867,530 @@ TEST_CASE("Match letters", "[NEW]")
 {
 	CHECK(MatchLetters().shortestCompletingWord("1s3 PSt", vector<string>{"step", "steps", "stripe", "stepple"}) == "steps");
 }
+
+class StringStuff
+{
+public:
+	string toLowerCase(string str) {
+		transform(begin(str), end(str), begin(str), [](char c) {
+			if (c >= 'A' && c <= 'Z')
+				c = 'a' + (c - 'A');
+			return c;
+		});
+		return str;
+	}
+	// 804. Unique Morse Code Words
+	int uniqueMorseRepresentations(vector<string>& words) {  // beat 79%
+		static const vector<string> morse_code = { ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.." };
+		set<string> uniq;
+		for (const auto& w : words) {
+			string code = accumulate(begin(w), end(w), string(), [](string&init, char c) { return init.append(morse_code[c - 'a']); });
+			uniq.insert(code);
+		}
+		return uniq.size();
+	}
+	// 541. Reverse String II
+	string reverseStr(string s, int k) { // beat 25%
+		auto first = s.begin();
+		auto last = s.end();
+		int step = 2 * k;
+		while (first != s.end()) {
+			int remain = distance(first, last);
+			if (remain <= k)
+				reverse_string(first, last);
+			else
+				reverse_string(first, first + k);
+			if (remain <= step)
+				break;
+			first += step;
+		}
+		return s;
+	}
+	// 557. Reverse Words in a String III
+	string reverseWords(string s) {  // beat 96%
+		auto first = s.begin();
+		do {
+			auto space = find(first, end(s), ' ');
+			reverse_string(first, space);
+			first = space;
+			if (space == end(s))
+				break;
+		} while (++first != end(s));
+		return s;
+	}
+	//657. Robot Return to Origin
+	bool judgeCircle(string moves) {  // beat 97%
+		int count[26] = { 0 };
+		for (char m : moves)
+			count[m - 'A']++;
+		return count['U' - 'A'] == count['D' - 'A'] && count['L' - 'A'] == count['R' - 'A'];
+	}
+	// 859. Buddy Strings
+	// Given two strings A and B of lowercase letters, return true if and only if we can swap two letters in A so that the result equals B
+	bool buddyStrings(string A, string B) {// beat 98%, watch out for special case
+		if (A.size() != B.size())
+			return false;
+		auto mismatch1 = mismatch(begin(A), end(A), begin(B), end(B));
+		if (mismatch1.first == A.end()) {  // all matching, special case
+			int count[26] = { 0 };  // looking for if there are chars same
+			for (char c : A) {
+				if (count[c - 'a']++ == 1)  // find same char in A
+					return true;
+			}
+			return false;
+		}
+		auto mismatch2 = mismatch(mismatch1.first + 1, end(A), mismatch1.second + 1, end(B));
+		if (mismatch2.first == A.end())
+			return false;
+		auto mismatch3 = mismatch(mismatch2.first + 1, end(A), mismatch2.second + 1, end(B));
+		if (mismatch3.first != A.end())
+			return false;
+		return *mismatch1.first == *mismatch2.second && *mismatch1.second == *mismatch2.first;
+	}
+	// 387. First Unique Character in a String, only lowercase letters
+	// Given a string, find the first non-repeating character in it and return it's index. If it doesn't exist, return -1.
+	int firstUniqChar(string s) {
+		int count[26] = { 0 };
+		for (char c : s)
+			count[c - 'a']++;
+		auto found = find_if(s.begin(), s.end(), [&count](char c) { return count[c - 'a'] == 1; });
+		if (found == s.end())
+			return -1;
+		return distance(s.begin(), found);
+	}
+	int firstUniqChar_fast(string s) {  // beat 97%
+		const int MAX_POS = s.size();
+		// array can not be used to initialize like vector
+		vector<int> position(26, MAX_POS);  // keep track of first position of each letter, if more than once, mark as INT32_MAX
+		for (int i = 0; i < MAX_POS; i++) {
+			int idx = s[i] - 'a';
+			if (position[idx] == MAX_POS)  // first appearance
+				position[idx] = i;
+			else if (position[idx] != INT32_MAX)
+				position[idx] = INT32_MAX;
+		}
+		auto ans = min_element(begin(position), end(position));
+		return *ans >= MAX_POS ? -1 : *ans;  // more error prone than first approach, due to states
+	}
+	// 893. Groups of Special-Equivalent Strings, only lowercase letters, All A[i] have the same length
+	// Two strings S and T are special-equivalent if S==T after any number of moves, swapping char at odd or even position
+	int numSpecialEquivGroups(vector<string>& A) {  // beat 100%
+		auto compose_key = [](const string& s) {
+			string key;
+			key.reserve(s.size());
+			int pos = 0;
+			copy_if(begin(s), end(s), back_inserter(key), [&pos](char c) { return pos++ % 2 == 0; });  // even position
+			sort(begin(key), end(key));  // sort even chars
+			size_t old_len = key.size();
+			pos = 0;
+			copy_if(begin(s), end(s), back_inserter(key), [&pos](char c) { return pos++ % 2 == 1; });  // odd position
+			sort(begin(key) + old_len, end(key));  // sort chars at odd pos
+			return key;
+		};
+		set<string> group;
+		for (const string&s : A) {
+			group.insert(compose_key(s));
+		}
+		return group.size();
+	}
+	// 824. Goat Latin, upper and lower cases words in a sentence
+	// for each words, if starting vowel, append ma, else move letter to end of word, append ma
+	// for ith word, append i 'a', i from 1 to n
+	string toGoatLatin(string S) {  // beat 100%
+		const static set<char> vowels{ 'a','e','i','o','u','A','E','I','O','U' };
+		int i = 0;
+		auto word = S.begin();
+		string ans;
+		ans.reserve(S.size() * 2);
+		while (word != S.end()) {
+			auto space = find(word, S.end(), ' ');
+			if (vowels.count(*word)) {
+				ans.append(word, space);
+			}
+			else {
+				ans.append(word + 1, space).append(1, *word);
+			}
+			ans.append("ma").append(++i, 'a');
+			if (space == S.end())
+				break;
+			ans.append(1, ' ');
+			word = space + 1;
+		}
+		return ans;
+	}
+	// 520. Detect Capital
+	bool detectCapitalUse(string word) {  // beat 100%
+		int countUp = 0;
+		int countLow = 0;
+		for (char c : word) {
+			if (isupper(c)) {
+				if (countLow)
+					return false;  // upper case after lower case
+				countUp++;
+			}
+			else {
+				countLow++;
+			}
+		}
+		return countLow == 0 || countUp <= 1;  // either all upper case, or first is upper, or all lower
+	}
+	// 696. Count Binary Substrings, of same number of 0's and 1's
+	int countBinarySubstrings(string s) {  // beat 56%
+		int group1 = 0;
+		int group2 = 0;
+		char last = 0;
+		int ans = 0;
+		for (char c : s) {
+			if (c != last) {
+				ans += min(group1, group2); // count of substring of group1 and group 2
+				group1 = group2;  // shift to 2
+				group2 = 1;  // next group
+				last = c;
+			}
+			else
+				group2++;
+		}
+		ans += min(group1, group2);
+		return ans;
+	}
+	// 38. Count and Say, start with 1
+	// count same digit and say last string, generate a new string as count+digit1+count+digit2
+	string countAndSay(int n) {  // beat 100%
+		string last = "1";
+		while (--n) {
+			int count = 0;
+			char last_char = last[0];
+			string new_str;
+			for (char c : last) {
+				if (c != last_char) {
+					new_str.append(to_string(count)).append(1, last_char);
+					count = 1;
+					last_char = c;
+				}
+				else
+					count++;
+			}
+			new_str.append(to_string(count)).append(1, last_char);
+			last = move(new_str);
+		}
+		return last;
+	}
+	//13. Roman to Integer
+	int romanToInt(string s) {  // beat 97%
+		static const int roman[26] = { 0,0,100,500,0,0,0,0,1,0,0,50,1000,0,0,0,0,0,0,0,0,5,0,10 };
+		int ans = 0;
+		int size = s.size();
+		for (int i = 0; i < size - 1; i++) {
+			int cur = roman[s[i] - 'A'];
+			switch (s[i]) {
+			case 'C':
+			case 'X':
+			case 'I':
+			{
+				if (cur < roman[s[i + 1] - 'A']) // CM, CD // XC, XL // IX, IV
+					ans -= cur;
+				else
+					ans += cur;
+				break;
+			}
+			default:
+				ans += cur;
+				break;
+			}
+		}
+		return ans + roman[s[size - 1] - 'A'];  // add last one
+	}
+	// 383. Ransom Note, lowe case only
+	// check if note can written from lettters in magazine
+	bool canConstruct(string ransomNote, string magazine) {  // beat 81%, easy
+		int count[26] = { 0 };
+		for (char c : magazine)
+			count[c - 'a']++;
+		for (char c : ransomNote) {
+			if (count[c - 'a'] == 0)
+				return false;
+			count[c - 'a']--;
+		}
+		return true;
+	}
+	// 819. Most Common Word, not in banned list
+	// word is always separated by a space, return only lower case letter
+	string mostCommonWord(string paragraph, vector<string>& banned) {  // beat 98%
+		map<string, int> count;
+		int maxCount = 0;
+		for (const string&s : banned)  // add banned words with negative count
+			count[s] = INT32_MIN;
+		auto word = paragraph.begin();
+		string result;
+		while (word != paragraph.end()) {
+			auto space = find(word, paragraph.end(), ' ');
+			auto end = space; // save
+			if (!isalpha(*(space - 1)))  // strip last none letter char
+				--space;
+			string key;
+			transform(word, space, back_inserter(key), [](char c) {return tolower(c); });  // convert to lower case
+			auto& c = count[key];
+			if (++c > maxCount) {  // count and keep track of max
+				maxCount = c;
+				result = key;
+			}
+			if (end == paragraph.end())
+				break;
+			word = end + 1;
+		}
+		return result;
+	}
+	// 551. Student Attendance Record I, no more than 1 Ansent, no mor than 2 continuous Late
+	bool checkRecord(string s) {  // beat 50%, very easy
+		int absent = 0;
+		int lateCont = 0;
+		for (char c : s) {
+			switch (c) {
+			case 'A':
+				if (++absent > 1)
+					return false;
+				lateCont = 0;
+				break;
+			case 'L':
+				if (++lateCont > 2)
+					return false;
+				break;
+			default:
+				lateCont = 0;
+			}
+		}
+		return true;
+	}
+	// 459. Repeated Substring Pattern
+	bool repeatedSubstringPattern(string s) {
+		//return (s + s).substr(1, 2*s.size() - 2).find(s) != string::npos;  // borrowed idea, beat 95%
+		// more straight forward method below also beat 95%
+		int size = s.size();
+		for (int step = size / 2; step > 0; step--) {  // iterate all possible substring length
+			if (size%step == 0) {
+				bool success = true;
+				for (int j = step; j < size; j += step) {
+					if (!equal(begin(s), begin(s) + step, begin(s) + j, begin(s) + j + step)) {
+						success = false;
+						break;
+					}
+				}
+				if (success)
+					return true;
+			}
+		}
+		return false;
+	}
+	// 28. Implement strStr()
+	int strStr(string haystack, string needle) { // brute force, beat 98%
+		for (int i = 0; i <= (int)(haystack.size() - needle.size()); i++) {
+			if (equal(begin(haystack) + i, begin(haystack) + i + needle.size(), begin(needle), end(needle)))
+				return i;
+		}
+		return -1;
+	}
+	// 686. Repeated String Match
+	// find the minimum number of times A has to be repeated such that B is a substring of it
+	int repeatedStringMatch(string A, string B) { // brute force, beat 53%
+		int a_size = A.size();
+		A.reserve(B.size() + A.size());
+		int ans = 1;
+		while (A.size() < B.size()) {  // make A as long as B
+			A.append(A.begin(), A.begin() + a_size);
+			ans++;
+		}
+		if (A.find(B) != string::npos)
+			return ans;
+		A.append(A.begin(), A.begin() + a_size);  // try again repeat one more time
+		if (A.find(B) != string::npos)
+			return ans + 1;
+		return -1;
+	}
+	// 434. Number of Segments in a String
+	int countSegments(string s) {  // beat 100%
+		int count = 0;
+		int word = 0; // letter count
+		for (char c : s) {
+			if (isspace(c)) {
+				if (word) {
+					word = 0;
+					count++;
+				}
+			}
+			else
+				word++;
+		}
+		return word ? count + 1 : count;
+	}
+	// 443. String Compression, in place
+	int compress(vector<char>& chars) {  // beat 25%
+		int count = chars.empty() ? 0 : 1;
+		auto write_count = [&chars](int to, int count) {
+			int write = to;
+			while (count > 0) {
+				chars[write++] = (count % 10 + '0');
+				count /= 10;
+			}
+			if (write - to > 1)
+				reverse(chars.begin() + to, chars.begin() + write);
+			return write - 1; // position for next char
+		};
+		int to = 0; // current char
+		for (size_t from = 1; from < chars.size(); from++) {
+			if (chars[from] != chars[to]) {
+				if (count > 1)
+					to = write_count(to + 1, count);
+				count = 1;
+				chars[++to] = chars[from]; // move to postion storing next char
+			}
+			else
+				count++;
+		}
+		if (count > 1)
+			to = write_count(to + 1, count);
+		return to + 1;
+	}
+	// 20. Valid Parentheses
+	bool isValid(string s) {  // beat 100%
+		deque<char> paren;
+		for (char c : s) {
+			switch (c) {
+			case '(':
+			case '[':
+			case '{':
+				paren.push_back(c);
+				break;
+			case ')':
+				if (!paren.empty() && paren.back() == '(')
+					paren.pop_back();
+				else
+					return false;
+				break;
+			case ']':
+				if (!paren.empty() && paren.back() == '[')
+					paren.pop_back();
+				else
+					return false;
+				break;
+			case '}':
+				if (!paren.empty() && paren.back() == '{')
+					paren.pop_back();
+				else
+					return false;
+				break;
+			}
+		}
+		return paren.empty();
+	}
+	// 58. Length of Last Word
+	int lengthOfLastWord(string s) { // beat 100%
+		auto rfind = s.rbegin();
+		while (rfind != s.rend() && *rfind == ' ')  // skip space from end
+			++rfind;
+		if (rfind == s.rend())
+			return 0;
+		auto end = find(rfind, s.rend(), ' ');
+		return distance(rfind, end);
+	}
+	// 14. Longest Common Prefix, lowercase letters
+	string longestCommonPrefix(vector<string>& strs) {  // beat 98%
+		if (strs.empty())
+			return "";
+		if (strs.size() == 1)
+			return strs[0];
+		const string& first = strs[0];
+		size_t match = first.size();
+		for (size_t i = 1; i < strs.size(); i++) {
+			match = min(match, strs[i].size());
+			size_t j = 0;
+			for (; j < match; j++) {
+				if (first[j] != strs[i][j])
+					break;
+			}
+			if (j == 0)
+				return "";
+			match = j;
+		}
+		return first.substr(0, match);
+	}
+	// 796. Rotate String
+	bool rotateString(string A, string B) {  // brute force, try all rotation, beat 100%
+		if (A.size() != B.size())
+			return false;
+		for (size_t i = 0; i < A.size() - 1; i++) {
+			rotate(A.begin(), A.begin() + 1, A.end()); // rotate left once
+			if (A == B)
+				return true;
+		}
+		return false;
+	}
+	bool rotateString_clever(string A, string B) {  // beat 100%
+		if (A.size() == B.size() && A.append(A).find(B) != string::npos)
+			return true;
+		return false;
+	}
+	// 717. 1-bit and 2-bit Characters
+	// valid bit: 0, 10, 11
+	bool isOneBitCharacter(vector<int>& bits) {  // beat 98%
+		for (size_t i = 0; i < bits.size(); i++) {
+			if (i == bits.size() - 1)
+				return  bits[i] == 0;
+			if (bits[i] == 1) {  // 2 bits
+				i++;  // skip next bit
+			}
+		}
+		return false;
+	}
+	// 482. License Key Formatting, divide into N+1 group of K length, except the first group
+	string licenseKeyFormatting(string S, int K) {  // beat 26%
+		S.erase(remove(begin(S), end(S), '-'), end(S));
+		transform(begin(S), end(S), begin(S), [](char c) {return toupper(c); });
+		for (int i = S.size() - K; i > 0; i -= K)
+			S.insert(i, 1, '-');
+		return S;
+	}
+};
+TEST_CASE("20. Valid Parentheses", "[NEW]")
+{
+	CHECK(StringStuff().isValid("[") == false);
+	CHECK(StringStuff().isValid("[](") == false);
+}
+TEST_CASE("443. String Compression", "[NEW]")
+{
+	CHECK(StringStuff().compress(vector<char>{ 'a' }) == 1);
+	CHECK(StringStuff().compress(vector<char>{ 'a', 'b' }) == 2);
+	CHECK(StringStuff().compress(vector<char>{ 'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b' }) == 4);
+	CHECK(StringStuff().compress(vector<char>{ 'a', 'a', 'b', 'b', 'c', 'c', 'c' }) == 6);
+}
+TEST_CASE("686. Repeated String Match", "[NEW]")
+{
+	CHECK(StringStuff().repeatedStringMatch("abcd", "cdabcdab") == 3);
+}
+TEST_CASE("459. Repeated Substring Pattern", "[NEW]")
+{
+	CHECK(StringStuff().repeatedSubstringPattern("Aba") == false);
+}
+
+TEST_CASE("819. Most Common Word", "[NEW]")
+{
+	CHECK(StringStuff().mostCommonWord("a, a, a, a, b,b,b,c, c", vector<string>{ "a" }) == "b,b,b,c");
+}
+
+TEST_CASE("387. First Unique Character in a String", "[NEW]")
+{
+	CHECK(StringStuff().firstUniqChar_fast("aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz") == -1);
+	CHECK(StringStuff().firstUniqChar_fast("") == -1);
+	CHECK(StringStuff().firstUniqChar_fast("loveleetcode") == 2);
+}
+TEST_CASE("859. Buddy Strings", "[NEW]")
+{
+	CHECK(StringStuff().buddyStrings("aa", "aa") == true);
+	CHECK(StringStuff().buddyStrings("ab", "ab") == false);
+}
+/*
+	int strStr_KMP(string haystack, string needle) {
+		for (int i = 0; i <= (int)(haystack.size() - needle.size()); i++) {
+		}
+		return -1;
+	}
+*/
