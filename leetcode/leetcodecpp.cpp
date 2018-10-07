@@ -542,6 +542,139 @@ void testPalindromePart()
 	}
 }
 
+class Palindrome2
+{
+	vector<int> count(const string& s) {
+		vector<int> lowcases(123, 0);
+		for (char a : s) {
+			lowcases[a]++;
+		}
+		return lowcases;
+	}
+public:
+	// 409. Longest Palindrome. Given a string which consists of lowercase or uppercase letters, 
+	//  find the length of the longest palindromes that can be built with those letters. This is case sensitive
+	int longestPalindrome(string s) {  // beat 88%
+		vector<int> cnt = count(s);
+		size_t ans = accumulate(cnt.begin(), cnt.end(), 0, [](size_t a, int b) {
+			return a + ((b >> 1) << 1);
+		});
+		bool odd = any_of(cnt.rbegin(), cnt.rend(), [](int n) {return n % 2; });
+		return odd ? ans + 1 : ans;
+	}
+
+	bool isPalindrome(string s) {  // beat 100%
+		int start = 0;
+		int end = s.size() - 1;
+		while (start <= end) {
+			if (!isalnum(s[start])) {  // letter and digit
+				start++;
+				continue;
+			}
+			if (!isalnum(s[end])) {
+				end--;
+				continue;
+			}
+			if (tolower(s[start++]) != tolower(s[end--]))  // case insensitive
+				return false;
+		}
+		return true;
+	}
+
+	// 680. Valid Palindrome II, given non-empty lowercase string
+	// you may delete at most one character. Judge whether you can make it a palindrome.
+	inline bool validPalindrome(const string& s, int start, int end) {
+		while (start <= end) {
+			if (s[start++] != s[end--])
+				return false;
+		}
+		return true;
+	}
+	bool validPalindrome(string s) {  // beat 64%
+		int start = 0;
+		int end = s.size() - 1;
+		while (start <= end) {
+			if (s[start] != s[end]) {
+				if (validPalindrome(s, start + 1, end))
+					return true;
+				if (validPalindrome(s, start, end - 1))
+					return true;
+				return false;
+			}
+			else {
+				start++;
+				end--;
+			}
+		}
+		return true;
+	}
+	// 9. Palindrome Number
+	bool isPalindrome(int x) {  // beat 72%
+		if (x < 0)
+			return false;
+
+		int y = x;
+		int p = 0;
+		while (y > 0) {  // reverse x in value
+			p = p * 10 + y % 10;
+			y /= 10;
+		}
+		return x == p;
+	}
+
+	int64_t buildPalindromFromLeftHalf(int left, int n)
+	{
+		int right = 0;
+		int temp = left;
+		while (temp > 0) {
+			right = right * 10 + temp % 10;
+			temp /= 10;
+		}
+		return static_cast<int64_t>(pow(10, n)*left) + right;
+	}
+
+	// 479. Largest Palindrome Product, n is [1,8]
+	int largestPalindrome(int n) {  // 
+		if (n == 1)
+			return 9;
+		int lb = static_cast<int>(pow(10, n - 1));
+		int ub = static_cast<int>(pow(10, n)) - 1;
+		int64_t maxNum = (int64_t)ub*ub;  // underflow without cast
+		int firstHalf = static_cast<int>(maxNum / pow(10, n)); // find the left half of max number
+		if (buildPalindromFromLeftHalf(firstHalf, n) <= maxNum)
+			firstHalf++;  // this is to simplify while loop to use --
+		while (--firstHalf >= lb) {
+			auto candidate = buildPalindromFromLeftHalf(firstHalf, n);
+			for (int i = ub; i >= lb &&candidate / i <= ub; i--) {  // greedy search from ub to find candidate having 2 factors between lb and ub
+				if (candidate%i == 0)
+					return static_cast<int>(candidate % 1337);
+			}
+		}
+		return 9;
+	}
+};
+TEST_CASE("125. Valid Palindrome", "[NEW]")
+{
+	CHECK(Palindrome2().isPalindrome("0P") == false);
+	CHECK(Palindrome2().isPalindrome("race a car") == false);
+	CHECK(Palindrome2().isPalindrome("A man, a plan, a canal: Panama") == true);
+}
+
+TEST_CASE("9. Palindrome Number", "[NEW]")
+{
+	CHECK(Palindrome2().isPalindrome(-1) == false);
+	CHECK(Palindrome2().isPalindrome(-121) == false);
+	CHECK(Palindrome2().isPalindrome(+121) == true);
+}
+
+TEST_CASE("479. Largest Palindrome Product", "[NEW]")
+{
+	CHECK(Palindrome2().largestPalindrome(5) == 677);
+	CHECK(Palindrome2().largestPalindrome(2) == 987);
+}
+
+
+
 //452. Minimum Number of Arrows to Burst Balloons, similar to scheduling problem
 // similar to 435. Non-overlapping Intervals
 class Balloons {
@@ -739,6 +872,104 @@ void testGreedy()
 	cout << g.canCompleteCircuit(vector<int>{1,2, 3, 4,5}, vector<int>{3, 4, 5,1,2}) << endl;  // 3
 	cout << g.canCompleteCircuit(vector<int>{2,3,4}, vector<int>{3,4,3}) << endl;  // -1
 	cout << g.canCompleteCircuit(vector<int>{2}, vector<int>{2}) << endl;  // 0
+}
+
+class GreedyMore {
+public:
+	// customers holding bills to buy $5 lemonade, can all of them get right change. assume you have money at start
+	bool lemonadeChange(vector<int>& bills) {  // beat 99%
+		int change5 = 0;
+		int change10 = 0;
+		for (int b : bills) {
+			switch (b) {
+			case 5:	change5 += 5;	break;
+			case 10:
+				change5 -= 5;
+				change10 += 10;
+				break;
+			case 20:
+				if (change10) {
+					change10 -= 10;
+					change5 -= 5;
+				}
+				else
+					change5 -= 15;
+				break;
+			}
+			if (change5 < 0)
+				return false;
+		}
+		return true;
+	}
+
+};
+
+TEST_CASE("860. Lemonade Change", "[NEW]")
+{
+	CHECK(GreedyMore().lemonadeChange(vector<int>{5, 10, 5, 20}));
+	CHECK(GreedyMore().lemonadeChange(vector<int>{5, 5, 5, 10, 20}));
+	CHECK(GreedyMore().lemonadeChange(vector<int>{5, 5, 10, 10, 20}) == false);
+}
+
+
+
+class GreedyShuffle {
+public:
+	// 870. Advantage Shuffle, Return any permutation of A that maximizes its advantage with respect to B, A[i]>B[i]
+	vector<int> advantageCount(vector<int>& A, vector<int>& B) {  // OK but TLE
+		vector<int> A1(A);
+		for (int b = 0; b < (int)B.size(); b++) {
+			int minA = b;   // minimal A
+			int minAgB = -1; // minimal A > B[b]
+			for (int a = b; a < (int)A1.size(); a++) { // find the minimal A that is greater than B[b]
+				if (A1[a] < A1[minA])
+					minA = a;
+				if (A1[a] <= B[b])
+					continue;
+				if (minAgB < 0)
+					minAgB = a;
+				else if (A1[a] < A1[minAgB])
+					minAgB = a;
+			}
+			if (minAgB > b)
+				swap(A1[b], A1[minAgB]);
+			else if (minAgB<0 && minA>b)
+				swap(A1[b], A1[minA]);
+		}
+		return A1;
+	}
+	// 1 <= A.length = B.length <= 10000
+	vector<int> advantageCount2(vector<int>& A, vector<int>& B) {  // beat 99%
+		sort(A.begin(), A.end());
+		int N = B.size();
+		vector<pair<int, int>> BIdx;  // preserve B index
+		BIdx.reserve(N);
+		for (int i = 0; i < N; i++) {
+			BIdx.emplace_back(i, B[i]);
+		}
+		sort(begin(BIdx), end(BIdx), [](const auto&a, const auto& b) {return a.second < b.second; }); // sort B value
+		B.clear(); // reuse it to store unmatched
+		int match = 0;
+		vector<int> ans(N, 0);
+		for (int n : A) {  // greedily try to find a match of A>B[match]
+			if (n <= BIdx[match].second)  // no match, store for later use
+				B.push_back(n);
+			else
+				ans[BIdx[match++].first] = n;  // fill value to proper place
+		}
+		auto unmached = B.begin();
+		for (int i = match; i < N; i++) {  // fill remaining unmached value
+			ans[BIdx[i].first] = *unmached;
+			++unmached;
+		}
+		return ans;
+	}
+};
+
+TEST_CASE("870. Advantage Shuffle", "[NEW]")
+{
+	CHECK(GreedyShuffle().advantageCount2(vector<int>{15777, 7355, 6475, 15448, 18412}, vector<int>{986, 13574, 14234, 18412, 19893}) == vector<int>{6475, 15448, 15777, 7355, 18412});
+	CHECK(GreedyShuffle().advantageCount2(vector<int>{12, 24, 8, 32}, vector<int>{13, 25, 32, 11}) == vector<int>{24, 32, 8, 12});
 }
 
 class Sort {
@@ -2079,3 +2310,93 @@ TEST_CASE("703. Kth Largest Element in a Stream", "[NEW]")
 	KthLargest heap2(1, vector<int>{});
 	CHECK(heap2.add(-3) == -3);
 }
+
+//855. Exam Room, Seat #[0, N-1], 1 <= N <= 10^9, similar idea to 849. Maximize Distance to Closest Person
+//will be called at most 10^4 times 
+// If there are multiple such seats, they sit in the seat with the lowest number
+class ExamRoom {  // beat 85%
+	int seats;
+	set<int>  seating;
+	int findSeat()
+	{
+		int pos = 0;
+		int distMax = *begin(seating);
+		int right_end = seats - 1 - *(--end(seating));
+		if (right_end > distMax) {
+			distMax = right_end;
+			pos = seats - 1;
+		}
+		auto start = begin(seating);
+		int startPos = *start;
+		while (++start != end(seating)) {
+			int dist = (*start - startPos) / 2;
+			if (dist > distMax || dist == distMax && startPos + dist < pos) {
+				distMax = dist;
+				pos = startPos + dist;
+			}
+			startPos = *start;
+		}
+		return pos;
+	}
+public:
+	ExamRoom(int N) :seats(N) { }
+
+	int seat() {
+		if (seating.empty()) {
+			seating.insert(0);
+			return 0;
+		}
+		int pos = findSeat();
+		seating.insert(pos);
+		return pos;
+	}
+
+	void leave(int p) {
+		seating.erase(p);
+	}
+};
+
+TEST_CASE("855. Exam Room", "[NEW]")
+{
+	ExamRoom exam(10);
+	CHECK(exam.seat() == 0);
+	CHECK(exam.seat() == 9);
+	CHECK(exam.seat() == 4);
+	CHECK(exam.seat() == 2);
+	exam.leave(4);
+	CHECK(exam.seat() == 5);
+}
+
+class Teaser {
+public:
+	// 777. Swap Adjacent in LR String. return True if and only if there exists a sequence of moves to transform one string to the other.
+	// a move consists of either replacing one occurrence of "XL" with "LX", or replacing one occurrence of "RX" with "XR"
+	// idea: R and L relative order must be same between 2 strings
+	//       R in start string can be left of end string position, L can be right. 
+	bool canTransform(string start, string end) {  // beat 99%
+		auto skipX = [](const string& s, int pos, int size) {
+			while (pos < size) {
+				if (s[pos++] != 'X')
+					return pos - 1;
+			}
+			return -1;
+		};
+		int size1 = start.size();
+		int size2 = end.size();
+		if (size1 != size2)
+			return false;
+		int i = skipX(start, 0, size1);
+		int j = skipX(end, 0, size2);
+		while (i >= 0 && j >= 0) {
+			if (start[i] != end[j])  // L and R are not aligned
+				return false;
+			if (start[i] == 'L' && i < j)  // L is left
+				return false;
+			if (start[i] == 'R' && i > j)  // R is right
+				return false;
+			i = skipX(start, i + 1, size1);
+			j = skipX(end, j + 1, size2);
+		}
+		return i == j;
+	}
+};
