@@ -1069,8 +1069,29 @@ public:
 			return n;
 		return bs(citations, 0, n);  // binary search improve performance 9ms vs 31ms, beat 80%
 	}
+	// 910. Smallest Range II, add to each A[i], -K or K.
+	// Return the smallest possible difference between the maximum value of B and the minimum value of B
+	// borrowed idea: +-K, same same as 0, 2*K
+	int smallestRangeII(vector<int>& A, int K) { // beat 98%
+		int n = A.size();
+		if (n < 2)
+			return 0;
+		sort(begin(A), end(A));
+		int maxDiff = A[n - 1] - A[0];
+		int K2 = K * 2;
+		for (int i = 0; i < n-1; i++) {
+			int newMax = max(A[n - 1], A[i] + K2);
+			int newMin = min(A[0] + K2, A[i + 1]);
+			maxDiff = min(newMax - newMin, maxDiff);
+		}
+		return maxDiff;
+	}
 };
-
+TEST_CASE("910. Smallest Range II", "[NEW]")
+{
+	CHECK(Sort().smallestRangeII(vector<int>{3,0,3,0,6,3}, 4) == 5);
+	CHECK(Sort().smallestRangeII(vector<int>{2, 7, 2}, 1) == 3);
+}
 void testColor()
 {
 	Sort s;
