@@ -98,3 +98,11 @@ inline double nthRoot(int A, int N)
 
 	return xK;
 }
+
+inline std::vector<int> count_letter(const std::string&s, char base)  // all leeter, either loer, or upper case
+{
+	std::vector<int> count(26, 0);
+	for (char c : s)
+		count[c - base]++;
+	return count;
+}

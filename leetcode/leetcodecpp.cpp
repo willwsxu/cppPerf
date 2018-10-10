@@ -2085,9 +2085,7 @@ public:
 	}
 	// 438. Find All Anagrams in a String, all lower cases
 	vector<int> findAnagrams(string s, string p) {  // beat 99%
-		vector<int> p_count(26, 0);
-		for (char c : p)
-			p_count[c - 'a']++;
+		vector<int> p_count=count_letter(p,'a');
 		vector<int> count(26, 0);
 		size_t p_len = p.size();
 		size_t s_len = s.size();

@@ -491,6 +491,24 @@ public:
 		copy_if(begin(words), end(words), back_inserter(ans), [this, &pattern](string& s) { return isIsomorphic(s, pattern); });
 		return ans;
 	}
+	// 916. Word Subsets, find a in A when every b in B is subset of a
+	// Each word is a string of lowercase letters
+	vector<string> wordSubsets(vector<string>& A, vector<string>& B) {
+		auto universal = [&B](const string& s) {
+			vector<int> count = count_letter(s, 'a');
+			for (const string& b : B) {
+				vector<int> copy_ = count;
+				for (char c : b) {
+					if (copy_[c - 'a']-- == 0) // c is not in s
+						return false;
+				}
+			}
+			return true;
+		};
+		vector<string> ans;
+		copy_if(begin(A), end(A), back_inserter(ans), universal);
+		return ans;
+	}
 	// 914. X of a Kind in a Deck of Cards
 	// separate into groups of X same cards, X>=2
 	// 0 <= deck[i] < 10000
