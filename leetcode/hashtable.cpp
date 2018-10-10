@@ -493,16 +493,19 @@ public:
 	}
 	// 916. Word Subsets, find a in A when every b in B is subset of a
 	// Each word is a string of lowercase letters
+	// clever idea: find super set of B 
 	vector<string> wordSubsets(vector<string>& A, vector<string>& B) {
-		auto universal = [&B](const string& s) {
+		vector<int> superset_b_count(26, 0);
+		for (const string& b : B) {
+			vector<int> count_b = count_letter(b, 'a');
+			for (int i = 0; i < 26; i++)
+				superset_b_count[i] = max(superset_b_count[i], count_b[i]);
+		}
+		auto universal = [&superset_b_count](const string& s) {
 			vector<int> count = count_letter(s, 'a');
-			for (const string& b : B) {
-				vector<int> copy_ = count;
-				for (char c : b) {
-					if (copy_[c - 'a']-- == 0) // c is not in s
-						return false;
-				}
-			}
+			for (int i = 0; i < 26; i++)
+				if (count[i] < superset_b_count[i])
+					return false;
 			return true;
 		};
 		vector<string> ans;
