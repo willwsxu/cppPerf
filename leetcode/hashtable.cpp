@@ -485,6 +485,12 @@ public:
 		}
 		return true;
 	}
+	// 890. Find and Replace Pattern, reuse func #205
+	vector<string> findAndReplacePattern(vector<string>& words, string pattern) {
+		vector<string> ans;
+		copy_if(begin(words), end(words), back_inserter(ans), [this, &pattern](string& s) { return isIsomorphic(s, pattern); });
+		return ans;
+	}
 	// 914. X of a Kind in a Deck of Cards
 	// separate into groups of X same cards, X>=2
 	// 0 <= deck[i] < 10000
