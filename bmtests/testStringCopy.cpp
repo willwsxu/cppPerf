@@ -1,5 +1,6 @@
 #include <string>
 #include <memory>
+#include <array>
 using namespace std;
 
 #include "library/string_util.h"
@@ -19,16 +20,25 @@ unique_ptr<char[]> memcpy_unique(const char *test, size_t sz)
 	memcpy(buf.get(), test, sz);
 	return buf;
 }
+template<size_t N> 
+std::array<char, N> copy_array(const char *test, size_t sz)
+{
+	array<char, N> dest;
+	sz = min(sz, N) - 1;
+	memcpy(dest.data(), test, sz);
+	dest[sz] = 0;
+	return dest;
+}
 
 #include <benchmark/benchmark.h>
 BENCHMARK_MAIN();
 
 string *newStr;
-char *newCstr;
 
 static void BM_memset_control(benchmark::State& state) {
 	size_t len = static_cast<size_t>(state.range(0));
-	char *newCstr = make_unique<char[]>(len).get();
+	auto x = make_unique<char[]>(len);
+	char *newCstr=x.get();
 	for (auto _ : state) {
 		memset(newCstr, 'X', len);
 	}
@@ -40,15 +50,26 @@ static void BM_memcpy(benchmark::State& state) {
 	size_t sz = (size_t)state.range(0);
 	auto s = memset_char('x', sz);
 	char *src = s.get();
+	for (auto _ : state) {
+		auto dst = copy_array<8 << 10>(src, sz);
+	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
+}
+BENCHMARK(BM_memcpy)->Range(8, 8 << 10);
+
+static void BM_array_copy(benchmark::State& state) {  // better that BM_memcpy
+	size_t sz = (size_t)state.range(0);
+	auto s = memset_char('x', sz);
+	char *src = s.get();
 	char* dst = new char[sz];
 	for (auto _ : state) {
 		memcpy(dst, src, sz);
-		dst[sz-1] = 0;
+		dst[sz - 1] = 0;
 	}
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 	delete[] dst;
 }
-BENCHMARK(BM_memcpy)->Range(8, 8 << 10);
+BENCHMARK(BM_array_copy)->Range(8, 8 << 10);
 
 string buffer;
 static void BM_assign_string(benchmark::State& state) {
@@ -75,34 +96,10 @@ static void BM_memcpy_stack(benchmark::State& state) {
 }
 BENCHMARK(BM_memcpy_stack)->Range(8, 8 << 10);
 
-static void BM_strncpy(benchmark::State& state) {
-	auto s = memset_char('x', state.range(0));
-	char *src = s.get();
-	char* dst = new char[(size_t)state.range(0)];
-	for (auto _ : state) {
-		strncpy_s(dst, (size_t)state.range(0), src, _TRUNCATE);
-	}
-	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-	delete[] dst;
-}
-BENCHMARK(BM_strncpy)->Range(8, 8 << 10);
-
-static void BM_strncpy_stack(benchmark::State& state) {
-	char src[MAX_SIZE] = { 0 };
-	char dest[MAX_SIZE];
-	memset(src, 'x', (size_t)state.range(0)-1);
-	for (auto _ : state)
-	{
-		strncpy_s(dest, MAX_SIZE, src, _TRUNCATE);
-	}
-	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
-}
-//BENCHMARK(BM_strncpy_stack)->Range(8, 8 << 10);
-
 static void BM_memset_new_delete(benchmark::State& state) {
 	size_t len = static_cast<size_t>(state.range(0));
 	for (auto _ : state) {
-		newCstr = new char[len];
+		char *newCstr = new char[len];
 		memset(newCstr, 'X', len);
 		delete newCstr;
 	}
@@ -145,34 +142,6 @@ static void BM_memcpy_unique_with_len(benchmark::State& state) {
 }
 BENCHMARK(BM_memcpy_unique_with_len)->Range(8, 8 << 10);
 
-static void BM_memcpy_strlen(benchmark::State& state) {
-	size_t len = static_cast<size_t>(state.range(0));
-	auto s = memset_char('x', state.range(0));
-	char *src = s.get();
-	char* dst = new char[len];
-	for (auto _ : state) {
-		len = strlen(src) + 1;
-		memcpy(dst, src, len);
-	}
-	delete[] dst;
-	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(len));
-}
-BENCHMARK(BM_memcpy_strlen)->Range(8, 8 << 10);
-
-static void BM_new_delete_memcpy_strlen(benchmark::State& state) {
-	size_t len = static_cast<size_t>(state.range(0));
-	auto s = memset_char('x', state.range(0));
-	char *src = s.get();
-	for (auto _ : state) {
-		len = strlen(src) + 1;
-		newCstr = new char[len];
-		memcpy(newCstr, src, len);
-		delete newCstr;
-	}
-	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(len));
-}
-BENCHMARK(BM_new_delete_memcpy_strlen)->Range(8, 8 << 10);
-
 static void BM_new_delete_string(benchmark::State& state) {
 	for (auto _ : state) {
 		newStr = new string(static_cast<size_t>(state.range(0)), 'X');
@@ -190,6 +159,31 @@ static void BM_create_unique_ptr_chars(benchmark::State& state) {
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 }
 BENCHMARK(BM_create_unique_ptr_chars)->Range(8, 8 << 10);
+
+// strncpy is slow, prabably due to count str len
+static void BM_strncpy(benchmark::State& state) {
+	auto s = memset_char('x', state.range(0));
+	char *src = s.get();
+	char* dst = new char[(size_t)state.range(0)];
+	for (auto _ : state) {
+		strncpy_s(dst, (size_t)state.range(0), src, _TRUNCATE);
+	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
+	delete[] dst;
+}
+BENCHMARK(BM_strncpy)->Range(8, 8 << 10);
+
+static void BM_strncpy_stack(benchmark::State& state) {
+	char src[MAX_SIZE] = { 0 };
+	char dest[MAX_SIZE];
+	memset(src, 'x', (size_t)state.range(0) - 1);
+	for (auto _ : state)
+	{
+		strncpy_s(dest, MAX_SIZE, src, _TRUNCATE);
+	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
+}
+//BENCHMARK(BM_strncpy_stack)->Range(8, 8 << 10);
 
 ///////////////////////////////////////////////////////
 // copy test, include strlen
@@ -263,6 +257,35 @@ static void BM_memcpy_unique_ptr_chars(benchmark::State& state) {
 	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(state.range(0)));
 }
 BENCHMARK(BM_memcpy_unique_ptr_chars)->Range(8, 8 << 10);
+
+static void BM_memcpy_strlen(benchmark::State& state) {
+	size_t len = static_cast<size_t>(state.range(0));
+	auto s = memset_char('x', state.range(0));
+	char *src = s.get();
+	char* dst = new char[len];
+	for (auto _ : state) {
+		len = strlen(src) + 1;
+		memcpy(dst, src, len);
+	}
+	delete[] dst;
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(len));
+}
+BENCHMARK(BM_memcpy_strlen)->Range(8, 8 << 10);
+
+static void BM_new_delete_memcpy_strlen(benchmark::State& state) {
+	size_t len = static_cast<size_t>(state.range(0));
+	auto s = memset_char('x', state.range(0));
+	char *src = s.get();
+	for (auto _ : state) {
+		len = strlen(src) + 1;
+		newCstr = new char[len];
+		memcpy(newCstr, src, len);
+		delete newCstr;
+	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(len));
+}
+BENCHMARK(BM_new_delete_memcpy_strlen)->Range(8, 8 << 10);
+
 #endif // STRLEN
 
 /*
