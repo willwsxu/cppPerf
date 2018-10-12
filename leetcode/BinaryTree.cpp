@@ -435,6 +435,27 @@ public:
 			return (1 << h) - 1;
 		return 1 + countNodes(root->left) + countNodes(root->right);
 	}
+	// 894. All Possible Full Binary Trees
+	vector<TreeNode*> allPossibleFBT(int N) { // beat 71%, bottom up
+		if (N % 2 == 0)  // must be odd for full BT
+			return{};
+		if (N == 1)
+			return{ new TreeNode{0} };
+		vector<TreeNode*> heads;
+		for (int r = 2; r < N; r++) {
+			heads.reserve(heads.size() + (r - 1)*(N - r));
+			auto left = allPossibleFBT(r - 1);
+			auto right = allPossibleFBT(N - r);
+			for (const auto L : left) {
+				for (const auto R : right) {
+					heads.push_back(new TreeNode{ 0 });
+					heads.back()->left = L;
+					heads.back()->right = R;
+				}
+			}
+		}
+		return heads;
+	}
 };
 
 void testTree()
