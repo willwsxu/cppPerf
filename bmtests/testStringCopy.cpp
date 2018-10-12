@@ -86,7 +86,10 @@ static void BM_memcpy_stack(benchmark::State& state) {
 }
 BENCHMARK(BM_memcpy_stack)->Range(8, 8 << 10);
 
+//typedef void(*pCopyArray)(const char*, int);  // return type is array<>
+
 static void BM_array_copy(benchmark::State& state) {   // worse than BM_memcpy
+	//const static map<int, pCopyArray> func_map{ {8192,void (&copy_array<8192>)(const char*, int)} };
 	size_t sz = (size_t)state.range(0);
 	auto s = memset_char('x', sz);
 	char *src = s.get();
