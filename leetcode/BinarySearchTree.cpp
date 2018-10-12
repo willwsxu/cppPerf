@@ -186,6 +186,18 @@ public:
 		mode_.try_new_mode(prev->val, same_count);
 		return mode_.move();
 	}
+	// 701. Insert into a Binary Search Tree
+	// Return the root node of the BST after the insertion. 
+	// It is guaranteed that the new value does not exist in the original BST
+	TreeNode* insertIntoBST(TreeNode* root, int val) { // easy recursion, beat 87%
+		if (!root)
+			return new TreeNode(val);
+		if (root->val < val)
+			root->right = insertIntoBST(root->right, val);
+		else
+			root->left = insertIntoBST(root->left, val);
+		return root;
+	}
 };
 
 TEST_CASE("501. Find Mode in Binary Search Tree", "[NEW]")
