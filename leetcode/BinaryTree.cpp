@@ -1366,3 +1366,39 @@ public:
 		return myRoot;
 	}
 };
+
+class ConstructBinaryTree
+{
+
+public:
+	// 889. Construct Binary Tree from Preorder and Postorder Traversal
+	// from preorder, first is root, second is root of subtree, then root of other subtree
+	// from postorder, from right, first is root, second is root of right subtree, then root of left subtree
+	template<typename PreIter, typename PostIter>
+	TreeNode* constructFromPrePost(PreIter pre_first, PreIter pre_last, PostIter post_first, PostIter post_last) {
+		if (pre_first == pre_last)
+			return nullptr;
+		TreeNode * root = new TreeNode(*pre_first);
+		auto nodes = distance(++pre_first, pre_last);
+		++post_first;  // done with root node
+		if (nodes < 2 || *pre_first == *post_first) {
+			root->left= constructFromPrePost(pre_first, pre_last, post_first, post_last); // one subtree, pick left
+		}
+		else {
+			auto left_end = find(pre_first, pre_last, *post_first);  // start of right subtree
+			auto right_size = distance(left_end, pre_last);
+			root->left = constructFromPrePost(pre_first, left_end, post_first+ right_size, post_last);
+			root->right = constructFromPrePost(left_end, pre_last, post_first, post_first + right_size);
+		}
+		return root;
+	}
+	TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {  // beat 53% without map
+		return constructFromPrePost(begin(pre), end(pre), rbegin(post), rend(post));
+	}
+};
+
+
+TEST_CASE("889. Construct Binary Tree from Preorder and Postorder Traversal", "[NEW]")
+{
+	TreeNode *r = ConstructBinaryTree().constructFromPrePost(vector<int>{1, 2, 4, 5, 3, 6, 7}, vector<int>{4, 5, 2, 6, 7, 3, 1});
+}
