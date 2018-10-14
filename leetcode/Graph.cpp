@@ -259,40 +259,7 @@ public:
 		map<int, UndirectedGraphNode*> visited;
 		return cloneGraph(node, visited);
 	}
-	// 127. Word Ladder, change 1 letter to different word in dictionary, until it is end word
-	int ladderLength(string beginWord, string& endWord, set<string>& dict)
-	{
-		if (beginWord == endWord)
-			return 1;
-		int ans = INT32_MAX / 2;
-		for (size_t i = 0; i < beginWord.size(); i++) {
-			for (char letter = 'a'; letter <= 'z'; letter++) {
-				char old = beginWord[i];
-				beginWord[i] = letter;
-				if (dict.count(beginWord)) {
-					dict.erase(beginWord);
-					ans = min(ans, 1 + ladderLength(beginWord, endWord, dict));
-					dict.insert(beginWord);
-				}
-				beginWord[i] = old;
-			}
-		}
-		return ans;
-	}
-	int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-		set<string> dict(begin(wordList), end(wordList));
-		int ans = ladderLength(beginWord, endWord, dict);
-		return ans >= INT32_MAX / 2 ? 0 : ans;
-	}
 };
-TEST_CASE("127. Word Ladder", "[NEW]")
-{
-	vector<string> long_dict{ "si", "go", "se", "cm", "so", "ph", "mt", "db", "mb", "sb", "kr", "ln", "tm", "le", "av", "sm", "ar", "ci", "ca", "br", "ti", "ba", "to", "ra", "fa", "yo", "ow", "sn", "ya", "cr", "po", "fe", "ho", "ma", "re", "or", "rn", "au", "ur", "rh", "sr", "tc", "lt", "lo", "as", "fr", "nb", "yb", "if", "pb", "ge", "th", "pm", "rb", "sh", "co", "ga", "li", "ha", "hz", "no", "bi", "di", "hi", "qa", "pi", "os", "uh", "wm", "an", "me", "mo", "na", "la", "st", "er", "sc", "ne", "mn", "mi", "am", "ex", "pt", "io", "be", "fm", "ta", "tb", "ni", "mr", "pa", "he", "lr", "sq", "ye" };
-	//CHECK(Graph().ladderLength("qa", "sq", long_dict) == 0);  TLE
-	CHECK(Graph().ladderLength("hit", "cog", vector<string>{"hot", "dot", "dog", "lot", "log"}) == 0);
-	CHECK(Graph().ladderLength("hit", "cog", vector<string>{"hot", "dot", "dog", "lot", "log", "cog"}) == 5);
-}
-
 TEST_CASE("133. Clone Graph", "[NEW]")
 {
 	UndirectedGraphNode *r2 = new UndirectedGraphNode(10);
@@ -368,4 +335,42 @@ public:
 		}
 	}
 
+	// 127. Word Ladder, change 1 letter to different word in dictionary, until it is end word
+	int ladderLength(string beginWord, string endWord, vector<string>& wordList) {  // recursion is too slow, TLE, beat 76%
+		if (beginWord == endWord)
+			return 1;
+		unordered_set<string> dict(begin(wordList), end(wordList));
+		deque<string> transform_from{ beginWord };
+		int len = 1;
+		while (!transform_from.empty()) {
+			int old_size = transform_from.size();
+			for (int i = 0; i < old_size; i++) {
+				string& word_to_change = transform_from.front();
+				for (size_t i = 0; i < word_to_change.size(); i++) {
+					for (char letter = 'a'; letter <= 'z'; letter++) {
+						char old = word_to_change[i];
+						word_to_change[i] = letter;
+						if (dict.count(word_to_change)) { // valid transformed word
+							if (word_to_change == endWord)
+								return len + 1;
+							dict.erase(word_to_change);  // each word will be transformed just once
+							transform_from.push_back(word_to_change);
+						}
+						word_to_change[i] = old;
+					}
+				}
+				transform_from.pop_front();
+			}
+			len++; // complete one round of transform
+		}
+		return 0;
+	}
 };
+
+TEST_CASE("127. Word Ladder", "[NEW]")
+{
+	vector<string> long_dict{ "si", "go", "se", "cm", "so", "ph", "mt", "db", "mb", "sb", "kr", "ln", "tm", "le", "av", "sm", "ar", "ci", "ca", "br", "ti", "ba", "to", "ra", "fa", "yo", "ow", "sn", "ya", "cr", "po", "fe", "ho", "ma", "re", "or", "rn", "au", "ur", "rh", "sr", "tc", "lt", "lo", "as", "fr", "nb", "yb", "if", "pb", "ge", "th", "pm", "rb", "sh", "co", "ga", "li", "ha", "hz", "no", "bi", "di", "hi", "qa", "pi", "os", "uh", "wm", "an", "me", "mo", "na", "la", "st", "er", "sc", "ne", "mn", "mi", "am", "ex", "pt", "io", "be", "fm", "ta", "tb", "ni", "mr", "pa", "he", "lr", "sq", "ye" };
+	CHECK(BFS().ladderLength("qa", "sq", long_dict) == 5);
+	CHECK(BFS().ladderLength("hit", "cog", vector<string>{"hot", "dot", "dog", "lot", "log"}) == 0);
+	CHECK(BFS().ladderLength("hit", "cog", vector<string>{"hot", "dot", "dog", "lot", "log", "cog"}) == 5);
+}
