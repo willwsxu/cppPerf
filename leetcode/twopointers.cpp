@@ -236,6 +236,25 @@ public:
 		}
 		return{ 0,0 }; // silence compiler, not reachable
 	}
+	// 922. Sort Array By Parity II, value parity match index parity
+	vector<int> sortArrayByParityII(vector<int>& A) {
+		int even = 0, odd = 1;
+		while (even<A.size() && odd<A.size()) {
+			if (A[even] % 2 != 0 && A[odd] % 2 == 0) {
+				swap(A[even], A[odd]);
+				even += 2;
+				odd += 2;
+				continue;
+			}
+			if (A[even] % 2 == 0) {
+				even += 2;
+			}
+			if (A[odd] % 2 != 0) {
+				odd += 2;
+			}
+		}
+		return A;
+	}
 };
 TEST_CASE("532. K-diff Pairs in an Array", "[NEW]")
 {
