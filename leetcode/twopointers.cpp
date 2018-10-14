@@ -240,18 +240,16 @@ public:
 	vector<int> sortArrayByParityII(vector<int>& A) {
 		int even = 0, odd = 1;
 		while (even<A.size() && odd<A.size()) {
-			if (A[even] % 2 != 0 && A[odd] % 2 == 0) {
+			if (A[even] % 2 != 0 && A[odd] % 2 == 0) {  // even on odd index, odd on even index, swap
 				swap(A[even], A[odd]);
 				even += 2;
 				odd += 2;
 				continue;
 			}
-			if (A[even] % 2 == 0) {
+			if (A[even] % 2 == 0)  // even index is good, move to next
 				even += 2;
-			}
-			if (A[odd] % 2 != 0) {
+			if (A[odd] % 2 != 0)	// odd index is good, move to next
 				odd += 2;
-			}
 		}
 		return A;
 	}

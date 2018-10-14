@@ -131,6 +131,34 @@ public:
 			return -1;
 		return atoi(s.c_str());
 	}
+	// 921. Minimum Add to Make Parentheses Valid
+	int minAddToMakeValid(string S) {
+		int count_bad = 0;
+		stack<char> paren;
+		for (char c : S) {
+			if (c == '(')
+				paren.push(c);
+			else {
+				if (paren.empty())
+					count_bad++;
+				else
+					paren.pop();
+			}
+		}
+		return count_bad + paren.size();
+	}
+	int minAddToMakeValid_borrowed(string S) {
+		int open = 0, close=0;
+		for (char c : S) {
+			if (c == '(')
+				open++;
+			else if (open > 0)
+				open--;
+			else
+				close++;
+		}
+		return open + close;
+	}
 };
 
 TEST_CASE("Daily Temperatures find warmer day ahead", "[GRE]")
