@@ -3,6 +3,7 @@
 
 using namespace std;
 #include "TreeNode.h"
+#include "helper.h"
 
 // 515. Find Largest Value in Each Tree Row of a binary tree.
 // BFS, similar to 102. Binary Tree Level Order Traversal, 199. Binary Tree Right Side View, 103.Binary Tree Zigzag Level Order Traversal,513.Find Bottom Left Tree Value
@@ -1317,8 +1318,7 @@ class ConstructBinaryTree
 {
 
 public:
-
-	template<typename InIt>
+	template<typename InIt>  // from root, find size of left and right subtree
 	tuple<int, int> treePartition(int rootVal, InIt InFirst, InIt InStart, InIt InEnd, const unordered_map<int, int>& pos_map)
 	{
 		auto pos = pos_map.find(rootVal)->second;
@@ -1327,41 +1327,34 @@ public:
 		return{ left_size , right_size };
 	}
 	template<typename PreIt, typename InIt>
-	TreeNode* buildTree(PreIt preFirst, PreIt preStart, PreIt preEnd, InIt InFirst, InIt InStart, InIt InEnd, const unordered_map<int, int>& pos_map)
+	TreeNode* buildTree(PreIt preStart, PreIt preEnd, InIt InFirst, InIt InStart, InIt InEnd, const unordered_map<int, int>& pos_map)
 	{
 		TreeNode * r = new TreeNode(*preStart);  // first value in preorder vec is the root
 		int left_size, right_size;
 		tie(left_size, right_size) = treePartition(*preStart, InFirst, InStart, InEnd, pos_map);
-		r->left = left_size ? buildTree(preFirst, preStart + 1, preStart + 1 + left_size, InFirst, InStart, InStart + left_size, pos_map) : nullptr;
-		r->right = right_size ? buildTree(preFirst, preStart + 1 + left_size, preEnd, InFirst, InStart + left_size + 1, InEnd, pos_map) : nullptr;
+		r->left = left_size ? buildTree(preStart + 1, preStart + 1 + left_size, InFirst, InStart, InStart + left_size, pos_map) : nullptr;
+		r->right = right_size ? buildTree(preStart + 1 + left_size, preEnd, InFirst, InStart + left_size + 1, InEnd, pos_map) : nullptr;
 		return r;
-	}
-
-	TreeNode* buildTree(vector<int>& pporder, vector<int>& inorder, bool post) {
-		if (pporder.empty())
-			return nullptr;
-		unordered_map<int, int> pos_map;
-		for (unsigned int i = 0; i < inorder.size(); i++)  // find position of inorder value
-			pos_map.emplace(inorder[i], i);
-		return post ? buildTreePost(pporder.rbegin(), pporder.rbegin(), pporder.rend(), inorder.begin(), inorder.begin(), inorder.end(), pos_map) :
-			buildTree(pporder.begin(), pporder.begin(), pporder.end(), inorder.begin(), inorder.begin(), inorder.end(), pos_map);
 	}
 
 	// 105. Construct Binary Tree from Preorder and Inorder Traversal, no dup
 	TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {  // beat 92%
-		return buildTree(preorder, inorder, false);
+		if (preorder.empty())
+			return nullptr;
+		unordered_map<int, int> inorder_pos = vector2map(inorder);
+		return buildTree(preorder.begin(), preorder.end(), inorder.begin(), inorder.begin(), inorder.end(), inorder_pos);
 	}
 
 	template<typename PostRIT, typename InIt>
-	TreeNode* buildTreePost(PostRIT pFirst, PostRIT pStart, PostRIT pEnd, InIt InFirst, InIt InStart, InIt InEnd, const unordered_map<int, int>& pos_map)
+	TreeNode* buildTreePost(PostRIT pStart, PostRIT pEnd, InIt InFirst, InIt InStart, InIt InEnd, const unordered_map<int, int>& pos_map)
 	{
 		TreeNode * r = new TreeNode(*pStart);  // first value from back in postorder vec is the root
 		int left_size, right_size;
 		tie(left_size, right_size) = treePartition(*pStart, InFirst, InStart, InEnd, pos_map);
 
 		// code is same as inorder buildTree, except how to calculate left and right side for postorder
-		r->left = left_size ? buildTreePost(pFirst, pStart + 1 + right_size, pEnd, InFirst, InStart, InStart + left_size, pos_map) : nullptr;
-		r->right = right_size ? buildTreePost(pFirst, pStart + 1, pStart + 1 + right_size, InFirst, InStart + left_size + 1, InEnd, pos_map) : nullptr;
+		r->left = left_size ? buildTreePost(pStart + 1 + right_size, pEnd, InFirst, InStart, InStart + left_size, pos_map) : nullptr;
+		r->right = right_size ? buildTreePost(pStart + 1, pStart + 1 + right_size, InFirst, InStart + left_size + 1, InEnd, pos_map) : nullptr;
 		return r;
 	}
 
@@ -1369,32 +1362,37 @@ public:
 	// inorder = [9, 3, 15, 20, 7]
 	// postorder = [9, 15, 7, 20, 3]
 	TreeNode* buildTreePost(vector<int>& inorder, vector<int>& postorder) {  // beat 88%
-		return buildTree(postorder, inorder, true);  // beat 84% after refactoring out common code between preorder and postorder
+		if (postorder.empty())
+			return nullptr;
+		unordered_map<int, int> inorder_pos = vector2map(inorder);
+		return buildTreePost(postorder.rbegin(), postorder.rend(), inorder.begin(), inorder.begin(), inorder.end(), inorder_pos);
 	}
 
 	// 889. Construct Binary Tree from Preorder and Postorder Traversal
 	// from preorder, first is root, second is root of subtree, then root of other subtree
 	// from postorder, from right, first is root, second is root of right subtree, then root of left subtree
 	template<typename PreIter, typename PostIter>
-	TreeNode* constructFromPrePost(PreIter pre_first, PreIter pre_last, PostIter post_first, PostIter post_last) {
+	TreeNode* constructFromPrePost(PreIter pre_begin, PreIter pre_first, PreIter pre_last, PostIter post_first, PostIter post_last, unordered_map<int, int>& pre_pos_map) {
 		if (pre_first == pre_last)
 			return nullptr;
 		TreeNode * root = new TreeNode(*pre_first);
 		auto nodes = distance(++pre_first, pre_last);
 		++post_first;  // done with root node
-		if (nodes < 2 || *pre_first == *post_first) {
-			root->left= constructFromPrePost(pre_first, pre_last, post_first, post_last); // one subtree, pick left
+		if (nodes < 2 || *pre_first == *post_first) {  // first node in pre=first node in post
+			root->left= constructFromPrePost(pre_begin, pre_first, pre_last, post_first, post_last, pre_pos_map); // one subtree, pick left
 		}
 		else {
-			auto left_end = find(pre_first, pre_last, *post_first);  // start of right subtree
-			auto right_size = distance(left_end, pre_last);
-			root->left = constructFromPrePost(pre_first, left_end, post_first+ right_size, post_last);
-			root->right = constructFromPrePost(left_end, pre_last, post_first, post_first + right_size);
+			//auto left_end = find(pre_first, pre_last, *post_first);  // start of right subtree, O(n), slow
+			auto left_end = pre_begin+pre_pos_map[*post_first];
+			auto right_size = distance(left_end, pre_last);  // partition 2 sub tree
+			root->left = constructFromPrePost(pre_begin, pre_first, left_end, post_first+ right_size, post_last, pre_pos_map);
+			root->right = constructFromPrePost(pre_begin, left_end, pre_last, post_first, post_first + right_size, pre_pos_map);
 		}
 		return root;
 	}
 	TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {  // beat 53% without map
-		return constructFromPrePost(begin(pre), end(pre), rbegin(post), rend(post));
+		unordered_map<int, int> pre_pos_map = vector2map(pre);  // fast find of subtree size, beat 95%
+		return constructFromPrePost(begin(pre), begin(pre), end(pre), rbegin(post), rend(post), pre_pos_map);
 	}
 };
 
@@ -1403,4 +1401,5 @@ TEST_CASE("889. Construct Binary Tree from Preorder and Postorder Traversal", "[
 {
 	TreeNode *r = ConstructBinaryTree().constructFromPrePost(vector<int>{1, 2, 4, 5, 3, 6, 7}, vector<int>{4, 5, 2, 6, 7, 3, 1});
 	CHECK(TreeNode::levelOrder(r) == vector < vector<int>>{ {1}, { 2,3 }, { 4,5,6,7 }});
+
 }

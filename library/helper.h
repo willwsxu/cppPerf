@@ -106,3 +106,12 @@ inline std::vector<int> count_letter(const std::string&s, char base)  // all let
 		count[c - base]++;
 	return count;
 }
+
+template<typename T>
+inline std::unordered_map<T, int> vector2map(const std::vector<T>& v)
+{
+	std::unordered_map<T, int> pos_map;
+	for (unsigned int i = 0; i < v.size(); i++)  // find position of value
+		pos_map.emplace(v[i], i);
+	return pos_map;
+}
