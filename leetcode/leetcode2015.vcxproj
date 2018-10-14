@@ -148,6 +148,7 @@
     <ClInclude Include="..\library\helper.h" />
     <ClInclude Include="..\library\myalgo.h" />
     <ClInclude Include="..\library\trie.h" />
+    <ClInclude Include="..\library\UnionFind.h" />
     <ClInclude Include="ListNode.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
