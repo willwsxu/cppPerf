@@ -1372,27 +1372,29 @@ public:
 	// from preorder, first is root, second is root of subtree, then root of other subtree
 	// from postorder, from right, first is root, second is root of right subtree, then root of left subtree
 	template<typename PreIter, typename PostIter>
-	TreeNode* constructFromPrePost(PreIter pre_begin, PreIter pre_first, PreIter pre_last, PostIter post_first, PostIter post_last, unordered_map<int, int>& pre_pos_map) {
+	TreeNode* constructFromPrePost(PreIter pre_first, PreIter pre_last, PostIter post_first, PostIter post_last, 
+		unordered_map<int, vector<int>::const_iterator>& pre_pos_map) {
 		if (pre_first == pre_last)
 			return nullptr;
 		TreeNode * root = new TreeNode(*pre_first);
 		auto nodes = distance(++pre_first, pre_last);
 		++post_first;  // done with root node
 		if (nodes < 2 || *pre_first == *post_first) {  // first node in pre=first node in post
-			root->left= constructFromPrePost(pre_begin, pre_first, pre_last, post_first, post_last, pre_pos_map); // one subtree, pick left
+			root->left= constructFromPrePost(pre_first, pre_last, post_first, post_last, pre_pos_map); // one subtree, pick left
 		}
 		else {
 			//auto left_end = find(pre_first, pre_last, *post_first);  // start of right subtree, O(n), slow
-			auto left_end = pre_begin+pre_pos_map[*post_first];
+			auto left_end = pre_pos_map[*post_first];
 			auto right_size = distance(left_end, pre_last);  // partition 2 sub tree
-			root->left = constructFromPrePost(pre_begin, pre_first, left_end, post_first+ right_size, post_last, pre_pos_map);
-			root->right = constructFromPrePost(pre_begin, left_end, pre_last, post_first, post_first + right_size, pre_pos_map);
+			root->left = constructFromPrePost(pre_first, left_end, post_first+ right_size, post_last, pre_pos_map);
+			root->right = constructFromPrePost(left_end, pre_last, post_first, post_first + right_size, pre_pos_map);
 		}
 		return root;
 	}
 	TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {  // beat 53% without map
-		unordered_map<int, int> pre_pos_map = vector2map(pre);  // fast find of subtree size, beat 95%
-		return constructFromPrePost(begin(pre), begin(pre), end(pre), rbegin(post), rend(post), pre_pos_map);
+		//unordered_map<int, int> pre_pos_map = vector2map(pre);  // fast find of subtree size, beat 95%
+		unordered_map<int, vector<int>::const_iterator> x = value_iter_map(pre);  // this line fail to compile in leetcode
+		return constructFromPrePost(cbegin(pre), cend(pre), crbegin(post), crend(post), x);  // must use const iterator everywhere
 	}
 };
 

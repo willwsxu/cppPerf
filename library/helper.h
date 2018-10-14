@@ -115,3 +115,11 @@ inline std::unordered_map<T, int> vector2map(const std::vector<T>& v)
 		pos_map.emplace(v[i], i);
 	return pos_map;
 }
+template<typename T>
+inline auto value_iter_map(const std::vector<T>& v)
+{
+	std::unordered_map<T, std::vector<T>::const_iterator> pos_map;  // use const iterator because vector is const
+	for (auto x = begin(v); x != end(v); ++x)  // find position of value
+		pos_map[*x]=x;
+	return pos_map;
+}
