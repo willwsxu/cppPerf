@@ -115,8 +115,52 @@ public:
 		}
 		return longest;
 	}
+	// 923. 3Sum With Multiplicity, output total possible A[i]+A[j]+A[k]=target, modulo 1e9+7
+	// 3 <= A.length <= 3000, 0 <= A[i] <= 100
+	int threeSumMulti(vector<int>& A, int target) {  // math counting
+		static const int MOD = 1000000007;
+		vector<int> count(101, 0);
+		for (int a : A)
+			count[a]++;
+		int size = A.size();
+		int ans = 0;
+		for (int Ai = 0; Ai < 101; Ai++) {
+			if (count[Ai] == 0)
+				continue;
+			for (int Aj = 0; Aj < 101; Aj++) {
+				if (count[Aj] == 0)
+					continue;
+				int Ak = target - Ai - Aj;
+				if (Ak<0 || Ak>100 || !count[Ak]) // A[k] does not exist
+					continue;
+				if (Ai == Aj && Aj == Ak) // pick 3 out of A[i]
+				{
+					if (count[Ai] < 3)
+						continue;
+					int64_t choose3 = count[Ai] * (count[Ai] - 1);
+					ans += static_cast<int>(choose3*(count[Ai] - 2) / 6 % MOD);
+				}
+				else if (Ai == Aj && Aj != Ak) {  // 2 2 2 3 target 7
+					if (count[Ai] < 2)
+						continue;
+					int64_t choose2 = count[Ai] * (count[Ai] - 1) / 2;
+					ans += static_cast<int>(choose2*count[Ak] % MOD);
+				}
+				else if (Ai < Aj && Aj < Ak) {
+					ans += static_cast<int>((int64_t)count[Ai] * count[Aj] * count[Ak] % MOD);
+				}
+				ans %= MOD;
+			}
+		}
+		return ans;
+	}
 };
 
+TEST_CASE("923. 3Sum With Multiplicity", "[NEW]")
+{
+	CHECK(TwoPointers().threeSumMulti(vector<int>{16, 51, 36, 29, 84, 80, 46, 97, 84, 16}, 171) == 2);
+	CHECK(TwoPointers().threeSumMulti(vector<int>{1, 1, 2, 2, 3, 3, 4, 4, 5, 5}, 8) == 20);
+}
 class TwoPointerEasy
 {
 public:
@@ -238,7 +282,7 @@ public:
 	}
 	// 922. Sort Array By Parity II, value parity match index parity
 	vector<int> sortArrayByParityII(vector<int>& A) {
-		int even = 0, odd = 1;
+		size_t even = 0, odd = 1;
 		while (even<A.size() && odd<A.size()) {
 			if (A[even] % 2 != 0 && A[odd] % 2 == 0) {  // even on odd index, odd on even index, swap
 				swap(A[even], A[odd]);
