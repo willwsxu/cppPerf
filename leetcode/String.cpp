@@ -1349,7 +1349,38 @@ public:
 			S.insert(i, 1, '-');
 		return S;
 	}
+	// 820. Short Encoding of Words
+	// use # for end of words, index array for start of a word
+	bool startWith(const string&prefix, const string&target)
+	{
+		if (prefix.size() > target.size())
+			return false;
+		return target.compare(0, prefix.size(), prefix) == 0;// compare prefix of target to prefix string
+	}
+public:
+	int minimumLengthEncoding(vector<string>& words) {  // beat 81%, use sorting
+		if (words.empty())
+			return 0;
+		for (string& s : words)
+			reverse(begin(s), end(s));
+		sort(begin(words), end(words));
+		int len = 0;
+		auto last = begin(words);
+		for (auto word = begin(words) + 1; word != end(words); ++word) {
+			if (!startWith(*(word - 1), *word)) {  // find longest word ends with same suffix
+				len += (word - 1)->size();
+				len++;
+			}
+		}
+		len += words.back().size();
+		return len + 1;
+	}
 };
+TEST_CASE("820. Short Encoding of Words", "[NEW]")
+{
+	CHECK(StringStuff().minimumLengthEncoding(vector<string>{"time", "me", "bell"}) == 10);
+}
+
 TEST_CASE("20. Valid Parentheses", "[NEW]")
 {
 	CHECK(StringStuff().isValid("[") == false);
