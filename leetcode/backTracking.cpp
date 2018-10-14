@@ -59,8 +59,29 @@ public:
 		}
 		return{};
 	}
+	void grayCode2(int n, int& prefix, int pos, vector<int>& ans) {
+		if (pos == n) {
+			ans.push_back(prefix);
+			return;
+		}
+		grayCode2(n, prefix, pos + 1, ans);
+		prefix ^= (1 << pos);  // flip the bit
+		grayCode2(n, prefix, pos + 1, ans);
+	}
+	// 89. Gray Code, two successive values differ in only one bit
+	vector<int> grayCode(int n) {  // beat 74%
+		vector<int> ans;
+		ans.reserve(1 << n);
+		int code = 0;
+		grayCode2(n, code, 0, ans);
+		return ans;
+	}
 };
 
+TEST_CASE("89. Gray Code", "[NEW]")
+{
+	CHECK(BackTracking().grayCode(2) == vector<int>{0, 2, 3, 1});
+}
 TEST_CASE("splitIntoFibonacci", "[FIB]")
 {
 	BackTracking s;
