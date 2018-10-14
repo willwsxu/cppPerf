@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <mutex>
 #include <thread>
 #include <atomic>

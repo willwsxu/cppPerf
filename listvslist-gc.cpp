@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "SlistEx.h"
 #include <thread>
 #include <list>
