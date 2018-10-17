@@ -403,6 +403,25 @@ public:
 		}
 		return heads;
 	}
+	// 865. Smallest Subtree with all the Deepest Nodes
+	TreeNode* subtreeWithAllDeepest(TreeNode* root) {
+		if (!root)
+			return nullptr;
+		int diff = TreeNode::getHeight(root->left) - TreeNode::getHeight(root->right);
+		if (!diff)
+			return root;
+		return diff > 0 ? subtreeWithAllDeepest(root->left) : subtreeWithAllDeepest(root->right);
+	}
+};
+
+TEST_CASE("865. Smallest Subtree with all the Deepest Nodes", "[NEW]")
+{
+	auto *x = TreeNode::CreateBinaryTree({ 3,5,1,6,2,0,8,INT32_MIN,INT32_MIN,7,4 });
+	CHECK(Tree().subtreeWithAllDeepest(x) == x->left->right);
+}
+class TreeTraversal
+{
+public:
 };
 
 void testTree()
@@ -1110,6 +1129,7 @@ public:
 		return longest;
 	}
 };
+
 TEST_CASE("687. Longest Univalue Path", "[TREE]")
 {
 	auto *x = TreeNode::CreateBinaryTree({ 1,4,5,4,4,5 });
@@ -1308,5 +1328,4 @@ TEST_CASE("889. Construct Binary Tree from Preorder and Postorder Traversal", "[
 {
 	TreeNode *r = ConstructBinaryTree().constructFromPrePost(vector<int>{1, 2, 4, 5, 3, 6, 7}, vector<int>{4, 5, 2, 6, 7, 3, 1});
 	CHECK(TreeNode::levelOrder(r) == vector < vector<int>>{ {1}, { 2,3 }, { 4,5,6,7 }});
-
 }
