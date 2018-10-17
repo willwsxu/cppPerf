@@ -403,14 +403,24 @@ public:
 		}
 		return heads;
 	}
+	pair<int, TreeNode*> subtreeWithAllDeepestHelper(TreeNode* root) {
+		if (!root)
+			return{ 0, nullptr };
+		auto left = subtreeWithAllDeepestHelper(root->left);
+		auto right = subtreeWithAllDeepestHelper(root->right);
+		return{ max(left.first,right.first) + 1, left.first == right.first ? root : (left.first > right.first ? left.second : right.second) };
+	}
 	// 865. Smallest Subtree with all the Deepest Nodes
 	TreeNode* subtreeWithAllDeepest(TreeNode* root) {
+		return subtreeWithAllDeepestHelper(root).second;
+		/*
 		if (!root)
 			return nullptr;
 		int diff = TreeNode::getHeight(root->left) - TreeNode::getHeight(root->right);
 		if (!diff)
 			return root;
 		return diff > 0 ? subtreeWithAllDeepest(root->left) : subtreeWithAllDeepest(root->right);
+		*/
 	}
 };
 
