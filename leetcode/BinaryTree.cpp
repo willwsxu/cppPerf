@@ -146,54 +146,6 @@ public:
 		return ans;
 	}
 
-
-	// 94. Binary Tree Inorder Traversal
-	vector<int> vec;
-	void inorderTraversalHelper(TreeNode* root)  // beat 97%
-	{
-		if (root == nullptr)
-			return;
-		inorderTraversal(root->left);
-		vec.push_back(root->val);
-		inorderTraversal(root->right);
-	}
-	vector<int> inorderTraversal(TreeNode* root) {// iterative solution beat 97%
-		stack<TreeNode*> nodes;
-		while (root) {
-			nodes.push(root);
-			root = root->left;  // traverse to left most leaf node
-		}
-		while (!nodes.empty()) {
-			root = nodes.top();
-			vec.push_back(root->val);
-			nodes.pop();
-			root = root->right;  // visit right subtree
-			while (root) {
-				nodes.push(root);
-				root = root->left;  // traverse to left most leaf node
-			}
-		}
-		return vec;
-	}
-
-	// 144. Binary Tree Preorder Traversal
-	vector<int> preorderTraversal(TreeNode* root) {  // beats 96%
-		stack<TreeNode*> nodes;
-		if (root)
-			nodes.push(root);
-		vector<int> ans;
-		while (!nodes.empty()) {
-			root = nodes.top();
-			ans.push_back(root->val); // preorder, add root first
-			nodes.pop();  // remove root from stack
-			if (root->right)
-				nodes.push(root->right);  // push right first so left will pop visited before right
-			if (root->left)
-				nodes.push(root->left);
-		}
-		return ans;
-	}
-
 	void addOneRow(TreeNode *root, int v, int depth, int level)
 	{
 		if (root == nullptr)
@@ -432,6 +384,52 @@ TEST_CASE("865. Smallest Subtree with all the Deepest Nodes", "[NEW]")
 class TreeTraversal
 {
 public:
+	// 94. Binary Tree Inorder Traversal
+	vector<int> vec;
+	void inorderTraversalHelper(TreeNode* root)  // beat 97%
+	{
+		if (root == nullptr)
+			return;
+		inorderTraversal(root->left);
+		vec.push_back(root->val);
+		inorderTraversal(root->right);
+	}
+	vector<int> inorderTraversal(TreeNode* root) {// iterative solution beat 97%
+		stack<TreeNode*> nodes;
+		while (root) {
+			nodes.push(root);
+			root = root->left;  // traverse to left most leaf node
+		}
+		while (!nodes.empty()) {
+			root = nodes.top();
+			vec.push_back(root->val);
+			nodes.pop();
+			root = root->right;  // visit right subtree
+			while (root) {
+				nodes.push(root);
+				root = root->left;  // traverse to left most leaf node
+			}
+		}
+		return vec;
+	}
+
+	// 144. Binary Tree Preorder Traversal
+	vector<int> preorderTraversal(TreeNode* root) {  // beats 96%
+		stack<TreeNode*> nodes;
+		if (root)
+			nodes.push(root);
+		vector<int> ans;
+		while (!nodes.empty()) {
+			root = nodes.top();
+			ans.push_back(root->val); // preorder, add root first
+			nodes.pop();  // remove root from stack
+			if (root->right)
+				nodes.push(root->right);  // push right first so left will pop visited before right
+			if (root->left)
+				nodes.push(root->left);
+		}
+		return ans;
+	}
 };
 
 void testTree()
