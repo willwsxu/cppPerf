@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <string>
 #include <memory>
 #include <functional>
@@ -10,8 +9,9 @@
 #include <chrono>
 
 using namespace std;
+#include "bm_hashtable_small.cpp"
 //#include "bm_hashtable_large.cpp"
-#include "bm_unique_test.cpp"
+//#include "bm_unique_test.cpp"
 
 static void BM_wait(benchmark::State& state) {
 	using namespace std::chrono_literals;

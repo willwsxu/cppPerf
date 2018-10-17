@@ -11,22 +11,35 @@ class HASH_TABLE_PROBING
 {
 	int bucket_size = 20003;
 	int PROBE_LEN = 140;
+	static const size_t	MASK_EMPTY = 0x80000000;  // empty - highest bit not set
+	static const size_t MASK_TOMB =  0x40000000;  // tombstone - 2nd highest bit set
+	static const size_t MASK_HASH =  0x3FFFFFFF;   // 30 bits hash
+	static const size_t MASK_VALID = 0xC0000000;
+
 	struct HASH_ELEMENT {
-		size_t	hash = UINT32_MAX;
-		HASH_DATA		data{};
-		bool	empty = true;
+		size_t		preHash = MASK_EMPTY;  // 2 highest bits are reserved for emptiness and tombstone
+		HASH_DATA	data{};
+		bool	empty() const {
+			return (preHash&MASK_EMPTY) != 0;
+		}
+		bool	tomb_stone() const {
+			return (preHash&MASK_TOMB) != 0;
+		}
+		bool	valid() const {
+			return (preHash&MASK_VALID) == 0;
+		}
 	};
 	std::vector<HASH_ELEMENT>	pElements;
 	size_t		elements = 0;
 	int findSlot(const HASH_DATA& data)
 	{
-		auto hasVal = hasher(data);
+		auto hashVal = hasher(data)&MASK_HASH;
 		for (int i = 0; i < PROBE_LEN; i++) {
-			size_t slot = (hasVal + i*i) % bucket_size;
+			size_t slot = (hashVal + i*i) % bucket_size;
 			auto &elem = pElements[slot];
-			if (elem.empty)  // keep probing until empty slot
+			if (elem.empty())  // keep probing until empty slot
 				break;
-			else if (elem.hash == hasVal && elem.data == data)
+			else if (elem.preHash == hashVal && elem.data == data)
 				return slot;
 		}
 		return -1;
@@ -48,28 +61,27 @@ public:
 	// remember removed slot if happened
 	// insert to removed slot, or the first slot
 	std::pair<iterator, bool> insert(const HASH_DATA& value) {
-		auto hasVal = hasher(value);
+		auto hashVal = hasher(value)&MASK_HASH;
 		size_t deleted = UINT32_MAX;
 		for (int i = 0; i < PROBE_LEN; i++) {
-			size_t slot = (hasVal + i*i) % bucket_size;
+			size_t slot = (hashVal + i*i) % bucket_size;
 			auto &elem = pElements[slot];
-			if (elem.empty) {
+			if (elem.empty()) {  // probing complete
 				auto *elem2 = &elem;
-				if (deleted != UINT32_MAX) {
+				if (deleted != UINT32_MAX) {  // re-use deleted slot
 					elem2 = &pElements[deleted];
 					slot = deleted;
-				} else
-					elem.empty = false;
-				elem2->hash = hasVal;
+				}
+				elem2->preHash = hashVal;
 				elem2->data = value;
 				elements++;
 				return{ pElements.begin() + slot, true };
 			}
-			else if (elem.hash == hasVal && elem.data == value) {
+			else if (elem.preHash == hashVal && elem.data == value) {
 				elem.data = value;
 				return{ pElements.begin()+slot, false };
 			}
-			else if (elem.hash == deleted)  // save first deleted slot
+			else if (elem.tomb_stone())  // save first deleted slot
 				deleted = slot;
 		}
 		return{ end(), false };
@@ -85,7 +97,7 @@ public:
 		auto slot = findSlot(data);
 		if (slot<0)
 			return 0;
-		pElements[slot].hash = UINT32_MAX;
+		pElements[slot].preHash = MASK_TOMB;
 		elements--;
 		return 1;
 	}
@@ -100,7 +112,7 @@ public:
 		v_iter last;
 		inline void next() {
 			while (first != last) {
-				if (!first->empty && first->hash!= UINT32_MAX)
+				if (first->valid()) 
 					break;
 				++first;
 			}

@@ -185,8 +185,9 @@ BENCHMARK(BM_stl_myhash);
 BENCHMARK(BM_stl_buckethash);
 BENCHMARK(BM_stl_probinghash);
 /*
-BM_stl_set                   43 ns         44 ns   16000000
-BM_stl_unordered_set        195 ns        195 ns    3200000
-BM_stl_myhash               319 ns        321 ns    2240000
-BM_stl_buckethash           165 ns        164 ns    4480000
+BM_stl_set                  180 ns        180 ns    4072727   10.5779M items/s
+BM_stl_unordered_set        188 ns        186 ns    3446154   10.2603M items/s
+BM_stl_myOldHash            291 ns        292 ns    2357895   6.54157M items/s
+BM_stl_buckethash           193 ns        195 ns    3446154    9.7831M items/s
+BM_stl_probinghash          165 ns        167 ns    4480000   11.3932M items/s
 */

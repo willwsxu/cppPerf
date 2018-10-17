@@ -75,4 +75,7 @@ TEST_CASE("probing Hashing table Test", "[NEW]")
 	ins1 = t.insert("test9");
 	CHECK(t.size() == 9);
 	CHECK(*t.find("test9") == "test9");
+	vector<string> all{ begin(t), end(t) };
+	sort(begin(all), end(all));
+	CHECK(all == vector<string>{"test", "test2","test3","test4","test5","test6","test7","test8","test9"});
 }
