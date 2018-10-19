@@ -155,6 +155,7 @@
     <ClInclude Include="TreeNode.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\HackerRank\HackerRank.cpp" />
     <ClCompile Include="backTracking.cpp" />
     <ClCompile Include="BinarySearch.cpp" />
     <ClCompile Include="BinarySearchTree.cpp" />
