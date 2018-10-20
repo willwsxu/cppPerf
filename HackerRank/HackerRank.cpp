@@ -38,7 +38,50 @@ TEST_CASE("Hackerrank Down to Zero II", "[NEW]")
 
 	vector<int> testcase1{ 966514, 812849, 808707, 360422, 691410, 691343, 551065, 432560, 192658, 554548 };
 	vector<int> answer1{ 8, 10, 8, 11, 9, 11, 9, 9, 10, 10 };
-	for (int i = 0; i < testcase1.size(); i++) {
+	for (size_t i = 0; i < testcase1.size(); i++) {
 		CHECK(downToZero(testcase1[i]) == answer1[i]);
 	}
+}
+
+// return nothing if it sorted
+// return "yes\nswap a b" if it becomes sorted by swapping position a and b
+// return "yes\nreverse a b" if it becomes sorted by reverting all nubers position a and b
+// return "no"
+string almostSorted(vector<int> arr) {
+	auto decrease = adjacent_find(begin(arr), end(arr), [](int a, int b) { return a>b; });  // first fist number decreasing
+	if (decrease == end(arr))  // sorted
+		return "";
+	auto rlast = make_reverse_iterator(decrease);
+	auto increase = adjacent_find(rbegin(arr), rlast, [](int a, int b) { return a<b; });
+	if (increase != rbegin(arr) && *decrease > *(increase - 1))
+		return "no";
+	if (decrease != begin(arr) && *(decrease - 1) > *increase)
+		return "no";
+	int first = distance(begin(arr), decrease) + 1;
+	int second = distance(begin(arr), increase.base());
+	auto mid_increase = adjacent_find(decrease, increase.base(), [](int a, int b) { return a < b; }); 
+	if (mid_increase != increase.base()) {  // mid section is not decrease
+		iter_swap(decrease, increase.base() - 1);
+		if (adjacent_find(decrease, increase.base(), [](int a, int b) { return a < b; }) != increase.base()) {
+			return "no"; // not sorted after swap, no good
+		}
+		return string("yes\nswap ").append(to_string(first)).append(1, ' ').append(to_string(second));
+	}
+	auto mid_dist = distance(decrease, increase.base());
+	if (mid_dist == 2 || mid_dist==3) {
+		return string("yes\nswap ").append(to_string(first)).append(1, ' ').append(to_string(second));
+	}
+	return string("yes\nreverse ").append(to_string(first)).append(1, ' ').append(to_string(second));
+}
+
+TEST_CASE("Hackerrank almost sorted", "[NEW]")
+{
+	CHECK(almostSorted(vector<int>{3, 6, 4, 5}) == "no");
+	CHECK(almostSorted(vector<int>{3, 4, 1, 5}) == "no");
+	CHECK(almostSorted(vector<int>{2, 4, 12, 10, 8, 6}) == "yes\nreverse 3 6");
+	CHECK(almostSorted(vector<int>{2, 4, 10, 8, 6}) == "yes\nswap 3 5");
+	CHECK(almostSorted(vector<int>{3, 2}) == "yes\nswap 1 2");
+	CHECK(almostSorted(vector<int>{1, 2, 3, 4, 5}) == "");
+	CHECK(almostSorted(vector<int>{5}) == "");
+	CHECK(almostSorted(vector<int>{}) == "");
 }
