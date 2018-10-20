@@ -43,31 +43,34 @@ TEST_CASE("Hackerrank Down to Zero II", "[NEW]")
 	}
 }
 
-// return nothing if it sorted
+// return "yes" if it sorted
 // return "yes\nswap a b" if it becomes sorted by swapping position a and b
 // return "yes\nreverse a b" if it becomes sorted by reverting all nubers position a and b
 // return "no"
-string almostSorted(vector<int> arr) {
+string almostSorted(vector<int> arr) { // divid into 3 section, increasing, mid, decreasing
 	auto decrease = adjacent_find(begin(arr), end(arr), [](int a, int b) { return a>b; });  // first fist number decreasing
 	if (decrease == end(arr))  // sorted
-		return "";
+		return "yes";
 	auto rlast = make_reverse_iterator(decrease);
 	auto increase = adjacent_find(rbegin(arr), rlast, [](int a, int b) { return a<b; });
-	if (increase != rbegin(arr) && *decrease > *(increase - 1))
+	if (increase != rbegin(arr) && *decrease > *(increase - 1))  // first value in mid is larger than first in third section
 		return "no";
-	if (decrease != begin(arr) && *(decrease - 1) > *increase)
+	if (decrease != begin(arr) && *(decrease - 1) > *increase)   // last value in first section is larger than last in mid
 		return "no";
+
+	auto mid_end = increase.base();  // use it for end of mid section, from decrease to increase
 	int first = distance(begin(arr), decrease) + 1;
-	int second = distance(begin(arr), increase.base());
-	auto mid_increase = adjacent_find(decrease, increase.base(), [](int a, int b) { return a < b; }); 
-	if (mid_increase != increase.base()) {  // mid section is not decrease
+	int second = distance(begin(arr), mid_end);
+	auto mid_increase = adjacent_find(decrease, mid_end, [](int a, int b) { return a < b; });
+	if (mid_increase != mid_end) {  // mid section is not decrease
 		iter_swap(decrease, increase.base() - 1);
-		if (adjacent_find(decrease, increase.base(), [](int a, int b) { return a < b; }) != increase.base()) {
+		auto mid_decrease = adjacent_find(decrease, mid_end, [](int a, int b) { return a > b; });
+		if (mid_decrease != mid_end) {
 			return "no"; // not sorted after swap, no good
 		}
 		return string("yes\nswap ").append(to_string(first)).append(1, ' ').append(to_string(second));
 	}
-	auto mid_dist = distance(decrease, increase.base());
+	auto mid_dist = distance(decrease, mid_end);
 	if (mid_dist == 2 || mid_dist==3) {
 		return string("yes\nswap ").append(to_string(first)).append(1, ' ').append(to_string(second));
 	}
@@ -76,12 +79,17 @@ string almostSorted(vector<int> arr) {
 
 TEST_CASE("Hackerrank almost sorted", "[NEW]")
 {
+	CHECK(almostSorted(vector<int>{2, 4, 12, 8, 10, 6, 13}) == "yes\nswap 3 6");
+	CHECK(almostSorted(vector<int>{2, 4, 12, 10, 8, 6, 13}) == "yes\nreverse 3 6");
+	CHECK(almostSorted(vector<int>{2, 4, 12, 8, 6, 13}) == "yes\nswap 3 5");
+
+	CHECK(almostSorted(vector<int>{2, 4, 12, 8, 10, 6}) == "yes\nswap 3 6");
+	CHECK(almostSorted(vector<int>{2, 4, 12, 10, 8, 6}) == "yes\nreverse 3 6");
+
 	CHECK(almostSorted(vector<int>{3, 6, 4, 5}) == "no");
 	CHECK(almostSorted(vector<int>{3, 4, 1, 5}) == "no");
-	CHECK(almostSorted(vector<int>{2, 4, 12, 10, 8, 6}) == "yes\nreverse 3 6");
-	CHECK(almostSorted(vector<int>{2, 4, 10, 8, 6}) == "yes\nswap 3 5");
 	CHECK(almostSorted(vector<int>{3, 2}) == "yes\nswap 1 2");
-	CHECK(almostSorted(vector<int>{1, 2, 3, 4, 5}) == "");
-	CHECK(almostSorted(vector<int>{5}) == "");
-	CHECK(almostSorted(vector<int>{}) == "");
+	CHECK(almostSorted(vector<int>{1, 2, 3, 4, 5}) == "yes");
+	CHECK(almostSorted(vector<int>{5}) == "yes");
+	CHECK(almostSorted(vector<int>{}) == "yes");
 }
