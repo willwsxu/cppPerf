@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <iostream>
 
 using std::vector;
 using std::transform;
@@ -44,10 +45,11 @@ public:
 	friend LargeInt operator*(const LargeInt& lhs, const LargeInt& rhs)
 	{
 		LargeInt ans(0);
-		int shift = 0;
 		LargeInt temp_copy(0);
-		temp_copy.li.reserve(lhs.li.size()*rhs.li.size() + 5);
-		ans.li.reserve(lhs.li.size()*rhs.li.size() + 5);
+		const int out_size = lhs.li.size() + rhs.li.size() + 5;
+		temp_copy.li.reserve(out_size);
+		ans.li.reserve(out_size);
+		int shift = 0;
 		for (DigitType d : rhs.li) {
 			temp_copy.li.assign(shift++, 0); // add some zero before copy from lhs
 			std::copy(begin(lhs.li), end(lhs.li), back_inserter(temp_copy.li));
@@ -56,6 +58,7 @@ public:
 				std::swap(ans.li, temp_copy.li);
 			ans += temp_copy;
 		}
+		//std::cout << "lhs size" << lhs.li.size() << " ans size" << ans.li.size() << "\n";
 		return ans;
 	}
 
@@ -80,11 +83,6 @@ public:
 	}
 	LargeInt(const LargeInt& rhs) :li(rhs.li)
 	{
-	}
-	LargeInt(const LargeInt& rhs, int append0):li(append0,0)
-	{
-		li.reserve(rhs.li.size() + append0);
-		copy(begin(rhs.li), end(rhs.li), std::back_inserter(li));
 	}
 	LargeInt& operator=(LargeInt&& rhs) {
 		li = move(rhs.li);

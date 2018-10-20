@@ -16,6 +16,19 @@ TEST_CASE("larget int math", "NEW")
 	LargeInt x(0);
 	x = move(e);
 	CHECK(x.get() == vector<LargeInt::DigitType>{1, 1, 5, 3, 1, 7, 3, 0});
+
+	LargeInt big(1000000000);
+	auto p2 = big*big;
+	auto p4 = p2*p2;
+	auto p8 = p4*p4;
+	auto p16 = p8*p8;
+	auto p32 = p16*p16;
+	vector<LargeInt::DigitType> p144(145, 0);
+	p144[0] = 1;
+	CHECK(p16.get() == p144);
+	vector<LargeInt::DigitType> p288(289, 0);
+	p288[0] = 1;
+	CHECK(p32.get() == p288);
 }
 
 vector<LargeInt::DigitType> fibonacciModified(int t1, int t2, int n) {
