@@ -9,23 +9,6 @@ using std::transform;
 class LargeInt
 {
 public:
-	friend LargeInt operator*(LargeInt lhs, int rhs)
-	{
-		lhs *= rhs;
-		return lhs;
-	}
-	LargeInt& operator*=(int rhs)
-	{
-		int carry = 0;
-		std::transform(begin(li), end(li), begin(li), [rhs, &carry](int n) {
-			int multi = n*rhs + carry;
-			carry = multi / 10;
-			return multi % 10;
-		});
-		if (carry > 0)
-			li.push_back(carry);
-		return *this;
-	}
 	friend LargeInt operator+(LargeInt lhs, LargeInt rhs)
 	{
 		if (lhs.li.size() < rhs.li.size()) {
@@ -35,7 +18,7 @@ public:
 		lhs += rhs;
 		return lhs;
 	}
-	LargeInt& operator+=(LargeInt rhs)
+	LargeInt& operator+=(LargeInt& rhs)  // rhs could be modified inside the method, assyme lhs is longer than rhs
 	{
 		vector<int> *pLong = &li;
 		vector<int> *pShort = &rhs.li;
@@ -57,16 +40,20 @@ public:
 			pLong->push_back(carry);
 		return *this;
 	}
-	friend LargeInt operator*(LargeInt lhs, LargeInt rhs)
+	friend LargeInt operator*(const LargeInt& lhs, const LargeInt& rhs)
 	{
 		LargeInt ans(0);
 		int shift = 0;
+		LargeInt temp_copy(0);
+		temp_copy.li.reserve(lhs.li.size()*rhs.li.size() + 5);
+		ans.li.reserve(lhs.li.size()*rhs.li.size() + 5);
 		for (int d : rhs.li) {
-			LargeInt m(lhs, shift++);
-			m *= d;
-			if (ans.li.size() < m.li.size())
-				std::swap(ans.li, m.li);
-			ans += m;
+			temp_copy.li.assign(shift++, 0); // add some zero before copy from lhs
+			std::copy(begin(lhs.li), end(lhs.li), back_inserter(temp_copy.li));
+			temp_copy *= d;
+			if (ans.li.size() < temp_copy.li.size())
+				std::swap(ans.li, temp_copy.li);
+			ans += temp_copy;
 		}
 		return ans;
 	}
@@ -107,5 +94,17 @@ public:
 		std::swap(li, rhs.li);
 	}
 private:
+	LargeInt& operator*=(int rhs)
+	{
+		int carry = 0;
+		std::transform(begin(li), end(li), begin(li), [rhs, &carry](int n) {
+			int multi = n*rhs + carry;
+			carry = multi / 10;
+			return multi % 10;
+		});
+		if (carry > 0)
+			li.push_back(carry);
+		return *this;
+	}
 	std::vector<int> li;  // least significant to most significant digit
 };

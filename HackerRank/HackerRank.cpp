@@ -39,7 +39,6 @@ TEST_CASE("Hackerrank Down to Zero II", "[NEW]")
 	vector<int> testcase1{ 966514, 812849, 808707, 360422, 691410, 691343, 551065, 432560, 192658, 554548 };
 	vector<int> answer1{ 8, 10, 8, 11, 9, 11, 9, 9, 10, 10 };
 	for (int i = 0; i < testcase1.size(); i++) {
-		cout << i << "\n";
 		CHECK(downToZero(testcase1[i]) == answer1[i]);
 	}
 }

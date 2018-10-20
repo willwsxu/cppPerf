@@ -19,11 +19,11 @@ TEST_CASE("larget int math", "NEW")
 }
 
 vector<int> fibonacciModified(int t1, int t2, int n) {
-	LargeInt lt(t2);
 	LargeInt lt1(t1);
 	LargeInt lt2(t2);
 	while (n-- > 2) {
-		lt = lt1 + lt2*lt2;
+		LargeInt lt = lt2*lt2;
+		lt += lt1;
 		lt1=move(lt2);
 		lt2 = move(lt);
 	}
@@ -32,8 +32,8 @@ vector<int> fibonacciModified(int t1, int t2, int n) {
 
 TEST_CASE("larget int fibonacci", "NEW")
 {
-	CHECK(fibonacciModified(0, 1, 5) == vector<int>{5});
+	CHECK(fibonacciModified(0, 1, 6) == vector<int>{2,7});
 
 	CHECK(fibonacciModified(0, 1, 10) == vector<int>{8,4,2,6,6,6,1,3,0,9,6,2,8,1,2,4,3,3,8,2,1,1,2});
-	//fibonacciModified(0, 1, 20);
+//	fibonacciModified(0, 1, 20);
 }
