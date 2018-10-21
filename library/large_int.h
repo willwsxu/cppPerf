@@ -198,17 +198,19 @@ LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter 
 	}
 	int right_half = size_r / 2;
 	int left_half = size_r - right_half;
-	auto XrYr = multiply_fast(lhs_s + left_half, lhs_e, rhs_s + left_half, rhs_e);
-	auto XlYl = multiply_fast(lhs_s, lhs_s + left_half, rhs_s, rhs_s + left_half);
+	auto XrYr = multiply_fast(lhs_s + left_half, lhs_e, rhs_s + left_half, rhs_e);  // first term in formula
+	auto XlYl = multiply_fast(lhs_s, lhs_s + left_half, rhs_s, rhs_s + left_half);  // last term in formula
+
 	LargeInt ans(0, (size_l + 1) << 1);
 	ans.li.assign(left_half << 1, 0);
 	copy(begin(XrYr.li), end(XrYr.li), back_inserter(ans.li));
-	ans += XlYl;
-	XlYl += XrYr;  // left side is longer
+	ans += XlYl;  // ans = 10^n XrYr+XlYl
+
 	auto XlXr = add(lhs_s, lhs_s + left_half, lhs_s + left_half, lhs_e);
 	auto YlYr = add(rhs_s, rhs_s + left_half, rhs_s + left_half, rhs_e);
 	auto mid_part=multiply_fast(XlXr, YlYr);
 	mid_part -= XlYl;
+	mid_part -= XrYr;
 
 	XrYr.li.assign(left_half, 0);  // reuse XrYr as storage
 	copy(begin(mid_part.li), end(mid_part.li), back_inserter(XrYr.li));

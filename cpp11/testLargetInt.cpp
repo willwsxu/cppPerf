@@ -73,9 +73,9 @@ TEST_CASE("larget int fibonacci", "NEW")
 	CHECK(fibonacciModified(0, 1, 10) == "84266613096281243382112");
 	CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
 	CHECK(fibonacciModified_fast(0, 1, 11) == fibonacciModified(0, 1, 11));
-	//auto t1=fibonacciModified(1, 1, 20);
-	//CHECK(t1.size()==46952);
-	//CHECK(fibonacciModified_fast(1, 1, 20) == t1);
+	auto t1=fibonacciModified(1, 1, 20);
+	CHECK(t1.size()==46952);
+	CHECK(fibonacciModified_fast(1, 1, 20) == t1);
 	//auto t2 = fibonacciModified(2, 2, 20);
 	//cout << t2.size() << "\n";
 }
