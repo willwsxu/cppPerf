@@ -1375,6 +1375,26 @@ public:
 		len += words.back().size();
 		return len + 1;
 	}
+	// 925. typed name could repeat same letter when pressed too long
+	bool isLongPressedName(string name, string typed) { // easy, beat 100%
+		if (name.empty() || typed.empty() || name[0] != typed[0])
+			return false;
+		int idx = 0;
+		for (int i = 0; i < name.size(); i++) {
+			if (typed[idx] == name[i])
+				idx++;
+			else {
+				if (name[i] == name[i - 1])  // same letter as last one, typed does not have enough
+					return false;
+				while (typed[idx] == typed[idx - 1])  // skip repeating letter
+					idx++;
+				if (typed[idx] != name[i])
+					return false;
+				idx++;
+			}
+		}
+		return true;
+	}
 };
 TEST_CASE("820. Short Encoding of Words", "[NEW]")
 {
