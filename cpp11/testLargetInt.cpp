@@ -1,5 +1,6 @@
 #include "..\catch.hpp"
 #include "large_int.h"
+#include <chrono>
 using namespace std;
 
 TEST_CASE("larget int math", "NEW")
@@ -72,10 +73,26 @@ TEST_CASE("larget int fibonacci", "NEW")
 
 	CHECK(fibonacciModified(0, 1, 10) == "84266613096281243382112");
 	CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
-	CHECK(fibonacciModified_fast(0, 1, 11) == fibonacciModified(0, 1, 11));
-	auto t1=fibonacciModified(1, 1, 20);
-	CHECK(t1.size()==46952);
-	CHECK(fibonacciModified_fast(1, 1, 20) == t1);
+	CHECK(fibonacciModified_fast(0, 1, 19) == fibonacciModified(0, 1, 19));
+	/*
+	{
+		auto start = chrono::high_resolution_clock::now();
+		auto fast = fibonacciModified_fast(0, 1, 19);
+		auto end = chrono::high_resolution_clock::now();
+		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+		std::cout << " fibonacciModified_fast " << nanos.count() << "\n";  // 188 ms
+	}
+	{
+		auto start = chrono::high_resolution_clock::now();
+		auto slow = fibonacciModified(0, 1, 19);
+		auto end = chrono::high_resolution_clock::now();
+		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
+		std::cout << " fibonacciModified slow " << nanos.count() << "\n";  // 692 ms
+	}
+	*/
+	//auto t1=fibonacciModified(1, 1, 20);
+	//CHECK(t1.size()==46952);
+	//CHECK(fibonacciModified_fast(1, 1, 20) == t1);
 	//auto t2 = fibonacciModified(2, 2, 20);
 	//cout << t2.size() << "\n";
 }
