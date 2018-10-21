@@ -52,11 +52,11 @@ public:
 	template<typename RandIter>
 	friend LargeInt add(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e);
 
-	LargeInt& operator-=(const LargeInt& rhs)
+	LargeInt& operator-=(const LargeInt& rhs)  // this - rh2
 	{
 		int borrow = 0;
 		transform(begin(rhs.li), end(rhs.li), begin(li), begin(li), [&borrow](DigitType c1, DigitType c2) {
-			int sum = c1 - c2 - borrow;
+			int sum = c2 - c1 - borrow;
 			if (sum < 0) {
 				borrow = 1;
 				sum += 10;
@@ -128,7 +128,10 @@ public:
 	std::string get() const {
 		std::string str;
 		str.reserve(li.size() + 1);
-		std::transform(rbegin(li), rend(li), back_inserter(str), [](char c) { return c + '0'; });
+		auto start = rbegin(li);
+		while (*start == 0)  // trim leading 0
+			++start;
+		std::transform(start, rend(li), back_inserter(str), [](char c) { return c + '0'; });
 		return str;
 	}
 	LargeInt(LargeInt&& rhs):li(move(rhs.li))
