@@ -30,10 +30,7 @@ public:
 	LargeInt& add(RandIter rhs_s, RandIter rhs_e)
 	{
 		size_t short_size = distance(rhs_s, rhs_e);
-		if (li.size() < short_size) {
-			cout << "add left size " << li.size() << " right size " << short_size << "\n";
-			assert(li.size() >= short_size);
-		}
+		assert(li.size() >= short_size);
 		int carry = 0;
 		transform(rhs_s, rhs_e, begin(li), begin(li), [&carry](DigitType c1, DigitType c2) {
 			int sum = c1 + c2 + carry;
@@ -58,8 +55,7 @@ public:
 
 	LargeInt& operator-=(const LargeInt& rhs)  // this - rh2
 	{
-		if (li.size() < rhs.li.size())
-			assert(li.size() >= rhs.li.size());
+		assert(li.size() >= rhs.li.size());
 		int borrow = 0;
 		transform(begin(rhs.li), end(rhs.li), begin(li), begin(li), [&borrow](DigitType c1, DigitType c2) {
 			int sum = c2 - c1 - borrow;
@@ -85,8 +81,7 @@ public:
 				return static_cast<DigitType>(sum);
 			});
 		}
-		if (borrow>0)
-			assert(borrow == 0);
+		assert(borrow == 0);
 		return *this;
 	}
 
@@ -188,6 +183,25 @@ private:
 };
 
 template<typename RandIter>
+LargeInt add(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e)
+{
+	size_t left_size = distance(lhs_s, lhs_e);
+	size_t right_size = distance(rhs_s, rhs_e);
+	size_t size = max(left_size, right_size);
+	LargeInt ans(0, size + 1);
+	ans.li.clear();
+	if (left_size < right_size) {
+		copy(rhs_s, rhs_e, back_inserter(ans.li));
+		ans.add(lhs_s, lhs_e);
+	}
+	else {
+		copy(lhs_s, lhs_e, back_inserter(ans.li));
+		ans.add(rhs_s, rhs_e);
+	}
+	return ans;
+}
+
+template<typename RandIter>
 LargeInt multiply1(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e)
 {
 	LargeInt ans(0);
@@ -244,23 +258,4 @@ LargeInt multiply_fast(LargeInt& lhs, LargeInt& rhs)
 	else if (lhs.li.size() > rhs.li.size())
 		fill_n(back_inserter(rhs.li), lhs.li.size() - rhs.li.size(), 0);
 	return multiply_fast(begin(lhs.li), end(lhs.li), begin(rhs.li), end(rhs.li));
-}
-
-template<typename RandIter>
-LargeInt add(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e)
-{
-	size_t left_size = distance(lhs_s, lhs_e);
-	size_t right_size = distance(rhs_s, rhs_e);
-	size_t size = max(left_size, right_size);
-	LargeInt ans(0, size + 1);
-	ans.li.clear();
-	if (left_size < right_size) {
-		copy(rhs_s, rhs_e, back_inserter(ans.li));
-		ans.add(lhs_s, lhs_e);
-	}
-	else {
-		copy(lhs_s, lhs_e, back_inserter(ans.li));
-		ans.add(rhs_s, rhs_e);
-	}
-	return ans;
 }
