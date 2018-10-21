@@ -32,7 +32,11 @@ TEST_CASE("larget int math", "NEW")
 	CHECK(p32.get() == p288);
 
 	 auto y=(big + LargeInt(10))* LargeInt(100);
-	 CHECK((y*y).get() == multiply_fast(y, y).get());
+	 auto yy = multiply_fast(y, y);
+	 CHECK((y*y).get() == yy.get());
+	 yy -= yy;
+	 yy.trim0();
+	 CHECK(yy.get() == "0");
 	 y -= big;
 	 CHECK(y.get() == "99000001000");
 }
@@ -73,7 +77,7 @@ TEST_CASE("larget int fibonacci", "NEW")
 
 	CHECK(fibonacciModified(0, 1, 10) == "84266613096281243382112");
 	CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
-	CHECK(fibonacciModified_fast(0, 1, 19) == fibonacciModified(0, 1, 19));
+	CHECK(fibonacciModified_fast(0, 1, 20) == fibonacciModified(0, 1, 20));
 	/*
 	{
 		auto start = chrono::high_resolution_clock::now();
@@ -90,7 +94,7 @@ TEST_CASE("larget int fibonacci", "NEW")
 		std::cout << " fibonacciModified slow " << nanos.count() << "\n";  // 692 ms
 	}
 	*/
-	//auto t1=fibonacciModified(1, 1, 20);
+	auto t1=fibonacciModified_fast(2, 2, 20);
 	//CHECK(t1.size()==46952);
 	//CHECK(fibonacciModified_fast(1, 1, 20) == t1);
 	//auto t2 = fibonacciModified(2, 2, 20);

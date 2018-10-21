@@ -29,15 +29,17 @@ public:
 	template<typename RandIter>
 	LargeInt& add(RandIter rhs_s, RandIter rhs_e)
 	{
-		if (li.size() < (size_t)distance(rhs_s, rhs_e))
-			assert(li.size() >= (size_t)distance(rhs_s, rhs_e));
+		size_t short_size = distance(rhs_s, rhs_e);
+		if (li.size() < short_size) {
+			cout << "add left size " << li.size() << " right size " << short_size << "\n";
+			assert(li.size() >= short_size);
+		}
 		int carry = 0;
 		transform(rhs_s, rhs_e, begin(li), begin(li), [&carry](DigitType c1, DigitType c2) {
 			int sum = c1 + c2 + carry;
 			carry = sum / 10;
 			return static_cast<DigitType>(sum % 10);
 		});
-		size_t short_size = distance(rhs_s, rhs_e);
 		if (carry && li.size() > short_size) {
 			auto start = begin(li) + short_size;
 			transform(start, end(li), start, [&carry](DigitType c1) {
@@ -131,11 +133,15 @@ public:
 		}
 	}
 	std::string get() const {
+		if (li.empty())
+			return "";
 		std::string str;
 		str.reserve(li.size() + 1);
 		auto start = rbegin(li);
-		while (*start == 0)  // trim leading 0
+		while (start !=rend(li) && *start == 0)  // trim leading 0
 			++start;
+		if (start == rend(li))
+			return "0";
 		std::transform(start, rend(li), back_inserter(str), [](char c) { return c + '0'; });
 		return str;
 	}
@@ -152,6 +158,18 @@ public:
 	void swap(LargeInt& rhs)
 	{
 		std::swap(li, rhs.li);
+	}
+	void trim0()
+	{
+		auto trailing0 = rbegin(li);
+		while (trailing0 != rend(li) && *trailing0 == 0)
+			++trailing0;
+		auto last = trailing0.base();
+		if (last == begin(li))
+			++last;
+		if (last != end(li)) {
+			li.erase(last, end(li));
+		}
 	}
 private:
 	LargeInt& operator*=(int rhs)
@@ -211,6 +229,7 @@ LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter 
 	auto mid_part=multiply_fast(XlXr, YlYr);
 	mid_part -= XlYl;
 	mid_part -= XrYr;
+	mid_part.trim0();
 
 	XrYr.li.assign(left_half, 0);  // reuse XrYr as storage
 	copy(begin(mid_part.li), end(mid_part.li), back_inserter(XrYr.li));
