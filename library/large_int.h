@@ -29,6 +29,8 @@ public:
 	template<typename RandIter>
 	LargeInt& add(RandIter rhs_s, RandIter rhs_e)
 	{
+		if (li.size() < (size_t)distance(rhs_s, rhs_e))
+			assert(li.size() >= (size_t)distance(rhs_s, rhs_e));
 		int carry = 0;
 		transform(rhs_s, rhs_e, begin(li), begin(li), [&carry](DigitType c1, DigitType c2) {
 			int sum = c1 + c2 + carry;
@@ -54,6 +56,8 @@ public:
 
 	LargeInt& operator-=(const LargeInt& rhs)  // this - rh2
 	{
+		if (li.size() < rhs.li.size())
+			assert(li.size() >= rhs.li.size());
 		int borrow = 0;
 		transform(begin(rhs.li), end(rhs.li), begin(li), begin(li), [&borrow](DigitType c1, DigitType c2) {
 			int sum = c2 - c1 - borrow;
@@ -79,7 +83,8 @@ public:
 				return static_cast<DigitType>(sum);
 			});
 		}
-		assert(borrow == 0);
+		if (borrow>0)
+			assert(borrow == 0);
 		return *this;
 	}
 
@@ -199,14 +204,15 @@ LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter 
 	ans.li.assign(left_half << 1, 0);
 	copy(begin(XrYr.li), end(XrYr.li), back_inserter(ans.li));
 	ans += XlYl;
-	XrYr += XlYl;
+	XlYl += XrYr;  // left side is longer
 	auto XlXr = add(lhs_s, lhs_s + left_half, lhs_s + left_half, lhs_e);
 	auto YlYr = add(rhs_s, rhs_s + left_half, rhs_s + left_half, rhs_e);
 	auto mid_part=multiply_fast(XlXr, YlYr);
-	mid_part -= XrYr;
-	XlYl.li.assign(left_half, 0);
-	copy(begin(mid_part.li), end(mid_part.li), back_inserter(XlYl.li));
-	ans += XlYl;
+	mid_part -= XlYl;
+
+	XrYr.li.assign(left_half, 0);  // reuse XrYr as storage
+	copy(begin(mid_part.li), end(mid_part.li), back_inserter(XrYr.li));
+	ans += XrYr;
 	return ans;
 }
 
