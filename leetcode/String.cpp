@@ -1380,7 +1380,7 @@ public:
 		if (name.empty() || typed.empty() || name[0] != typed[0])
 			return false;
 		int idx = 0;
-		for (int i = 0; i < name.size(); i++) {
+		for (size_t i = 0; i < name.size(); i++) {
 			if (typed[idx] == name[i])
 				idx++;
 			else {
@@ -1395,7 +1395,32 @@ public:
 		}
 		return true;
 	}
+	// 926, flip to increasing, only 0 or 1
+	int minFlipsMonoIncr(string S) {  // beat 100%, similar to 122?
+		vector<int> count0back(S.size()+1, 0);
+		for (int backward = S.size() - 1; backward >=0; backward--) {
+			count0back[backward] = count0back[backward + 1];
+			if (S[backward] == '0')
+				count0back[backward]++;
+		}
+		int ans = S.size();
+		int ones = 0;  // forward couting
+		for (size_t i = 0; i < S.size(); i++) {
+			if (S[i] == '1')
+				ones++;
+			ans = min(ans, ones + count0back[i] - 1);  // at each position, how many 1 before and zero after
+		}  // don't doubt count at current position
+		return ans;
+	}
 };
+
+TEST_CASE("926, flip to increasing", "[NEW]")
+{
+	CHECK(StringStuff().minFlipsMonoIncr("00110") == 1);
+	CHECK(StringStuff().minFlipsMonoIncr("00100110") == 2);
+	CHECK(StringStuff().minFlipsMonoIncr("0011000") == 2);
+}
+
 TEST_CASE("820. Short Encoding of Words", "[NEW]")
 {
 	CHECK(StringStuff().minimumLengthEncoding(vector<string>{"time", "me", "bell"}) == 10);
