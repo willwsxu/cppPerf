@@ -185,3 +185,33 @@ TEST_CASE("69. Sqrt(x)", "[BS]")
 	CHECK(BinarySearch().mySqrt(4) == 2);
 	CHECK(BinarySearch().mySqrt(2147395599) == 46339);
 }
+class TopVotedCandidate {
+	vector<int> winners;
+	vector<int> times_;
+public:
+	TopVotedCandidate(vector<int> persons, vector<int> times): times_(move(times)), winners(persons.size(), 0) {
+		vector<int> count(persons.size() + 1, 0);
+		int top = 0;
+		int time = 0;
+		for (int p : persons) {
+			if (++count[p] >= count[top])
+				top = p;
+			winners[time++] = top; // winning person at each time, pre-process
+		}
+	}
+
+	int q(int t) {  // beat 95%
+		auto found = lower_bound(begin(times_), end(times_), t);
+		if (found ==end(times_) || *found > t)
+			--found;
+		int pos = distance(begin(times_), found);
+		return winners[pos];
+	}
+};
+TEST_CASE("911. Online Election", "[NEW]")
+{
+	TopVotedCandidate vote(vector<int>{0, 0, 1, 1, 2}, vector<int>{0, 67, 69, 74, 87});
+	CHECK(vote.q(70) == 0);
+	CHECK(vote.q(100) == 1);
+	CHECK(vote.q(75) == 1);
+}
