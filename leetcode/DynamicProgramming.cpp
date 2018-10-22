@@ -124,7 +124,35 @@ public:
 			sum += max(prices[i + 1] - prices[i], 0);
 		return sum;
 	}
+	// 123. Best Time to Buy and Sell Stock III, 2 transactions
+	int maxProfit3(vector<int>& prices) { // beat 99%
+		int n = prices.size();
+		if (n < 2)
+			return 0;
+		// start from right, sell highest buy low
+		vector<int> profitRight(n+1, 0);  // add extra slot for edge case later
+		int sell = prices[n - 1];
+		for (int i = n - 2; i >= 0; i--) {
+			if (prices[i] > sell)// new selling point
+				sell = prices[i];
+			profitRight[i] = max(sell - prices[i], profitRight[i+1]);  // max profit from i till end
+		}
+		int buy = prices[0];
+		int maxP = profitRight[0];
+		for (int i = 0; i < n; i++) {
+			if (prices[i] < buy)  // new low, new buy
+				buy = prices[i];
+			// transaction 1: prices[i] - buy, transaction 2: profitRight[i + 1]
+			maxP = max(maxP, prices[i] - buy + profitRight[i + 1]);
+		}
+		return maxP;
+	}
 };
+
+TEST_CASE("123. Best Time to Buy and Sell Stock III", "[NEW]")
+{
+	CHECK(BuyStock().maxProfit3(vector<int>{3, 2, 6, 5, 0, 3}) == 7);
+}
 
 TEST_CASE("309. Best Time to Buy and Sell Stock with Cooldown", "[DYN]")
 {
