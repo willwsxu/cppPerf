@@ -147,6 +147,21 @@ public:
 		}
 		return maxP;
 	}
+
+	//915. Partition Array into Disjoint Intervals, left side <= right side
+	int partitionDisjoint(vector<int>& A) {
+		vector<int> min_from_right(A.size()+1, INT32_MAX);
+		for (int i = A.size() - 1; i >= 0; i--) {
+			min_from_right[i] = min(A[i], min_from_right[i + 1]);
+		}
+		int max_from_left = INT32_MIN;
+		for (int i = 0; i < A.size(); i++) {
+			max_from_left = max(max_from_left, A[i]);
+			if (max_from_left <= min_from_right[i + 1])
+				return i + 1;
+		}
+		return 0; // not reachable
+	}
 };
 
 TEST_CASE("123. Best Time to Buy and Sell Stock III", "[NEW]")
