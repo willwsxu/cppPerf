@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
+#include "Graph.h"
 using namespace std;
 
 static vector<int> dp(1000001, 0);
@@ -121,4 +122,21 @@ int commonChild(string s1, string s2) {
 TEST_CASE("Hackerrank Common Child", "[NEW]")
 {
 	CHECK(commonChild("michelangelo", "hieroglyphology") == 5);
+}
+
+// Breadth First Search: Shortest Reach
+// n nodes, m edges
+// cost from s to each node, -1 if not reachable
+// print cost from node 1 to n, but exclude s
+vector<int> bfs(int n, int m, vector<vector<int>> edges, int s) {
+	GraphUnweighted g(n);
+	g.undirectEdges(edges);
+	auto ans = g.bfs(s);
+	ans.erase(begin(ans));
+	ans.erase(begin(ans) + s - 1);
+	for (int& w : ans) {  // each edge weight 6 units
+		if (w > 0)
+			w *= 6;
+	}
+	return ans;
 }

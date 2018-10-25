@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\library\Graph.h" />
     <ClInclude Include="..\library\helper.h" />
     <ClInclude Include="..\library\myalgo.h" />
     <ClInclude Include="..\library\trie.h" />
