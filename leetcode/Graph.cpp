@@ -365,6 +365,38 @@ public:
 		}
 		return 0;
 	}
+	// 909. Snakes and Ladders, a board is numbered 1 to N*N, from bottom left cell, 
+	// from left to right, up a row, from right to left
+	// at each move, cell number A can move to A+1, ..., A+6
+	// If it landed a cell which is a snake ladder, it will jump to the cell as indicated by its value
+	// find min moves to reach N*N cell
+	int snakesAndLadders(vector<vector<int>>& board) {  // beat 46%
+		int n = board.size();
+		int NN = n*n;
+		map<int, int> square_moves;  // number of moves at each square, 
+		deque<int> squares{ 1 };
+		square_moves[1] = 0;
+		while (!squares.empty()) {
+			for (int dice = 1; dice <= 6; dice++) {
+				int next = dice + squares.front();
+				int r = (next - 1) / n;
+				int c = (next - 1) % n;
+				if (r % 2 != 0)  // odd row
+					c = n - c - 1;
+				r = n - 1 - r; // row count from top down
+				if (board[r][c] > 0)
+					next = board[r][c];
+				if (square_moves.count(next))  // square is reached brefore, don't make a move here
+					continue;
+				square_moves[next] = square_moves[squares.front()] + 1;
+				if (next == NN)
+					return square_moves[next];
+				squares.push_back(next);
+			}
+			squares.pop_front();
+		}
+		return -1;
+	}
 };
 
 TEST_CASE("127. Word Ladder", "[NEW]")
