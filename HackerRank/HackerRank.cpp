@@ -140,3 +140,19 @@ vector<int> bfs(int n, int m, vector<vector<int>> edges, int s) {
 	}
 	return ans;
 }
+
+//C++ Variadics
+#include "meta_lib.h"
+
+template<bool ...args>
+int reversed_binary_value()
+{
+	return reverse_compute_from_bit(sizeof...(args), 0, args...);
+}
+
+TEST_CASE("Hackerrank compute value from bits", "[NEW]")
+{
+	CHECK(compute_from_bit(0, 1, 0, 0) == 4);
+	CHECK(reverse_compute_from_bit(3,0,0,0,1) == 4);
+	CHECK(reversed_binary_value<0, 0, 1>() == 4);
+}
