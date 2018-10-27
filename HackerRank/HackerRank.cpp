@@ -1,7 +1,9 @@
 #include "stdafx.h"
+#include <cassert>
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
 #include "Graph.h"
+#include "helper.h"
 using namespace std;
 
 static vector<int> dp(1000001, 0);
@@ -155,4 +157,249 @@ TEST_CASE("Hackerrank compute value from bits", "[NEW]")
 	CHECK(compute_from_bit(0, 1, 0, 0) == 4);
 	CHECK(reverse_compute_from_bit(3,0,0,0,1) == 4);
 	CHECK(reversed_binary_value<0, 0, 1>() == 4);
+}
+
+
+// n - chapters, arr - problems in each chapter, k - problems in a page
+// find special problem where problem # == page #
+int workbook(int n, int k, vector<int> arr) {
+	int pageNo = 0;
+	int ans = 0;
+	for (int chapter = 0; chapter<n; chapter++) {
+		int problemNo = pageNo + 1;
+		int maxProblemNo = pageNo + ceiling_int(arr[chapter], k);
+		while (problemNo <= arr[chapter] && problemNo <= maxProblemNo) {  // only problems fall in page count matters
+			int pages = ceiling_int(problemNo, k) + pageNo;
+			if (pages == problemNo) {
+				ans++;
+				problemNo++;
+			}
+			else if (problemNo > pages)
+				problemNo = pages*k + 1;
+			else
+				problemNo = pages;
+		}
+		pageNo = maxProblemNo;
+	}
+	return ans;
+}
+
+TEST_CASE("Hackerrank Lisa's Workbook", "[NEW]")
+{
+	CHECK(workbook(5, 3, vector<int>{4, 2, 6, 1, 10}) == 4);
+}
+
+class SimpleTextEditor
+{
+	string S;
+	stack<std::pair<int, string>> commands;
+public:
+	void append(const string& W, bool save_cmd = true) {
+		if (save_cmd)
+			commands.push({ 1, to_string(W.size()) });
+		S.append(W);
+	}
+	void erase(int k, bool save_cmd = true) { //Delete the last  characters
+		int chop_pos = S.size() - k;
+		if (save_cmd)
+			commands.push({ 2, S.substr(chop_pos, k) });
+		S.erase(begin(S) + chop_pos, end(S));
+	}
+	char print(int k) {
+		assert(k >= 1 && k <= (int)S.size());
+		return S[k - 1];
+	}
+	void undo() {
+		const auto& cmd = commands.top();
+		switch (cmd.first) {
+		case 1:  // undo append
+			erase(stoi(cmd.second), false);
+			break;
+		case 2:  // undo delete
+			append(cmd.second, false);
+			break;
+		}
+		commands.pop();
+	}
+};
+
+TEST_CASE("Hackerrank SimpleTextEditor", "[NEW]")
+{
+	SimpleTextEditor editor;
+	editor.append("abc");
+	CHECK(editor.print(3) == 'c');
+	editor.erase(3);
+	editor.append("xy");
+	CHECK(editor.print(2) == 'y');
+	editor.undo();
+	editor.undo();
+	CHECK(editor.print(1) == 'a');
+}
+
+// find all possible sub string pair that are anagram to each other. 
+// 2 sub string can overlap, 
+int sherlockAndAnagrams(string s) {
+	int ans = 0;
+	map<char, int> count1;
+	for (char c : s)  // easy case for 1 letter
+		count1[c]++;
+	for (const auto&p : count1) {
+		if (p.second > 1) {
+			ans += p.second*(p.second - 1) / 2;
+		}
+	}
+	for (size_t len = 2; len < s.size(); len++)
+	{
+		map<string, int> count;
+		for (size_t i = 0; i <= s.size() - len; i++) {
+			auto subs = s.substr(i, len);
+			sort(begin(subs), end(subs));  // anagrams match after sorted
+			count[subs]++;
+		}
+		int  old_ans = ans;
+		for (const auto& p : count) {
+			if (p.second > 1)
+				ans += p.second*(p.second - 1) / 2;
+		}
+		//if (old_ans == ans)
+		//	break;
+	}
+	return ans;
+}
+TEST_CASE("Hackerrank Sherlock and Anagrams", "[NEW]")
+{
+	CHECK(sherlockAndAnagrams("ifailuhkqq") == 3);
+	CHECK(sherlockAndAnagrams("abba") == 4);
+	CHECK(sherlockAndAnagrams("KKKK") == 10);
+	CHECK(sherlockAndAnagrams("abcd") == 0);
+}
+
+class Person
+{
+protected:
+	string name;
+	int age;
+	int cur_id;
+
+public:
+	virtual void getdata() {
+		cin >> name >> age;
+	}
+	virtual void putdata() = 0;
+	void print(int param3) {
+		cout << name << " " << age << " " << param3 << " " << cur_id << "\n";
+	}
+};
+
+class Professor : public Person
+{
+	static int gid;
+	int publications;
+
+public:
+	Professor() {
+		cur_id = ++gid;
+	};
+	void getdata() override
+	{
+		Person::getdata();
+		cin >> publications;
+	}
+	void putdata()
+	{
+		print(publications);
+	}
+};
+int Professor::gid = 0;
+
+class Student : public Person
+{
+	static int gid;
+	int marks[6];
+public:
+	Student() {
+		cur_id = ++gid;
+	}
+	void getdata() override
+	{
+		Person::getdata();
+		for (int i = 0; i < sizeof(marks) / sizeof(int); i++)
+			cin >> marks[i];
+	}
+	void putdata()
+	{
+		print(accumulate(begin(marks), end(marks), 0));
+	}
+};
+int Student::gid = 0;
+
+Person *createObj(int type) {
+	switch (type) {
+	case 1:
+		return new Professor();
+	case 2:
+		return new Student();
+	}
+	return nullptr;
+}
+
+// finx max among K numbers, in the array
+vector<int> findKMax(int arr[], int n, int k) {
+	if (k>n)
+		return{};
+	deque<pair<int, int>> k_num;  // store position
+	auto add = [&k_num, k](int n, int pos) {
+		if (!k_num.empty() && k_num.front().second + k == pos)  // maintain window of K numbers
+			k_num.pop_front();
+		if (k_num.empty()) {
+			k_num.emplace_back(n, pos);
+			return;
+		}
+		if (n >= k_num.front().first) {  // new max val, clear out all
+			k_num.clear();
+			k_num.emplace_back(n, pos);
+		}
+		//else if (n == k_num.front().first) {  // keep the biggest at front, clear rest
+		//	k_num.erase(begin(k_num) + 1, end(k_num));
+		//}
+		else {
+			while (k_num.back().first <= n)
+				k_num.pop_back();   // remove smaller number at back
+			if (k_num.back().first > n)
+				k_num.emplace_back(n, pos); // add new num in strictly decreasing order
+		}
+	};
+
+	vector<int> ans;
+	ans.reserve(n - k + 1);
+	for (int i = 0; i < k - 1; i++)
+		add(arr[i], i);
+	for (int i = k - 1; i < n; i++) {
+		add(arr[i], i);
+		ans.push_back(k_num.front().first);
+	}
+	return ans;
+}
+void printKMax(int arr[], int n, int k) {
+	//Write your code here.
+	auto ans = findKMax(arr, n, k);
+	copy(begin(ans), end(ans), ostream_iterator<int>(cout, " "));
+	cout << "\n";
+}
+TEST_CASE("Hackerrank deque STL", "[NEW]")
+{
+	int arr3[] = { 10,1,2,10,7 };
+	CHECK(findKMax(arr3, 5, 4) == vector<int>{10, 10});
+	int arr2[] = { 3,4,6,3,4 };
+	CHECK(findKMax(arr2, 5, 2) == vector<int>{4, 6, 6, 4});
+	int arr[] = { 3,4,5,8,1,4,10 };
+	CHECK(findKMax(arr, 7, 4) == vector<int>{8, 8, 8, 10});
+}
+
+// find a minimal section to replace with a new sequence to make it steady
+// each letter is exactly 1/4, ATCG
+// n [4, 500000]
+int steadyGene(string gene) {
+	int max_per_letter = gene.size() / 4;
+	return -1;
 }

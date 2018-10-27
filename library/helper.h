@@ -123,3 +123,8 @@ inline auto value_iter_map(const std::vector<T>& v)
 		pos_map[*x]=x;
 	return pos_map;
 }
+
+inline int ceiling_int(int divdend, int divisor)
+{
+	return (divdend + divisor - 1) / divisor;
+}
