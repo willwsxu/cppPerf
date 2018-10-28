@@ -1412,6 +1412,20 @@ public:
 		}  // don't doubt count at current position
 		return ans;
 	}
+	// 929. Unique Email Addresses, local_name@domain_name
+	// within local_name, any char after + are ignored. period is same as no period
+	int numUniqueEmails(vector<string>& emails) {
+		set<string> uniq;
+		for (string& str : emails) {
+			auto at = find(begin(str), end(str), '@');
+			auto plus = find(begin(str), at, '+');
+			//auto period = remove_if(begin(str), plus, [](char c) { return c == '.'; });
+			auto period = remove(begin(str), plus, '.');
+			str.erase(period, at);
+			uniq.insert(str);
+		}
+		return uniq.size();
+	}
 };
 
 TEST_CASE("926, flip to increasing", "[NEW]")
