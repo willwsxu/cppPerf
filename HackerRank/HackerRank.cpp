@@ -4,6 +4,7 @@
 
 #include "Graph.h"
 #include "helper.h"
+#include "myalgo.h"
 using namespace std;
 
 static vector<int> dp(1000001, 0);
@@ -397,6 +398,23 @@ TEST_CASE("Hackerrank deque STL", "[NEW]")
 	CHECK(findKMax(arr, 7, 4) == vector<int>{8, 8, 8, 10});
 }
 
+// leetcode 53. Maximum Subarray
+// max of continuous sub array, and max of sub sequence
+vector<int> maxSubarray(vector<int> arr) {
+	if (arr.empty())
+		return{};	
+	auto maxSubSeq = [&arr]() {
+		int ans = INT32_MIN;
+		for (int n : arr) {
+			if (ans < 0)
+				ans = max(ans, n);
+			else if (n > 0)
+				ans += n;
+		}
+		return ans;
+	};
+	return{ maxSubSum(arr.begin(), arr.end(), INT32_MIN).first, maxSubSeq() };
+}
 // find a minimal section to replace with a new sequence to make it steady
 // each letter is exactly 1/4, ATCG
 // n [4, 500000]
