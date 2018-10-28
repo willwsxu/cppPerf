@@ -25,22 +25,22 @@ protected:
 	Node* head; // double linked list head pointer
 	virtual void set(int, int) = 0; //set function
 	virtual int get(int) = 0; //get function
-
 };
+
 class LRUCache : public Cache {
+	void removeNode(Node *node)
+	{
+		if (node->prev)
+			node->prev->next = node->next;
+		if (node->next)
+			node->next->prev = node->prev;
+	}
 	void update(int key, int val) {
 		auto& new_head = mp[key];
-		if (new_head == tail) {
-			tail = new_head->prev;
-			tail->next = nullptr;
-			new_head->next = head;
-			new_head->prev = nullptr;
-			head = new_head;
-		}
-		else if (head != new_head) {
-			new_head->prev->next = new_head->next;
-			if (new_head->next)
-				new_head->next->prev = new_head->prev;
+		if (new_head != head) {
+			removeNode(new_head);
+			if (new_head == tail)
+				tail = new_head->prev;
 			new_head->next = head;
 			new_head->prev = nullptr;
 			head = new_head;
