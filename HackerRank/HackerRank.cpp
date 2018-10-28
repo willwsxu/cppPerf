@@ -343,9 +343,10 @@ Person *createObj(int type) {
 	return nullptr;
 }
 
+// Leetcode 239. Sliding Window Maximum, beat 94%
 // finx max among K numbers, in the array
 vector<int> findKMax(int arr[], int n, int k) {
-	if (k>n)
+	if (k>n || k==0)
 		return{};
 	deque<pair<int, int>> k_num;  // store position
 	auto add = [&k_num, k](int n, int pos) {
@@ -359,9 +360,6 @@ vector<int> findKMax(int arr[], int n, int k) {
 			k_num.clear();
 			k_num.emplace_back(n, pos);
 		}
-		//else if (n == k_num.front().first) {  // keep the biggest at front, clear rest
-		//	k_num.erase(begin(k_num) + 1, end(k_num));
-		//}
 		else {
 			while (k_num.back().first <= n)
 				k_num.pop_back();   // remove smaller number at back
@@ -380,6 +378,7 @@ vector<int> findKMax(int arr[], int n, int k) {
 	}
 	return ans;
 }
+
 void printKMax(int arr[], int n, int k) {
 	//Write your code here.
 	auto ans = findKMax(arr, n, k);
@@ -388,6 +387,8 @@ void printKMax(int arr[], int n, int k) {
 }
 TEST_CASE("Hackerrank deque STL", "[NEW]")
 {
+	int arr4[] = { 1,3,-1,-3,5,3,6,7 };
+	CHECK(findKMax(arr4, 8,3) == vector<int>{3, 3, 5, 5, 6, 7});
 	int arr3[] = { 10,1,2,10,7 };
 	CHECK(findKMax(arr3, 5, 4) == vector<int>{10, 10});
 	int arr2[] = { 3,4,6,3,4 };
