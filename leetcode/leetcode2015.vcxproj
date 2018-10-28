@@ -187,6 +187,7 @@
     <ClCompile Include="NaryTree.cpp" />
     <ClCompile Include="OtherTree.cpp" />
     <ClCompile Include="Random.cpp" />
+    <ClCompile Include="HackerLRUCache.cpp" />
     <ClCompile Include="stack.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -383,8 +383,9 @@ vector<int> findKMax(int arr[], int n, int k) {
 void printKMax(int arr[], int n, int k) {
 	//Write your code here.
 	auto ans = findKMax(arr, n, k);
-	copy(begin(ans), end(ans), ostream_iterator<int>(cout, " "));
-	cout << "\n";
+	stringstream ostm;
+	copy(begin(ans), end(ans), ostream_iterator<int>(ostm, " "));
+	cout << ostm.str() << "\n";
 }
 TEST_CASE("Hackerrank deque STL", "[NEW]")
 {
@@ -415,6 +416,7 @@ vector<int> maxSubarray(vector<int> arr) {
 	};
 	return{ maxSubSum(arr.begin(), arr.end(), INT32_MIN).first, maxSubSeq() };
 }
+
 // find a minimal section to replace with a new sequence to make it steady
 // each letter is exactly 1/4, ATCG
 // n [4, 500000]
