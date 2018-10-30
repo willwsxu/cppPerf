@@ -167,8 +167,6 @@ public:
 			return accumulate(begin(counts), end(counts), 0,
 				[](int init, int c) { return init + c*(c + 1) / 2; });
 		}
-		if (S==1)
-			return count(begin(A), end(A), S);
 		partial_sum(begin(A), end(A), begin(A));
 		if (A.empty() || S>A[A.size()-1])
 			return 0;
@@ -189,6 +187,7 @@ public:
 TEST_CASE("930. Binary Subarrays With Sum", "[NEW]")
 {
 	CHECK(BinarySearch().numSubarraysWithSum(vector<int>{0, 0, 0, 0, 0}, 0) == 15);
+	CHECK(BinarySearch().numSubarraysWithSum(vector<int>{0,0,1, 0, 0, 0, 0}, 1) == 15); //3x5
 }
 TEST_CASE("475. Heaters", "[NEW]")
 {
