@@ -468,3 +468,45 @@ TEST_CASE("Hackerrank steadyGene", "[NEW]")
 	//f >> n >> gene;
 	//CHECK(steadyGene(gene) == 50022);
 }
+
+// find all integer pairs with difference =k, (k>0), all values are unique
+int pairs(int k, vector<int> arr) {  // easy binay search
+	sort(begin(arr), end(arr));
+	int ans = 0;
+	for (auto first = begin(arr); first != end(arr); ++first) {
+		auto p2 = lower_bound(first + 1, end(arr), *first + k);
+		if (p2 == end(arr))
+			break;
+		if (*p2 - *first == k)
+			ans++;
+	}
+	return ans;
+}
+
+// find index of two values in arr, with sum=m
+vector<int> icecreamParlor(int m, vector<int> arr) {
+	vector<int> sorted{ begin(arr), end(arr) };
+	sort(begin(sorted), end(sorted));
+	for (auto first = begin(sorted); first != end(sorted); ++first) {
+		auto second = lower_bound(first + 1, end(sorted), m - *first);
+		if (second != end(arr) && *second + *first == m) {
+			auto found_first = find(begin(arr), end(arr), *first);
+			auto second_start = *first == *second ? found_first+1 : begin(arr); //if number same, start next one
+			auto found_second = find(second_start, end(arr), *second);
+			vector<int> ans{ distance(begin(arr),found_first) + 1, distance(begin(arr),found_second) + 1 };
+			sort(begin(ans), end(ans));
+			return ans;
+		}
+	}
+	return{};  // should not happen
+}
+
+// minimum loss, find min p[i]-p[j] where i<j, all p[i] distinct
+int minimumLoss(vector<long> price) {
+	vector<pair<int, int>> price_index;
+	price_index.reserve(price.size());
+	for (size_t i = 0; i < price.size(); i++)
+		price_index.emplace_back(price[i], i);
+	sort(begin(price_index), end(price_index), [](const auto&p1, const auto&p2) { return p1.first < p2.first; });
+	return -1;
+}
