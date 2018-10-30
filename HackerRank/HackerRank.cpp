@@ -422,5 +422,41 @@ vector<int> maxSubarray(vector<int> arr) {
 // n [4, 500000]
 int steadyGene(string gene) {
 	int max_per_letter = gene.size() / 4;
-	return -1;
+	map<char, int> count;
+	for (char g : gene)
+		count[g]++;
+	if (all_of(begin(count), end(count), [max_per_letter](const auto&p) { return p.second == max_per_letter; }))
+		return 0;
+	for (auto& p : count)  // count of any letter exceed 1/4
+		p.second -= max_per_letter;
+	map<char, int> count_section{ {'A', 0},{ 'T', 0 },{ 'C', 0 },{ 'G', 0 } };
+	auto section_good = [&count, &count_section]() {  // a section contain the excessive letters
+		return equal(begin(count), end(count), begin(count_section),
+			[](const auto&p1, const auto&p2) { return p2.second >= p1.second; });
+	};
+	// Scan from left to right yo find the optimal section
+	auto first = begin(gene);
+	auto last = first;
+	int ans = gene.size();
+	while (last != end(gene)) {
+		while (!section_good() && last != end(gene)) {
+			count_section[*last]++;
+			++last;
+		}
+		if (!section_good())  // this section is not good, done
+			break;
+		while (first != last && count[*first] <= 0) { // move to right if the letter is no in excess
+			count_section[*first]--;
+			++first;
+		}
+		ans = min(ans, (int)distance(first, last));
+		count_section[*first]--;  // scan forward one
+		++first;
+	}
+	return ans;
+}
+TEST_CASE("Hackerrank steadyGene", "[NEW]")
+{	
+	CHECK(steadyGene("GAAATAAA") == 5);
+	CHECK(steadyGene("AGCCCGGC") == 3);
 }
