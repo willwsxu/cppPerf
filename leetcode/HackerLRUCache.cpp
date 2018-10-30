@@ -64,7 +64,7 @@ public:
 			else if (old_head)
 				old_head->prev = head;
 			mp[key] = head;
-			if (mp.size()>cp) {
+			if ((int)mp.size()>cp) {
 				mp.erase(tail->key);
 				auto old = tail;
 				tail = old->prev;

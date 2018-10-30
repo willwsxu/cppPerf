@@ -145,3 +145,23 @@ void reverse_string_if(Iter first, Iter last, Pred cond)
 		}
 	}
 }
+
+// count of consecutive values in an array, return all counts
+template<typename RaIter, typename T>
+std::vector<int> count_consecutive(RaIter first, RaIter last, T target)
+{
+	std::vector<int> counts;
+	int cnt = 0;
+	while (first != last) {
+		if (*first == target)
+			cnt++;
+		else if (cnt>0) {
+			counts.push_back(cnt);
+			cnt = 0;
+		}
+		++first;
+	}
+	if (cnt>0)
+		counts.push_back(cnt);
+	return counts;
+}

@@ -160,7 +160,36 @@ public:
 	int firstBadVersion(int n) {
 		return firstBadVersion(1, n);
 	}
+	//930. Binary Subarrays With Sum
+	int numSubarraysWithSum(vector<int>& A, int S) {
+		if (S == 0) {  // special case
+			auto counts = count_consecutive(begin(A), end(A), S);
+			return accumulate(begin(counts), end(counts), 0,
+				[](int init, int c) { return init + c*(c + 1) / 2; });
+		}
+		if (S==1)
+			return count(begin(A), end(A), S);
+		partial_sum(begin(A), end(A), begin(A));
+		if (A.empty() || S>A[A.size()-1])
+			return 0;
+		int total = 0;
+		// special case for first
+		auto start = equal_range(begin(A), end(A), 0); // start from 0
+		auto sum_end= equal_range(begin(A), end(A), S);
+		total += (distance(start.first, start.second) + 1)*(distance(sum_end.first, sum_end.second));
+		while (sum_end.second != end(A)) {
+			int target = *start.second + S;
+			start = equal_range(start.second, end(A), *start.second);
+			sum_end = equal_range(sum_end.second, end(A), target);
+			total += (distance(start.first, start.second))*(distance(sum_end.first, sum_end.second));
+		}
+		return total;
+	}
 };
+TEST_CASE("930. Binary Subarrays With Sum", "[NEW]")
+{
+	CHECK(BinarySearch().numSubarraysWithSum(vector<int>{0, 0, 0, 0, 0}, 0) == 15);
+}
 TEST_CASE("475. Heaters", "[NEW]")
 {
 	CHECK(BinarySearch().findRadius(vector<int>{282475249, 622650073, 984943658, 144108930, 470211272, 101027544, 457850878, 458777923}, vector<int>{823564440, 115438165, 784484492, 74243042, 114807987, 137522503, 441282327, 16531729, 823378840, 143542612}) == 161834419);
@@ -215,3 +244,10 @@ TEST_CASE("911. Online Election", "[NEW]")
 	CHECK(vote.q(100) == 1);
 	CHECK(vote.q(75) == 1);
 }
+
+class DivideConquer
+{
+	// 907. Sum of Subarray Minimums
+	int sumSubarrayMins(vector<int>& A) {
+	}
+};
