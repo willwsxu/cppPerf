@@ -510,3 +510,18 @@ int minimumLoss(vector<long> price) {
 	sort(begin(price_index), end(price_index), [](const auto&p1, const auto&p2) { return p1.first < p2.first; });
 	return -1;
 }
+
+void countSort(vector<vector<string>> arr) {  // vector of int string pair, sort by int
+	vector<vector<string>> ans(100, vector<string>{});
+	for (size_t i = 0; i < arr.size() / 2; i++) {  // first half converting to "-"
+		ans[stoi(arr[i][0])].push_back("-");
+	}
+	for (size_t i = arr.size() / 2; i < arr.size();  i++) {
+		ans[stoi(arr[i][0])].push_back(arr[i][1]);
+	}
+	for (const auto& v : ans) {
+		for (const string& s : v)
+			cout << s << " ";
+	}
+	cout << "\n";
+}
