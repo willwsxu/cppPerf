@@ -440,6 +440,20 @@ public:
 			return max_sum;
 		return max(max_sum, std::accumulate(begin(A), end(A), 0) - min_sum);
 	}
+	// 931. Minimum Falling Path Sum, from top to bottom, can move at most 1 to left or right
+	int minFallingPathSum(vector<vector<int>>& A) {  // beat 99%
+		if (A.empty())
+			return 0;
+		int N = A.size();
+		for (int r = N - 2; r >= 0; r--) {  // from second to last row, compute min value to path down
+			A[r][0] += min(A[r + 1][0], A[r + 1][1]);
+			A[r][N-1] += min(A[r + 1][N-1], A[r + 1][N-2]);
+			for (int c = 1; c < N-1; c++) {
+				A[r][c] += min(min(A[r + 1][c - 1], A[r + 1][c]), A[r + 1][c + 1]);
+			}
+		}
+		return *min_element(begin(A[0]), end(A[0]));
+	}
 };
 
 TEST_CASE("918. Maximum Sum Circular Subarray", "[NEW]")
