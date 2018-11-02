@@ -501,6 +501,105 @@ vector<int> icecreamParlor(int m, vector<int> arr) {
 	return{};  // should not happen
 }
 
+class HRMLElement
+{
+	HRMLElement *		parent;
+	string				name;
+	map<string, string> attributes;
+	vector<HRMLElement>	child;
+public:
+	HRMLElement() :HRMLElement("", nullptr)
+	{
+	}
+	HRMLElement(string&& n, HRMLElement* p) :name(move(n)), parent(p)
+	{
+	}
+	HRMLElement& addTag(string&& tag)
+	{
+		if (tag.find('/')==string::npos) {  // <tag1 value = "HelloWorld">
+			vector<string> attr;
+			istringstream istr(tag);
+			vector<string> tokens;
+			move(istream_iterator<string>(istr), istream_iterator<string>(), back_inserter(tokens));
+			string tag_name = tokens[0].substr(1);
+			if (tag_name.back() == '>')
+				tag_name.erase(end(tag_name) - 1); //<tag>, no attribute
+			child.push_back(HRMLElement(move(tag_name), this));
+			HRMLElement& cur = child.back();
+			auto tok = begin(tokens) + 1;
+
+			while (tok != end(tokens)) {
+				string& val = *(tok + 2);
+				if (val.back() == '>')
+					val.erase(end(val) - 1);
+				if (val.back() == '"')
+					val.erase(end(val) - 1);
+				if (val.front() == '"')
+					val.erase(begin(val));
+				cur.attributes[move(*tok)] = move(val);
+				tok += 3;
+			}
+			return cur;
+		}
+		else {  // </tag2>
+			return *parent;
+		}
+	}
+
+	const char * find(string&& long_tag) {  // tag1.tag2.tag3...tagn~attr
+		transform(begin(long_tag), end(long_tag), begin(long_tag), [](char c) {
+			if (c == '.' || c == '~')
+				return ' ';
+			return c;
+		});
+		istringstream istr(long_tag);
+		vector<string> tags;
+		move(istream_iterator<string>(istr), istream_iterator<string>(), back_inserter(tags));
+		return find(tags, 0);
+	}
+
+private:
+	const char * find(const vector<string>& tags, int idx)
+	{
+		if (idx == tags.size() - 1) {
+			auto found = attributes.find(tags[idx]);
+			return found == end(attributes) ? "Not Found!" : attributes[tags[idx]].c_str();
+		}
+		auto found = std::find_if(begin(child), end(child), [tag = tags[idx]](const auto& e) { return e.name == tag; });
+		if (found == end(child))
+			return "Not Found!";
+		return found->find(tags, idx + 1);
+	}
+};
+
+TEST_CASE("Hacker rank Attribute Parser", "[NEW]")
+{
+	HRMLElement hrml;
+	HRMLElement *curElem = &hrml;
+	curElem = &curElem->addTag("<tag1 value = \"HelloWorld\">");
+	curElem = &curElem->addTag("<tag2 name = \"Name1\">");
+	curElem = &curElem->addTag("</tag2>");
+	curElem = &curElem->addTag("</tag1>");
+	CHECK(hrml.find("tag1.tag2~name") == string("Name1"));
+	CHECK(hrml.find("tag1~name") == string("Not Found!"));
+	CHECK(hrml.find("tag1~value") == string("HelloWorld"));
+}
+TEST_CASE("Hacker rank Attribute Parser test case 2", "[NEW]")
+{
+	HRMLElement hrml;
+	HRMLElement *curElem = &hrml;
+	curElem = &curElem->addTag("<a>");
+	curElem = &curElem->addTag("<b name = \"tag_one\">");
+	curElem = &curElem->addTag("<c name = \"tag_two\" value = \"val_907\">");
+	curElem = &curElem->addTag("< / c>");
+	curElem = &curElem->addTag("< / b>");
+	curElem = &curElem->addTag("< / a>");
+	CHECK(hrml.find("a.b~name") == string("tag_one"));
+	CHECK(hrml.find("a.b.c~value") == string("val_907"));
+	CHECK(hrml.find("a.b.c~src") == string("Not Found!"));
+	CHECK(hrml.find("a.b.c.d~name") == string("Not Found!"));
+}
+
 // minimum loss, find min p[i]-p[j] where i<j, all p[i] distinct
 int minimumLoss(vector<long> price) {
 	vector<pair<int, int>> price_index;
