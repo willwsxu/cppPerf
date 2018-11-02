@@ -602,14 +602,36 @@ TEST_CASE("Hacker rank Attribute Parser test case 2", "[NEW]")
 
 // minimum loss, find min p[i]-p[j] where i<j, all p[i] distinct
 int minimumLoss(vector<long> price) {
-	vector<pair<int, int>> price_index;
-	price_index.reserve(price.size());
-	for (size_t i = 0; i < price.size(); i++)
-		price_index.emplace_back(price[i], i);
-	sort(begin(price_index), end(price_index), [](const auto&p1, const auto&p2) { return p1.first < p2.first; });
-	return -1;
+	vector<long> sorted_desc;
+	sorted_desc.reserve(price.size());
+	sorted_desc.emplace_back(price[0]);
+	int min_val = INT32_MAX;
+	for (size_t i = 1; i < price.size(); i++) {
+		if (price[i] == sorted_desc.back()) // not possible
+			return 0;
+		else if (price[i] < sorted_desc.back()) {
+			if (min_val > sorted_desc.back() - price[i]) {
+				min_val = sorted_desc.back() - price[i];
+				sorted_desc.push_back(price[i]);
+			}
+		}
+		else { // find a larger value see before
+			auto larger = upper_bound(rbegin(sorted_desc), rend(sorted_desc), price[i]);
+			if (larger==rend(sorted_desc)) // largest
+				sorted_desc.insert(begin(sorted_desc), price[i]);
+			else {
+				min_val = min<int>(min_val, *larger - price[i]);
+				sorted_desc.insert(larger.base(), price[i]);
+			}
+		}
+	}
+	return min_val;
 }
-
+TEST_CASE("Hacker rank search min loss", "[NEW]")
+{
+	CHECK(minimumLoss(vector<long>{5,10,3}) == 2);
+	CHECK(minimumLoss(vector<long>{20, 7, 8, 2, 5}) == 2);
+}
 void countSort(vector<vector<string>> arr) {  // vector of int string pair, sort by int
 	vector<vector<string>> ans(100, vector<string>{});
 	for (size_t i = 0; i < arr.size() / 2; i++) {  // first half converting to "-"
