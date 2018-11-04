@@ -78,31 +78,37 @@ string balancedSums(vector<int> arr) {
 	return "NO";
 }
 // minimum loss, find min p[i]-p[j] where i<j, all p[i] distinct
-int minimumLoss(vector<long> price) {
-	vector<long> sorted_desc{ price[0] };  // as processing each elem, keep them sorted
-	sorted_desc.reserve(price.size());
-	long min_val = INT32_MAX;
+template<typename T>
+int minimumLoss(vector<T>& price) {
+	set<T> sorted_desc{ price[0] };  // as processing each elem, keep them sorted
+	T min_loss = INT32_MAX;
 	for (size_t i = 1; i < price.size(); i++) {
-		if (price[i] == sorted_desc.back()) // not possible
-			return 0;
-		else if (price[i] < sorted_desc.back()) {
-			min_val = min(min_val, sorted_desc.back() - price[i]);
-			sorted_desc.push_back(price[i]);
+		if (price[i] < *sorted_desc.begin()) {
+			min_loss = min(min_loss, *sorted_desc.begin() - price[i]);
+			sorted_desc.insert(begin(sorted_desc), price[i]);
 		}
 		else { // find a larger value see before
-			auto larger = upper_bound(rbegin(sorted_desc), rend(sorted_desc), price[i]);
-			if (larger == rend(sorted_desc)) // largest
-				sorted_desc.insert(begin(sorted_desc), price[i]);
-			else {
-				min_val = min(min_val, *larger - price[i]);
-				sorted_desc.insert(larger.base(), price[i]);
-			}
+			auto larger = sorted_desc.upper_bound(price[i]);  // map upper_bound solved TLE 
+			if (larger != end(sorted_desc)) // largest
+				min_loss = min(min_loss, *larger - price[i]);
+			sorted_desc.insert(larger, price[i]);
 		}
 	}
-	return min_val;
+	return static_cast<int>(min_loss);
 }
 TEST_CASE("Hacker rank search min loss", "[NEW]")
 {
 	CHECK(minimumLoss(vector<long>{5, 10, 7, 6}) == 1);
 	CHECK(minimumLoss(vector<long>{20, 7, 8, 2, 5}) == 2);
+	ifstream fin("minimumloss.txt");
+	int N;
+	fin >> N;
+	vector<int64_t> v;
+	v.reserve(N);
+	for (int i = 0; i < N; i++) {
+		int64_t p;
+		fin >> p;
+		v.push_back(p);
+	}
+	CHECK(minimumLoss(v) == 47175);
 }
