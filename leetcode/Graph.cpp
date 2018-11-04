@@ -477,8 +477,48 @@ public:
 		}
 		return -1;
 	}
-};
 
+	// 934. Shortest Bridge, between 2 connected components, 4 directions
+	int shortestBridge(vector<vector<int>>& A) {
+		vector<vector<int>> dir{ { 0,-1 },{ -1,0 },{ 0,1 },{ 1,0 } };
+		auto components=connectedComponents(A, dir);
+		if (components.size() != 2)  // invalid input
+			return 0;
+		int rows = A.size();
+		int cols = A[0].size();
+		deque<int> q{ begin(components[0]), end(components[0])};
+		int steps = 0;
+		while (!q.empty()) {
+			size_t old_size = q.size();
+			for (size_t i = 0; i < old_size; i++) {
+				int r = q.front() / cols;
+				int c = q.front() % cols;
+				for (const auto& d : dir) {  // check 4 directions
+					int r1 = r + d[0];
+					int c1 = c + d[1];
+					if (r1 >= 0 && r1 < rows &&c1 >= 0 && c1 < cols) {
+						int idx = r1*cols + c1;
+						if (components[1].count(idx))  // found it in second component
+							return steps;
+						if (!components[0].count(idx)) {
+							q.emplace_back(idx);
+							components[0].insert(idx);
+						}
+					}
+				}
+				q.pop_front();
+			}
+			steps++;
+		}
+		return 0; // not possible
+	}
+};
+TEST_CASE("934. Shortest Bridge", "[NEW]")
+{
+	CHECK(BFS().shortestBridge(vector<vector<int>>{ {0, 1}, { 1,0 }})==1);
+	CHECK(BFS().shortestBridge(vector<vector<int>>{ {0, 1, 0}, { 0, 0, 0 }, { 0, 0, 1 }}) == 2);
+	CHECK(BFS().shortestBridge(vector<vector<int>>{ {1, 1, 1, 1, 1}, { 1,0,0,0,1 }, { 1,0,1,0,1 }, { 1,0,0,0,1 }, { 1,1,1,1,1 }}) == 1);
+}
 TEST_CASE("127. Word Ladder", "[NEW]")
 {
 	vector<string> long_dict{ "si", "go", "se", "cm", "so", "ph", "mt", "db", "mb", "sb", "kr", "ln", "tm", "le", "av", "sm", "ar", "ci", "ca", "br", "ti", "ba", "to", "ra", "fa", "yo", "ow", "sn", "ya", "cr", "po", "fe", "ho", "ma", "re", "or", "rn", "au", "ur", "rh", "sr", "tc", "lt", "lo", "as", "fr", "nb", "yb", "if", "pb", "ge", "th", "pm", "rb", "sh", "co", "ga", "li", "ha", "hz", "no", "bi", "di", "hi", "qa", "pi", "os", "uh", "wm", "an", "me", "mo", "na", "la", "st", "er", "sc", "ne", "mn", "mi", "am", "ex", "pt", "io", "be", "fm", "ta", "tb", "ni", "mr", "pa", "he", "lr", "sq", "ye" };
