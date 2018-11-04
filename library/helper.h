@@ -1,6 +1,12 @@
 #pragma once
 
 #include <regex>
+#include <vector>
+#include <set>
+#include <deque>
+
+using std::vector;
+using std::set;
 
 inline void print(std::vector<int>& v)
 {
@@ -127,4 +133,38 @@ inline auto value_iter_map(const std::vector<T>& v)
 inline int ceiling_int(int divdend, int divisor)
 {
 	return (divdend + divisor - 1) / divisor;
+}
+// matrix of value 0 or 1, 1 - land, 0 - water
+inline vector<set<int>> connectedComponents(std::vector<vector<int>>& matrix, std::vector<vector<int>>& dir)
+{
+	int rows = matrix.size();
+	if (rows == 0)
+		return{};
+	int cols = matrix[0].size();
+	auto empty_cell = [](int val) { return val == 0; };
+	vector<set<int>> components;
+	set<int>		visited;
+	for (int r = 0; r < rows; r++) {
+		for (int c = 0; c < cols; c++) {
+			if (!empty_cell(matrix[r][c]) && !visited.count(r*cols + c)) {
+				std::deque<std::pair<int, int>> bfs{ { r,c } };
+				components.push_back(set<int>{});
+				while (!bfs.empty()) {
+					int idx = bfs.front().first*cols + bfs.front().second;  // process front
+					components.back().insert(idx);
+					visited.insert(idx);
+					for (const auto& d : dir) {  // check 8 directions
+						int r1 = bfs.front().first + d[0];
+						int c1 = bfs.front().second + d[1];
+						if (r1 >= 0 && r1 < rows &&c1 >= 0 && c1 < cols && !empty_cell(matrix[r1][c1])) {
+							if (!visited.count(r1*cols + c1))
+								bfs.emplace_back(r1, c1);
+						}
+					}
+					bfs.pop_front();
+				}
+			}
+		}
+	}
+	return components;
 }
