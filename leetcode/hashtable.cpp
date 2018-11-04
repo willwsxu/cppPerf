@@ -615,3 +615,15 @@ TEST_CASE("874. Walking Robot Simulation", "[NEW]")
 	CHECK(Greedy().robotSim(vector<int>{4, -1, 4, -1, 4, -1, 3}, vector<vector<int>>{ {2, 4}}) == 17);
 	CHECK(Greedy().robotSim(vector<int>{4, -1, 4, -2, 4}, vector<vector<int>>{ {2,4}})==65);
 }
+
+// 933. Number of Recent Calls
+class RecentCounter {
+	set<int> pings;  // ping time, increasing
+public:
+	RecentCounter() {	}
+
+	int ping(int t) { // return number of pings between [t-3000, t]
+		pings.insert(end(pings), t);
+		return distance(pings.lower_bound(t - 3000), end(pings));
+	}
+};
