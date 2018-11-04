@@ -149,16 +149,18 @@ inline vector<set<int>> connectedComponents(std::vector<vector<int>>& matrix, st
 			if (!empty_cell(matrix[r][c]) && !visited.count(r*cols + c)) {
 				std::deque<std::pair<int, int>> bfs{ { r,c } };
 				components.push_back(set<int>{});
+				visited.insert(r*cols+c);
 				while (!bfs.empty()) {
 					int idx = bfs.front().first*cols + bfs.front().second;  // process front
 					components.back().insert(idx);
-					visited.insert(idx);
 					for (const auto& d : dir) {  // check 8 directions
 						int r1 = bfs.front().first + d[0];
 						int c1 = bfs.front().second + d[1];
 						if (r1 >= 0 && r1 < rows &&c1 >= 0 && c1 < cols && !empty_cell(matrix[r1][c1])) {
-							if (!visited.count(r1*cols + c1))
+							if (!visited.count(r1*cols + c1)) {
 								bfs.emplace_back(r1, c1);
+								visited.insert(r1*cols + c1);
+							}
 						}
 					}
 					bfs.pop_front();
