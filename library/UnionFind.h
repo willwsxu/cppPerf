@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 class UnionFind
 {
@@ -8,7 +9,7 @@ class UnionFind
 	std::vector<int> size;
 
 public:
-	UnionFind(int N) : parents(N + 1, -1), size(N + 1, 0) {}
+	UnionFind(int N) : parents(N + 1, -1), size(N + 1, 1) {}
 	int find(int u) {
 		if (parents[u] < 0)
 			return u;

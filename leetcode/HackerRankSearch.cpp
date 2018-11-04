@@ -6,6 +6,7 @@
 #include "Graph.h"
 #include "helper.h"
 #include "myalgo.h"
+#include "UnionFind.h"
 using namespace std;
 
 // some number in arr are missing from original brr
@@ -96,7 +97,7 @@ int minimumLoss(vector<T>& price) {
 	}
 	return static_cast<int>(min_loss);
 }
-TEST_CASE("Hacker rank search min loss", "[NEW]")
+TEST_CASE("Hacker rank search min loss", "[SRCH]")
 {
 	CHECK(minimumLoss(vector<long>{5, 10, 7, 6}) == 1);
 	CHECK(minimumLoss(vector<long>{20, 7, 8, 2, 5}) == 2);
@@ -111,4 +112,43 @@ TEST_CASE("Hacker rank search min loss", "[NEW]")
 		v.push_back(p);
 	}
 	CHECK(minimumLoss(v) == 47175);
+}
+// Connected Cells in a Grid, return size of largest region
+int connectedCell(vector<vector<int>> matrix) {
+	int rows = matrix.size();
+	if (rows == 0)
+		return 0;
+	int cols = matrix[0].size();
+	auto empty_cell = [](int val) { return val == 0; };
+	vector<set<int>> components;
+	set<int>		visited;
+	vector<vector<int>> dir{ {0,-1}, {-1,-1},{-1,0},{-1,1},{0,1},{1,1},{1,0},{1,-1} };  // left, top left, top, top right
+	for (int r = 0; r < rows; r++) {
+		for (int c = 0; c < cols; c++) {
+			if (!empty_cell(matrix[r][c]) && !visited.count(r*cols + c)) {
+				deque<pair<int, int>> bfs{ {r,c} };
+				components.push_back(set<int>{});
+				while (!bfs.empty()) {
+					int idx = bfs.front().first*cols + bfs.front().second;  // process front
+					components.back().insert(idx);
+					visited.insert(idx);
+					for (const auto& d : dir) {  // check 8 directions
+						int r1 = bfs.front().first + d[0];
+						int c1 = bfs.front().second + d[1];
+						if (r1 >= 0 && r1 < rows &&c1 >= 0 && c1 < cols && !empty_cell(matrix[r1][c1])) {
+							if (!visited.count(r1*cols + c1))
+								bfs.emplace_back(r1, c1);
+						}
+					}
+					bfs.pop_front();
+				}
+			}
+		}
+	}
+	return max_element(begin(components), end(components), [](const auto& c1, const auto&c2) { return c1.size() < c2.size(); })->size();
+}
+TEST_CASE("Hacker rank search Connected Cells in a Grid", "[NEW]")
+{
+	vector<vector<int>> matrix{ { 1,1,0,0,0 },{ 0,1,1,0,0 },{ 0,0,1,0,1 },{ 1,0,0,0,1 },{ 0,1,0,1,1 } };
+	CHECK(connectedCell(matrix)==5);
 }
