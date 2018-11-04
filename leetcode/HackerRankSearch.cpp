@@ -68,7 +68,7 @@ string balancedSums(vector<int> arr) {
 	partial_sum(begin(arr), end(arr), begin(arr));
 	int sum_left = 0;
 	int sum_right = 0;
-	for (int i = 0; i<arr.size(); i++) {
+	for (size_t i = 0; i<arr.size(); i++) {
 		if (i>0)
 			sum_left = arr[i - 1];
 		sum_right = i<arr.size() - 1 ? arr.back() - arr[i] : 0;
@@ -79,25 +79,22 @@ string balancedSums(vector<int> arr) {
 }
 // minimum loss, find min p[i]-p[j] where i<j, all p[i] distinct
 int minimumLoss(vector<long> price) {
-	vector<long> sorted_desc;
+	vector<long> sorted_desc{ price[0] };  // as processing each elem, keep them sorted
 	sorted_desc.reserve(price.size());
-	sorted_desc.emplace_back(price[0]);
-	int min_val = INT32_MAX;
+	long min_val = INT32_MAX;
 	for (size_t i = 1; i < price.size(); i++) {
 		if (price[i] == sorted_desc.back()) // not possible
 			return 0;
 		else if (price[i] < sorted_desc.back()) {
-			if (min_val > sorted_desc.back() - price[i]) {
-				min_val = sorted_desc.back() - price[i];
-				sorted_desc.push_back(price[i]);
-			}
+			min_val = min(min_val, sorted_desc.back() - price[i]);
+			sorted_desc.push_back(price[i]);
 		}
 		else { // find a larger value see before
 			auto larger = upper_bound(rbegin(sorted_desc), rend(sorted_desc), price[i]);
 			if (larger == rend(sorted_desc)) // largest
 				sorted_desc.insert(begin(sorted_desc), price[i]);
 			else {
-				min_val = min<int>(min_val, *larger - price[i]);
+				min_val = min(min_val, *larger - price[i]);
 				sorted_desc.insert(larger.base(), price[i]);
 			}
 		}

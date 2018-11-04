@@ -140,5 +140,8 @@
     <ClCompile Include="HackerLRUCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HackerRankSearch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
