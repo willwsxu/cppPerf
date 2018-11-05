@@ -127,3 +127,22 @@ TEST_CASE("Hacker rank search Connected Cells in a Grid", "[NEW]")
 	vector<vector<int>> matrix{ { 1,1,0,0,0 },{ 0,1,1,0,0 },{ 0,0,1,0,1 },{ 1,0,0,0,1 },{ 0,1,0,1,1 } };
 	CHECK(connectedCell(matrix)==5);
 }
+int hackerlandRadioTransmitters(vector<int> x, int k) {
+	sort(begin(x), end(x));
+	k <<= 1;  // cover 2k distance
+	auto start = begin(x); // greedy method, add transmitter from near to far
+	int count = 0;
+	while (start != end(x)) {
+		count++;
+		int target = *start + k;
+		auto last = lower_bound(start, end(x), target);
+		if (last == end(x))
+			break;
+		start = *last == target ? last + 1 : last;
+	}
+	return count;
+}
+TEST_CASE("Hacker rank search transmitter", "[NEW]")
+{
+	CHECK(hackerlandRadioTransmitters(vector<int>{9, 5, 4, 2, 6, 15, 12}, 2) == 4);
+}
