@@ -454,8 +454,34 @@ public:
 		}
 		return *min_element(begin(A[0]), end(A[0]));
 	}
-};
-
+	// 935. Knight Dialer, N-1 steps to dial N numbers
+	// find total distinct numbers, mod 10^9+7
+	int knightDialer(int N) {
+		static const int MOD = 1000000007;
+		vector<vector<int>> moves{ {4,6},{6,8},{7,9},{4,8},{0,3,9},{},{0,1,7},{2,6},{1,3},{2,4} };
+		vector<vector<long long>> dp(2, vector<long long>(10, 1));
+		int prev = 0;
+		int curr = 0;
+		for (int i = 1; i < N; i++) {
+			curr = i % 2;
+			prev = 1 - curr;
+			for (int j = 0; j < 10; j++) {
+				dp[curr][j] = 0;
+				for (int m : moves[j])
+					dp[curr][j] += dp[prev][m];
+				dp[curr][j] %= MOD;
+			}
+		}
+		return (int)(accumulate(begin(dp[curr]), end(dp[curr]), (long long)0)%MOD);
+	}
+}; 
+TEST_CASE("935. Knight Dialer", "[NEW]")
+{
+	CHECK(SpecialDp().knightDialer(1) == 10);
+	CHECK(SpecialDp().knightDialer(2) == 20);
+	CHECK(SpecialDp().knightDialer(3) == 46);
+	CHECK(SpecialDp().knightDialer(5000) == 406880451);
+}
 TEST_CASE("918. Maximum Sum Circular Subarray", "[NEW]")
 {
 	CHECK(SpecialDp().maxSubarraySumCircular(vector<int>{-2, -3, -1}) == -1);
