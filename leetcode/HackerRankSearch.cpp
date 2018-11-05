@@ -129,16 +129,17 @@ TEST_CASE("Hacker rank search Connected Cells in a Grid", "[NEW]")
 }
 int hackerlandRadioTransmitters(vector<int> x, int k) {
 	sort(begin(x), end(x));
-	k <<= 1;  // cover 2k distance
 	auto start = begin(x); // greedy method, add transmitter from near to far
 	int count = 0;
 	while (start != end(x)) {
 		count++;
 		int target = *start + k;
-		auto last = lower_bound(start, end(x), target);
-		if (last == end(x))
-			break;
-		start = *last == target ? last + 1 : last;
+		auto last = equal_range(start, end(x), target);
+		if (last.first != last.second || distance(start, last.first) > 1) {  // find a middle house to put on transmitter
+			start = last.second - 1;
+			last = equal_range(start, end(x), *start + k);
+		}  // or transmitter on this house
+		start = last.second;
 	}
 	return count;
 }
