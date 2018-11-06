@@ -159,7 +159,41 @@ public:
 		}
 		return open + close;
 	}
+	// 907. Sum of Subarray Minimums, sum of min of all sub array, n [1,30000]
+	int sumSubarrayMins(vector<int>& A) {
+		vector<int> prev_less_pos(A.size(), -1); // elem < current, on the left side
+		deque<int> plp{ 0 };
+		for (size_t i = 1; i < A.size(); i++) {
+			while (!plp.empty() && A[i] <= A[plp.back()])
+				plp.pop_back();
+			if (!plp.empty())
+				prev_less_pos[i] = plp.back();
+			plp.push_back(i);
+		}
+		plp.clear();
+		vector<int> next_less_pos(A.size(), A.size()); // elem < current, on the right side
+		for (int i = (int)A.size()-1; i >=0; i--) {  // i must be signed
+			while (!plp.empty() && A[i] <= A[plp.back()])
+				plp.pop_back();
+			if (!plp.empty())
+				next_less_pos[i] = plp.back();
+			plp.push_back(i);
+
+		}
+		int MOD = 1000000007;
+		long long sum = 0;
+		for (size_t i = 0; i < A.size(); i++) {
+			// treat i as local min, find left and right boundary
+			sum += (i - prev_less_pos[i])*(next_less_pos[i] - i)*A[i];
+			sum %= MOD;
+		}
+		return (int)sum;
+	}
 };
+TEST_CASE("907. Sum of Subarray Minimums", "[NEW]")
+{
+	CHECK(Stacking().sumSubarrayMins(vector<int>{3, 1, 2, 4}) == 17);
+}
 
 TEST_CASE("Daily Temperatures find warmer day ahead", "[GRE]")
 {
