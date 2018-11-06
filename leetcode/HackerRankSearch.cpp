@@ -147,3 +147,32 @@ TEST_CASE("Hacker rank search transmitter", "[NEW]")
 {
 	CHECK(hackerlandRadioTransmitters(vector<int>{9, 5, 4, 2, 6, 15, 12}, 2) == 4);
 }
+
+// n x m grid, k horizontal train tracks
+// find total cells, not occupied by tracks
+long long gridlandMetro(int n, int m, int k, vector<vector<int>> track) {
+	map<int, map<int, int>>  tracks;  //keep tracks of start and stop, start 1, stop -1
+	for (const auto& t : track) {
+		tracks[t[0]][t[1]] += 1;
+		tracks[t[0]][t[2]+1] -= 1;
+	}
+	long long track_cells = 0;
+	for (const auto& tr : tracks) {
+		int start = 0;
+		int start_pos = -1;
+		for (const auto& stop : tr.second) {
+			start += stop.second;
+			if (start > 0 && start_pos<0)
+				start_pos = stop.first;
+			else if (start == 0 && start_pos > 0) {
+				track_cells += stop.first - start_pos;
+				start_pos = -1;
+			}
+		}
+	}
+	return n*m - track_cells;
+}
+TEST_CASE("Hacker rank search grid land metro", "[NEW]")
+{
+	CHECK(gridlandMetro(4, 4, 3, vector<vector<int>>{ {2,2,3}, {3,1,4}, {4,4,4}}) == 9);
+}
