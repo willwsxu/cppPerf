@@ -170,9 +170,10 @@ long long gridlandMetro(int n, int m, int k, vector<vector<int>> track) {
 			}
 		}
 	}
-	return n*m - track_cells;
+	return (long long)n*m - track_cells;
 }
 TEST_CASE("Hacker rank search grid land metro", "[NEW]")
 {
 	CHECK(gridlandMetro(4, 4, 3, vector<vector<int>>{ {2,2,3}, {3,1,4}, {4,4,4}}) == 9);
+	CHECK(gridlandMetro(4, 4, 3, vector<vector<int>>{ {2, 2, 3}, { 2, 3,4 }, { 3,1,4 }, { 3,4,4 }, { 4,4,4 }, { 4,1,2 }}) == 6);
 }
