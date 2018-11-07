@@ -161,19 +161,19 @@ public:
 	}
 	// 907. Sum of Subarray Minimums, sum of min of all sub array, n [1,30000]
 	int sumSubarrayMins(vector<int>& A) {
-		vector<int> prev_less_pos(A.size(), -1); // elem < current, on the left side
+		vector<int> prev_less_pos(A.size(), -1); //find  elem < current, on the left side
 		deque<int> plp{ 0 };
 		for (size_t i = 1; i < A.size(); i++) {
-			while (!plp.empty() && A[i] <= A[plp.back()])
+			while (!plp.empty() && A[i] < A[plp.back()])  // don't cross equal value
 				plp.pop_back();
 			if (!plp.empty())
 				prev_less_pos[i] = plp.back();
 			plp.push_back(i);
 		}
 		plp.clear();
-		vector<int> next_less_pos(A.size(), A.size()); // elem < current, on the right side
+		vector<int> next_less_pos(A.size(), A.size()); // find elem < current, on the right side
 		for (int i = (int)A.size()-1; i >=0; i--) {  // i must be signed
-			while (!plp.empty() && A[i] <= A[plp.back()])
+			while (!plp.empty() && A[i] <= A[plp.back()])  // cross equal value
 				plp.pop_back();
 			if (!plp.empty())
 				next_less_pos[i] = plp.back();
@@ -192,6 +192,7 @@ public:
 };
 TEST_CASE("907. Sum of Subarray Minimums", "[NEW]")
 {
+	CHECK(Stacking().sumSubarrayMins(vector<int>{71, 55, 82, 55}) == 593);
 	CHECK(Stacking().sumSubarrayMins(vector<int>{3, 1, 2, 4}) == 17);
 }
 
