@@ -11,24 +11,20 @@ class Tree {
 public:
 	vector<int> largestValues(TreeNode* root) {
 		vector<int> ans;
-		queue<TreeNode*> q;
-		if (root == nullptr)
+		if (!root)
 			return ans;
-		q.push(root);
+		deque<TreeNode*> q{ root };
 		while (!q.empty()) {
+			ans.push_back((*max_element(begin(q), end(q)))->val);
 			int oldSize = q.size();
-			int large = INT_MIN;
-			for (int i = 0; i < oldSize; i++) {
+			while (oldSize--) {
 				TreeNode *tn = q.front();
-				q.pop();
-				if (large < tn->val)
-					large = tn->val;
+				q.pop_front();
 				if (tn->left)
-					q.push(tn->left);
+					q.push_back(tn->left);
 				if (tn->right)
-					q.push(tn->right);
+					q.push_back(tn->right);
 			}
-			ans.push_back(large);
 		}
 		return ans;
 	}
