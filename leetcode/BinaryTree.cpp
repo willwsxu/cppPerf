@@ -5,30 +5,8 @@ using namespace std;
 #include "TreeNode.h"
 #include "helper.h"
 
-// 515. Find Largest Value in Each Tree Row of a binary tree.
-// BFS, similar to 102. Binary Tree Level Order Traversal, 199. Binary Tree Right Side View, 103.Binary Tree Zigzag Level Order Traversal,513.Find Bottom Left Tree Value
 class Tree {
 public:
-	vector<int> largestValues(TreeNode* root) {
-		vector<int> ans;
-		if (!root)
-			return ans;
-		deque<TreeNode*> q{ root };
-		while (!q.empty()) {
-			ans.push_back((*max_element(begin(q), end(q), [](TreeNode *r1, TreeNode* r2) {return r1->val < r2->val; }))->val);
-			int oldSize = q.size();
-			while (oldSize--) {
-				TreeNode *tn = q.front();
-				q.pop_front();
-				if (tn->left)
-					q.push_back(tn->left);
-				if (tn->right)
-					q.push_back(tn->right);
-			}
-		}
-		return ans;
-	}
-
 	// 230. Kth Smallest Element in a BST, 1 ≤ k ≤ BST's total elements
 	int count(TreeNode* root) {
 		if (root == nullptr)
@@ -380,6 +358,32 @@ TEST_CASE("865. Smallest Subtree with all the Deepest Nodes", "[NEW]")
 class TreeTraversal
 {
 public:
+	// 515. Find Largest Value in Each Tree Row of a binary tree.
+	// BFS, similar to 
+	//   102. Binary Tree Level Order Traversal, 
+	//   199. Binary Tree Right Side View, 
+	//   103.Binary Tree Zigzag Level Order Traversal,
+	//    513.Find Bottom Left Tree Value
+	vector<int> largestValues(TreeNode* root) {
+		vector<int> ans;
+		if (!root)
+			return ans;
+		deque<TreeNode*> q{ root };
+		while (!q.empty()) {
+			ans.push_back((*max_element(begin(q), end(q), [](TreeNode *r1, TreeNode* r2) {return r1->val < r2->val; }))->val);
+			int oldSize = q.size();
+			while (oldSize--) {
+				TreeNode *tn = q.front();
+				q.pop_front();
+				if (tn->left)
+					q.push_back(tn->left);
+				if (tn->right)
+					q.push_back(tn->right);
+			}
+		}
+		return ans;
+	}
+
 	// 94. Binary Tree Inorder Traversal
 	vector<int> vec;
 	void inorderTraversalHelper(TreeNode* root)  // beat 97%
@@ -430,15 +434,8 @@ public:
 
 TEST_CASE("largestValues", "[NEW]")
 {
-	TreeNode *tn = new TreeNode(1);
-	tn->left = new TreeNode(3);
-	tn->right = new TreeNode(2);
-	tn->left->left = new TreeNode(5);
-	tn->left->right = new TreeNode(3);
-	tn->right->right = new TreeNode(9); 
 	TreeNode *root = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"1","3","2","5","3","null","9"});
-	Tree t;
-	CHECK(t.largestValues(root) == vector<int>{1, 3, 9});
+	CHECK(TreeTraversal().largestValues(root) == vector<int>{1, 3, 9});
 }
 
 TEST_CASE("kth smallest BST Components", "[BST]")
