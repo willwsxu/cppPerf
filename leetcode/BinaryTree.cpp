@@ -430,7 +430,30 @@ public:
 		}
 		return ans;
 	}
+	// 145. Binary Tree Postorder Traversal
+    vector<int> postorderTraversal(TreeNode* root) { // reverse of pre-order, beat 100%
+		if (!root)
+			return{};
+		deque<TreeNode*> post_order_stack{ root };
+		vector<int> ans;  // in reverse order
+		while (!post_order_stack.empty()) {
+			root = post_order_stack.back();
+			ans.push_back(root->val);  // pre-order visit, order will be reversed at end
+			post_order_stack.pop_back();
+			if (root->left)
+				post_order_stack.push_back(root->left);  // visit child in reverse order
+			if (root->right)
+				post_order_stack.push_back(root->right);
+		}
+		reverse(begin(ans), end(ans));
+		return ans;
+    }
 };
+TEST_CASE("145. Binary Tree Postorder Traversal", "[NEW]")
+{
+	TreeNode *root = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"1", "2", "3", "4", "5", "6", "7", "null", "null", "8","null","null","9"});
+	CHECK(TreeTraversal().postorderTraversal(root) == vector<int>{4,8,5,2,9,6,7,3,1});
+}
 
 TEST_CASE("largestValues", "[NEW]")
 {
