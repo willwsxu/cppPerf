@@ -58,6 +58,31 @@ struct TreeNode {
 	{
 		return r == nullptr ? 0 : max(getHeight(r->left), getHeight(r->right)) + 1;
 	}
+	static TreeNode *ConstructBinaryTreePerLevel(const vector<string>& nodes) { // level traversal
+		if (nodes.empty())
+			return nullptr;
+		TreeNode *root = new TreeNode(stoi(nodes[0]));
+		deque<TreeNode*> level{ root }; // nodes from last level
+		auto node_val = begin(nodes) + 1;
+		auto create_node = [&level](const string& s, TreeNode*& child) {
+			if (s != "null") {
+				child = new TreeNode(stoi(s));
+				level.push_back(child);
+			}
+		};
+		while (!level.empty() && node_val!=end(nodes)) {
+			int old_size = level.size();
+			while (old_size--  && node_val != end(nodes) ) {
+				create_node(*node_val, level.front()->left);		// left child
+				if (++node_val != end(nodes)) {
+					create_node(*node_val, level.front()->right);	// right child
+					++node_val;
+				}
+				level.pop_front();
+			}
+		}
+		return root;
+	}
 
 	static TreeNode *CreateBinaryTree(const vector<int>& nodes) { // INT32_MIN as null node, level traversal
 		if (nodes.empty())

@@ -15,7 +15,7 @@ public:
 			return ans;
 		deque<TreeNode*> q{ root };
 		while (!q.empty()) {
-			ans.push_back((*max_element(begin(q), end(q)))->val);
+			ans.push_back((*max_element(begin(q), end(q), [](TreeNode *r1, TreeNode* r2) {return r1->val < r2->val; }))->val);
 			int oldSize = q.size();
 			while (oldSize--) {
 				TreeNode *tn = q.front();
@@ -428,17 +428,17 @@ public:
 	}
 };
 
-void testTree()
+TEST_CASE("largestValues", "[NEW]")
 {
 	TreeNode *tn = new TreeNode(1);
 	tn->left = new TreeNode(3);
 	tn->right = new TreeNode(2);
 	tn->left->left = new TreeNode(5);
 	tn->left->right = new TreeNode(3);
-	tn->right->right = new TreeNode(9);
+	tn->right->right = new TreeNode(9); 
+	TreeNode *root = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"1","3","2","5","3","null","9"});
 	Tree t;
-	vector<int> ans = t.largestValues(tn);
-	print(ans);
+	CHECK(t.largestValues(root) == vector<int>{1, 3, 9});
 }
 
 TEST_CASE("kth smallest BST Components", "[BST]")
