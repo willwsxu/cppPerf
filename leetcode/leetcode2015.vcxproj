@@ -172,6 +172,7 @@
     <ClCompile Include="DynamicProgramming.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="HackerRankDp.cpp" />
     <ClCompile Include="HackerRankSearch.cpp" />
     <ClCompile Include="hashtable.cpp" />
     <ClCompile Include="leetcode.c">
