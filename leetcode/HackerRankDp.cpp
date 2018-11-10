@@ -53,8 +53,8 @@ TEST_CASE("Hackerrank string DP Common Child", "[NEW]")
 	CHECK(commonChild("michelangelo", "hieroglyphology") == 5);
 }
 
-template<typename RandIter>
-vector<int> longestCommonSubsequence(RandIter startA, RandIter endA, RandIter startB, RandIter endB) {
+template<typename RandIter, typename Inserter>
+void longestCommonSubsequence(RandIter startA, RandIter endA, RandIter startB, RandIter endB, Inserter inserter) {
 	int sizeA = distance(startA, endA);
 	int sizeB = distance(startB, endB);
 	vector<vector<int>> dp(sizeA+1, vector<int>(sizeB+1, 0));
@@ -68,16 +68,11 @@ vector<int> longestCommonSubsequence(RandIter startA, RandIter endA, RandIter st
 				dp[i][j] = max(dp[i + 1][j], dp[i][j + 1]);
 		}
 	}
-	//for (const auto& v : dp) {
-	//	copy(begin(v), end(v), ostream_iterator<int>(cout, " "));
-	//	cout << "\n";
-	//}
-	vector<int> ans;
 	int i = 0;
 	int j = 0;
 	while (i <sizeA && j < sizeB) {
 		if (*(startA + i) == *(startB + j)) {
-			ans.push_back(*(startA + i));
+			*inserter++ = *(startA + i);
 			i++;
 			j++;
 		}
@@ -86,17 +81,21 @@ vector<int> longestCommonSubsequence(RandIter startA, RandIter endA, RandIter st
 		else
 			j++;
 	}
-	return ans;
 }
 
 vector<int> longestCommonSubsequence(vector<int> a, vector<int> b) {
 	if (a.empty() || b.empty())
 		return{};
-	return longestCommonSubsequence(begin(a),end(a),begin(b),end(b));
+	vector<int> ans;
+	longestCommonSubsequence(begin(a),end(a),begin(b),end(b), back_inserter(ans));
+	return ans;
 }
 TEST_CASE("Hackerrank DP longest Common subsequence", "[NEW]")
 {
 	string s1 = "michelangelo";
 	string s2="hieroglyphology";
-	CHECK(longestCommonSubsequence(begin(s1), end(s1), begin(s2), end(s2)) == vector<int>{'i','e','l','l','o'});
+	string result;
+	longestCommonSubsequence(begin(s1), end(s1), begin(s2), end(s2), back_inserter(result));
+	CHECK( result== "iello");
+	CHECK(longestCommonSubsequence(vector<int>{1,2,3,4,1}, vector<int>{1,3,4,1,2,1,3}) == vector<int>{1,3,4,1});
 }
