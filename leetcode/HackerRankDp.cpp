@@ -134,3 +134,23 @@ TEST_CASE("Hackerrank DP substring sum", "[NEW]")
 	CHECK(substrings("16") == 23);
 	CHECK(substrings("123") == 164);
 }
+
+// construct array, consecutive positions contain different values.
+// use value [1,k], array ends at 1, x
+
+// suffix, from back
+// at n-1, total ways=k-1
+// at n-2, prev_total-count[1],prev_total-count[2], ...=(k-1)*prev_total
+// at 2, exclude count[1], =(k-2)*prev_total+count[1]
+long countArray(int n, int k, int x) {
+	// Return the number of ways to fill in the array.
+	const int MOD = 1000000007;
+	long long count_total = k - 1;
+	long long count1 = x == 1 ? 0 : 1;
+	n -= 3;  // exclude first, last, and second to last
+	while (n--) {
+		count1 = (MOD+count_total - count1)%MOD;
+		count_total = (k - 1)*count_total%MOD;
+	}
+	return (MOD + count_total - count1) % MOD;
+}
