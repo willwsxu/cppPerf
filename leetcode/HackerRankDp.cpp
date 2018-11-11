@@ -99,3 +99,37 @@ TEST_CASE("Hackerrank DP longest Common subsequence", "[NEW]")
 	CHECK( result== "iello");
 	CHECK(longestCommonSubsequence(vector<int>{1,2,3,4,1}, vector<int>{1,3,4,1,2,1,3}) == vector<int>{1,3,4,1});
 }
+
+// compute sum of all the substrings function.
+// 3842
+// 2
+// 4, 2, 42=4+40+prev(2)
+// 8,4,2,84,42,842=8+80+800+4+2+4+42+42=8+80+800+prev(4+2+42)+prev-prevprev (42+4)
+// 3+30+300+3000+prev+8+84+842=3+30+300+3000+prev*2-prevprev = 3(1+10+100+1000)+prev*2-prevprev
+int substrings(string n) {
+	const int MAX_SIZE = 200000; // n=[1,200000]
+	const int MOD = 1000000007;
+	vector<long long> pow_mod{ 1 };
+	pow_mod.resize(MAX_SIZE);
+	for (int i = 1; i < MAX_SIZE; i++)
+		pow_mod[i] = pow_mod[i - 1] * 10 % MOD;
+	for (int i = 1; i < MAX_SIZE; i++)  // compute prefix sum;
+		pow_mod[i] = (pow_mod[i] + pow_mod[i - 1]) % MOD;
+
+	auto digit = rbegin(n);
+	vector<long long> dp(3, 0);
+	if (!n.empty())
+		dp[1] = *digit - '0';
+	for (size_t i = 1; i < n.size(); i++) {
+		dp[2] = (pow_mod[i] * (*(++digit) - '0') + dp[1] * 2 - dp[0]) % MOD;
+		rotate(begin(dp), begin(dp) + 1, end(dp));
+	}
+	return static_cast<int>(dp[1]);
+}
+
+TEST_CASE("Hackerrank DP substring sum", "[NEW]")
+{
+	CHECK(substrings("0") == 0);
+	CHECK(substrings("16") == 23);
+	CHECK(substrings("123") == 164);
+}
