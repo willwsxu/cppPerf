@@ -121,7 +121,7 @@ int substrings(string n) {
 	if (!n.empty())
 		dp[1] = *digit - '0';
 	for (size_t i = 1; i < n.size(); i++) {
-		dp[2] = (pow_mod[i] * (*(++digit) - '0') + dp[1] * 2 - dp[0]) % MOD;
+		dp[2] = (MOD+pow_mod[i] * (*(++digit) - '0') + dp[1] * 2 - dp[0]) % MOD;  // prevent netagive
 		rotate(begin(dp), begin(dp) + 1, end(dp));
 	}
 	return static_cast<int>(dp[1]);
@@ -129,6 +129,7 @@ int substrings(string n) {
 
 TEST_CASE("Hackerrank DP substring sum", "[NEW]")
 {
+	CHECK(substrings("213676822290") == 546421488);
 	CHECK(substrings("0") == 0);
 	CHECK(substrings("16") == 23);
 	CHECK(substrings("123") == 164);
