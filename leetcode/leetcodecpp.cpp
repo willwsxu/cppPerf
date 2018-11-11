@@ -2339,3 +2339,28 @@ public:
 		return i == j;
 	}
 };
+
+// 900. RLE Iterator
+class RLEIterator {  // beat 100%
+	vector<int> RLE;  // run length encoding
+public:
+	RLEIterator(vector<int> A):RLE(move(A)) {}
+
+	int next(int n) {
+		for (size_t i = 0; i < RLE.size(); i += 2) {  // scan through count of int
+			if (RLE[i] >= n) {
+				int result = RLE[i + 1];
+				RLE[i] -= n;
+				if (RLE[i] == 0)
+					i += 2;
+				if (i)
+					RLE.erase(begin(RLE), begin(RLE) + i);
+				return result;
+			}
+			else
+				n -= RLE[i];
+		}
+		RLE.clear();
+		return -1;
+	}
+};
