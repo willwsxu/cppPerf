@@ -250,7 +250,31 @@ public:
 		reverse_string_if(begin(S), end(S), [](char c) { return isalpha(c); });
 		return S;
 	}
+	// 937. Reorder Log Files
+	vector<string> reorderLogFiles(vector<string>& logs) {
+		auto digitLog = stable_partition(begin(logs), end(logs), 
+			[](const string& s) {
+			auto next = find(cbegin(s), cend(s), ' ');
+			return !isdigit(*(++next));
+		});
+		sort(begin(logs), digitLog, [](const string& s1, const string& s2) {
+			auto next1 = find(cbegin(s1), cend(s1), ' ');
+			auto next2 = find(cbegin(s2), cend(s2), ' ');
+			if (lexicographical_compare(next1, cend(s1), next2, cend(s2)))
+				return true;
+			if (lexicographical_compare(next2, cend(s2), next1, cend(s1)))
+				return false;
+			// second part same
+			return lexicographical_compare(cbegin(s1), next1, cbegin(s2), next2);
+		});
+		return logs;
+	}
 };
+TEST_CASE("937. Reorder Log Files", "[NEW]")
+{
+	CHECK(STL().reorderLogFiles(vector<string>{"a1 9 2 3 1", "g1 act car", "zo4 4 7", "ab1 off key dog", "a8 act zoo"}) 
+		== vector<string>{"g1 act car", "a8 act zoo", "ab1 off key dog", "a1 9 2 3 1", "zo4 4 7"});
+}
 
 TEST_CASE("345. Reverse Vowels of a String", "[NEW]")
 {
