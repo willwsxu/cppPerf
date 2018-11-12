@@ -198,6 +198,19 @@ public:
 			root->left = insertIntoBST(root->left, val);
 		return root;
 	}
+	//938. Range Sum of BST
+	int rangeSumBST(TreeNode* root, int L, int R) {
+		if (!root)
+			return 0;
+		int total = 0;
+		if (root->val < R)
+			total += rangeSumBST(root->right, L, R);
+		if (root->val > L)
+			total += rangeSumBST(root->left, L, R);
+		if (root->val <= R && root->val >= L)
+			total += root->val;
+		return total;
+	}
 };
 
 TEST_CASE("501. Find Mode in Binary Search Tree", "[NEW]")
