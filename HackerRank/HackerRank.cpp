@@ -553,3 +553,25 @@ void countSort(vector<vector<string>> arr) {  // vector of int string pair, sort
 	}
 	cout << "\n";
 }
+
+// Greedy
+// Complete the luckBalance function below. each game has a luck value and importance flag
+// lose a game gain luck, winning reduce luck
+// find max luck if can lose k important games
+int luckBalance(int k, vector<vector<int>> contests) {
+	auto computeLuck = [](auto start, auto end, int init) {
+		return accumulate(start, end, init, [](int init, const auto& g) { return init + g[0]; });
+	};
+	auto unImportant = partition(begin(contests), end(contests), [](const auto& g) { return g[1] > 0; });
+	if (k >= distance(begin(contests), unImportant)) // can lose all games
+		return computeLuck(begin(contests), end(contests), 0);
+	int luck= computeLuck(unImportant, end(contests), 0);  // lose all unimportant games
+	nth_element(begin(contests), begin(contests) + k, unImportant, [](const auto&g1, const auto&g2) { return g1[0] > g2[0]; });
+	// add luck up to position k, minus luck from k, from important games
+	return computeLuck(begin(contests), begin(contests) + k, luck)- computeLuck(begin(contests)+k, unImportant, 0);
+}
+TEST_CASE("Hacker rank Greedy luck balance", "[NEW]")
+{
+	CHECK(luckBalance(3, vector<vector<int>>{ {5, 1}, { 2,1 }, { 1,1 }, { 8,1 }, { 10,0 }, { 5,0 }}) == 29);
+	CHECK(luckBalance(5, vector<vector<int>>{ {13, 1}, { 10,1 }, { 9,1 }, { 8,1 }, { 13,1 }, { 12,1 }, { 18,1 }, { 13,1 }}) == 42);
+}
