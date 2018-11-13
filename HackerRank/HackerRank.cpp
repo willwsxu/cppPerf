@@ -582,12 +582,7 @@ int toys(vector<int> w) {
 	auto cursor = begin(w);
 	int count = 0;
 	while (cursor != end(w)) {
-		int target = *cursor + 4;
-		cursor = lower_bound(cursor, end(w), target);
-		if (cursor != end(w)) {
-			if (*cursor == target)
-				++cursor;
-		}
+		cursor = upper_bound(cursor, end(w), *cursor + 4);
 		count++;
 	}
 	return count;
