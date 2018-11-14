@@ -162,7 +162,7 @@ public:
 	// 907. Sum of Subarray Minimums, sum of min of all sub array, n [1,30000]
 	int sumSubarrayMins(vector<int>& A) {
 		vector<int> prev_less_pos(A.size(), -1); //find  elem < current, on the left side
-		deque<int> plp{ 0 };
+		deque<int> plp{ 0 };  // monotonous none decreasing stack, allow equal
 		for (size_t i = 1; i < A.size(); i++) {
 			while (!plp.empty() && A[i] < A[plp.back()])  // don't cross equal value
 				plp.pop_back();
@@ -171,6 +171,7 @@ public:
 			plp.push_back(i);
 		}
 		plp.clear();
+		// do the same from back, effectively monotonously decreasing
 		vector<int> next_less_pos(A.size(), A.size()); // find elem < current, on the right side
 		for (int i = (int)A.size()-1; i >=0; i--) {  // i must be signed
 			while (!plp.empty() && A[i] <= A[plp.back()])  // cross equal value
@@ -178,7 +179,6 @@ public:
 			if (!plp.empty())
 				next_less_pos[i] = plp.back();
 			plp.push_back(i);
-
 		}
 		int MOD = 1000000007;
 		long long sum = 0;
@@ -189,7 +189,48 @@ public:
 		}
 		return (int)sum;
 	}
+	template <typename T, typename Comp>
+	vector<T> computePrevLess(vector<T>& arr, Comp comp) {
+		vector<T> prev_less_pos(arr.size(), -1); //find  elem < current, on the left side
+		deque<T> plp{ 0 };  // monotonous stack
+		for (size_t i = 1; i < arr.size(); i++) {
+			while (!plp.empty() && comp(arr[i], arr[plp.back()]))  // don't cross equal value
+				plp.pop_back();
+			if (!plp.empty())
+				prev_less_pos[i] = plp.back();
+			plp.push_back(i);
+		}
+		return prev_less_pos;
+	}
+	template <typename T, typename Comp>
+	vector<T> computeNextLess(vector<T>& arr, Comp comp) {
+		deque<T> plp{ 0 };  // monotonous stack
+		vector<T> next_less_pos(arr.size(), arr.size()); // find elem < current, on the right side
+		for (int i = (int)arr.size() - 1; i >= 0; i--) {  // i must be signed
+			while (!plp.empty() && comp(arr[i], arr[plp.back()]))  // cross equal value
+				plp.pop_back();
+			if (!plp.empty())
+				next_less_pos[i] = plp.back();
+			plp.push_back(i);
+		}
+		return next_less_pos;
+	}
+	// 84. Largest Rectangle in Histogram
+	// at each bar, find the left and rigth edge which are shorter than current
+	int largestRectangleArea(vector<int>& heights) {
+		vector<int> prev_less_pos = computePrevLess(heights, less_equal<int>());// from L to R, maintain increasing stack
+		vector<int> next_less_pos = computeNextLess(heights, less_equal<int>());// from R to L, maintain increasing stack
+		int max_area = 0;
+		for (size_t i = 0; i < heights.size(); i++) { // height of current bar will be height of the rentangle
+			max_area = max(max_area, heights[i] * (next_less_pos[i] - prev_less_pos[i]-1));
+		}
+		return max_area;
+	}
 };
+TEST_CASE("84. Largest Rectangle in Histogram", "[NEW]")
+{
+	CHECK(Stacking().largestRectangleArea(vector<int>{2, 1, 5, 6, 2, 3}) == 10);
+}
 TEST_CASE("907. Sum of Subarray Minimums", "[NEW]")
 {
 	CHECK(Stacking().sumSubarrayMins(vector<int>{71, 55, 82, 55}) == 593);
