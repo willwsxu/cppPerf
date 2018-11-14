@@ -647,3 +647,33 @@ public:
 		return q.empty();
 	}
 };
+
+// similar to 907. Sum of Subarray Minimums, 239. Sliding Window Maximum
+// max # of consecutive days that none decreasing price till today
+class StockSpanner {
+	vector<pair<int, int>> prices_stack;  // decreasing, with count of deleted smaller #
+public:
+	StockSpanner() {}
+
+	int next(int price) {
+		int count = 1;// itself
+		while (!prices_stack.empty() && prices_stack.back().first <= price) {
+			count += prices_stack.back().second;
+			prices_stack.pop_back();
+		}
+		prices_stack.emplace_back(price, count);
+		return count;
+	}
+};
+TEST_CASE("901. Online Stock Span", "[NEW]")
+{
+	StockSpanner span;
+	CHECK(span.next(100) == 1);
+	CHECK(span.next(80) == 1);
+	CHECK(span.next(60) == 1);
+	CHECK(span.next(70) == 2);
+	CHECK(span.next(60) == 1);
+	CHECK(span.next(75) == 4);
+	CHECK(span.next(85) == 6);
+	CHECK(span.next(85) == 7);
+}

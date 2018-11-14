@@ -243,10 +243,3 @@ TEST_CASE("911. Online Election", "[NEW]")
 	CHECK(vote.q(100) == 1);
 	CHECK(vote.q(75) == 1);
 }
-
-class DivideConquer
-{
-	// 907. Sum of Subarray Minimums
-	int sumSubarrayMins(vector<int>& A) {
-	}
-};
