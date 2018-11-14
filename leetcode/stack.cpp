@@ -204,7 +204,7 @@ public:
 	}
 	template <typename T, typename Comp>
 	vector<T> computeNextLess(vector<T>& arr, Comp comp) {
-		deque<T> plp{ 0 };  // monotonous stack
+		deque<T> plp{};  // monotonous stack
 		vector<T> next_less_pos(arr.size(), arr.size()); // find elem < current, on the right side
 		for (int i = (int)arr.size() - 1; i >= 0; i--) {  // i must be signed
 			while (!plp.empty() && comp(arr[i], arr[plp.back()]))  // cross equal value
@@ -229,6 +229,7 @@ public:
 };
 TEST_CASE("84. Largest Rectangle in Histogram", "[NEW]")
 {
+	CHECK(Stacking().largestRectangleArea(vector<int>{0,9}) == 9);
 	CHECK(Stacking().largestRectangleArea(vector<int>{2, 1, 5, 6, 2, 3}) == 10);
 }
 TEST_CASE("907. Sum of Subarray Minimums", "[NEW]")
