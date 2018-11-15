@@ -215,7 +215,7 @@ public:
 		}
 		return next_less_pos;
 	}
-	// 84. Largest Rectangle in Histogram
+	// 84. Largest Rectangle in Histogram, similar to #907
 	// at each bar, find the left and rigth edge which are shorter than current
 	int largestRectangleArea(vector<int>& heights) {
 		vector<int> prev_less_pos = computePrevLess(heights, less_equal<int>());// from L to R, maintain increasing stack
@@ -223,6 +223,35 @@ public:
 		int max_area = 0;
 		for (size_t i = 0; i < heights.size(); i++) { // height of current bar will be height of the rentangle
 			max_area = max(max_area, heights[i] * (next_less_pos[i] - prev_less_pos[i]-1));
+		}
+		return max_area;
+	}
+	// 85. Maximal Rectangle, matrix of '0' and '1'
+	// find max rectangle of '1's
+	int maximalRectangle(vector<vector<char>>& matrix) {
+		if (matrix.empty() || matrix[0].empty())
+			return 0;
+		int rows = matrix.size();
+		int cols = matrix[0].size();
+		vector<vector<int>> heights(rows, vector<int>(cols, 0));
+		// count cumulative '1' from top to bottom, start over if there is '0'
+		for (int j = 0; j < cols; j++) {
+			int h = 0;
+			for (int i = 0; i < rows; i++) {
+				if (matrix[i][j] == '1')
+					h++;
+				else
+					h = 0;
+				heights[i][j] = h;
+			}
+		}
+		int max_area = 0;
+		// each row is be base of a histogram, like problem #84
+		for (int r = 0; r < rows; r++) {
+			vector<int> prev_less_pos = computePrevLess(heights[r], less_equal<int>());// from L to R, maintain increasing stack
+			vector<int> next_less_pos = computeNextLess(heights[r], less_equal<int>());// from R to L, maintain increasing stack
+			for (size_t c = 0; c < cols; c++)  // height of current bar will be height of the rentangle
+				max_area = max(max_area, heights[r][c] * (next_less_pos[c] - prev_less_pos[c] - 1));
 		}
 		return max_area;
 	}
