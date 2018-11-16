@@ -237,6 +237,42 @@ public:
 		}
 		return max_area;
 	}
+	// 42. Trapping Rain Water
+	int trap(vector<int>& height) {
+		// scan from R to L, use stack to store elevaion in decreasing order
+		deque<int> elevation;  // keep same order as vector height
+		int area = 0;
+		for (int i = height.size() - 1; i >= 0; i--) {
+			if (elevation.empty())
+				elevation.push_back(i);
+			else if (height[i] >= height[elevation.back()]) {  // compute water trapped between current and the highest
+				area += (elevation.back() - i-1)*height[elevation.back()];
+				area -= accumulate(begin(height) + i + 1, begin(height) + elevation.back(), 0); // subtract area occupied by elevation in between
+				elevation.clear();  // sub system to store water is done because Left side is higher
+				elevation.push_back(i);
+			}
+			else {
+				while (height[i] >= height[elevation.front()]) // maintain increasing order from left to right
+					elevation.pop_front();
+				elevation.push_front(i);
+			}
+		}
+		// check each reservoir in increasing order
+		if (elevation.size() > 1) {
+			int left = elevation.front();
+			for (int right : elevation) {
+				if (right - left > 1) {
+					int A = (right - left - 1)*height[left];
+					int noneWater= accumulate(begin(height) + left + 1, begin(height) + right, 0);
+					if (A > noneWater)
+						area += (A- noneWater);
+				}
+				left = right;
+			}
+		}
+		return area;
+	}
+
 	// 85. Maximal Rectangle, matrix of '0' and '1'
 	// find max rectangle of '1's
 	int maximalRectangle(vector<vector<char>>& matrix) {
