@@ -116,6 +116,34 @@ public:
 		return ans;
 	}
 
+	template <typename T, typename Comp>
+	vector<T> computePrevQueue(vector<T>& arr, Comp comp) {
+		vector<T> prev_pos(arr.size(), -1); //find  elem > current, on the left side, from left
+		deque<T> plp{ 0 };  // monotonous stack
+		for (size_t i = 1; i < arr.size(); i++) {
+			if (plp.empty() || comp(arr[i], arr[plp.back()]))
+				plp.push_back(i);
+			else {
+				auto greater = upper_bound(begin(plp), end(plp), i, [&arr](int i, int j) { return arr[i] < arr[j]; });
+				if (greater != end(plp))
+					prev_pos[i] = *greater;
+			}
+		}
+		return prev_pos;
+	}
+	vector<int> nextGreaterElementsII(vector<int>& nums) {  // implement with monotone stack, no circular, beat 96%
+		vector<int> next_greater_pos = computeNextLess(nums, greater_equal<int>());// from R to L, maintain decreasing stack
+		// circular array means left side of current, scan from left to right
+		vector<int> prev_greater_pos = computePrevQueue(nums, greater<int>());
+		vector<int> ans(nums.size(),-1);
+		for (size_t i = 0; i < nums.size(); i++) {
+			if (next_greater_pos[i] != nums.size()) {
+				ans[i]= nums[next_greater_pos[i]];
+			} else if (prev_greater_pos[i] != -1)
+				ans[i] = nums[prev_greater_pos[i]];
+		}
+		return ans;
+	}
 	// 556. Next Greater Element III
 	// Given a positive 32-bit integer n, you need to find the smallest 32-bit integer which has exactly the same digits existing in the integer n and is greater in value than n
 	int nextGreaterElement(int n) {  // beat 100%
@@ -257,11 +285,13 @@ TEST_CASE("Daily Temperatures find warmer day ahead", "[GRE]")
 	CHECK(Stacking().dailyTemperatures(vector<int>{73}) == vector<int>{0});
 }
 
-TEST_CASE("Next Greater Element I, II, III", "[GRE]")
+TEST_CASE("Next Greater Element I, II, III", "[NEW]")
 {
 	CHECK(Stacking().nextGreaterElement(vector<int>{4, 1, 2}, vector<int>{1, 3, 4, 2}) == vector<int>{-1, 3, -1});
 
 	CHECK(Stacking().nextGreaterElements(vector<int>{1, 2, 1}) == vector<int>{2, -1, 2});
+	CHECK(Stacking().nextGreaterElementsII(vector<int>{1, 2, 1}) == vector<int>{2, -1, 2});
+	CHECK(Stacking().nextGreaterElementsII(vector<int>{5,4,3,2,1}) == vector<int>{-1,5,5,5,5});
 
 	CHECK(Stacking().nextGreaterElement(4365) == 4536);
 	CHECK(Stacking().nextGreaterElement(230241) == 230412);
