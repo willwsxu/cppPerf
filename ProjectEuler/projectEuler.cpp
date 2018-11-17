@@ -53,7 +53,7 @@ int successfulCalls(int phone, int p)
 		}
 	}
 }
-TEST_CASE("Project Euler #186: Connectedness of a network", "[NEW]")
+TEST_CASE("Project Euler #186: Connectedness of a network", "[EUL]")
 {
 	CHECK(successfulCalls(0, 1) == 622572);
 	CHECK(successfulCalls(1, 99) == 3116963);
@@ -68,11 +68,11 @@ int gcd(int p, int q)
 //Project Euler #39: Integer right triangles, perimeter N=[12, 5x10^6]
 vector<vector<int>> rightTrianglesFundamental(int N)
 {
-	// 3.4a <=5 x10^6
-	// Euclid method: M^2-n^2, 2mn, m^2+n^2, p=2m(m+n)>=4n^2
+	// Euclid method: M^2-n^2, 2mn, m^2+n^2, p=2m(m+n)>=4n^2, m>n
 	vector<vector<int>> triangles;
-	const int MAX_N = 1200;
-	const int MAX_M = 1300;
+	const int MAX_N = static_cast<int>(sqrt(N / 4)) + 1; // 4n^2 <= p
+	const int MAX_M = static_cast<int>(sqrt(N / 2)) + 1;  // 2m^2 <= p
+	cout << MAX_N << " " << MAX_M << "\n";
 	for (int n = 1; n < MAX_N; n++) {
 		int n_sq = n*n;
 		for (int m = n + 1; m < MAX_M; m+=2) { // m and n must be odd parity
@@ -80,13 +80,13 @@ vector<vector<int>> rightTrianglesFundamental(int N)
 				int m_sq = m*m;
 				triangles.push_back({ m_sq - n_sq, 2 * m*n, m_sq + n_sq });
 			}
-//			perimeter.push_back(2 * m*(m + n));
 		}
 	}
+	cout << "fundamental triangles " << triangles.size() << "\n";
 	return triangles;
 }
 
-TEST_CASE("Euler #39 fundamental right Triangles", "[NEW]")
+TEST_CASE("Euler #39 fundamental right Triangles", "[EUL]")
 {
 	auto x = rightTrianglesFundamental(5000000);
 	set<vector<int>> uniq;
@@ -105,6 +105,7 @@ map<int,int> max_right_triangles_by_perimeter(int N)
 		for (int p = perim; p < N; p += perim)
 			perimeter_map[p]++;  // step 1, count repeats of perimeter
 	}
+	cout << "perimeter_map triangles " << perimeter_map.size() << "\n";
 	int max_count = 0;
 	int max_val = 0;  // value with max_count
 	for (auto& m : perimeter_map) {
