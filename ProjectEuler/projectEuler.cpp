@@ -72,7 +72,7 @@ vector<vector<int>> rightTrianglesFundamental(int N)
 	vector<vector<int>> triangles;
 	const int MAX_N = static_cast<int>(sqrt(N / 4)) + 1; // 4n^2 <= p
 	const int MAX_M = static_cast<int>(sqrt(N / 2)) + 1;  // 2m^2 <= p
-	cout << MAX_N << " " << MAX_M << "\n";
+//	cout << MAX_N << " " << MAX_M << "\n";
 	for (int n = 1; n < MAX_N; n++) {
 		int n_sq = n*n;
 		for (int m = n + 1; m < MAX_M; m+=2) { // m and n must be odd parity
@@ -82,7 +82,7 @@ vector<vector<int>> rightTrianglesFundamental(int N)
 			}
 		}
 	}
-	cout << "fundamental triangles " << triangles.size() << "\n";
+//	cout << "fundamental triangles " << triangles.size() << "\n";
 	return triangles;
 }
 
@@ -105,7 +105,8 @@ map<int,int> max_right_triangles_by_perimeter(int N)
 		for (int p = perim; p <= N; p += perim)
 			perimeter_map[p]++;  // step 1, count repeats of perimeter
 	}
-	cout << "perimeter_map triangles " << perimeter_map.size() << "\n";
+//	cout << "perimeter_map triangles " << perimeter_map.size() << "\n";
+
 	int max_count = 0;
 	int max_val = 0;  // value with max_count
 	for (auto& m : perimeter_map) {
@@ -120,13 +121,14 @@ map<int,int> max_right_triangles_by_perimeter(int N)
 
 TEST_CASE("Euler #39 rightTriangles", "[NEW]")
 {
-	map<int, int> triangles_same_perimeter = max_right_triangles_by_perimeter(120);
+	map<int, int> triangles_same_perimeter = max_right_triangles_by_perimeter(121);
 	auto find_max_p = [&triangles_same_perimeter](int N) {
 		auto found = triangles_same_perimeter.lower_bound(N);
-		if (found->first > N)
+		if (found==end(triangles_same_perimeter) || found->first > N)
 			--found;
 		return found->second;
 	};
+	CHECK(find_max_p(121) == 120);  // edge case, perimeter 121 has no triangle
 	CHECK(find_max_p(120) == 120);
 	CHECK(find_max_p(12) == 12);
 	CHECK(find_max_p(80) == 60);
