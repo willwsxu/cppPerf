@@ -5,6 +5,7 @@
 
 #include <map>
 #include <set>
+#include <numeric>
 #include "myalgo.h"
 #include "UnionFind.h"
 using namespace std;
@@ -59,30 +60,59 @@ TEST_CASE("Project Euler #186: Connectedness of a network", "[NEW]")
 	CHECK(successfulCalls(524287, 99) == 2325629);
 }
 
+int gcd(int p, int q)
+{
+	return q == 0 ? p : gcd(q, p%q);
+}
+// http://www.friesian.com/pythag.htm
 //Project Euler #39: Integer right triangles, perimeter N=[12, 5x10^6]
-vector<int> rightTriangles(int N)
+vector<vector<int>> rightTrianglesFundamental(int N)
 {
 	// 3.4a <=5 x10^6
 	// Euclid method: M^2-n^2, 2mn, m^2+n^2, p=2m(m+n)>=4n^2
-	//vector<vector<int>> triangles;
-	vector<int> perimeter;
+	vector<vector<int>> triangles;
 	const int MAX_N = 1200;
 	const int MAX_M = 1300;
 	for (int n = 1; n < MAX_N; n++) {
-		//int n_sq = n*n;
-		for (int m = n + 1; m < MAX_M; m++) {
-			//int m_sq = m*m;
-			//triangles.push_back({ m_sq - n_sq, 2 * m*n, m_sq + n_sq });
-			perimeter.push_back(2 * m*(m + n));
+		int n_sq = n*n;
+		for (int m = n + 1; m < MAX_M; m+=2) { // m and n must be odd parity
+			if (gcd(m, n) == 1) {
+				int m_sq = m*m;
+				triangles.push_back({ m_sq - n_sq, 2 * m*n, m_sq + n_sq });
+			}
+//			perimeter.push_back(2 * m*(m + n));
 		}
 	}
-	//sort(begin(perimeter), end(perimeter));
+	return triangles;
+}
+
+TEST_CASE("Euler #39 fundamental right Triangles", "[NEW]")
+{
+	auto x = rightTrianglesFundamental(5000000);
+	set<vector<int>> uniq;
+	for (auto& v : x) {
+		sort(begin(v), end(v));
+		uniq.insert(v);
+	}
+	CHECK(uniq.size() == x.size());
+}
+vector<int> allRightTrianglesPerimeter(int N)
+{
+	auto x = rightTrianglesFundamental(N);
+	vector<int> perimeter;
+	perimeter.reserve(x.size() * 10);
+	for (const auto& v : x) {
+		int perim = accumulate(cbegin(v), cend(v),0);
+		for (int p = perim; p < N; p += perim)
+			perimeter.push_back(p);
+	}
+	sort(begin(perimeter), end(perimeter));
 	return perimeter;
 }
 
-TEST_CASE("Euler #39 rightTriangles", "[X]")
+TEST_CASE("Euler #39 rightTriangles", "[NEW]")
 {
-	auto x = rightTriangles(5000000);
+	auto x = allRightTrianglesPerimeter(5000000);
 	map<int, int> triangles_same_perimeter;
 	for (int p : x)
 		triangles_same_perimeter[p]++;
