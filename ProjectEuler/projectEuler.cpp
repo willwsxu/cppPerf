@@ -96,35 +96,30 @@ TEST_CASE("Euler #39 fundamental right Triangles", "[NEW]")
 	}
 	CHECK(uniq.size() == x.size());
 }
-vector<int> allRightTrianglesPerimeter(int N)
+map<int,int> max_right_triangles_by_perimeter(int N)
 {
 	auto x = rightTrianglesFundamental(N);
-	vector<int> perimeter;
-	perimeter.reserve(x.size() * 10);
+	map<int, int> perimeter_map;
 	for (const auto& v : x) {
 		int perim = accumulate(cbegin(v), cend(v),0);
 		for (int p = perim; p < N; p += perim)
-			perimeter.push_back(p);
+			perimeter_map[p]++;  // step 1, count repeats of perimeter
 	}
-	sort(begin(perimeter), end(perimeter));
-	return perimeter;
-}
-
-TEST_CASE("Euler #39 rightTriangles", "[NEW]")
-{
-	auto x = allRightTrianglesPerimeter(5000000);
-	map<int, int> triangles_same_perimeter;
-	for (int p : x)
-		triangles_same_perimeter[p]++;
 	int max_count = 0;
 	int max_val = 0;  // value with max_count
-	for (auto& m : triangles_same_perimeter) {
+	for (auto& m : perimeter_map) {
 		if (m.second > max_count) {
 			max_count = m.second;
 			max_val = m.first;
 		}
-		m.second = max_val;  // change s
+		m.second = max_val;  // change map to store the last perimeter which has the max triangles
 	}
+	return perimeter_map;
+}
+
+TEST_CASE("Euler #39 rightTriangles", "[NEW]")
+{
+	map<int, int> triangles_same_perimeter = max_right_triangles_by_perimeter(5000000);
 	auto find_max_p = [&triangles_same_perimeter](int N) {
 		auto found = triangles_same_perimeter.lower_bound(N);
 		if (found->first > N)
