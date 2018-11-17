@@ -188,6 +188,7 @@
     <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="NaryTree.cpp" />
     <ClCompile Include="OtherTree.cpp" />
+    <ClCompile Include="projectEuler.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="HackerLRUCache.cpp" />
     <ClCompile Include="stack.cpp" />

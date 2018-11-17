@@ -146,5 +146,8 @@
     <ClCompile Include="HackerRankDp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="projectEuler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
