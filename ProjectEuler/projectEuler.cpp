@@ -102,7 +102,7 @@ map<int,int> max_right_triangles_by_perimeter(int N)
 	map<int, int> perimeter_map;
 	for (const auto& v : x) {
 		int perim = accumulate(cbegin(v), cend(v),0);
-		for (int p = perim; p < N; p += perim)
+		for (int p = perim; p <= N; p += perim)
 			perimeter_map[p]++;  // step 1, count repeats of perimeter
 	}
 	cout << "perimeter_map triangles " << perimeter_map.size() << "\n";
@@ -120,14 +120,14 @@ map<int,int> max_right_triangles_by_perimeter(int N)
 
 TEST_CASE("Euler #39 rightTriangles", "[NEW]")
 {
-	map<int, int> triangles_same_perimeter = max_right_triangles_by_perimeter(5000000);
+	map<int, int> triangles_same_perimeter = max_right_triangles_by_perimeter(120);
 	auto find_max_p = [&triangles_same_perimeter](int N) {
 		auto found = triangles_same_perimeter.lower_bound(N);
 		if (found->first > N)
 			--found;
 		return found->second;
 	};
+	CHECK(find_max_p(120) == 120);
 	CHECK(find_max_p(12) == 12);
 	CHECK(find_max_p(80) == 60);
-	CHECK(find_max_p(120) == 120);
 }
