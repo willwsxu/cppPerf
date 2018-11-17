@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "leetcode", ".\leetcode\leetcode2015.vcxproj", "{C25CAF52-0A3A-4078-9740-27C330DFBC2D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "leetcode", "leetcode\leetcode2015.vcxproj", "{C25CAF52-0A3A-4078-9740-27C330DFBC2D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp11", ".\cpp11\cpp11.vcxproj", "{4AD8D5B6-A842-4E98-AD68-9F99FADFC687}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp11", "cpp11\cpp11.vcxproj", "{4AD8D5B6-A842-4E98-AD68-9F99FADFC687}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "perfTest", ".\perfTest.vcxproj", "{FEF478C4-61FD-4640-AB88-3E6D97CA89BF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "perfTest", "perfTest.vcxproj", "{FEF478C4-61FD-4640-AB88-3E6D97CA89BF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectEuler", "ProjectEuler\ProjectEuler.vcxproj", "{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,14 @@ Global
 		{FEF478C4-61FD-4640-AB88-3E6D97CA89BF}.Release|x64.ActiveCfg = Release|Win32
 		{FEF478C4-61FD-4640-AB88-3E6D97CA89BF}.Release|x86.ActiveCfg = Release|Win32
 		{FEF478C4-61FD-4640-AB88-3E6D97CA89BF}.Release|x86.Build.0 = Release|Win32
+		{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}.Debug|x64.ActiveCfg = Debug|x64
+		{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}.Debug|x64.Build.0 = Debug|x64
+		{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}.Debug|x86.ActiveCfg = Debug|Win32
+		{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}.Debug|x86.Build.0 = Debug|Win32
+		{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}.Release|x64.ActiveCfg = Release|x64
+		{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}.Release|x64.Build.0 = Release|x64
+		{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}.Release|x86.ActiveCfg = Release|Win32
+		{B4FDF9A0-9930-4D74-8D47-5E3AF6EA73E5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

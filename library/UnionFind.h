@@ -2,7 +2,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
-
+#include <set>
 
 class UnionFind
 {
@@ -43,11 +43,12 @@ public:
 			return;
 		nodes_added++;
 	}
+	/*
 	int get_count(set<int>& bad) const {
 		for (int u : bad) {
 			if (parents[u] >= 0 || size[u] > 1)
 				bad.erase(u);
 		}
 		return nodes_added + bad.size();
-	}
+	}*/
 };

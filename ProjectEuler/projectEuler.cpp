@@ -1,6 +1,10 @@
-#include "stdafx.h"
+////////////////////////////////////////////////
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
+#include <map>
+#include <set>
 #include "myalgo.h"
 #include "UnionFind.h"
 using namespace std;
