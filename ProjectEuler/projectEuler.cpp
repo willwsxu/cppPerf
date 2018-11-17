@@ -69,7 +69,7 @@ int gcd(int p, int q)
 }
 // http://www.friesian.com/pythag.htm
 //Project Euler #39: Integer right triangles, perimeter N=[12, 5x10^6]
-vector<vector<int>> rightTrianglesFundamental(int N)
+vector<vector<int>> rightTrianglesFundamental(long long N) // primitive right angled triangle
 {
 	// Euclid method: M^2-n^2, 2mn, m^2+n^2, p=2m(m+n)>=4n^2, m>n
 	vector<vector<int>> triangles;
@@ -111,7 +111,7 @@ set<int> max_right_triangles_by_perimeter(int N)
 	return best_perimeter;
 }
 
-TEST_CASE("Euler #39 fundamental right Triangles", "[NEW]")
+TEST_CASE("Euler #39 fundamental right Triangles", "[LARGE]")
 {
 	auto x = rightTrianglesFundamental(5000000);
 	set<vector<int>> uniq;
@@ -156,3 +156,35 @@ int main_func () {
 		cout << find_max_p(p) << "\n";
 	return 0;
 }
+
+bool isPerfectSquare(long x)
+{
+	// Find floating point value of  
+	// square root of x. 
+	long double sr = sqrt(x);
+
+	// If square root is an integer 
+	return ((sr - floor(sr)) == 0);
+}
+
+// Project Euler #218: Perfect right-angled triangles
+int perfect_right_triangle_not_super(long long N)
+{
+	vector<vector<int>> right_triangles = rightTrianglesFundamental(N);
+	auto not_perfect = remove_if(begin(right_triangles), end(right_triangles), [](const auto&abc) {
+		return !isPerfectSquare(abc[2]);
+	});
+	//right_triangles.erase(bad, end(right_triangles));
+	auto super_perfect = count_if(begin(right_triangles), not_perfect, [](const auto&abc) {
+		long long area = abc[0];  // test divisible by 6 and 28
+		area *= abc[1];  // twice of area must be divisible by 28, so it should be divisible by 8
+		return area % 8 == 0 && area % 21 == 0;  // 21 is multiple of factors from 6 and 28
+	});
+	return distance(begin(right_triangles), not_perfect)- super_perfect;
+}
+
+TEST_CASE("Project Euler #218: Perfect right-angled triangles", "[NEW]")
+{
+	CHECK(perfect_right_triangle_not_super(1000000) == 0); // trick q, all perfect right triangles are super perfect
+}
+
