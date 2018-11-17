@@ -10,6 +10,9 @@
 #include "UnionFind.h"
 using namespace std;
 
+// reference
+// https://euler.stephan-brumme.com/39/
+
 // Project Euler #186: Connectedness of a network.
 // phone number generated via Lagged Fibonacci Generator, caller(n)=S2n-1, called(n)=S2n
 // if caller(n)=celled(n), mis dial
@@ -86,7 +89,29 @@ vector<vector<int>> rightTrianglesFundamental(int N)
 	return triangles;
 }
 
-TEST_CASE("Euler #39 fundamental right Triangles", "[EUL]")
+set<int> max_right_triangles_by_perimeter(int N)
+{
+	auto x = rightTrianglesFundamental(N);
+	vector<unsigned char> perimeter_count(N+1,0);  // speed up a lot to use vector instead of map
+	for (const auto& v : x) {
+		int perim = accumulate(cbegin(v), cend(v),0);
+		for (int p = perim; p <= N; p += perim)
+			perimeter_count[p]++;  // step 1, count repeats of perimeter
+	}
+
+	set<int> best_perimeter{ 0 };  // only store the perimeter with better # of triangles
+	int max_count = 0;
+	for (size_t i = 0; i < perimeter_count.size(); i++) {
+		if (perimeter_count[i] > max_count) {
+			max_count = perimeter_count[i];
+			best_perimeter.insert(i);
+		}
+	}
+	//cout << " max count " << max_count << " " << best_perimeter .size() << "\n";  // max count 168 when N=5000000
+	return best_perimeter;
+}
+
+TEST_CASE("Euler #39 fundamental right Triangles", "[NEW]")
 {
 	auto x = rightTrianglesFundamental(5000000);
 	set<vector<int>> uniq;
@@ -95,41 +120,39 @@ TEST_CASE("Euler #39 fundamental right Triangles", "[EUL]")
 		uniq.insert(v);
 	}
 	CHECK(uniq.size() == x.size());
-}
-map<int,int> max_right_triangles_by_perimeter(int N)
-{
-	auto x = rightTrianglesFundamental(N);
-	map<int, int> perimeter_map;
-	for (const auto& v : x) {
-		int perim = accumulate(cbegin(v), cend(v),0);
-		for (int p = perim; p <= N; p += perim)
-			perimeter_map[p]++;  // step 1, count repeats of perimeter
-	}
-//	cout << "perimeter_map triangles " << perimeter_map.size() << "\n";
-
-	int max_count = 0;
-	int max_val = 0;  // value with max_count
-	for (auto& m : perimeter_map) {
-		if (m.second > max_count) {
-			max_count = m.second;
-			max_val = m.first;
-		}
-		m.second = max_val;  // change map to store the last perimeter which has the max triangles
-	}
-	return perimeter_map;
+	set<int> best_perimeter = max_right_triangles_by_perimeter(5000000);
+	CHECK(best_perimeter.size() == 30);
 }
 
 TEST_CASE("Euler #39 rightTriangles", "[NEW]")
 {
-	map<int, int> triangles_same_perimeter = max_right_triangles_by_perimeter(121);
-	auto find_max_p = [&triangles_same_perimeter](int N) {
-		auto found = triangles_same_perimeter.lower_bound(N);
-		if (found==end(triangles_same_perimeter) || found->first > N)
-			--found;
-		return found->second;
+	set<int> best_perimeter = max_right_triangles_by_perimeter(121);
+	auto find_max_p = [&best_perimeter](int N) {
+		auto found = best_perimeter.upper_bound(N);
+		return *(--found);
 	};
 	CHECK(find_max_p(121) == 120);  // edge case, perimeter 121 has no triangle
 	CHECK(find_max_p(120) == 120);
 	CHECK(find_max_p(12) == 12);
 	CHECK(find_max_p(80) == 60);
+}
+int main_func () {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n;
+	cin >> n;
+	vector<int> perimeters(n);
+	int max_val = 0;
+	for (int i = 0; i<n; i++) {
+		cin >> perimeters[i];
+		max_val = max(max_val, perimeters[i]);
+	}
+	set<int> best_perimeter = max_right_triangles_by_perimeter(max_val + 1);
+	auto find_max_p = [&best_perimeter](int N) {
+		auto found = best_perimeter.upper_bound(N);
+		return *(--found);
+	};
+	for (int p : perimeters)
+		cout << find_max_p(p) << "\n";
+	return 0;
 }
