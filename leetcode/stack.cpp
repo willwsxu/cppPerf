@@ -302,7 +302,26 @@ public:
 		}
 		return max_area;
 	}
+	// 316. Remove Duplicate Letters, every letter appear once and only once
+	// result is the smallest in lexicographical order among all possible results
+	string removeDuplicateLetters(string s) {
+		deque<char> letters;
+		for (auto letter = rbegin(s); letter != rend(s); ++letter) {
+			auto found = find(begin(letters), end(letters), *letter);
+			if (found == end(letters))
+				letters.push_front(*letter);  // first itme for this letter, add to front
+			else if (*letter < letters.front()) {  // smaller letter should insert to front
+				letters.erase(found);
+				letters.push_front(*letter);
+			}
+		}
+		return{ begin(letters), end(letters) };
+	}
 };
+TEST_CASE("316. Remove Duplicate Letters", "[NEW]")
+{
+	CHECK(Stacking().removeDuplicateLetters("abacb") == "abc");
+}
 TEST_CASE("84. Largest Rectangle in Histogram", "[NEW]")
 {
 	CHECK(Stacking().largestRectangleArea(vector<int>{0,9}) == 9);
