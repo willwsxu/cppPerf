@@ -4,6 +4,7 @@
 #include <vector>
 #include <set>
 #include <deque>
+#include <unordered_map>
 
 using std::vector;
 using std::set;
@@ -169,4 +170,9 @@ inline vector<set<int>> connectedComponents(std::vector<vector<int>>& matrix, st
 		}
 	}
 	return components;
+}
+
+inline int gcd(int p, int q)
+{
+	return q == 0 ? p : gcd(q, p%q);
 }

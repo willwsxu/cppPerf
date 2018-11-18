@@ -7,6 +7,7 @@
 #include <set>
 #include <numeric>
 #include "myalgo.h"
+#include "helper.h"
 #include "UnionFind.h"
 using namespace std;
 
@@ -63,10 +64,6 @@ TEST_CASE("Project Euler #186: Connectedness of a network", "[EUL]")
 	CHECK(successfulCalls(524287, 99) == 2325629);
 }
 
-int gcd(int p, int q)
-{
-	return q == 0 ? p : gcd(q, p%q);
-}
 // http://www.friesian.com/pythag.htm
 //Project Euler #39: Integer right triangles, perimeter N=[12, 5x10^6]
 vector<vector<int>> rightTrianglesFundamental(long long N) // primitive right angled triangle
