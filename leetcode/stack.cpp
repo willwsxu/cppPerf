@@ -2,6 +2,7 @@
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
 #include "myalgo.h"
+#include "helper.h"
 using namespace std;
 
 
@@ -305,15 +306,23 @@ public:
 	// 316. Remove Duplicate Letters, every letter appear once and only once
 	// result is the smallest in lexicographical order among all possible results
 	string removeDuplicateLetters(string s) {
+		vector<int> count = count_letter(s, 'a'); // use counter to remove previous added letters which are larger than current
 		deque<char> letters;
-		for (auto letter = rbegin(s); letter != rend(s); ++letter) {
-			auto found = find(begin(letters), end(letters), *letter);
-			if (found == end(letters))
-				letters.push_front(*letter);  // first itme for this letter, add to front
-			else if (*letter < letters.front()) {  // smaller letter should insert to front
-				letters.erase(found);
-				letters.push_front(*letter);
+		for (char letter: s) {
+			if (find(begin(letters), end(letters), letter) == end(letters)) {  // add to stack only if it is new
+				while (!letters.empty()) {
+					char back = letters.back();
+					if (letter < back && count[back - 'a'] > 1) {  // maintain increast order if possible
+						letters.pop_back();  // remove previously larger letter
+						count[back - 'a']--;
+					}
+					else
+						break;
+				}
+				letters.push_back(letter);
 			}
+			else
+				count[letter - 'a']--;
 		}
 		return{ begin(letters), end(letters) };
 	}
@@ -321,6 +330,9 @@ public:
 TEST_CASE("316. Remove Duplicate Letters", "[NEW]")
 {
 	CHECK(Stacking().removeDuplicateLetters("abacb") == "abc");
+
+	CHECK(Stacking().removeDuplicateLetters("bcabc") == "abc");
+	CHECK(Stacking().removeDuplicateLetters("cbacdcbc") == "acdb");
 }
 TEST_CASE("84. Largest Rectangle in Histogram", "[NEW]")
 {
