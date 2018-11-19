@@ -474,6 +474,14 @@ public:
 		}
 		return (int)(accumulate(begin(dp[curr]), end(dp[curr]), (long long)0)%MOD);
 	}
+	// 940. Distinct Subsequences II
+	int distinctSubseqII(string S) {
+		const int MOD = 1000000007;
+		vector<long long> ends_with(26, 0);  // count sub sequence ends with each char
+		for (char ch : S)  // append new char to all current sequences, plus 1
+			ends_with[ch - 'a'] = (accumulate(begin(ends_with), end(ends_with), (long long)0) + 1) % MOD;
+		return accumulate(begin(ends_with), end(ends_with), (long long)0) % MOD;
+	}
 }; 
 TEST_CASE("935. Knight Dialer", "[NEW]")
 {
