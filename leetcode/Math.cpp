@@ -538,6 +538,11 @@ public:
 		}
 		if (seg_count!=0)
 			count.push_back(seg_count);
+
+		// strategy to fill, from left to right
+		// if segment is up, fill the top numbers from low to high
+		// if segment is down, fill from top num dowm except to use the bottom nuber as the last one, to prepare for next up segment
+		// update the two pointers
 		int top_num = S.size();
 		int bottom_num = 0;
 		vector<int> ans;
@@ -560,12 +565,10 @@ public:
 			fill_up(count.front());
 		}
 		for (size_t i = 1; i < count.size(); i++) {
-			if (count.front() < 0) {
-				fill_down(-count.front()+1);
-			}
-			else {
-				fill_up(count.front()-1);
-			}
+			if (count[i] < 0) 
+				fill_down(-count[i]-1);
+			else
+				fill_up(count[i]-1);
 		}
 		return ans;
 	}
