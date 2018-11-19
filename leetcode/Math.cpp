@@ -515,7 +515,67 @@ public:
 			return 0;
 		return ans;
 	}
+	// Given string with 'I' or 'D', construct vector if S[i]='I', A[i]<A[i+1]
+	// fill array with permutation of 0..N to conform to rule
+	vector<int> diStringMatch(string S) {
+		vector<int> count;   // by segments, up positive, down negative
+		int seg_count = 0;
+		for (char c : S) {
+			if (c == 'I') {
+				if (seg_count < 0) {
+					count.push_back(seg_count);
+					seg_count = 0;
+				}
+				seg_count++;
+			}
+			else {
+				if (seg_count > 0) {
+					count.push_back(seg_count);
+					seg_count = 0;
+				}
+				seg_count--;
+			}
+		}
+		if (seg_count!=0)
+			count.push_back(seg_count);
+		int top_num = S.size();
+		int bottom_num = 0;
+		vector<int> ans;
+		ans.reserve(top_num + 1);
+		auto fill_down = [&ans, &top_num, &bottom_num](int c) {
+			while (c--) {
+				ans.push_back(top_num--);
+			}
+			ans.push_back(bottom_num++);
+		};
+		auto fill_up = [&ans, &top_num](int c) {
+			for (int i = top_num - c; i <= top_num; i++)
+				ans.push_back(i);
+			top_num -= (c + 1);
+		};
+		if (count.front() < 0) {
+			fill_down(-count.front());
+		}
+		else {
+			fill_up(count.front());
+		}
+		for (size_t i = 1; i < count.size(); i++) {
+			if (count.front() < 0) {
+				fill_down(-count.front()+1);
+			}
+			else {
+				fill_up(count.front()-1);
+			}
+		}
+		return ans;
+	}
 };
+TEST_CASE("942. DI String Match", "[NEW]")
+{
+	CHECK(MathEasy().diStringMatch("IDID") == vector<int>{3,4,0,2,1});
+	CHECK(MathEasy().diStringMatch("DDI") == vector<int>{3, 2, 0, 1});
+	CHECK(MathEasy().diStringMatch("III") == vector<int>{0, 1, 2, 3});
+}
 TEST_CASE("172. Factorial Trailing Zeroes", "[NEW]")
 {
 	CHECK(MathEasy().trailingZeroes(1808548329) == 452137076);
