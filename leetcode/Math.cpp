@@ -558,12 +558,10 @@ public:
 				ans.push_back(i);
 			top_num -= (c + 1);
 		};
-		if (count.front() < 0) {
+		if (count.front() < 0)
 			fill_down(-count.front());
-		}
-		else {
+		else
 			fill_up(count.front());
-		}
 		for (size_t i = 1; i < count.size(); i++) {
 			if (count[i] < 0) 
 				fill_down(-count[i]-1);
@@ -572,12 +570,30 @@ public:
 		}
 		return ans;
 	}
+	vector<int> diStringMatch2(string S) {  // borrowed idea
+		int top_num = S.size();
+		int bottom_num = 0;
+		vector<int> ans;
+		ans.reserve(top_num + 1);
+		for (char c : S) {
+			if (c == 'I')
+				ans.push_back(bottom_num++);
+			else
+				ans.push_back(top_num--);
+		}
+		ans.push_back(bottom_num);
+		return ans;
+	}
 };
 TEST_CASE("942. DI String Match", "[NEW]")
 {
 	CHECK(MathEasy().diStringMatch("IDID") == vector<int>{3,4,0,2,1});
 	CHECK(MathEasy().diStringMatch("DDI") == vector<int>{3, 2, 0, 1});
 	CHECK(MathEasy().diStringMatch("III") == vector<int>{0, 1, 2, 3});
+
+	CHECK(MathEasy().diStringMatch2("IDID") == vector<int>{0,4,1,3,2});
+	CHECK(MathEasy().diStringMatch2("DDI") == vector<int>{3, 2, 0, 1});
+	CHECK(MathEasy().diStringMatch2("III") == vector<int>{0, 1, 2, 3});
 }
 TEST_CASE("172. Factorial Trailing Zeroes", "[NEW]")
 {
