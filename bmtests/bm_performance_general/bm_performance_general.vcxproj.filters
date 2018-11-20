@@ -21,6 +21,9 @@
     <ClCompile Include="bm_general_test_driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="instruction-parallelism.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pre_post_increment.h">

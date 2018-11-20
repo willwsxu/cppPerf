@@ -1,7 +1,8 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <string>
 #include <memory>
 #include <functional>
+#include <iostream>
 #include <benchmark/benchmark.h>
 
 BENCHMARK_MAIN();

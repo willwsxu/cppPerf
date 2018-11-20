@@ -114,6 +114,7 @@
   <ItemGroup>
     <ClCompile Include="..\perfExample.cpp" />
     <ClCompile Include="bm_general_test_driver.cpp" />
+    <ClCompile Include="instruction-parallelism.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bm_call_once.h" />
