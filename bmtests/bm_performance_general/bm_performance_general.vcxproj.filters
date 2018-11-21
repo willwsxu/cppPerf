@@ -24,6 +24,9 @@
     <ClCompile Include="instruction-parallelism.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bm_itoa.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pre_post_increment.h">
