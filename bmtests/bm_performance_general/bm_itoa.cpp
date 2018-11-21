@@ -176,7 +176,7 @@ static void BM_itoa_fix(benchmark::State& state)  // 7.3 ns vs 63.8 ns experimen
 	char *szEnd = szValue + state.range(0);
 	while (state.KeepRunning())
 	{
-		benchmark::DoNotOptimize(val = itoa_fix(test, szValue, szEnd));
+		benchmark::DoNotOptimize(val = itoa_fix(-1234567890, szValue, szEnd));
 	}
 }
 BENCHMARK(BM_itoa_fix)->Args({ 12,2 })->Args({ 14,3 })->Args({ 16,4 })->Args({ 18,5 });
@@ -216,15 +216,16 @@ bool ftoa_fix(int64_t val, unsigned short dp, char *szValue, char *pEnd)
 }
 static void BM_ftoa_fix(benchmark::State& state)
 {
-	int64_t tests[] = { -1234567890, -12345678900ll, -123456789000ll , -1234567890000ll };
+	// long long value slow down a lot
+	static const int64_t tests[] = { -1234567890, -12345678900ll, -123456789000ll , -1234567890000ll };
 	char szValue[20] = { 0 };
 	bool success = false;
 	int64_t test = tests[state.range(1) - 2];
-	int dp = static_cast<unsigned short>(state.range(1));
+	int dp = static_cast<unsigned short>(state.range(1));  // use dp also slow down, ?
 	char *szEnd = szValue + state.range(0);
 	while (state.KeepRunning())
 	{
-		benchmark::DoNotOptimize(success = ftoa_fix(test, dp, szValue, szEnd));
+		benchmark::DoNotOptimize(success = ftoa_fix(-1234567890, 2, szValue, szEnd));
 	}
 }
 BENCHMARK(BM_ftoa_fix)->Args({ 12,2 })->Args({ 14,3 })->Args({ 16,4 })->Args({ 18,5 });
