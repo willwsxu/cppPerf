@@ -21,9 +21,6 @@
     <ClCompile Include="bm_general_test_driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="instruction-parallelism.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="bm_itoa.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
