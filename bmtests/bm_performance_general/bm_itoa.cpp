@@ -128,50 +128,62 @@ static void BM_itoa_new2(benchmark::State& state)
 }
 BENCHMARK(BM_itoa_new2);
 
-int itoa_fix_ori(int64_t val, char *szValue, char *pEnd)
-{
-	if (val < 0) {
-		*szValue++ = '-';
-		val = -val;
-	}
-	pEnd--;
-	char *fill = pEnd - count_digits(val);
-	while (val>0) {
-		*pEnd-- = val % 10 + '0';
-		val /= 10;
-	}
-	while (fill >= szValue)
-		*fill-- = '0';
-	return (int)val;
-}
-
+// convert int to string, right justified, pad left with 0
 int itoa_fix(int64_t val, char *szValue, char *pEnd)
 {
 	if (val < 0) {
 		*szValue++ = '-';
 		val = -val;
 	}
-	//pEnd--;
-	char *fill = pEnd - count_digits(val);
-	while (val>0) {
-		*--pEnd = val % 10 + '0';
+	int fill_zero = pEnd - szValue - count_digits(val);
+	pEnd--;
+	while (val>0) {  // test 0 is fast than compare other values
+		*pEnd-- = val % 10 + '0';
 		val /= 10;
 	}
-	while (fill > szValue)
-		*--fill = '0';
+	szValue += fill_zero-1;
+	while (fill_zero--)  // less data dependency
+		*szValue-- = '0';
 	return (int)val;
 }
 
-static void BM_itoa_fix(benchmark::State& state)
+int itoa_fix_experiment(int64_t val, char *szValue, char *pEnd)
 {
-	char szValue[12] = { 0 };
+	if (val < 0) {
+		*szValue++ = '-';
+		val = -val;
+	}
+	char *fill = pEnd - count_digits(val);
+	while (pEnd-- > fill) {
+		*pEnd = val % 10 + '0';
+		val /= 10;
+	}
+	while (fill-- > szValue)
+		*fill = '0';
+	return (int)val;
+}
+
+static void BM_itoa_fix(benchmark::State& state)  // 7.3 ns vs 63.8 ns experiment code
+{
+	char szValue[20] = { 0 };
 	int val = 0;
 	while (state.KeepRunning())
 	{
-		benchmark::DoNotOptimize(val = itoa_fix(-1234567890, szValue, szValue + sizeof(szValue)));
+		benchmark::DoNotOptimize(val = itoa_fix(-1234567890, szValue, szValue + state.range(0)));
 	}
 }
-BENCHMARK(BM_itoa_fix);
+BENCHMARK(BM_itoa_fix)->Arg(12)->Arg(14)->Arg(16)->Arg(16);
+
+static void BM_itoa_fix_experiment(benchmark::State& state)
+{
+	char szValue[20] = { 0 };
+	int val = 0;
+	while (state.KeepRunning())
+	{
+		benchmark::DoNotOptimize(val = itoa_fix_experiment(-1234567890, szValue, szValue + state.range(0)));
+	}
+}
+BENCHMARK(BM_itoa_fix_experiment)->Arg(12)->Arg(14)->Arg(16)->Arg(16);
 
 
 char* ftoa2(int val, int dp, char *szValue, int size)
