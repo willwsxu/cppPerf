@@ -326,7 +326,52 @@ public:
 		}
 		return{ begin(letters), end(letters) };
 	}
+	// 32. Longest Valid Parentheses
+	int longestValidParentheses(string s) {
+		deque<char> _stack;
+		int maxParen = 0;
+		int runningLen = 0;
+		int prev_valid = 0;
+		int prev_pos = -1;
+		for (const char c : s) {
+			if (c == '(') {
+				if (prev_pos < 0 && runningLen) {  // only allow one prev valid
+					prev_valid = runningLen;
+					prev_pos = _stack.size();
+					runningLen = 0;
+				}
+				_stack.push_back(c);
+			}
+			else {
+				if (_stack.empty()) {  // extra ), invalid
+					runningLen = 0;
+				}
+				else {
+					runningLen += 2;
+					_stack.pop_back();
+					if (_stack.size() == prev_pos && prev_valid > 0) {  // combine with previous valid
+						runningLen += prev_valid;
+						prev_pos = -1;
+						prev_valid = 0;
+					}
+					maxParen = max(maxParen, runningLen);
+				}
+			}
+		}
+		return max(maxParen, runningLen);
+	}
 };
+
+TEST_CASE("32. Longest Valid Parentheses", "[NEW]")
+{
+	CHECK(Stacking().longestValidParentheses("(())()(()((") == 6);
+	CHECK(Stacking().longestValidParentheses(")(())(()()))(") == 10);
+	CHECK(Stacking().longestValidParentheses("(()()") == 4);
+	CHECK(Stacking().longestValidParentheses("(()(((()") == 2);
+	CHECK(Stacking().longestValidParentheses(")()(((())))(") == 10);
+	CHECK(Stacking().longestValidParentheses(")()())") == 4);
+	CHECK(Stacking().longestValidParentheses("()(()") == 2);
+}
 TEST_CASE("316. Remove Duplicate Letters", "[NEW]")
 {
 	CHECK(Stacking().removeDuplicateLetters("abacb") == "abc");

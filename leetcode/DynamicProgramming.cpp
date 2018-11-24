@@ -482,7 +482,7 @@ public:
 			ends_with[ch - 'a'] = (accumulate(begin(ends_with), end(ends_with), (long long)0) + 1) % MOD;
 		return accumulate(begin(ends_with), end(ends_with), (long long)0) % MOD;
 	}
-}; 
+};
 TEST_CASE("935. Knight Dialer", "[NEW]")
 {
 	CHECK(SpecialDp().knightDialer(1) == 10);
