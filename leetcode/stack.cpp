@@ -117,34 +117,6 @@ public:
 		return ans;
 	}
 
-	template <typename T, typename Comp>
-	vector<T> computePrevQueue(vector<T>& arr, Comp comp) {
-		vector<T> prev_pos(arr.size(), -1); //find  elem > current, on the left side, from left
-		deque<T> plp{ 0 };  // monotonous stack
-		for (size_t i = 1; i < arr.size(); i++) {
-			if (plp.empty() || comp(arr[i], arr[plp.back()]))
-				plp.push_back(i);
-			else {
-				auto greater = upper_bound(begin(plp), end(plp), i, [&arr](int i, int j) { return arr[i] < arr[j]; });
-				if (greater != end(plp))
-					prev_pos[i] = *greater;
-			}
-		}
-		return prev_pos;
-	}
-	vector<int> nextGreaterElementsII(vector<int>& nums) {  // implement with monotone stack, no circular, beat 96%
-		vector<int> next_greater_pos = computeNextLess(nums, greater_equal<int>());// from R to L, maintain decreasing stack
-		// circular array means left side of current, scan from left to right
-		vector<int> prev_greater_pos = computePrevQueue(nums, greater<int>());
-		vector<int> ans(nums.size(),-1);
-		for (size_t i = 0; i < nums.size(); i++) {
-			if (next_greater_pos[i] != nums.size()) {
-				ans[i]= nums[next_greater_pos[i]];
-			} else if (prev_greater_pos[i] != -1)
-				ans[i] = nums[prev_greater_pos[i]];
-		}
-		return ans;
-	}
 	// 556. Next Greater Element III
 	// Given a positive 32-bit integer n, you need to find the smallest 32-bit integer which has exactly the same digits existing in the integer n and is greater in value than n
 	int nextGreaterElement(int n) {  // beat 100%
@@ -188,121 +160,6 @@ public:
 		}
 		return open + close;
 	}
-	// 907. Sum of Subarray Minimums, sum of min of all sub array, n [1,30000]
-	int sumSubarrayMins(vector<int>& A) {
-		vector<int> prev_less_pos = computePrevLess(A, less<int>());// from L to R, maintain increasing stack, allow equal
-		vector<int> next_less_pos = computeNextLess(A, less_equal<int>());// from R to L, maintain increasing stack
-		int MOD = 1000000007;
-		long long sum = 0;
-		for (size_t i = 0; i < A.size(); i++) {
-			// treat i as local min, find left and right boundary
-			sum += (i - prev_less_pos[i])*(next_less_pos[i] - i)*A[i];
-			sum %= MOD;
-		}
-		return (int)sum;
-	}
-	template <typename T, typename Comp>
-	vector<T> computePrevLess(vector<T>& arr, Comp comp) {
-		vector<T> prev_less_pos(arr.size(), -1); //find  elem < current, on the left side
-		deque<T> plp{ 0 };  // monotonous stack
-		for (size_t i = 1; i < arr.size(); i++) {
-			while (!plp.empty() && comp(arr[i], arr[plp.back()]))  // don't cross equal value
-				plp.pop_back();
-			if (!plp.empty())
-				prev_less_pos[i] = plp.back();
-			plp.push_back(i);
-		}
-		return prev_less_pos;
-	}
-	template <typename T, typename Comp>
-	vector<T> computeNextLess(vector<T>& arr, Comp comp) {
-		deque<T> plp{};  // monotonous stack
-		vector<T> next_less_pos(arr.size(), arr.size()); // find elem < current, on the right side
-		for (int i = (int)arr.size() - 1; i >= 0; i--) {  // i must be signed
-			while (!plp.empty() && comp(arr[i], arr[plp.back()]))  // cross equal value
-				plp.pop_back();
-			if (!plp.empty())
-				next_less_pos[i] = plp.back();
-			plp.push_back(i);
-		}
-		return next_less_pos;
-	}
-	// 84. Largest Rectangle in Histogram, similar to #907
-	// at each bar, find the left and rigth edge which are shorter than current
-	int largestRectangleArea(vector<int>& heights) {
-		vector<int> prev_less_pos = computePrevLess(heights, less_equal<int>());// from L to R, maintain increasing stack
-		vector<int> next_less_pos = computeNextLess(heights, less_equal<int>());// from R to L, maintain increasing stack
-		int max_area = 0;
-		for (size_t i = 0; i < heights.size(); i++) { // height of current bar will be height of the rentangle
-			max_area = max(max_area, heights[i] * (next_less_pos[i] - prev_less_pos[i]-1));
-		}
-		return max_area;
-	}
-	// 42. Trapping Rain Water
-	int trap(vector<int>& height) {
-		// scan from R to L, use stack to store elevaion in decreasing order
-		deque<int> elevation;  // keep same order as vector height
-		int area = 0;
-		for (int i = height.size() - 1; i >= 0; i--) {
-			if (elevation.empty())
-				elevation.push_back(i);
-			else if (height[i] >= height[elevation.back()]) {  // compute water trapped between current and the highest
-				area += (elevation.back() - i-1)*height[elevation.back()];
-				area -= accumulate(begin(height) + i + 1, begin(height) + elevation.back(), 0); // subtract area occupied by elevation in between
-				elevation.clear();  // sub system to store water is done because Left side is higher
-				elevation.push_back(i);
-			}
-			else {
-				while (height[i] >= height[elevation.front()]) // maintain increasing order from left to right
-					elevation.pop_front();
-				elevation.push_front(i);
-			}
-		}
-		// check each reservoir in increasing order
-		if (elevation.size() > 1) {
-			int left = elevation.front();
-			for (int right : elevation) {
-				if (right - left > 1) {
-					int A = (right - left - 1)*height[left];
-					int noneWater= accumulate(begin(height) + left + 1, begin(height) + right, 0);
-					if (A > noneWater)
-						area += (A- noneWater);
-				}
-				left = right;
-			}
-		}
-		return area;
-	}
-
-	// 85. Maximal Rectangle, matrix of '0' and '1'
-	// find max rectangle of '1's
-	int maximalRectangle(vector<vector<char>>& matrix) {
-		if (matrix.empty() || matrix[0].empty())
-			return 0;
-		int rows = matrix.size();
-		int cols = matrix[0].size();
-		vector<vector<int>> heights(rows, vector<int>(cols, 0));
-		// count cumulative '1' from top to bottom, start over if there is '0'
-		for (int j = 0; j < cols; j++) {
-			int h = 0;
-			for (int i = 0; i < rows; i++) {
-				if (matrix[i][j] == '1')
-					h++;
-				else
-					h = 0;
-				heights[i][j] = h;
-			}
-		}
-		int max_area = 0;
-		// each row is the base of a histogram, like problem #84
-		for (int r = 0; r < rows; r++) {
-			vector<int> prev_less_pos = computePrevLess(heights[r], less_equal<int>());// from L to R, maintain increasing stack
-			vector<int> next_less_pos = computeNextLess(heights[r], less_equal<int>());// from R to L, maintain increasing stack
-			for (int c = 0; c < cols; c++)  // height of current bar will be height of the rentangle
-				max_area = max(max_area, heights[r][c] * (next_less_pos[c] - prev_less_pos[c] - 1));
-		}
-		return max_area;
-	}
 	// 316. Remove Duplicate Letters, every letter appear once and only once
 	// result is the smallest in lexicographical order among all possible results
 	string removeDuplicateLetters(string s) {
@@ -330,6 +187,7 @@ public:
 	int longestValidParentheses(string s) {
 		deque<int> _stack;
 		for (size_t i = 0; i < s.size(); i++) {
+			if (s[i] == '(') {
 				_stack.push_back(i);
 			}
 			else {
@@ -351,6 +209,8 @@ public:
 
 TEST_CASE("32. Longest Valid Parentheses", "[NEW]")
 {
+	string paren = ")(()(()(((())(((((()()))((((()()(()()())())())()))()()()())(())()()(((()))))()((()))(((())()((()()())((())))(())))())((()())()()((()((())))))((()(((((()((()))(()()(())))((()))()))())";
+	CHECK(Stacking().longestValidParentheses(paren) == 132);
 	CHECK(Stacking().longestValidParentheses("(())()(()((") == 6);
 	CHECK(Stacking().longestValidParentheses(")(())(()()))(") == 10);
 	CHECK(Stacking().longestValidParentheses("(()()") == 4);
@@ -359,22 +219,13 @@ TEST_CASE("32. Longest Valid Parentheses", "[NEW]")
 	CHECK(Stacking().longestValidParentheses(")()())") == 4);
 	CHECK(Stacking().longestValidParentheses("()(()") == 2);
 }
+
 TEST_CASE("316. Remove Duplicate Letters", "[NEW]")
 {
 	CHECK(Stacking().removeDuplicateLetters("abacb") == "abc");
 
 	CHECK(Stacking().removeDuplicateLetters("bcabc") == "abc");
 	CHECK(Stacking().removeDuplicateLetters("cbacdcbc") == "acdb");
-}
-TEST_CASE("84. Largest Rectangle in Histogram", "[NEW]")
-{
-	CHECK(Stacking().largestRectangleArea(vector<int>{0,9}) == 9);
-	CHECK(Stacking().largestRectangleArea(vector<int>{2, 1, 5, 6, 2, 3}) == 10);
-}
-TEST_CASE("907. Sum of Subarray Minimums", "[NEW]")
-{
-	CHECK(Stacking().sumSubarrayMins(vector<int>{71, 55, 82, 55}) == 593);
-	CHECK(Stacking().sumSubarrayMins(vector<int>{3, 1, 2, 4}) == 17);
 }
 
 TEST_CASE("Daily Temperatures find warmer day ahead", "[GRE]")
@@ -389,8 +240,6 @@ TEST_CASE("Next Greater Element I, II, III", "[NEW]")
 	CHECK(Stacking().nextGreaterElement(vector<int>{4, 1, 2}, vector<int>{1, 3, 4, 2}) == vector<int>{-1, 3, -1});
 
 	CHECK(Stacking().nextGreaterElements(vector<int>{1, 2, 1}) == vector<int>{2, -1, 2});
-	CHECK(Stacking().nextGreaterElementsII(vector<int>{1, 2, 1}) == vector<int>{2, -1, 2});
-	CHECK(Stacking().nextGreaterElementsII(vector<int>{5,4,3,2,1}) == vector<int>{-1,5,5,5,5});
 
 	CHECK(Stacking().nextGreaterElement(4365) == 4536);
 	CHECK(Stacking().nextGreaterElement(230241) == 230412);
@@ -657,6 +506,171 @@ TEST_CASE("car fleet", "[STACK]")
 {
 	CHECK(NoStack().carFleet(10, vector<int>{0, 4, 2}, vector<int>{2, 1, 3}) == 1);
 	CHECK(NoStack().carFleet(12, vector<int>{10, 8, 0, 5, 3}, vector<int>{2, 4, 1, 1, 3}) == 3);
+}
+
+class MonotoneStack
+{
+public:
+	template <typename T, typename Comp>
+	vector<T> computePrevQueue(vector<T>& arr, Comp comp) {
+		vector<T> prev_pos(arr.size(), -1); //find  elem > current, on the left side, from left
+		deque<T> plp{ 0 };  // monotonous stack
+		for (size_t i = 1; i < arr.size(); i++) {
+			if (plp.empty() || comp(arr[i], arr[plp.back()]))
+				plp.push_back(i);
+			else {
+				auto greater = upper_bound(begin(plp), end(plp), i, [&arr](int i, int j) { return arr[i] < arr[j]; });
+				if (greater != end(plp))
+					prev_pos[i] = *greater;
+			}
+		}
+		return prev_pos;
+	}
+	vector<int> nextGreaterElementsII(vector<int>& nums) {  // implement with monotone stack, no circular, beat 96%
+		vector<int> next_greater_pos = computeNextLess(nums, greater_equal<int>());// from R to L, maintain decreasing stack
+																				   // circular array means left side of current, scan from left to right
+		vector<int> prev_greater_pos = computePrevQueue(nums, greater<int>());
+		vector<int> ans(nums.size(), -1);
+		for (size_t i = 0; i < nums.size(); i++) {
+			if (next_greater_pos[i] != nums.size()) {
+				ans[i] = nums[next_greater_pos[i]];
+			}
+			else if (prev_greater_pos[i] != -1)
+				ans[i] = nums[prev_greater_pos[i]];
+		}
+		return ans;
+	}
+	// 907. Sum of Subarray Minimums, sum of min of all sub array, n [1,30000]
+	int sumSubarrayMins(vector<int>& A) {
+		vector<int> prev_less_pos = computePrevLess(A, less<int>());// from L to R, maintain increasing stack, allow equal
+		vector<int> next_less_pos = computeNextLess(A, less_equal<int>());// from R to L, maintain increasing stack
+		int MOD = 1000000007;
+		long long sum = 0;
+		for (size_t i = 0; i < A.size(); i++) {
+			// treat i as local min, find left and right boundary
+			sum += (i - prev_less_pos[i])*(next_less_pos[i] - i)*A[i];
+			sum %= MOD;
+		}
+		return (int)sum;
+	}
+	template <typename T, typename Comp>
+	vector<T> computePrevLess(vector<T>& arr, Comp comp) {
+		vector<T> prev_less_pos(arr.size(), -1); //find  elem < current, on the left side
+		deque<T> plp{ 0 };  // monotonous stack
+		for (size_t i = 1; i < arr.size(); i++) {
+			while (!plp.empty() && comp(arr[i], arr[plp.back()]))  // don't cross equal value
+				plp.pop_back();
+			if (!plp.empty())
+				prev_less_pos[i] = plp.back();
+			plp.push_back(i);
+		}
+		return prev_less_pos;
+	}
+	template <typename T, typename Comp>
+	vector<T> computeNextLess(vector<T>& arr, Comp comp) {
+		deque<T> plp{};  // monotonous stack
+		vector<T> next_less_pos(arr.size(), arr.size()); // find elem < current, on the right side
+		for (int i = (int)arr.size() - 1; i >= 0; i--) {  // i must be signed
+			while (!plp.empty() && comp(arr[i], arr[plp.back()]))  // cross equal value
+				plp.pop_back();
+			if (!plp.empty())
+				next_less_pos[i] = plp.back();
+			plp.push_back(i);
+		}
+		return next_less_pos;
+	}
+	// 84. Largest Rectangle in Histogram, similar to #907
+	// at each bar, find the left and rigth edge which are shorter than current
+	int largestRectangleArea(vector<int>& heights) {
+		vector<int> prev_less_pos = computePrevLess(heights, less_equal<int>());// from L to R, maintain increasing stack
+		vector<int> next_less_pos = computeNextLess(heights, less_equal<int>());// from R to L, maintain increasing stack
+		int max_area = 0;
+		for (size_t i = 0; i < heights.size(); i++) { // height of current bar will be height of the rentangle
+			max_area = max(max_area, heights[i] * (next_less_pos[i] - prev_less_pos[i] - 1));
+		}
+		return max_area;
+	}
+	// 42. Trapping Rain Water
+	int trap(vector<int>& height) {
+		// scan from R to L, use stack to store elevaion in decreasing order
+		deque<int> elevation;  // keep same order as vector height
+		int area = 0;
+		for (int i = height.size() - 1; i >= 0; i--) {
+			if (elevation.empty())
+				elevation.push_back(i);
+			else if (height[i] >= height[elevation.back()]) {  // compute water trapped between current and the highest
+				area += (elevation.back() - i - 1)*height[elevation.back()];
+				area -= accumulate(begin(height) + i + 1, begin(height) + elevation.back(), 0); // subtract area occupied by elevation in between
+				elevation.clear();  // sub system to store water is done because Left side is higher
+				elevation.push_back(i);
+			}
+			else {
+				while (height[i] >= height[elevation.front()]) // maintain increasing order from left to right
+					elevation.pop_front();
+				elevation.push_front(i);
+			}
+		}
+		// check each reservoir in increasing order
+		if (elevation.size() > 1) {
+			int left = elevation.front();
+			for (int right : elevation) {
+				if (right - left > 1) {
+					int A = (right - left - 1)*height[left];
+					int noneWater = accumulate(begin(height) + left + 1, begin(height) + right, 0);
+					if (A > noneWater)
+						area += (A - noneWater);
+				}
+				left = right;
+			}
+		}
+		return area;
+	}
+
+	// 85. Maximal Rectangle, matrix of '0' and '1'
+	// find max rectangle of '1's
+	int maximalRectangle(vector<vector<char>>& matrix) {
+		if (matrix.empty() || matrix[0].empty())
+			return 0;
+		int rows = matrix.size();
+		int cols = matrix[0].size();
+		vector<vector<int>> heights(rows, vector<int>(cols, 0));
+		// count cumulative '1' from top to bottom, start over if there is '0'
+		for (int j = 0; j < cols; j++) {
+			int h = 0;
+			for (int i = 0; i < rows; i++) {
+				if (matrix[i][j] == '1')
+					h++;
+				else
+					h = 0;
+				heights[i][j] = h;
+			}
+		}
+		int max_area = 0;
+		// each row is the base of a histogram, like problem #84
+		for (int r = 0; r < rows; r++) {
+			vector<int> prev_less_pos = computePrevLess(heights[r], less_equal<int>());// from L to R, maintain increasing stack
+			vector<int> next_less_pos = computeNextLess(heights[r], less_equal<int>());// from R to L, maintain increasing stack
+			for (int c = 0; c < cols; c++)  // height of current bar will be height of the rentangle
+				max_area = max(max_area, heights[r][c] * (next_less_pos[c] - prev_less_pos[c] - 1));
+		}
+		return max_area;
+	}
+
+};
+TEST_CASE("84. Largest Rectangle in Histogram", "[NEW]")
+{
+	CHECK(MonotoneStack().largestRectangleArea(vector<int>{0, 9}) == 9);
+	CHECK(MonotoneStack().largestRectangleArea(vector<int>{2, 1, 5, 6, 2, 3}) == 10);
+}
+TEST_CASE("907. Sum of Subarray Minimums", "[NEW]")
+{
+	CHECK(MonotoneStack().sumSubarrayMins(vector<int>{71, 55, 82, 55}) == 593);
+	CHECK(MonotoneStack().sumSubarrayMins(vector<int>{3, 1, 2, 4}) == 17);
+}
+TEST_CASE("Next Greater Element II", "[NEW]")
+{
+	CHECK(MonotoneStack().nextGreaterElementsII(vector<int>{1, 2, 1}) == vector<int>{2, -1, 2});
+	CHECK(MonotoneStack().nextGreaterElementsII(vector<int>{5, 4, 3, 2, 1}) == vector<int>{-1, 5, 5, 5, 5});
 }
 
 class Pattern132 {
