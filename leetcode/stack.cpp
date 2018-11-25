@@ -874,3 +874,22 @@ TEST_CASE("901. Online Stock Span", "[NEW]")
 	CHECK(span.next(85) == 6);
 	CHECK(span.next(85) == 7);
 }
+// 895. Maximum Frequency Stack
+class FreqStack {
+	unordered_map<int, int> freq; // overall frequency of each int
+	map<int, stack<int>, greater<int>> freq_stack; // stack per frequency
+public:
+	FreqStack() {}
+
+	void push(int x) {
+		freq_stack[++freq[x]].push(x);
+	}
+
+	int pop() {
+		int x = freq_stack.begin()->second.top();
+		freq_stack.begin()->second.pop();
+		freq[x]--;
+		if (freq_stack.begin()->second.empty())
+			freq_stack.erase(freq_stack.begin());
+	}
+};
