@@ -328,37 +328,24 @@ public:
 	}
 	// 32. Longest Valid Parentheses
 	int longestValidParentheses(string s) {
-		deque<char> _stack;
-		int maxParen = 0;
-		int runningLen = 0;
-		int prev_valid = 0;
-		int prev_pos = -1;
-		for (const char c : s) {
-			if (c == '(') {
-				if (prev_pos < 0 && runningLen) {  // only allow one prev valid
-					prev_valid = runningLen;
-					prev_pos = _stack.size();
-					runningLen = 0;
-				}
-				_stack.push_back(c);
+		deque<int> _stack;
+		for (size_t i = 0; i < s.size(); i++) {
+				_stack.push_back(i);
 			}
 			else {
-				if (_stack.empty()) {  // extra ), invalid
-					runningLen = 0;
-				}
-				else {
-					runningLen += 2;
+				if (_stack.empty() || s[_stack.back()]==')')
+					_stack.push_back(i);
+				else
 					_stack.pop_back();
-					if (_stack.size() == prev_pos && prev_valid > 0) {  // combine with previous valid
-						runningLen += prev_valid;
-						prev_pos = -1;
-						prev_valid = 0;
-					}
-					maxParen = max(maxParen, runningLen);
-				}
 			}
 		}
-		return max(maxParen, runningLen);
+		int prev_pos = -1;
+		int maxParen = 0;
+		for (int pos : _stack) {
+			maxParen = max(maxParen, pos - prev_pos-1);
+			prev_pos = pos;
+		}
+		return max(maxParen, (int)s.size()- prev_pos-1);
 	}
 };
 
