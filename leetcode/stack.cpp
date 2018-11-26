@@ -452,6 +452,38 @@ public:
 		}
 		return accumulate(begin(scores), end(scores), 0);
 	}
+	// 946. Validate Stack Sequences
+	// Given two sequences pushed and popped with distinct values, return true if and only if 
+	// this could have been the result of a sequence of push and pop operations on an initially empty stack.
+	bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+		if (pushed.size() != popped.size())
+			return false;
+		stack<int> stk;
+		auto pushed_cur = begin(pushed);
+		auto popped_cur = begin(popped);
+		auto popping = [&]() {
+			while (!stk.empty() && popped_cur != end(popped)) {  // pop from stack if it matches popped sequence
+				if (stk.top() == *popped_cur) {
+					stk.pop();
+					++popped_cur;
+				}
+				else
+					break;
+			}
+		};
+		while (pushed_cur != end(pushed)) {
+			popping();
+			while (*pushed_cur != *popped_cur) {  // keep push to stack until it match popped
+				stk.push(*pushed_cur);
+				if (++pushed_cur == end(pushed))
+					return false;
+			}
+			++pushed_cur;
+			++popped_cur;
+		}
+		popping();
+		return stk.empty();
+	}
 };
 
 TEST_CASE("asteroidCollision", "[AST]")
@@ -891,5 +923,6 @@ public:
 		freq[x]--;
 		if (freq_stack.begin()->second.empty())
 			freq_stack.erase(freq_stack.begin());
+		return x;
 	}
 };
