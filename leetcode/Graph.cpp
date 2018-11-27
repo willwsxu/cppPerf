@@ -339,7 +339,26 @@ public:
 		map<int, UndirectedGraphNode*> visited;
 		return cloneGraph(node, visited);
 	}
+
+	// 947. Most Stones Removed with Same Row or Column
+	// remove all stones in a component except last one
+	// transform problem into: find total components
+	int removeStones(vector<vector<int>>& stones) {
+		int N = stones.size();
+		UnionFind uf(stones.size());
+		for (int i = 0; i < N - 1; i++) {
+			for (int j = i + 1; j < N; j++) {
+				if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1])
+					uf.union_(i, j);
+			}
+		}
+		return N-(uf.get_component() - 1);
+	}
 };
+TEST_CASE("947. Most Stones Removed with Same Row or Column", "[NEW]")
+{
+	CHECK(Graph().removeStones(vector<vector<int>>{ {0, 0}, { 0,1 }, { 1,0 }, { 1,2 }, { 2,1 }, { 2,2 }}) == 5);
+}
 TEST_CASE("133. Clone Graph", "[NEW]")
 {
 	UndirectedGraphNode *r2 = new UndirectedGraphNode(10);
