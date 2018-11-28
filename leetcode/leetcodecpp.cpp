@@ -822,8 +822,44 @@ public:
 		return true;
 	}
 
+	// 948. Bag of Tokens, trade a token of power to gain a point, or trade a point to gain power of token value
+	int bagOfTokensScore(vector<int>& tokens, int P) {
+		int points = 0;
+		sort(begin(tokens), end(tokens));
+		int total_val = accumulate(begin(tokens), end(tokens), 0);
+		auto start = begin(tokens);
+		auto last = end(tokens);
+		while (start != last) {
+			if (P >= total_val) {  // trade all tokens for points
+				return points + distance(start, last);
+			}
+			if (*start <= P) {  // greedily trade for points
+				P -= *start;
+				total_val -= *start;
+				++start;
+				points++;
+			}
+			else if (points == 0) { // no point to buy power, game over
+				return 0;
+			}
+			else if (distance(start, last) > 1) {  // only to pay point if there are more than one left
+				points--;
+				P += *(--last);  // gain power to get point later, greedily to gain max power for a point
+				total_val -= *last;
+			}
+			else
+				break;
+		}
+		return points;
+	}
 };
 
+TEST_CASE("948. Bag of Tokens", "[NEW]")
+{
+	CHECK(GreedyMore().bagOfTokensScore(vector<int>{100, 200, 300}, 300) == 2);
+	CHECK(GreedyMore().bagOfTokensScore(vector<int>{100, 200, 300,400}, 300) == 2);
+	CHECK(GreedyMore().bagOfTokensScore(vector<int>{100, 200, 300, 400}, 200) == 2);
+}
 TEST_CASE("860. Lemonade Change", "[NEW]")
 {
 	CHECK(GreedyMore().lemonadeChange(vector<int>{5, 10, 5, 20}));
