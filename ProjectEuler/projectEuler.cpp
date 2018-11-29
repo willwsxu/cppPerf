@@ -5,6 +5,7 @@
 
 #include <map>
 #include <set>
+#include <unordered_set>
 #include <numeric>
 #include "myalgo.h"
 #include "helper.h"
@@ -185,3 +186,78 @@ TEST_CASE("Project Euler #218: Perfect right-angled triangles", "[NEW]")
 	CHECK(perfect_right_triangle_not_super(1000000) == 0); // trick q, all perfect right triangles are super perfect
 }
 
+
+// Project Euler #125: Palindromic sums
+// generate palindrome number with prefix (first half, digits/2) [1,prefix), produce both odd and even length numbers
+vector<int> allPalindrome(int prefix)
+{
+	vector<int> palindrome{ 1,2,3,4,5,6,7,8,9 };
+	auto compute_palin = [](int palin, int prefix) {
+		while (prefix > 0) {
+			palin = palin * 10 + prefix % 10;
+			prefix /= 10;
+		}
+		return palin;
+	};
+	for (int p = 1; p < prefix; p++) {
+		palindrome.push_back(compute_palin(p, p));
+		for (int i = 0; i < 10; i++)   // add center digit for odd len number
+			palindrome.push_back(compute_palin(p * 10 + i, p));
+	}
+	return palindrome;// RVO
+}
+
+bool consecutiveSquareSum(int sum, int d) {
+
+	for (int i = 1; i*i < sum; i++) {
+		int sq = 0;
+		for (int j = i; sq < sum; j += d) {
+			sq += j*j;
+			if (sq == sum)
+				return j>i;
+		}
+	}
+	return false;
+}
+int sumOfNicePalindrome(const vector<int>& palin, int N, int d)  // 1<=N,d<=1000000000
+{
+	vector<int> result;
+	copy_if(begin(palin), end(palin), back_inserter(result), [N, d](int p) { return p < N && consecutiveSquareSum(p, d); });
+	return accumulate(begin(result), end(result), 0);
+}
+
+bool isPalindrome(int n)
+{
+	return false;
+}
+long long sumOfNicePalindrome2(const unordered_set<int>& palin, int N, int d)  // 1<=N,d<=1000000000
+{
+	set<int> result;
+	for (int i = 1; 2 * i*i < N; i++) {
+		int sq = i*i;
+		for (int j = i + d; sq < N; j += d) {
+			sq += j*j;
+			if (sq<N && palin.find(sq) != end(palin))
+				result.insert(sq);
+		}
+	}
+	return accumulate(begin(result), end(result), 0LL);
+}
+
+TEST_CASE("Project Euler #125: Palindromic sums, test palindrome generator", "[NEW]")
+{
+	CHECK(allPalindrome(10).size() == 108);
+	vector<int> result = allPalindrome(10000);
+
+	CHECK(sumOfNicePalindrome(result, 1000, 1) == 4164);
+	CHECK(sumOfNicePalindrome(result, 1000, 2) == 3795);
+	CHECK(sumOfNicePalindrome(result, 1000000, 1) == 14893023);
+	CHECK(sumOfNicePalindrome(result, 1000000, 2) == 6398298);
+
+	unordered_set<int> palin_set(begin(result), end(result));
+	CHECK(sumOfNicePalindrome2(palin_set, 1000, 1) == 4164);
+	CHECK(sumOfNicePalindrome2(palin_set, 1000, 2) == 3795);
+	CHECK(sumOfNicePalindrome2(palin_set, 1000000, 1) == 14893023);
+	CHECK(sumOfNicePalindrome2(palin_set, 1000000, 2) == 6398298);
+	CHECK(sumOfNicePalindrome2(palin_set, 1000000000, 2) == 39283936423LL);
+}
