@@ -188,25 +188,6 @@ TEST_CASE("Project Euler #218: Perfect right-angled triangles", "[NEW]")
 
 
 // Project Euler #125: Palindromic sums
-// generate palindrome number with prefix (first half, digits/2) [1,prefix), produce both odd and even length numbers
-vector<int> allPalindrome(int prefix)
-{
-	vector<int> palindrome{ 1,2,3,4,5,6,7,8,9 };
-	auto compute_palin = [](int palin, int prefix) {
-		while (prefix > 0) {
-			palin = palin * 10 + prefix % 10;
-			prefix /= 10;
-		}
-		return palin;
-	};
-	for (int p = 1; p < prefix; p++) {
-		palindrome.push_back(compute_palin(p, p));
-		for (int i = 0; i < 10; i++)   // add center digit for odd len number
-			palindrome.push_back(compute_palin(p * 10 + i, p));
-	}
-	return palindrome;// RVO
-}
-
 bool consecutiveSquareSum(int sum, int d) {
 
 	for (int i = 1; i*i < sum; i++) {
@@ -226,18 +207,7 @@ long long sumOfNicePalindrome(const vector<int>& palin, int N, int d)  // 1<=N,d
 	return accumulate(begin(result), end(result), 0LL);
 }
 
-bool isPalindrome(int64_t n)
-{
-	int64_t original = n;
-	if (n % 10 == 0)  // palindrome last digit cannot be 0
-		return false;
-	int64_t reversed = 0;
-	while (n > 0) {
-		reversed = reversed * 10 + n % 10;
-		n /= 10;
-	}
-	return reversed==original;
-}
+// much faster comparing to previous function
 long long sumOfNicePalindrome2(int N, int d)  // 1<=N,d<=1000000000
 {
 	set<int> result;
