@@ -238,3 +238,17 @@ TEST_CASE("Project Euler #125: Palindromic sums, test palindrome generator", "[N
 	CHECK(sumOfNicePalindrome2(1000000, 2) == 6398298);
 	CHECK(sumOfNicePalindrome2(1000000000, 2) == 39283936423LL);
 }
+
+// Project Euler #4: Largest palindrome product < N, from 3 digit number
+int largestPalindrome(int N)  // easy after isPalindrome from #125 
+{
+	int ans = 0;
+	for (int i = 100; i < 1000; i++) {
+		for (int j = 100; j < 1000; j++) {
+			int prod = i*j;
+			if (prod <N && isPalindrome(prod))
+				ans = max(ans, prod);
+		}
+	}
+	return ans;
+}
