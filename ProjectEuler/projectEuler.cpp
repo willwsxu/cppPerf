@@ -219,26 +219,34 @@ bool consecutiveSquareSum(int sum, int d) {
 	}
 	return false;
 }
-int sumOfNicePalindrome(const vector<int>& palin, int N, int d)  // 1<=N,d<=1000000000
+long long sumOfNicePalindrome(const vector<int>& palin, int N, int d)  // 1<=N,d<=1000000000
 {
 	vector<int> result;
 	copy_if(begin(palin), end(palin), back_inserter(result), [N, d](int p) { return p < N && consecutiveSquareSum(p, d); });
-	return accumulate(begin(result), end(result), 0);
+	return accumulate(begin(result), end(result), 0LL);
 }
 
-bool isPalindrome(int n)
+bool isPalindrome(int64_t n)
 {
-	return false;
+	int64_t original = n;
+	if (n % 10 == 0)  // palindrome last digit cannot be 0
+		return false;
+	int64_t reversed = 0;
+	while (n > 0) {
+		reversed = reversed * 10 + n % 10;
+		n /= 10;
+	}
+	return reversed==original;
 }
-long long sumOfNicePalindrome2(const unordered_set<int>& palin, int N, int d)  // 1<=N,d<=1000000000
+long long sumOfNicePalindrome2(int N, int d)  // 1<=N,d<=1000000000
 {
 	set<int> result;
 	for (int i = 1; 2 * i*i < N; i++) {
-		int sq = i*i;
-		for (int j = i + d; sq < N; j += d) {
+		long long sq = i*i;
+		for (long long j = i + d; sq < N; j += d) {
 			sq += j*j;
-			if (sq<N && palin.find(sq) != end(palin))
-				result.insert(sq);
+			if (sq<N && isPalindrome(sq))
+				result.insert((int)sq);
 		}
 	}
 	return accumulate(begin(result), end(result), 0LL);
@@ -254,10 +262,9 @@ TEST_CASE("Project Euler #125: Palindromic sums, test palindrome generator", "[N
 	CHECK(sumOfNicePalindrome(result, 1000000, 1) == 14893023);
 	CHECK(sumOfNicePalindrome(result, 1000000, 2) == 6398298);
 
-	unordered_set<int> palin_set(begin(result), end(result));
-	CHECK(sumOfNicePalindrome2(palin_set, 1000, 1) == 4164);
-	CHECK(sumOfNicePalindrome2(palin_set, 1000, 2) == 3795);
-	CHECK(sumOfNicePalindrome2(palin_set, 1000000, 1) == 14893023);
-	CHECK(sumOfNicePalindrome2(palin_set, 1000000, 2) == 6398298);
-	CHECK(sumOfNicePalindrome2(palin_set, 1000000000, 2) == 39283936423LL);
+	CHECK(sumOfNicePalindrome2(1000, 1) == 4164);
+	CHECK(sumOfNicePalindrome2(1000, 2) == 3795);
+	CHECK(sumOfNicePalindrome2(1000000, 1) == 14893023);
+	CHECK(sumOfNicePalindrome2(1000000, 2) == 6398298);
+	CHECK(sumOfNicePalindrome2(1000000000, 2) == 39283936423LL);
 }
