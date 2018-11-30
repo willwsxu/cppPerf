@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 #include "myalgo.h"
 using namespace std;

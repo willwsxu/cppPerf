@@ -5,6 +5,8 @@
 #include <set>
 #include <deque>
 #include <unordered_map>
+#include <iterator>
+#include <iostream>
 
 using std::vector;
 using std::set;

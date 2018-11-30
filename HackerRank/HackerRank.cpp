@@ -1,11 +1,15 @@
-#include "stdafx.h"
-#include <cassert>
-#include <fstream>
+
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
+#include <cassert>
+#include <fstream>
 #include "Graph.h"
 #include "helper.h"
 #include "myalgo.h"
+#include <stack>
+#include <numeric>
 using namespace std;
 
 static vector<int> dp(1000001, 0);

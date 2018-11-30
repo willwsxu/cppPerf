@@ -1,10 +1,10 @@
-#include "stdafx.h"
 #include <cassert>
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
 #include "Graph.h"
 #include "helper.h"
 #include "myalgo.h"
+#include <map>
 using namespace std;
 
 struct Node {
