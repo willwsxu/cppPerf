@@ -179,7 +179,7 @@ inline int gcd(int p, int q)
 	return q == 0 ? p : gcd(q, p%q);
 }
 
-bool isPalindrome(int64_t n)
+inline bool isPalindrome(int64_t n)
 {
 	int64_t original = n;
 	if (n % 10 == 0)  // palindrome last digit cannot be 0
@@ -193,7 +193,7 @@ bool isPalindrome(int64_t n)
 }
 
 // generate palindrome number with prefix (first half, digits/2) [1,prefix), produce both odd and even length numbers
-vector<int> allPalindrome(int prefix)
+inline vector<int> allPalindrome(int prefix)
 {
 	vector<int> palindrome{ 1,2,3,4,5,6,7,8,9 };
 	auto compute_palin = [](int palin, int prefix) {

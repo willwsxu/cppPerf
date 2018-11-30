@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <cassert>
 #include <fstream>
 #include "..\catch.hpp"  // don't put this file in stdafx.h
@@ -7,6 +6,8 @@
 #include "helper.h"
 #include "myalgo.h"
 #include "UnionFind.h"
+#include <map>
+#include <numeric>
 using namespace std;
 
 // some number in arr are missing from original brr
@@ -97,6 +98,7 @@ int minimumLoss(vector<T>& price) {
 	}
 	return static_cast<int>(min_loss);
 }
+
 TEST_CASE("Hacker rank search min loss", "[SRCH]")
 {
 	CHECK(minimumLoss(vector<long>{5, 10, 7, 6}) == 1);
