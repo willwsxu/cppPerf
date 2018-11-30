@@ -145,6 +145,7 @@
     <ClCompile Include="HackerRank.cpp" />
     <ClCompile Include="HackerRankDp.cpp" />
     <ClCompile Include="HackerRankSearch.cpp" />
+    <ClCompile Include="HackerRankStack.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
