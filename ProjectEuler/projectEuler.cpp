@@ -252,4 +252,47 @@ int largestPalindrome(int N)  // easy after isPalindrome from #125
 	}
 	return ans;
 }
+
+// add string of equal length, return carry
+template<typename RandRevIter>
+int sum_str(RandRevIter first1, RandRevIter last1, RandRevIter first2, RandRevIter dest)
+{
+	int carry = 0;
+	while (first1 != last1) {
+		carry += *first1 - '0' + *first2 - '0';
+		*dest = carry % 10 + '0';
+		carry /= 10;
+		++first1;
+		++first2;
+		++dest;
+	}
+	return carry;
+}
+string sum_str(string& s1, string& s2)
+{
+	if (s1.size()<s2.size()) {
+		swap(s1, s2);
+	}
+	int carry = sum_str(rbegin(s2), rend(s2), rbegin(s1), rbegin(s1));
+	if (carry>0 && s1.size()>s2.size()) {
+		transform(rbegin(s1) + s2.size(), rend(s1), rbegin(s1) + s2.size(), [&carry](char c) {
+			carry += c - '0';
+			c = carry % 10 + '0';
+			carry /= 10;
+			return c;
+		});
+	}
+	if (carry)
+		s1.insert(0, 1, carry + '0');
+	return move(s1);
+}
+
+TEST_CASE("Project Euler #13: Large sum", "[NEW]")
+{
+	string sum = sum_str(string("37107287533902102798797998220837590246510135740250"), string("46376937677490009712648124896970078050417018260538"));
+	string sum2 = sum_str(sum, string("74324986199524741059474233309513058123726617309629"));
+	string sum3 = sum_str(sum2, string("91942213363574161572522430563301811072406154908250")); 
+	string sum4 = sum_str(sum3, string("23067588207539346171171980310421047513778063246676"));
+	CHECK(sum4.substr(0, 10) == "2728190129");
+}
 // Project Euler #3: Largest prime factor 
