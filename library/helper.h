@@ -179,6 +179,25 @@ inline int gcd(int p, int q)
 	return q == 0 ? p : gcd(q, p%q);
 }
 
+inline vector<vector<int>> rightTrianglesFundamental(long long N) // primitive right angled triangle
+{
+	// Euclid method: M^2-n^2, 2mn, m^2+n^2, p=2m(m+n)>=4n^2, m>n
+	vector<vector<int>> triangles;
+	const int MAX_N = static_cast<int>(sqrt(N / 4)) + 1; // 4n^2 <= p
+	const int MAX_M = static_cast<int>(sqrt(N / 2)) + 1;  // 2m^2 <= p
+	for (int n = 1; n < MAX_N; n++) {
+		int n_sq = n*n;
+		for (int m = n + 1; m < MAX_M; m += 2) { // m and n must be odd parity
+			if (gcd(m, n) == 1) {
+				int m_sq = m*m;
+				triangles.push_back({ m_sq - n_sq, 2 * m*n, m_sq + n_sq });
+			}
+		}
+	}
+	//	cout << "fundamental triangles " << triangles.size() << "\n";
+	return triangles;
+}
+
 inline bool isPalindrome(int64_t n)
 {
 	int64_t original = n;

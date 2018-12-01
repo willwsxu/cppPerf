@@ -28,6 +28,8 @@ TEST_CASE("Hacker rank stack Waiter test primes", "[NEW]")
 	CHECK(primes[1] == 3);
 	CHECK(primes[2] == 5);
 	CHECK(primes[3] == 7);
+	vector<int> primes2 = make_primes(200000);
+	CHECK( primes2.size() ==17984);
 }
 
 TEST_CASE("Hacker rank stack Waiter", "[NEW]")
