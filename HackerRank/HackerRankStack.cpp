@@ -1,22 +1,9 @@
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 #include <vector>
+#include "helper.h"
 using namespace std;
 
-vector<int> make_primes(int N)
-{
-	vector<int> primes;
-	vector<char> is_primes(N, 1); // 
-	is_primes[0] = is_primes[1] = 0;
-	for (size_t i = 2; i < is_primes.size(); i++)
-	{
-		if (is_primes[i]) {
-			primes.push_back(i);
-			for (size_t j = i + i; j < is_primes.size(); j += i)
-				is_primes[j] = 0;
-		}
-	}
-	return primes;
-}
+
 // plates from stack Ai-1, move to stack Bi if divisible by prime[i], or A[i]
 vector<int> waiter(vector<int> number, int q) {
 	vector<int> primes = make_primes(10000);

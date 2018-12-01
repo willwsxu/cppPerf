@@ -296,3 +296,18 @@ TEST_CASE("Project Euler #13: Large sum", "[NEW]")
 	CHECK(sum4.substr(0, 10) == "2728190129");
 }
 // Project Euler #3: Largest prime factor 
+vector<long long> largestPrime(vector<long long> N)  // [10, 10^12]
+{
+	vector<int> primes = make_primes(1000000);
+	vector<long long> ans;
+	for (long long n : N) {
+		long long max_p = 1;
+		auto x = find_if(rbegin(primes), rend(primes), [n](int p) { return n>p && n%p == 0; });
+		ans.push_back(x == rend(primes) ? n : *x);
+	}
+	return ans;
+}
+TEST_CASE("Project Euler #3: Largest prime factor", "[NEW]")
+{
+	CHECK(largestPrime(vector<long long>{10,17, 13195, 1000000000000LL-9}) == vector<long long>{5, 17, 29, 1321});
+}
