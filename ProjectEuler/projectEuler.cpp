@@ -302,12 +302,21 @@ vector<long long> largestPrime(vector<long long> N)  // [10, 10^12]
 	vector<long long> ans;
 	for (long long n : N) {
 		long long max_p = 1;
-		auto x = find_if(rbegin(primes), rend(primes), [n](int p) { return n>p && n%p == 0; });
-		ans.push_back(x == rend(primes) ? n : *x);
+		for (int p : primes) {
+			if (p > n)
+				break;
+			if (n%p != 0)
+				continue;
+			max_p = max<long long>(max_p, p);
+			while (n%p == 0) {
+				n /= p;
+			}
+		}
+		ans.push_back(max(n, max_p)) ;
 	}
 	return ans;
 }
 TEST_CASE("Project Euler #3: Largest prime factor", "[NEW]")
 {
-	CHECK(largestPrime(vector<long long>{10,17, 13195, 1000000000000LL-9}) == vector<long long>{5, 17, 29, 1321});
+	CHECK(largestPrime(vector<long long>{10,17, 13195, 1000000000000LL-9, 987654321111}) == vector<long long>{5, 17, 29, 1000003, 20426761});
 }
