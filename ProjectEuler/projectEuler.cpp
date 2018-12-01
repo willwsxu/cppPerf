@@ -300,3 +300,25 @@ TEST_CASE("Project Euler #3: Largest prime factor", "[NEW]")
 {
 	CHECK(largestPrime(vector<long long>{10,17, 13195, 1000000000000LL-9, 987654321111}) == vector<long long>{5, 17, 29, 1000003, 20426761});
 }
+
+// Project Euler #9: Special Pythagorean triplet 
+// Find maximum possible value of among all such Pythagorean triplets, a+b+c=N <= 3000
+int maxABC(int N)
+{
+	static const auto uniq_right_triangles = rightTrianglesFundamental(3000);
+	int ans = -1;
+	for (const auto& t : uniq_right_triangles) {
+		int perimeter = t[0] + t[1] + t[2];
+		if (N >= perimeter && N%perimeter == 0) {
+			int abc = N / perimeter;
+			ans = max(ans, abc*abc*abc*t[0] * t[1] * t[2]);
+		}
+	}
+	return ans;
+}
+
+TEST_CASE("Project Euler #9: Special Pythagorean triplet", "[NEW]")
+{
+	CHECK(maxABC(36) == 60);
+	CHECK(maxABC(3000) == 937500000);
+}

@@ -188,8 +188,9 @@ inline vector<vector<int>> rightTrianglesFundamental(long long N) // primitive r
 	for (int n = 1; n < MAX_N; n++) {
 		int n_sq = n*n;
 		for (int m = n + 1; m < MAX_M; m += 2) { // m and n must be odd parity
-			if (gcd(m, n) == 1) {
+			if (gcd(m, n) == 1 && 2 * m*(m + n) <= N) {
 				int m_sq = m*m;
+				int n_sq = n*n;
 				triangles.push_back({ m_sq - n_sq, 2 * m*n, m_sq + n_sq });
 			}
 		}
