@@ -387,31 +387,28 @@ public:
 		long long count = 0;
 		for (char c : S) {
 			if (isdigit(c))
-				count *= c - '0';
+				count *= c - '0';  // multiple of all previous letter
 			else
 				count++;
 			decode.push(c);
 			if (count >= K)
 				break;
 		}
+		auto update_count = [&count, &K](int multi) {
+			count /= multi;
+			K = K%count;  // adjust K to [1, count]
+			if (K == 0)
+				K = (int)count; 
+		};
 		while (count > K) {
-			if (isdigit(decode.top())) {
-				int multi = decode.top() - '0';
-				count /= multi;
-				K = K%count;
-				if (K == 0)
-					K = count;
-			}
+			if (isdigit(decode.top()))
+				update_count(decode.top() - '0');
 			else
 				count--;
 			decode.pop();
 		}
 		while (isdigit(decode.top())) {
-			int multi = decode.top() - '0';
-			count /= multi;
-			K = K%count;
-			if (K == 0)
-				K = count;
+			update_count(decode.top() - '0');
 			decode.pop();
 		}
 		return string(1, decode.top());
