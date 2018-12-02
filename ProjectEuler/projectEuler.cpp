@@ -319,6 +319,6 @@ int maxABC(int N)
 
 TEST_CASE("Project Euler #9: Special Pythagorean triplet", "[NEW]")
 {
-	CHECK(maxABC(36) == 60);
+	CHECK(maxABC(36) == 1620);
 	CHECK(maxABC(3000) == 937500000);
 }

@@ -381,6 +381,42 @@ public:
 		return s;
 	}
 
+	// 880. Decoded String at Index
+	string decodeAtIndex(string S, int K) {
+		stack<char> decode;
+		long long count = 0;
+		for (char c : S) {
+			if (isdigit(c))
+				count *= c - '0';
+			else
+				count++;
+			decode.push(c);
+			if (count >= K)
+				break;
+		}
+		while (count > K) {
+			if (isdigit(decode.top())) {
+				int multi = decode.top() - '0';
+				count /= multi;
+				K = K%count;
+				if (K == 0)
+					K = count;
+			}
+			else
+				count--;
+			decode.pop();
+		}
+		while (isdigit(decode.top())) {
+			int multi = decode.top() - '0';
+			count /= multi;
+			K = K%count;
+			if (K == 0)
+				K = count;
+			decode.pop();
+		}
+		return string(1, decode.top());
+	}
+
 	// 150. Evaluate Reverse Polish Notation
 	int evalRPN(vector<string>& tokens) {  // simple, beat 100%
 		stack<int> operands;
@@ -486,6 +522,13 @@ public:
 	}
 };
 
+TEST_CASE("880. Decoded String at Index", "[NEW]")
+{
+	CHECK(GeneralStack().decodeAtIndex("ha22", 5) == "h");
+	CHECK(GeneralStack().decodeAtIndex("leet2code3", 10) == "o");
+	CHECK(GeneralStack().decodeAtIndex("a2345678999999999999999", 1) == "a");
+	CHECK(GeneralStack().decodeAtIndex("a2345678999999999999999", 1000000) == "a");
+}
 TEST_CASE("asteroidCollision", "[AST]")
 {
 	CHECK(GeneralStack().asteroidCollision(vector<int>{5, 10, -5, -15, 5, -5}) == vector<int>{-15});
