@@ -43,7 +43,7 @@ public:
 			return;
 		nodes_added++;
 	}
-	int get_component() const {
+	int get_components() const { // not connected commponents
 		set<int> components;
 		for (size_t i = 0; i < parents.size(); i++) {
 			int p = find(i);
@@ -53,6 +53,9 @@ public:
 				components.insert(p);
 		}
 		return components.size();
+	}
+	int max_component_size() const {
+		return *max_element(begin(size), end(size));
 	}
 	/*
 	int get_count(set<int>& bad) const {

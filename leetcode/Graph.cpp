@@ -352,9 +352,26 @@ public:
 					uf.union_(i, j);
 			}
 		}
-		return N-(uf.get_component() - 1);
+		return N-(uf.get_components() - 1);
+	}
+	// 952. Largest Component Size by Common Factor
+	int largestComponentSize(vector<int>& A) {
+		UnionFind uf(A.size() - 1);
+		for (int i = 0; i < A.size() - 1; i++) {
+			for (int j = i + 1; j < A.size(); j++) {
+				if (gcd(A[i], A[j]) > 1)
+					uf.union_(i, j);
+			}
+		}
+		return uf.max_component_size();
 	}
 };
+TEST_CASE("952. Largest Component Size by Common Factor", "[NEW]")
+{	
+	CHECK(Graph().largestComponentSize(vector<int>{4, 6, 15, 35}) == 4);
+	CHECK(Graph().largestComponentSize(vector<int>{2, 3, 6, 7, 4, 12, 21, 39}) == 8);
+	CHECK(Graph().largestComponentSize(vector<int>{20, 50, 9, 63}) == 2);
+}
 TEST_CASE("947. Most Stones Removed with Same Row or Column", "[NEW]")
 {
 	CHECK(Graph().removeStones(vector<vector<int>>{ {0, 0}, { 0,1 }, { 1,0 }, { 1,2 }, { 2,1 }, { 2,2 }}) == 5);
