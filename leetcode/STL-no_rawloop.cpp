@@ -269,7 +269,48 @@ public:
 		});
 		return logs;
 	}
+
+	// 949. Largest Time for Given Digits
+	// constraint: if hour digit 1 is 2, hour digit 2 <= 3, minute digit <=5
+	// if hour digit is 0 or 1, minte digit 1<=5
+	string largestTimeFromDigits(vector<int>& A) {
+		sort(begin(A), end(A));
+		int max_h1 = 2;
+		if (A[2]>5) {
+			max_h1 = 1;
+		}
+		if (A[0]>max_h1)
+			return "";
+		auto find_num = [&A](int n) {
+			auto hour1 = lower_bound(begin(A), end(A), n);
+			if (hour1 == end(A) || *hour1>n)
+				--hour1;
+			return hour1;
+		};
+		auto hour1 = find_num(max_h1);  // first digit of hour <=2
+		int max_h2 = *hour1 == 2 ? 3 : 9;  // second digit of hour depends on first digit
+		string time(1, *hour1 + '0');
+		A.erase(hour1);
+		if (A[0]>max_h2)
+			return "";
+		auto hour2 = find_num(max_h2);
+		time.append(1, *hour2 + '0');
+		A.erase(hour2);
+		if (A[0]>5)
+			return "";
+		time.append(1, ':');
+		auto minute1 = find_num(5);
+		time.append(1, *minute1 + '0');
+		A.erase(minute1);
+		time.append(1, A[0] + '0');
+		return time;
+	}
 };
+TEST_CASE("949. Largest Time for Given Digits", "[NEW]")
+{
+	CHECK(STL().largestTimeFromDigits(vector<int>{1,9,6,0}) == "19:06");
+	CHECK(STL().largestTimeFromDigits(vector<int>{2, 0, 6, 6}) == "06:26");
+}
 TEST_CASE("937. Reorder Log Files", "[NEW]")
 {
 	CHECK(STL().reorderLogFiles(vector<string>{"a1 9 2 3 1", "g1 act car", "zo4 4 7", "ab1 off key dog", "a8 act zoo"}) 
