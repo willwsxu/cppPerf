@@ -356,9 +356,9 @@ public:
 	}
 	// 952. Largest Component Size by Common Factor, A[i]<=100000, A[i] is unique
 	int largestComponentSize(vector<int>& A) {
-		UnionFind uf(A.size() - 1);
+		UnionFind uf(A.size() - 1);   // store index
 		auto primes = make_primes(sqrt(100000)+1);
-		unordered_map<int, int> factor_index;
+		unordered_map<int, int> factor_index; // using map to link array index sharing same prime factor
 		auto try_factor = [&factor_index, &uf](int p, int v) {
 			auto found = factor_index.find(p);
 			if (found == end(factor_index))  // first time, add factor to map
@@ -378,7 +378,7 @@ public:
 					try_factor(p, i);
 				}
 			}
-			if (copy>1)
+			if (copy>1)  // edge case
 				try_factor(copy, i);
 		}
 		return uf.max_component_size();
