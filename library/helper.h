@@ -231,10 +231,10 @@ inline vector<int> allPalindrome(int prefix)
 	return palindrome;// RVO
 }
 
-inline vector<int> make_primes(int N)
+inline vector<int> make_primes(int N)  // prime numbers < N
 {
 	vector<int> primes;
-	vector<char> is_primes(N, 1); // 
+	vector<char> is_primes(N, 1); // initialize to true
 	is_primes[0] = is_primes[1] = 0;
 	for (size_t i = 2; i < is_primes.size(); i++)
 	{

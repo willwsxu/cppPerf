@@ -354,23 +354,41 @@ public:
 		}
 		return N-(uf.get_components() - 1);
 	}
-	// 952. Largest Component Size by Common Factor
+	// 952. Largest Component Size by Common Factor, A[i]<=100000, A[i] is unique
 	int largestComponentSize(vector<int>& A) {
 		UnionFind uf(A.size() - 1);
-		for (int i = 0; i < A.size() - 1; i++) {
-			for (int j = i + 1; j < A.size(); j++) {
-				if (gcd(A[i], A[j]) > 1)
-					uf.union_(i, j);
+		auto primes = make_primes(sqrt(100000)+1);
+		unordered_map<int, int> factor_index;
+		auto try_factor = [&factor_index, &uf](int p, int v) {
+			auto found = factor_index.find(p);
+			if (found == end(factor_index))  // first time, add factor to map
+				factor_index[p] = v;
+			else {
+				uf.union_(v, found->second);
 			}
+		};
+		for (int i = 0; i < A.size(); i++) {
+			int copy = A[i];
+			for (int p : primes) {
+				if (p*p > copy)
+					break;
+				if (copy%p == 0) {
+					while (copy%p == 0)
+						copy /= p;
+					try_factor(p, i);
+				}
+			}
+			if (copy>1)
+				try_factor(copy, i);
 		}
 		return uf.max_component_size();
 	}
 };
 TEST_CASE("952. Largest Component Size by Common Factor", "[NEW]")
-{	
+{
+	CHECK(Graph().largestComponentSize(vector<int>{20, 50, 9, 63}) == 2);
 	CHECK(Graph().largestComponentSize(vector<int>{4, 6, 15, 35}) == 4);
 	CHECK(Graph().largestComponentSize(vector<int>{2, 3, 6, 7, 4, 12, 21, 39}) == 8);
-	CHECK(Graph().largestComponentSize(vector<int>{20, 50, 9, 63}) == 2);
 }
 TEST_CASE("947. Most Stones Removed with Same Row or Column", "[NEW]")
 {
