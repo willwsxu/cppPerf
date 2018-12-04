@@ -322,3 +322,28 @@ TEST_CASE("Project Euler #9: Special Pythagorean triplet", "[NEW]")
 	CHECK(maxABC(36) == 1620);
 	CHECK(maxABC(3000) == 937500000);
 }
+// Project Euler #14: Longest Collatz sequence 
+// find the start # (<=N) which produce longest chain
+class CollatzSequence
+{
+	unordered_map<int, int> seq_count;
+
+public:
+	CollatzSequence()
+	{
+		seq_count[1] = 1;
+	}
+	int compute_sequence(int N) {
+		auto x = seq_count.find(N);
+		if (x != end(seq_count))
+			return x->second;
+		seq_count[N]= 1 + compute_sequence(N % 2 == 0?N/2:3*N+1);
+		return seq_count[N];
+	}
+};
+TEST_CASE("Project Euler #14: Longest Collatz sequence", "[NEW]")
+{
+	CollatzSequence colla;
+	CHECK(colla.compute_sequence(13) == 10);
+	CHECK(colla.compute_sequence(20) == 19);
+}
