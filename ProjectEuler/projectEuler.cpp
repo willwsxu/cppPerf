@@ -329,21 +329,24 @@ class CollatzSequence
 	map<int64_t, int> seq_count;
 	vector<int>	  longest_chain;
 
+	inline int64_t next_n(int64_t n)
+	{
+		return (n % 2 == 0) ? (n / 2) : (3 * n + 1);
+	}
 	int map_sequence(int64_t n) {
 		if (n < longest_chain.size())
 			return vec_sequence(n);
 		auto x = seq_count.find(n);
 		if (x != end(seq_count))
 			return x->second;
-		seq_count[n] = 1 + map_sequence((n % 2 == 0) ? n / 2 : 3 * n + 1);
+		seq_count[n] = 1 + map_sequence(next_n(n));
 		return seq_count[n];
 	}
 	int vec_sequence(int64_t n) {
 		if (n >= longest_chain.size())
 			return map_sequence(n);
-		if (longest_chain[n] > 0)
-			return longest_chain[n];
-		longest_chain[n] = 1 + vec_sequence( (n % 2 == 0) ? n / 2 : 3 * n + 1);
+		if (longest_chain[n] == 0)
+			longest_chain[n] = 1 + vec_sequence(next_n(n));
 		return longest_chain[n];
 	}
 public:
@@ -361,6 +364,7 @@ public:
 			}
 			longest_chain[i] = max_index;
 		}
+		cout << " map size " << seq_count.size() << " highest key=" << seq_count.rbegin()->first << ", val " <<seq_count.rbegin()->second << "\n";
 	}
 	int longest_N(int n)  // 
 	{
@@ -371,7 +375,9 @@ public:
 };
 TEST_CASE("Project Euler #14: Longest Collatz sequence", "[NEW]")
 {
-	CollatzSequence colla(5000000);
+	CollatzSequence colla(1000000);
 	CHECK(colla.longest_N(13) == 9);
 	CHECK(colla.longest_N(20) == 19);
+	CHECK(colla.longest_N(1000000) == 3732423);
+	//CHECK(colla.longest_N(5000000) == 3732423);
 }
