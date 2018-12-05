@@ -364,7 +364,7 @@ public:
 			}
 			longest_chain[i] = max_index;
 		}
-		cout << " map size " << seq_count.size() << " highest key=" << seq_count.rbegin()->first << ", val " <<seq_count.rbegin()->second << "\n";
+		//cout << " map size " << seq_count.size() << " highest key=" << seq_count.rbegin()->first << ", val " <<seq_count.rbegin()->second << "\n";
 	}
 	int longest_N(int n)  // 
 	{
@@ -378,6 +378,6 @@ TEST_CASE("Project Euler #14: Longest Collatz sequence", "[NEW]")
 	CollatzSequence colla(1000000);
 	CHECK(colla.longest_N(13) == 9);
 	CHECK(colla.longest_N(20) == 19);
-	CHECK(colla.longest_N(1000000) == 3732423);
+	CHECK(colla.longest_N(1000000) == 837799);
 	//CHECK(colla.longest_N(5000000) == 3732423);
 }
