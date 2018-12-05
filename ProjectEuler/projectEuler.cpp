@@ -323,27 +323,55 @@ TEST_CASE("Project Euler #9: Special Pythagorean triplet", "[NEW]")
 	CHECK(maxABC(3000) == 937500000);
 }
 // Project Euler #14: Longest Collatz sequence 
-// find the start # (<=N) which produce longest chain
+// find the start # (<=N) which produce longest chain, return the largest if more than one answer
 class CollatzSequence
 {
-	unordered_map<int, int> seq_count;
+	map<int64_t, int> seq_count;
+	vector<int>	  longest_chain;
 
-public:
-	CollatzSequence()
-	{
-		seq_count[1] = 1;
-	}
-	int compute_sequence(int N) {
-		auto x = seq_count.find(N);
+	int map_sequence(int64_t n) {
+		if (n < longest_chain.size())
+			return vec_sequence(n);
+		auto x = seq_count.find(n);
 		if (x != end(seq_count))
 			return x->second;
-		seq_count[N]= 1 + compute_sequence(N % 2 == 0?N/2:3*N+1);
-		return seq_count[N];
+		seq_count[n] = 1 + map_sequence((n % 2 == 0) ? n / 2 : 3 * n + 1);
+		return seq_count[n];
+	}
+	int vec_sequence(int64_t n) {
+		if (n >= longest_chain.size())
+			return map_sequence(n);
+		if (longest_chain[n] > 0)
+			return longest_chain[n];
+		longest_chain[n] = 1 + vec_sequence( (n % 2 == 0) ? n / 2 : 3 * n + 1);
+		return longest_chain[n];
+	}
+public:
+	CollatzSequence(int N):longest_chain(N+1, 0)
+	{
+		longest_chain[1] = 1;
+		for (int i = 2; i <= N; i++)
+			longest_chain[i] = vec_sequence(i);
+		int max_chain = 0;
+		int max_index = 0;
+		for (int i = 1; i <= N; i++) {
+			if (longest_chain[i] >= max_chain) {
+				max_chain = longest_chain[i];
+				max_index = i;
+			}
+			longest_chain[i] = max_index;
+		}
+	}
+	int longest_N(int n)  // 
+	{
+		if (n < longest_chain.size())
+			return longest_chain[n];
+		return 0;
 	}
 };
 TEST_CASE("Project Euler #14: Longest Collatz sequence", "[NEW]")
 {
-	CollatzSequence colla;
-	CHECK(colla.compute_sequence(13) == 10);
-	CHECK(colla.compute_sequence(20) == 19);
+	CollatzSequence colla(5000000);
+	CHECK(colla.longest_N(13) == 9);
+	CHECK(colla.longest_N(20) == 19);
 }
