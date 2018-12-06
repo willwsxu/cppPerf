@@ -374,11 +374,45 @@ public:
 		return 0;
 	}
 };
-TEST_CASE("Project Euler #14: Longest Collatz sequence", "[NEW]")
+TEST_CASE("Project Euler #14: Longest Collatz sequence", "[LARGE]")
 {
 	CollatzSequence colla(5000000);
 	CHECK(colla.longest_N(13) == 9);
 	CHECK(colla.longest_N(20) == 19);
 	CHECK(colla.longest_N(1000000) == 837799);
 	CHECK(colla.longest_N(5000000) == 3732423);
+}
+
+// Project Euler #15: Lattice paths 
+class LatticePath
+{
+	static const int MOD = 1000000007;
+	vector<vector<int>> grid;
+	int result=0;
+public:
+	LatticePath(int N, int M) : grid(N+1, vector<int>(M+1, 0))  // NxM lattice is 
+	{
+		grid[0][0] = 1;
+		for (int i = 0; i <= N; i++) {
+			for (int j = 0; j <= M; j++) { // dynamic programming
+				if (i < N) {
+					grid[i + 1][j] += grid[i][j];  // down
+					grid[i + 1][j] %= MOD;
+				}
+				if (j < M) {
+					grid[i][j + 1] += grid[i][j];  // right
+					grid[i][j + 1] %= MOD;
+				}
+			}
+		}
+		result = grid[N][M];
+	}
+	int get() const {
+		return result;
+	}
+};
+TEST_CASE("Project Euler #15: Lattice paths", "[NEW]")
+{
+	LatticePath p(2, 2);
+	CHECK(p.get() == 6);
 }
