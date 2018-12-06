@@ -324,9 +324,10 @@ TEST_CASE("Project Euler #9: Special Pythagorean triplet", "[NEW]")
 }
 // Project Euler #14: Longest Collatz sequence 
 // find the start # (<=N) which produce longest chain, return the largest if more than one answer
+// facts the longest chain is 597
 class CollatzSequence
 {
-	map<int64_t, int> seq_count;
+	// map<int64_t, int> seq_count; // hacker rank crash ( run out of stack), remove this extra caching solved problem
 	vector<int>	  longest_chain;
 
 	inline int64_t next_n(int64_t n)
@@ -336,11 +337,11 @@ class CollatzSequence
 	int map_sequence(int64_t n) {
 		if (n < longest_chain.size())
 			return vec_sequence(n);
-		auto x = seq_count.find(n);
-		if (x != end(seq_count))
-			return x->second;
-		seq_count[n] = 1 + map_sequence(next_n(n));
-		return seq_count[n];
+//		auto x = seq_count.find(n);
+//		if (x != end(seq_count))
+//			return x->second;
+		return 1 + map_sequence(next_n(n));
+//		return seq_count[n];
 	}
 	int vec_sequence(int64_t n) {
 		if (n >= longest_chain.size())
@@ -375,9 +376,9 @@ public:
 };
 TEST_CASE("Project Euler #14: Longest Collatz sequence", "[NEW]")
 {
-	CollatzSequence colla(1000000);
+	CollatzSequence colla(5000000);
 	CHECK(colla.longest_N(13) == 9);
 	CHECK(colla.longest_N(20) == 19);
 	CHECK(colla.longest_N(1000000) == 837799);
-	//CHECK(colla.longest_N(5000000) == 3732423);
+	CHECK(colla.longest_N(5000000) == 3732423);
 }
