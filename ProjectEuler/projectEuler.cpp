@@ -416,3 +416,28 @@ TEST_CASE("Project Euler #15: Lattice paths", "[NEW]")
 	LatticePath p(2, 2);
 	CHECK(p.get() == 6);
 }
+
+// Project Euler #16: Power digit sum
+class Power2DigitSum
+{
+	vector<int> digitSum;
+public:
+	Power2DigitSum(int N): digitSum(N) { //2^N
+		string s1 = "1";
+		for (int i = 0; i < N; i++) {
+			int carry = sum_str(rbegin(s1), rend(s1), rbegin(s1), rbegin(s1));
+			if (carry > 0)
+				s1.insert(0, 1, carry + '0');
+			digitSum[i] = accumulate(begin(s1), end(s1), 0, [](int init, char c) { return init + c - '0'; });
+		}
+	}
+	int get(int N) const {
+		return digitSum[N-1];
+	}
+};
+
+TEST_CASE("Project Euler #16: Power digit sum", "[NEW]")
+{
+	Power2DigitSum digitSum(30);
+	CHECK(digitSum.get(9) == 8);
+}
