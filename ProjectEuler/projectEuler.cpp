@@ -346,9 +346,9 @@ class CollatzSequence
 	int vec_sequence(int64_t n) {
 		if (n >= longest_chain.size())
 			return map_sequence(n);
-		if (longest_chain[n] == 0)
-			longest_chain[n] = 1 + vec_sequence(next_n(n));
-		return longest_chain[n];
+		if (longest_chain[static_cast<int>(n)] == 0)
+			longest_chain[static_cast<int>(n)] = 1 + vec_sequence(next_n(n));
+		return longest_chain[static_cast<int>(n)];
 	}
 public:
 	CollatzSequence(int N):longest_chain(N+1, 0)
@@ -369,7 +369,7 @@ public:
 	}
 	int longest_N(int n)  // 
 	{
-		if (n < longest_chain.size())
+		if (n < (int)longest_chain.size())
 			return longest_chain[n];
 		return 0;
 	}
@@ -441,3 +441,21 @@ TEST_CASE("Project Euler #16: Power digit sum", "[NEW]")
 	Power2DigitSum digitSum(30);
 	CHECK(digitSum.get(9) == 8);
 }
+// Project Euler #22: Names scores
+class NameScore
+{
+	map<string, int> scores;
+public:
+	NameScore(vector<string>&& names) {
+		sort(begin(names), end(names));
+		int pos = 1;
+		for (string& name : names) {
+			int score = accumulate(begin(name), end(name), 0, [](int init, char c) { return init + c - 'A' + 1; });
+			scores[move(name)] = score*(pos++);
+		}
+	}
+	int get(const string& name)
+	{
+		return scores[name];
+	}
+};
