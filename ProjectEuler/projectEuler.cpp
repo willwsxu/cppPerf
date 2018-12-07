@@ -470,3 +470,46 @@ int MaxPathSum(vector<vector<int>>& triangle)  // bottom up dp
 	}
 	return triangle[0][0];
 };
+
+// Project Euler #20: Factorial digit sum
+template<typename RandRevIter>
+int large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, int factor)
+{
+	int carry = 0;
+	while (first1 != last1) {
+		carry += *first1  * factor;
+		*dest = carry % 10;
+		carry /= 10;
+		++first1;
+		++dest;
+	}
+	return carry;
+}
+
+class FactorialDigitSum
+{
+	vector<int> digitSum;
+public:
+	FactorialDigitSum(int N) :digitSum{ 1 } {
+		int max_size = static_cast<int>(N*log10(N));
+		digitSum.reserve(max_size);
+		vector<char> factorial{ 1 };  // int digits in reverse order, least significant at left
+		for (int n = 2; n <= N; n++) {
+			int carry = large_int_multiply(begin(factorial), end(factorial), begin(factorial), n);
+			while (carry > 0) {
+				factorial.push_back(carry % 10);
+				carry /= 10;
+			}
+			digitSum.push_back(accumulate(begin(factorial), end(factorial), 0));
+		}
+	}
+	int get(int N) const
+	{
+		return digitSum[N - 1];
+	}
+};
+TEST_CASE("Project Euler #20: Factorial digit sum", "[NEW]")
+{
+	FactorialDigitSum fact_digits(1000);
+	CHECK(fact_digits.get(1000) == 10539);
+}
