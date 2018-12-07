@@ -459,3 +459,14 @@ public:
 		return scores[name];
 	}
 };
+
+// Project Euler #18: Maximum path sum I , move from top to adjacent number below
+int MaxPathSum(vector<vector<int>>& triangle)  // bottom up dp
+{
+	for (int r = triangle.size() - 1; r > 0; r--) {
+		for (int c = 0; c < (int)triangle[r].size()-1; c++) {
+			triangle[r - 1][c] += max(triangle[r][c], triangle[r][c + 1]);  // add max of 2 adjacent nodes to the parent node
+		}
+	}
+	return triangle[0][0];
+};
