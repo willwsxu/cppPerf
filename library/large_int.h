@@ -9,6 +9,37 @@
 using std::vector;
 using std::transform;
 
+// add string of equal length, return carry
+template<typename RandRevIter>
+int sum_str(RandRevIter first1, RandRevIter last1, RandRevIter first2, RandRevIter dest)
+{
+	int carry = 0;
+	while (first1 != last1) {
+		carry += *first1 - '0' + *first2 - '0';
+		*dest = carry % 10 + '0';
+		carry /= 10;
+		++first1;
+		++first2;
+		++dest;
+	}
+	return carry;
+}
+
+// multiply large int with regular int
+template<typename RandRevIter>
+int large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, int factor)
+{
+	int carry = 0;
+	while (first1 != last1) {
+		carry += *first1  * factor;
+		*dest = carry % 10;
+		carry /= 10;
+		++first1;
+		++dest;
+	}
+	return carry;
+}
+
 class LargeInt
 {
 public:
