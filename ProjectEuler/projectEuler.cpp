@@ -488,9 +488,9 @@ int large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, 
 
 class FactorialDigitSum
 {
-	vector<int> digitSum;
+	vector<int> digitSum;  // 0! =1
 public:
-	FactorialDigitSum(int N) :digitSum{ 1 } {
+	FactorialDigitSum(int N) :digitSum{ 1, 1 } {
 		int max_size = static_cast<int>(N*log10(N));
 		digitSum.reserve(max_size);
 		vector<char> factorial{ 1 };  // int digits in reverse order, least significant at left
@@ -505,11 +505,15 @@ public:
 	}
 	int get(int N) const
 	{
-		return digitSum[N - 1];
+		return digitSum[N];
 	}
 };
 TEST_CASE("Project Euler #20: Factorial digit sum", "[NEW]")
 {
 	FactorialDigitSum fact_digits(1000);
+	CHECK(fact_digits.get(0) == 1);
+	CHECK(fact_digits.get(1) == 1);
+	CHECK(fact_digits.get(998) == 10287);
+	CHECK(fact_digits.get(999) == 10539);
 	CHECK(fact_digits.get(1000) == 10539);
 }
