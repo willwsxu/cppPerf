@@ -674,7 +674,7 @@ public:
 					}
 				}
 			}
-			if (divisors > max_divisors) {  // map a new divisor count to the first triangular value
+			if (divisors > max_divisors) {  // map a new divisor count to the first triangular value, critical for speed
 				max_divisors = divisors;
 				divisors_first_Num[divisors] = triangular;
 			}
@@ -697,3 +697,49 @@ TEST_CASE("Project Euler #12: Highly divisible triangular number", "[NEW]")
 	CHECK(divisors.get(1000) == 842161320);
 }
 
+// Project Euler #21: Amicable numbers
+// Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n)
+class AmicableNumbers
+{
+	map<int, int> amicable_sum;  // accumulative sum of all amicables up to this point
+public:
+	AmicableNumbers(int N) {
+		vector<int> divisor_sum(N+1, 0);
+		int amic_sum = 0;
+		for (int n = 2; n <= N; n++) {
+			int sum = 1;
+			for (int j = 2; j*j <= n; j++) {
+				if (n%j == 0) {
+					sum += j;
+					if (j*j < n)
+						sum += n / j;
+				}
+			}
+			divisor_sum[n] = sum;
+			if (sum < n && divisor_sum[sum] == n) {  // check amicable pair at lower range
+				amic_sum += (sum + n);
+				amicable_sum[n] = amic_sum;  // map the larger of the amicable pair
+			}
+		}
+	}
+	int get(int N) {
+		auto found = amicable_sum.lower_bound(N);
+		if (found == end(amicable_sum) || found->first > N) {
+			if (found == begin(amicable_sum))
+				return 0;
+			--found;
+		}
+		return found->second;
+	}
+};
+
+
+TEST_CASE("Project Euler #21: Amicable numbers", "[NEW]")
+{
+	AmicableNumbers amicables(100000);
+	CHECK(amicables.get(1) == 0);
+	CHECK(amicables.get(300) == 504);
+	CHECK(amicables.get(3000) == 8442);
+	CHECK(amicables.get(30000) == 115818);
+	CHECK(amicables.get(100000) == 852810);
+}
