@@ -705,7 +705,6 @@ class AmicableNumbers
 public:
 	AmicableNumbers(int N) {
 		vector<int> divisor_sum(N+1, 0);
-		int amic_sum = 0;
 		for (int n = 2; n <= N; n++) {
 			int sum = 1;
 			for (int j = 2; j*j <= n; j++) {
@@ -717,9 +716,15 @@ public:
 			}
 			divisor_sum[n] = sum;
 			if (sum < n && divisor_sum[sum] == n) {  // check amicable pair at lower range
-				amic_sum += (sum + n);
-				amicable_sum[n] = amic_sum;  // map the larger of the amicable pair
+				amicable_sum[n] = 0;
+				amicable_sum[sum] = 0;
 			}
+		}
+		// compute partial prefix sum
+		int running_sum = 0;
+		for (auto start = begin(amicable_sum); start != end(amicable_sum); ++start) {
+			running_sum += start->first;
+			start->second = running_sum;
 		}
 	}
 	int get(int N) {
@@ -738,6 +743,7 @@ TEST_CASE("Project Euler #21: Amicable numbers", "[NEW]")
 {
 	AmicableNumbers amicables(100000);
 	CHECK(amicables.get(1) == 0);
+	CHECK(amicables.get(220) == 220);
 	CHECK(amicables.get(300) == 504);
 	CHECK(amicables.get(3000) == 8442);
 	CHECK(amicables.get(30000) == 115818);
