@@ -520,7 +520,7 @@ class NumberToWords {
 		if (N >= unit) {
 			if (!s.empty())
 				s.append(1, ' ');
-			s.append(decode_hundred(N / unit)).append(move(unit_name));
+			s.append(decode_hundred(static_cast<int>(N / unit))).append(move(unit_name));
 		}
 		return N % unit;
 	}
@@ -554,3 +554,146 @@ TEST_CASE("Project Euler #17: Number to Words", "[NEW]")
 	CHECK(words.number2words(1000000000000LL) == "One Trillion");
 	CHECK(words.number2words(111111111111LL) == "One Hundred Eleven Billion One Hundred Eleven Million One Hundred Eleven Thousand One Hundred Eleven");
 }
+
+
+template<typename T, typename R>
+class ProductSlidingWindow
+{
+	deque<T>  slider;
+	int			size;
+	R			runningVal = 1;
+	R			maxVal = 0;
+public:
+	ProductSlidingWindow(int k) :size(k)
+	{
+	}
+
+	void operator()(const T& v)
+	{
+		if (v == 0) {
+			slider.clear();
+			runningVal = 1;
+		}
+		else {
+			runningVal *= v;
+			slider.push_back(v);
+			if (slider.size() == size) {
+				maxVal = max(maxVal, runningVal);
+				runningVal /= slider.front();
+				slider.pop_front();
+			}
+		}
+	}
+	void operator()(char x)  // this is not specialization, just additional overload for string
+	{
+		operator()(T(x - '0'));
+	}
+	R get() const {
+		return maxVal;
+	}
+};
+TEST_CASE("Project Euler #8: Largest product in a series", "[NEW]")
+{
+	ProductSlidingWindow<short, long> maxProd(4);
+	maxProd(short(5));
+	maxProd(short(2));
+	maxProd(short(3));
+	maxProd(short(4));
+	CHECK(maxProd.get() == 120);
+	maxProd(short(10));
+	CHECK(maxProd.get() == 240);
+
+	string x = "3675356291";
+	auto ans = for_each(begin(x), end(x), ProductSlidingWindow<short, long>(5));
+	CHECK(ans.get() == 3150);
+}
+
+// Project Euler #11: Largest product in a grid 20x20
+int maxProductGrid(vector<vector<int>> grid)
+{
+	int max_p = 0;
+	for (size_t i = 0; i < grid.size(); i++) { // rows
+		auto ans = for_each(begin(grid[i]), end(grid[i]), ProductSlidingWindow<int, int>(4));
+		max_p = max(max_p, ans.get());
+	}
+	for (size_t j = 0; j < grid[0].size(); j++) {  // columns
+		ProductSlidingWindow<int, int> slidingProd(4);
+		for (size_t i = 0; i < grid.size(); i++)
+			slidingProd(grid[i][j]);
+		max_p = max(max_p, slidingProd.get());
+	}
+	int grid_size = grid.size();
+	for (int diff = -grid_size + 4; diff <= 0; diff++) {  // backward diagnonal, right half, r-c same for each
+		ProductSlidingWindow<int, int> slidingProd(4);
+		for (int r = 0, c = r - diff; c<grid_size; r++, c = r - diff)
+			slidingProd(grid[r][c]);
+		max_p = max(max_p, slidingProd.get());
+	}
+	for (int diff = 1; diff <= grid_size - 4; diff++) {  // backward diagnonal, left half, r-c same for each
+		ProductSlidingWindow<int, int> slidingProd(4);
+		for (int c = 0, r = c + diff; r<grid_size; c++, r = c + diff)
+			slidingProd(grid[r][c]);
+		max_p = max(max_p, slidingProd.get());
+	}
+	for (int sum = 3; sum < grid_size; sum++) {  // forward diagnonal, top half, r+c same for each
+		ProductSlidingWindow<int, int> slidingProd(4);
+		for (int c = 0, r = sum - c; r >= 0; c++, r = sum - c)
+			slidingProd(grid[r][c]);
+		max_p = max(max_p, slidingProd.get());
+	}
+	for (int sum = grid_size; sum < 2 * grid_size - 4; sum++) {  // forward diagnonal, bottom half, r+c same for each
+		ProductSlidingWindow<int, int> slidingProd(4);
+		for (int r = grid_size - 1, c = sum - r; c < grid_size; r--, c = sum - r)
+			slidingProd(grid[r][c]);
+		max_p = max(max_p, slidingProd.get());
+	}
+	return max_p;
+}
+
+//Project Euler #12: Highly divisible triangular number
+// What is the value of the first triangle number to have over N divisors?
+class DivisibleTriangluar
+{
+	map<int, int> divisors_first_Num;  // first triangle number to have N divisors
+public:
+	DivisibleTriangluar(int N)
+	{
+		divisors_first_Num[1] = 1;
+		int triangular = 1;  // triangular value
+		int max_divisors = 1;
+		int i = 2;
+		while (max_divisors < N) {
+			triangular += i++;
+			int divisors = 2;  // 1 and itself
+			for (int j = 2; j*j <= triangular; j++) {
+				if (triangular%j == 0) {
+					divisors += 2;
+					if (j * j == triangular) {  // perfect square
+						divisors--;
+						break;
+					}
+				}
+			}
+			if (divisors > max_divisors) {  // map a new divisor count to the first triangular value
+				max_divisors = divisors;
+				divisors_first_Num[divisors] = triangular;
+			}
+		}
+	}
+	int get(unsigned int divisors) // first triangle number to have more divisors
+	{
+		auto found = divisors_first_Num.upper_bound(divisors);
+		if (found != end(divisors_first_Num))
+			return found->second;
+		return -1;
+	}
+};
+TEST_CASE("Project Euler #12: Highly divisible triangular number", "[NEW]")
+{
+	DivisibleTriangluar divisors(1000);
+	CHECK(divisors.get(1) == 3);
+	CHECK(divisors.get(2) == 6);
+	CHECK(divisors.get(4) == 28);
+	CHECK(divisors.get(1000) == 842161320);
+}
+
