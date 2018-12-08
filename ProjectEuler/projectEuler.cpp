@@ -489,3 +489,68 @@ TEST_CASE("Project Euler #20: Factorial digit sum", "[NEW]")
 	CHECK(fact_digits.get(999) == 10539);
 	CHECK(fact_digits.get(1000) == 10539);
 }
+
+// Project Euler #17: Number to Words 
+class NumberToWords {
+	const vector<string> ones;
+	const vector<string> tens;
+
+	string decode_hundred(int h)  // less then a thousand, > 0
+	{
+		string s;
+		if (h >= 100) {
+			s.append(ones[h / 100]).append(" Hundred");
+			h %= 100;
+		}
+		if (h >= 20) {
+			if (!s.empty())
+				s.append(1, ' ');
+			s.append(tens[h / 10 - 2]);
+			h %= 10;
+		}
+		if (h > 0) {
+			if (!s.empty())
+				s.append(1, ' ');
+			s.append(ones[h]);
+		}
+		return s;
+	}
+
+	long long encode_by_3(string& s, long long N, long long unit, string unit_name) {
+		if (N >= unit) {
+			if (!s.empty())
+				s.append(1, ' ');
+			s.append(decode_hundred(N / unit)).append(move(unit_name));
+		}
+		return N % unit;
+	}
+public:
+	NumberToWords() :ones{ "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+		"Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" },
+		tens{ "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" }
+	{}
+
+	string number2words(long long N)
+	{
+		if (N == 0)
+			return ones[0];
+		string s;
+		N = encode_by_3(s, N, 1000000000000LL, " Trillion");
+		N = encode_by_3(s, N, 1000000000, " Billion");
+		N = encode_by_3(s, N, 1000000, " Million");
+		N = encode_by_3(s, N, 1000, " Thousand");
+		N = encode_by_3(s, N, 1, "");
+		return s;
+	}
+};
+TEST_CASE("Project Euler #17: Number to Words", "[NEW]")
+{
+	NumberToWords words;
+	CHECK(words.number2words(900090009999LL) == "Nine Hundred Billion Ninety Million Nine Thousand Nine Hundred Ninety Nine");
+	CHECK(words.number2words(0) == "Zero");
+	CHECK(words.number2words(1) == "One");
+	CHECK(words.number2words(40050) == "Forty Thousand Fifty");
+	CHECK(words.number2words(1234567890) == "One Billion Two Hundred Thirty Four Million Five Hundred Sixty Seven Thousand Eight Hundred Ninety");
+	CHECK(words.number2words(1000000000000LL) == "One Trillion");
+	CHECK(words.number2words(111111111111LL) == "One Hundred Eleven Billion One Hundred Eleven Million One Hundred Eleven Thousand One Hundred Eleven");
+}
