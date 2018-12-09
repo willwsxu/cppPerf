@@ -480,7 +480,7 @@ public:
 		return digitSum[N];
 	}
 };
-TEST_CASE("Project Euler #20: Factorial digit sum", "[NEW]")
+TEST_CASE("Project Euler #20: Factorial digit sum", "[OLD]")
 {
 	FactorialDigitSum fact_digits(1000);
 	CHECK(fact_digits.get(0) == 1);
@@ -592,7 +592,7 @@ public:
 		return maxVal;
 	}
 };
-TEST_CASE("Project Euler #8: Largest product in a series", "[NEW]")
+TEST_CASE("Project Euler #8: Largest product in a series", "[OLD]")
 {
 	ProductSlidingWindow<short, long> maxProd(4);
 	maxProd(short(5));
@@ -802,14 +802,6 @@ public:
 				y1++;
 			}
 		}
-		if (d2 > 1) {
-			d2 = 1;
-			m2--;
-			if (m2 < 1) {
-				m2 = 12;
-				y2--;
-			}
-		}
 		if (y1 > y2)
 			return 0;
 		int64_t total_days = 0;
@@ -825,7 +817,7 @@ public:
 			first_wdays = (first_wdays + get_days_in_month(first_month++, y1)) % 7;
 		}
 		int ans = 0;
-		while (y1 < y2 || first_month <= m2) {
+		while (y1 < y2 || y1==y2 && first_month <= m2) {
 			if (first_wdays == 0)
 				ans++;
 			first_wdays = (first_wdays + get_days_in_month(first_month++, y1)) % 7;
@@ -841,6 +833,8 @@ public:
 TEST_CASE("Project Euler #19: Counting Sundays", "[NEW]")
 {
 	Calendar cal;
-	CHECK(cal.countSundays(1, 1, 1900, 1, 1, 1910) == 18);
+	CHECK(cal.countSundays(1, 1, 1900, 2, 8, 1909) == 18);
 	CHECK(cal.countSundays(1, 1, 2000, 1, 1, 2020) == 35);
+	CHECK(cal.countSundays(1, 1, 2000, 1, 12, 2020) == 37);
+	CHECK(cal.countSundays(30, 1, 2000, 2, 2, 3000) == 1720);
 }
