@@ -789,7 +789,7 @@ public:
 		}
 		return 0;
 	}
-	int countSundays(int d1, int m1, int64_t y1, int d2, int m2, int64_t y2) {
+	int countSundays(int64_t y1, int m1, int d1, int64_t y2, int m2, int d2) {
 		assert(y1 >= 1900);
 		assert(y1 <= y2);
 		assert(y2 - y1 <= 1000);
@@ -810,7 +810,7 @@ public:
 		if (years>0) {
 			total_days += years * 365;
 			total_days += leap_days(y1 - 1) - leap_days(start_day.year - 1);
-			first_wdays += total_days % 7;
+			first_wdays = (first_wdays + total_days) % 7;  // bug fix 
 		}
 		int first_month = 1;
 		while (first_month < m1) {
@@ -833,8 +833,9 @@ public:
 TEST_CASE("Project Euler #19: Counting Sundays", "[NEW]")
 {
 	Calendar cal;
-	CHECK(cal.countSundays(1, 1, 1900, 2, 8, 1909) == 18);
-	CHECK(cal.countSundays(1, 1, 2000, 1, 1, 2020) == 35);
-	CHECK(cal.countSundays(1, 1, 2000, 1, 12, 2020) == 37);
-	CHECK(cal.countSundays(30, 1, 2000, 2, 2, 3000) == 1720);
+	CHECK(cal.countSundays(1905, 1, 1, 1909, 8, 2) == 9);
+	CHECK(cal.countSundays(1900, 1, 1, 1909, 8, 2) == 18);
+	CHECK(cal.countSundays(2000, 1, 1, 2020, 1, 1) == 35);
+	CHECK(cal.countSundays(1999, 12, 12, 2020, 12, 1) == 37);
+	CHECK(cal.countSundays(2000, 1, 30, 3000, 2, 2) == 1720);
 }
