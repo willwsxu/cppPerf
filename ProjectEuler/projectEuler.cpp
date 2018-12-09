@@ -697,6 +697,18 @@ TEST_CASE("Project Euler #12: Highly divisible triangular number", "[NEW]")
 	CHECK(divisors.get(1000) == 842161320);
 }
 
+int proper_divisor_sum(int n)
+{
+	int sum = 1;
+	for (int j = 2; j*j <= n; j++) {
+		if (n%j == 0) {
+			sum += j;
+			if (j*j < n)
+				sum += n / j;
+		}
+	}
+	return sum;
+}
 // Project Euler #21: Amicable numbers
 // Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n)
 class AmicableNumbers
@@ -706,14 +718,7 @@ public:
 	AmicableNumbers(int N) {
 		vector<int> divisor_sum(N+1, 0);
 		for (int n = 2; n <= N; n++) {
-			int sum = 1;
-			for (int j = 2; j*j <= n; j++) {
-				if (n%j == 0) {
-					sum += j;
-					if (j*j < n)
-						sum += n / j;
-				}
-			}
+			int sum = proper_divisor_sum(n);
 			divisor_sum[n] = sum;
 			if (sum < n && divisor_sum[sum] == n) {  // check amicable pair at lower range
 				amicable_sum[n] = 0;
@@ -838,4 +843,41 @@ TEST_CASE("Project Euler #19: Counting Sundays", "[NEW]")
 	CHECK(cal.countSundays(2000, 1, 1, 2020, 1, 1) == 35);
 	CHECK(cal.countSundays(1999, 12, 12, 2020, 12, 1) == 37);
 	CHECK(cal.countSundays(2000, 1, 30, 3000, 2, 2) == 1720);
+}
+
+// Project Euler #23: Non - abundant sums
+// By mathematical analysis, it can be shown that all integers greater than 28123 can be written as the sum of two abundant numbers
+class AbundantNumbers
+{
+	set<int> abundant;
+	const int ALWAYS_ABUNDANT = 28124;
+public:
+	AbundantNumbers()
+	{
+		for (int i = 2; i < ALWAYS_ABUNDANT; i++)
+			if (proper_divisor_sum(i) > i)
+				abundant.insert(i);
+	}
+	bool abundant_sum(int N) {
+		if (N >= ALWAYS_ABUNDANT)
+			return true;
+		for (int n : abundant) {
+			if (n >= N)
+				return false;
+			if (abundant.count(N - n))
+				return true;
+		}
+		return false;
+	}
+};
+
+TEST_CASE("Project Euler #23: Non - abundant sums", "[NEW]")
+{
+	AbundantNumbers abund;
+	for (int i = 1; i < 24; i++)
+		CHECK(abund.abundant_sum(i) == false);
+	CHECK(abund.abundant_sum(24) == true);
+	CHECK(abund.abundant_sum(49) == false);
+	CHECK(abund.abundant_sum(28123) == false);
+	CHECK(abund.abundant_sum(28124) == true);
 }
