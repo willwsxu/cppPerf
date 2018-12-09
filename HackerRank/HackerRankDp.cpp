@@ -153,3 +153,35 @@ long countArray(int n, int k, int x) {
 	}
 	return (MOD + count_total - count1) % MOD;
 }
+
+
+// find maximum weight that can be obstained from object in the array
+int unboundedKnapsack(int capacity, vector<int>& stuff, int current, vector<int>& dp) {  // top down, 2 tests TLE
+	if (current > capacity)
+		return INT32_MIN;
+	if (current == capacity)
+		return current;
+	if (dp[current] >= 0)
+		return dp[current];
+	int max_w = 0;
+	for (int obj : stuff) {
+		max_w = max(max_w, unboundedKnapsack(capacity, stuff, current + obj, dp));
+	}
+	return max(max_w, current);
+}
+int unboundedKnapsack(int capacity, vector<int> arr) {  // pass all tests
+	vector<int> dp(capacity + 1, 0);
+	for (int weight = 1; weight <= capacity; weight++) {  // bottom up
+		for (int obj : arr) {
+			if (weight >= obj)
+				dp[weight] = max(dp[weight], obj + dp[weight - obj]);
+		}
+	}
+	return dp[capacity];
+}
+
+TEST_CASE("Hacker rank DP knap sack unbounded", "[NEW]")
+{
+	CHECK(unboundedKnapsack(11, vector<int>{3, 7, 9}) == 10);
+	CHECK(unboundedKnapsack(12, vector<int>{1, 6, 9}) == 12);
+}

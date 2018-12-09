@@ -102,6 +102,9 @@
     <ClInclude Include="..\library\large_int.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\library\SortedVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
