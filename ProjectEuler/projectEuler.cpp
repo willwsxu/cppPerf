@@ -103,7 +103,7 @@ TEST_CASE("Euler #39 fundamental right Triangles", "[LARGE]")
 	CHECK(best_perimeter.size() == 30);
 }
 
-TEST_CASE("Euler #39 rightTriangles", "[NEW]")
+TEST_CASE("Euler #39 rightTriangles", "[OLD]")
 {
 	set<int> best_perimeter = max_right_triangles_by_perimeter(121);
 	auto find_max_p = [&best_perimeter](int N) {
@@ -162,7 +162,7 @@ int perfect_right_triangle_not_super(long long N)
 	return distance(begin(right_triangles), not_perfect)- super_perfect;
 }
 
-TEST_CASE("Project Euler #218: Perfect right-angled triangles", "[NEW]")
+TEST_CASE("Project Euler #218: Perfect right-angled triangles", "[OLD]")
 {
 	CHECK(perfect_right_triangle_not_super(1000000) == 0); // trick q, all perfect right triangles are super perfect
 }
@@ -203,7 +203,7 @@ long long sumOfNicePalindrome2(int N, int d)  // 1<=N,d<=1000000000
 	return accumulate(begin(result), end(result), 0LL);
 }
 
-TEST_CASE("Project Euler #125: Palindromic sums, test palindrome generator", "[NEW]")
+TEST_CASE("Project Euler #125: Palindromic sums, test palindrome generator", "[OLD]")
 {
 	CHECK(allPalindrome(10).size() == 108);
 	vector<int> result = allPalindrome(10000);
@@ -253,7 +253,7 @@ string sum_str(string& s1, string& s2)
 	return move(s1);
 }
 
-TEST_CASE("Project Euler #13: Large sum", "[NEW]")
+TEST_CASE("Project Euler #13: Large sum", "[OLD]")
 {
 	string sum = sum_str(string("37107287533902102798797998220837590246510135740250"), string("46376937677490009712648124896970078050417018260538"));
 	string sum2 = sum_str(sum, string("74324986199524741059474233309513058123726617309629"));
@@ -282,7 +282,7 @@ vector<long long> largestPrime(vector<long long> N)  // [10, 10^12]
 	}
 	return ans;
 }
-TEST_CASE("Project Euler #3: Largest prime factor", "[NEW]")
+TEST_CASE("Project Euler #3: Largest prime factor", "[OLD]")
 {
 	CHECK(largestPrime(vector<long long>{10,17, 13195, 1000000000000LL-9, 987654321111}) == vector<long long>{5, 17, 29, 1000003, 20426761});
 }
@@ -303,7 +303,7 @@ int maxABC(int N)
 	return ans;
 }
 
-TEST_CASE("Project Euler #9: Special Pythagorean triplet", "[NEW]")
+TEST_CASE("Project Euler #9: Special Pythagorean triplet", "[OLD]")
 {
 	CHECK(maxABC(36) == 1620);
 	CHECK(maxABC(3000) == 937500000);
@@ -738,7 +738,6 @@ public:
 	}
 };
 
-
 TEST_CASE("Project Euler #21: Amicable numbers", "[NEW]")
 {
 	AmicableNumbers amicables(100000);
@@ -748,4 +747,100 @@ TEST_CASE("Project Euler #21: Amicable numbers", "[NEW]")
 	CHECK(amicables.get(3000) == 8442);
 	CHECK(amicables.get(30000) == 115818);
 	CHECK(amicables.get(100000) == 852810);
+}
+
+// Project Euler #19: Counting Sundays
+class Calendar {
+	struct Date {
+		int wday;  // weekday 0 Sunday, ..., 6 Saturday
+		int day;   // 1 to 31
+		int month; // 1 to 12
+		int64_t year;  // from 1900
+		int epoch_days = 0;
+		Date(int wd, int d, int m, int64_t y) {
+			wday = wd;
+			day = d;
+			month = m;
+			year = y;
+		}
+	};
+	Date start_day;
+public:
+	Calendar():start_day(1,1,1,1900) {
+	}
+	static bool is_leap(int64_t year) {
+		if (year % 4 != 0)
+			return false;
+		if (year % 100 != 0)
+			return true;
+		return year % 400 == 0;
+	}
+	static int64_t leap_days(int64_t year) {  // since year 0 (excluded)
+		return year / 4 - year / 100 + year / 400;
+	}
+	static int get_days_in_month(int m, int64_t y) {
+		switch (m) {
+		case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+			return 31;
+		case 4: case 6: case 9: case 11:
+			return 30;
+		case 2:
+			return is_leap(y) ? 29 : 28;
+		}
+		return 0;
+	}
+	int countSundays(int d1, int m1, int64_t y1, int d2, int m2, int64_t y2) {
+		assert(y1 >= 1900);
+		assert(y1 <= y2);
+		assert(y2 - y1 <= 1000);
+		// since we count sundays on first day of month, let's standardize input values
+		if (d1 > 1) {
+			d1 = 1;
+			m1++;
+			if (m1 > 12) {
+				m1 = 1;
+				y1++;
+			}
+		}
+		if (d2 > 1) {
+			d2 = 1;
+			m2--;
+			if (m2 < 1) {
+				m2 = 12;
+				y2--;
+			}
+		}
+		if (y1 > y2)
+			return 0;
+		int64_t total_days = 0;
+		int64_t years = y1 - start_day.year;
+		int first_wdays = start_day.wday;
+		if (years>0) {
+			total_days += years * 365;
+			total_days += leap_days(y1 - 1) - leap_days(start_day.year - 1);
+			first_wdays += total_days % 7;
+		}
+		int first_month = 1;
+		while (first_month < m1) {
+			first_wdays = (first_wdays + get_days_in_month(first_month++, y1)) % 7;
+		}
+		int ans = 0;
+		while (y1 < y2 || first_month <= m2) {
+			if (first_wdays == 0)
+				ans++;
+			first_wdays = (first_wdays + get_days_in_month(first_month++, y1)) % 7;
+			if (first_month > 12) {
+				first_month = 1;
+				y1++;
+			}
+		}
+		return ans;
+	}
+};
+
+TEST_CASE("Project Euler #19: Counting Sundays", "[NEW]")
+{
+	Calendar cal;
+	CHECK(cal.countSundays(1, 1, 1900, 1, 1, 1910) == 18);
+	CHECK(cal.countSundays(1, 1, 2000, 1, 1, 2020) == 35);
 }
