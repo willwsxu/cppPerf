@@ -878,6 +878,6 @@ TEST_CASE("Project Euler #23: Non - abundant sums", "[NEW]")
 		CHECK(abund.abundant_sum(i) == false);
 	CHECK(abund.abundant_sum(24) == true);
 	CHECK(abund.abundant_sum(49) == false);
-	CHECK(abund.abundant_sum(28123) == false);
+	CHECK(abund.abundant_sum(28123) == true);
 	CHECK(abund.abundant_sum(28124) == true);
 }

@@ -183,7 +183,44 @@ public:
 		}
 		return total;
 	}
+
+	// 954. Array of Doubled Pairs
+	bool canReorderDoubled(vector<int>& A) {
+		sort(begin(A), end(A));
+		vector<char> visited(A.size(), 0);
+		int i = 0;
+		while ( i<A.size()) {
+			if (!visited[i]) {
+				auto self = equal_range(begin(A)+i, end(A), A[i]);
+				int self_count = distance(self.first, self.second);
+				if (A[i] == 0) {  // trick case
+					if (self_count % 2 != 0)
+						return false;
+				}
+				else {
+					int target = A[i] > 0 ? 2 * A[i] : A[i] / 2;
+					auto found = equal_range(begin(A) + i + 1, end(A), target);
+					if (self_count > distance(found.first, found.second))
+						return false;
+					int start = distance(begin(A), found.first);
+					for (int j = start; j < start + self_count; j++)
+						visited[j] = 1;
+				}
+				i += self_count;
+			}
+			else
+				i++;
+		}
+		return true;
+	}
 };
+TEST_CASE("954. Array of Doubled Pairs", "[NEW]")
+{
+	CHECK(BinarySearch().canReorderDoubled(vector<int>{1, 2, 1, -8, 8, -4, 4, -4, 2, -2}) == true);
+	CHECK(BinarySearch().canReorderDoubled(vector<int>{0,0}) == true);
+	CHECK(BinarySearch().canReorderDoubled(vector<int>{2, 1, 2, 1, 1, 1, 2, 2}) == true);
+	CHECK(BinarySearch().canReorderDoubled(vector<int>{4, -2, 2, -4}) == true);
+}
 TEST_CASE("930. Binary Subarrays With Sum", "[NEW]")
 {
 	CHECK(BinarySearch().numSubarraysWithSum(vector<int>{0, 0, 0, 0, 0}, 0) == 15);
