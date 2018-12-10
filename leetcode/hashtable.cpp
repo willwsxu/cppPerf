@@ -441,8 +441,34 @@ public:
 		}
 		return n == 1;
 	}
+	// 955. Delete Columns to Make Sorted II
+	int minDeletionSize(vector<string>& A) {  // greedy check ordering column by column
+		int ans = 0;
+		set<int> good;  // save row who has column value larger than previous
+		for (size_t c = 0; c<A[0].size(); c++) {
+			vector<int> row_larger;
+			for (size_t r = 1; r<A.size(); r++) {
+				if (good.count(r)>0)  // no need to compare next column
+					continue;
+				else if (A[r - 1][c] > A[r][c]) {
+					ans++;
+					row_larger.clear();
+					break;
+				}
+				else if (A[r - 1][c] < A[r][c])  // potential candidate as good row
+					row_larger.push_back(r);
+			}
+			good.insert(begin(row_larger), end(row_larger));  // store good rows with larger values
+		}
+		return ans;
+	}
 };
 
+// 955. Delete Columns to Make Sorted II
+TEST_CASE("955. Delete Columns to Make Sorted II", "[NEW]")
+{
+	CHECK(SetStuff().minDeletionSize(vector<string>{"xc", "yb", "za"}) == 0);
+}
 TEST_CASE("202. Happy Number", "[NEW]")
 {
 	CHECK(SetStuff().isHappy(358) == false);
