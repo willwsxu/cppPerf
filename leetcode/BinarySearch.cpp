@@ -186,36 +186,28 @@ public:
 
 	// 954. Array of Doubled Pairs
 	bool canReorderDoubled(vector<int>& A) {
-		sort(begin(A), end(A));
-		vector<char> visited(A.size(), 0);
-		int i = 0;
-		while ( i<A.size()) {
-			if (!visited[i]) {
-				auto self = equal_range(begin(A)+i, end(A), A[i]);
-				int self_count = distance(self.first, self.second);
-				if (A[i] == 0) {  // trick case
-					if (self_count % 2 != 0)
-						return false;
-				}
-				else {
-					int target = A[i] > 0 ? 2 * A[i] : A[i] / 2;
-					auto found = equal_range(begin(A) + i + 1, end(A), target);
-					if (self_count > distance(found.first, found.second))
-						return false;
-					int start = distance(begin(A), found.first);
-					for (int j = start; j < start + self_count; j++)
-						visited[j] = 1;
-				}
-				i += self_count;
+		map<int, int> count;
+		for (int a : A)
+			count[a]++;
+		for (const auto& c : count) {
+			if (c.first == 0) {
+				if (c.second % 2 != 0)
+					return false;
 			}
-			else
-				i++;
+			else if (c.second>0){
+				int target = c.first > 0 ? 2 * c.first : c.first / 2;
+				auto found = count.lower_bound(target);
+				if (found == end(count) || found->first != target || found->second < c.second)
+					return false;
+				found->second -= c.second;
+			}
 		}
 		return true;
 	}
 };
 TEST_CASE("954. Array of Doubled Pairs", "[NEW]")
 {
+	CHECK(BinarySearch().canReorderDoubled(vector<int>{3,1,3,6}) == false);
 	CHECK(BinarySearch().canReorderDoubled(vector<int>{1, 2, 1, -8, 8, -4, 4, -4, 2, -2}) == true);
 	CHECK(BinarySearch().canReorderDoubled(vector<int>{0,0}) == true);
 	CHECK(BinarySearch().canReorderDoubled(vector<int>{2, 1, 2, 1, 1, 1, 2, 2}) == true);
