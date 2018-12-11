@@ -881,3 +881,37 @@ TEST_CASE("Project Euler #23: Non - abundant sums", "[NEW]")
 	CHECK(abund.abundant_sum(28123) == true);
 	CHECK(abund.abundant_sum(28124) == true);
 }
+// Project Euler #24: Lexicographic permutations
+class LexicoPerm
+{
+	vector<long long> factorial;
+public:
+	LexicoPerm(int N):factorial(N,1){
+		for (int i = 2; i <= N; i++)
+			factorial[i - 1] = factorial[i - 2] * i;
+	}
+	string permu(string&& word, long long Nth) { // find Nth permutation
+		set<char> avail{ begin(word), end(word) };
+		Nth--;  // count from 0
+		word.clear();
+		while (avail.size() > 1
+			) {
+			long long fact = factorial[avail.size() - 2];// from N letters, find (N-1)!
+			int pick = static_cast<int>(Nth / fact); // pick from left to right
+			auto found = begin(avail);
+			advance(found, pick);
+			word.push_back(*found);
+			avail.erase(found);
+			Nth %= fact;
+		}
+		word.push_back(*begin(avail));
+		return word;
+	}
+};
+
+TEST_CASE("Project Euler #24: Lexicographic permutations", "[NEW]")
+{
+	LexicoPerm lexi(13);
+	CHECK(lexi.permu("abcdefghijklm", 1) == "abcdefghijklm");
+	CHECK(lexi.permu("abcdefghijklm", 2) == "abcdefghijkml");
+}
