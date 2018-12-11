@@ -11,6 +11,7 @@
 #include "helper.h"
 #include "UnionFind.h"
 #include "large_int.h"
+#include "digits-helper.h"
 using namespace std;
 
 // reference
@@ -914,4 +915,38 @@ TEST_CASE("Project Euler #24: Lexicographic permutations", "[NEW]")
 	LexicoPerm lexi(13);
 	CHECK(lexi.permu("abcdefghijklm", 1) == "abcdefghijklm");
 	CHECK(lexi.permu("abcdefghijklm", 2) == "abcdefghijkml");
+}
+
+// Project Euler #34: Digit factorials 
+// sum of digit factorials is divisible by the number, 1!+9! divisible by 19
+// find sum of such numbers <=N
+class DigitFactorial
+{
+	vector<int> factorial;
+public:
+	DigitFactorial(): factorial(10, 1){
+		for (int i = 2; i < 10; i++)
+			factorial[i] = factorial[i - 1] * i;
+	}
+
+	int sum_divisible(int N) { // N<=100000
+		int sum = 0;
+		for (int i = 10; i <= N; i++) {
+			int temp = i;
+			int fact_sum = 0;
+			while (temp > 0) {
+				fact_sum += factorial[temp % 10];
+				temp /= 10;
+			}
+			if (fact_sum%i == 0)
+				sum += i;
+		}
+		return sum;
+	}
+};
+
+TEST_CASE("Project Euler #34: Digit factorials", "[NEW]")
+{
+	DigitFactorial digitFact;
+	CHECK(digitFact.sum_divisible(20) == 19);
 }
