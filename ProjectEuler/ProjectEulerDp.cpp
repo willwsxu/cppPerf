@@ -53,3 +53,29 @@ int MaxPathSum(vector<vector<int>>& triangle)  // bottom up dp
 	}
 	return triangle[0][0];
 };
+// Project Euler #31: Coin sums
+class WaysMakeChange
+{
+	static const int MOD = 1000000007;
+	vector<int> ways;
+public:
+	WaysMakeChange(int money, vector<int>&& coin_types): ways(money+1, 0)
+	{
+		ways[0] = 1;
+		for (int c : coin_types) {  // fill one coint at a time
+			for (int m = c; m <= money; m++) {
+				ways[m] = (ways[m] + ways[m - c]) % MOD;
+			}
+		}
+	}
+	int get(int m) const
+	{
+		return ways[m];
+	}
+};
+
+TEST_CASE("Project Euler #31: Coin sums ", "[NEW]")
+{
+	WaysMakeChange make_changes(100000, vector<int>{1,2,5,10,20,50,100,200});
+	CHECK(make_changes.get(20) == 41);
+}
