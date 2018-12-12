@@ -118,6 +118,7 @@
     <ClInclude Include="..\library\RingBufferAtomic.h" />
     <ClInclude Include="..\library\SmallObject.h" />
     <ClInclude Include="..\library\SortedVector.h" />
+    <ClInclude Include="Digits-Helper.h" />
     <ClInclude Include="meta_book_example.h" />
     <ClInclude Include="courseSchedule.h" />
     <ClInclude Include="DynBuffer.h" />

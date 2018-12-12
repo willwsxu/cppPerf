@@ -1,4 +1,5 @@
 #include <benchmark/benchmark.h>
+#include "digits-helper.h"
 
 int count_digits_basic(int val)
 {
@@ -9,40 +10,6 @@ int count_digits_basic(int val)
 	}
 	return count;
 }
-int count_digits(int64_t val) {
-	if (val >= 10000) {
-		if (val >= 1000000) {
-			if (val >= 100000000) {
-				if (val >= 1000000000)
-					return 10;
-				return 9;
-			}
-			else {
-				if (val >= 10000000)
-					return 8;
-				return 7;
-			}
-		}
-		else {
-			if (val >= 100000)
-				return 6;
-			return 5;
-		}
-	}
-	else {
-		if (val >= 100) {
-			if (val >= 1000)
-				return 4;
-			return 3;
-		}
-		else {
-			if (val >= 10)
-				return 2;
-			return 1;
-		}
-	}
-}
-
 int count_digits2(int val) {
 	int count = 0;
 	while (val >= 10000) {
@@ -91,31 +58,6 @@ static void BM_count_digits2(benchmark::State& state)
 }
 BENCHMARK(BM_count_digits2);
 
-
-char* itoa_new2(int64_t val, char *szValue, int size)
-{
-	//assert size>12
-	if (val == 0) {
-		szValue[0] = '0';
-		szValue[1] = 0;
-	}
-	else {
-		char *pEnd = nullptr;
-		if (val < 0) {
-			szValue[0] = '-';
-			val = -val;
-			pEnd = szValue + count_digits(val);
-		}
-		else
-			pEnd = szValue + count_digits(val) - 1;
-		pEnd[1] = 0;
-		while (val > 0) {
-			*pEnd-- = val % 10 + '0';
-			val /= 10;
-		}
-	}
-	return szValue;
-}
 
 static void BM_itoa_new2(benchmark::State& state)
 {
