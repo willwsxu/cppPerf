@@ -120,7 +120,7 @@ public:
 		return found->second;
 	}
 };
-TEST_CASE("Project Euler #25: N-digit Fibonacci number", "[NEW]")
+TEST_CASE("Project Euler #25: N-digit Fibonacci number", "[SLOW]")
 {
 	FibonacciDigits digitFib(5000);
 	CHECK(digitFib.terms(3) == 12);
