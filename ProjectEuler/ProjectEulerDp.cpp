@@ -7,6 +7,7 @@
 #include <numeric>
 #include "myalgo.h"
 #include "helper.h"
+#include "large_int.h"
 using namespace std;
 
 // Project Euler #15: Lattice paths 
@@ -74,8 +75,54 @@ public:
 	}
 };
 
-TEST_CASE("Project Euler #31: Coin sums ", "[NEW]")
+TEST_CASE("Project Euler #31: Coin sums ", "[OLD]")
 {
 	WaysMakeChange make_changes(100000, vector<int>{1,2,5,10,20,50,100,200});
 	CHECK(make_changes.get(20) == 41);
+}
+
+void sum(vector<int>& v1, vector<int>& v2)
+{
+	if (v1.size() < v2.size())
+		fill_n(back_inserter(v1), v2.size() - v1.size(), 0);
+	else if (v1.size() > v2.size())
+		fill_n(back_inserter(v2), v1.size() - v2.size(), 0);
+	int carry = sum_int(begin(v1), end(v1), begin(v2), begin(v1), 0);
+	while (carry > 0) {
+		v1.push_back(carry % 10);
+		carry /= 10;
+	}
+}
+
+class FibonacciDigits
+{
+	map<int, int>  digits_term;  // digits of first
+public:
+	FibonacciDigits(int N) {
+		vector<int> f1{ 1 }, f2{ 1 };
+		f1.reserve(N);
+		f2.reserve(N);
+		int term = 3;
+		unsigned int digits = 1;
+		while ((int)f1.size() < N) {
+			sum(f1, f2);  // add f2 to f1
+			if (f1.size() > digits) {
+				digits = f1.size();
+				digits_term[digits] = term;
+			}
+			swap(f1, f2);
+			term++;
+		}
+	}
+	int terms(int digits)
+	{
+		auto found = digits_term.lower_bound(digits);
+		return found->second;
+	}
+};
+TEST_CASE("Project Euler #25: N-digit Fibonacci number", "[NEW]")
+{
+	FibonacciDigits digitFib(5000);
+	CHECK(digitFib.terms(3) == 12);
+	CHECK(digitFib.terms(4) == 17);
 }

@@ -240,7 +240,7 @@ string sum_str(string& s1, string& s2)
 	if (s1.size()<s2.size()) {
 		swap(s1, s2);
 	}
-	int carry = sum_str(rbegin(s2), rend(s2), rbegin(s1), rbegin(s1));
+	int carry = sum_int(rbegin(s2), rend(s2), rbegin(s1), rbegin(s1));
 	if (carry>0 && s1.size()>s2.size()) {
 		transform(rbegin(s1) + s2.size(), rend(s1), rbegin(s1) + s2.size(), [&carry](char c) {
 			carry += c - '0';
@@ -378,7 +378,7 @@ public:
 	Power2DigitSum(int N): digitSum(N) { //2^N
 		string s1 = "1";
 		for (int i = 0; i < N; i++) {
-			int carry = sum_str(rbegin(s1), rend(s1), rbegin(s1), rbegin(s1));
+			int carry = sum_int(rbegin(s1), rend(s1), rbegin(s1), rbegin(s1));
 			if (carry > 0)
 				s1.insert(0, 1, carry + '0');
 			digitSum[i] = accumulate(begin(s1), end(s1), 0, [](int init, char c) { return init + c - '0'; });

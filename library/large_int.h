@@ -11,12 +11,12 @@ using std::transform;
 
 // add string of equal length, return carry
 template<typename RandRevIter>
-int sum_str(RandRevIter first1, RandRevIter last1, RandRevIter first2, RandRevIter dest)
+int sum_int(RandRevIter first1, RandRevIter last1, RandRevIter first2, RandRevIter dest, int offset='0')
 {
 	int carry = 0;
 	while (first1 != last1) {
-		carry += *first1 - '0' + *first2 - '0';
-		*dest = carry % 10 + '0';
+		carry += *first1 - offset + *first2 - offset;
+		*dest = carry % 10 + offset;
 		carry /= 10;
 		++first1;
 		++first2;
@@ -243,7 +243,7 @@ LargeInt multiply1(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_
 	multiply(ans, temp_copy, lhs_s, lhs_e, rhs_s, rhs_e);
 	return ans;
 }
-LargeInt operator*(const LargeInt& lhs, const LargeInt& rhs)
+inline LargeInt operator*(const LargeInt& lhs, const LargeInt& rhs)
 {
 	//std::cout << "lhs size" << lhs.li.size() << " ans size" << ans.li.size() << "\n";
 	return multiply1(begin(lhs.li), end(lhs.li), begin(rhs.li), end(rhs.li));
@@ -282,7 +282,7 @@ LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter 
 	return ans;
 }
 
-LargeInt multiply_fast(LargeInt& lhs, LargeInt& rhs)
+inline LargeInt multiply_fast(LargeInt& lhs, LargeInt& rhs)
 {
 	if (lhs.li.size() < rhs.li.size())
 		fill_n(back_inserter(lhs.li), rhs.li.size() - lhs.li.size(), 0);
