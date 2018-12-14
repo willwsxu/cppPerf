@@ -911,7 +911,7 @@ class DigitPower
 {
 	vector<vector<int>> powers;  // pre compute powers of digit 2 to 9, rows
 	set<int> ans_sum;
-	void RecurseDigitPower(int N, vector<int>& digits, int sum) {
+	void RecurseDigitPower(int N, int start,  vector<int>& digits, int sum) {
 		if (digits.size() == N) {
 			int sum_copy = sum;
 			vector<int> digits_of_sum{};
@@ -928,9 +928,9 @@ class DigitPower
 			}
 			return;
 		}
-		for (int digit = 0; digit < 10; digit++) {
+		for (int digit = start; digit < 10; digit++) {
 			digits.push_back(digit);
-			RecurseDigitPower(N, digits, sum + powers[digit][N]);
+			RecurseDigitPower(N, digit, digits, sum + powers[digit][N]);
 			digits.pop_back();
 		}
 	}
@@ -947,12 +947,15 @@ public:
 	int sum_digit_power(int N) {
 		ans_sum.clear();
 		vector<int> digits{};
-		RecurseDigitPower(N, digits, 0);
+		RecurseDigitPower(N, 0, digits, 0);
 		return accumulate(begin(ans_sum), end(ans_sum), 0);
 	}
 };
 TEST_CASE("Project Euler #30: Digit Nth powers", "[NEW]")
 {
 	DigitPower dpow(6);
+	CHECK(dpow.sum_digit_power(5) == 240559);
+	CHECK(dpow.sum_digit_power(3) == 1301);
 	CHECK(dpow.sum_digit_power(4) == 19316);
+	CHECK(dpow.sum_digit_power(6) == 548834);
 }
