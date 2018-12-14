@@ -906,27 +906,30 @@ TEST_CASE("Project Euler #34: Digit factorials", "[NEW]")
 	CHECK(digitFact.sum_divisible(20) == 19);
 }
 // Project Euler #30: Digit Nth powers 
-// numer of n digits = sum of digit to nth power
+// number of k digits = sum of digit to nth power
 class DigitPower
 {
 	vector<vector<int>> powers;  // pre compute powers of digit 2 to 9, rows
 	set<int> ans_sum;
 	void RecurseDigitPower(int N, int start,  vector<int>& digits, int sum) {
-		if (digits.size() == N) {
+		if (digits.size() > 1) {
 			int sum_copy = sum;
 			vector<int> digits_of_sum{};
-			while (sum > 0) {
-				digits_of_sum.push_back(sum % 10);
-				sum /= 10;
+			while (sum_copy > 0) {
+				digits_of_sum.push_back(sum_copy % 10);
+				sum_copy /= 10;
 			}
-			if (digits_of_sum.size() == N) {
+			if (digits_of_sum.size() == digits.size()) {
 				vector<int> acopy(digits);
 				sort(begin(acopy), end(acopy));
 				sort(begin(digits_of_sum), end(digits_of_sum));
-				if (digits_of_sum == acopy)
-					ans_sum.insert(sum_copy);
+				if (digits_of_sum == acopy) {
+					ans_sum.insert(sum);
+					return;
+				}
 			}
-			return;
+			if (digits.size() > 7)  // 8*9^6=7 digits, so no need to go beyond 7 digit number
+				return;
 		}
 		for (int digit = start; digit < 10; digit++) {
 			digits.push_back(digit);
@@ -954,7 +957,7 @@ public:
 TEST_CASE("Project Euler #30: Digit Nth powers", "[NEW]")
 {
 	DigitPower dpow(6);
-	CHECK(dpow.sum_digit_power(5) == 240559);
+	CHECK(dpow.sum_digit_power(5) == 553839);
 	CHECK(dpow.sum_digit_power(3) == 1301);
 	CHECK(dpow.sum_digit_power(4) == 19316);
 	CHECK(dpow.sum_digit_power(6) == 548834);
