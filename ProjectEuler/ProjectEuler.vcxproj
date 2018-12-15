@@ -120,6 +120,9 @@
     <ClCompile Include="projectEulerCombinatorics.cpp" />
     <ClCompile Include="ProjectEulerDp.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\library\mathlib.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

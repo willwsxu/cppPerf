@@ -12,6 +12,7 @@
 #include "UnionFind.h"
 #include "large_int.h"
 #include "digits-helper.h"
+#include "mathlib.h"
 using namespace std;
 
 // reference
@@ -904,4 +905,33 @@ TEST_CASE("Project Euler #34: Digit factorials", "[NEW]")
 {
 	DigitFactorial digitFact;
 	CHECK(digitFact.sum_divisible(20) == 19);
+}
+
+const static int MOD7 = 1000000007;
+TEST_CASE("Project Euler #28: sum_odd_square", "[NEW]")
+{
+	CHECK(sum_odd_square(5, MOD7) == 35);
+}
+// Project Euler #28: Number spiral diagonals, find sum of numbers on diagonals
+// idea: N=1, ans=1
+//       N=3, ans=4*(1+3^2) - 3 - 2(1+2+3) 4 corners of the square: 9, 7, 5, 3
+//       N=5, ans=4*(1+3^2+5^2) - 3, -4(1+2+3)  4 corners of the square: 25, 21, 17, 13
+// in general: ans=4 * sum of odd square -3 -6 (sum of 2, 4, ... N-1)
+int spiralDiagnoalSum(long long N)
+{
+	if (N == 1)
+		return 1;
+	long long ans = (4 * sum_odd_square(N, MOD7) - 3) % MOD7;
+	ans -= 6 * sum_arithmetic_sequence(2, N - 1, 2, MOD7);
+	if (ans < 0)
+		ans += MOD7;
+	else
+		ans %= MOD7;
+	return static_cast<int>(ans);
+}
+TEST_CASE("Project Euler #28: Number spiral diagonals", "[NEW]")
+{
+	CHECK(spiralDiagnoalSum(5) == 101);
+	CHECK(spiralDiagnoalSum(10001) == 916705339);
+	CHECK(spiralDiagnoalSum(99999999) == 370999997);
 }

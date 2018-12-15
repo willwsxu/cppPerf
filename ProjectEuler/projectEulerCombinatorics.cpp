@@ -11,6 +11,8 @@
 #include "digits-helper.h"
 using namespace std;
 
+// For combination (no ordering), permutation (ordered), or any factorial problems
+
 // Project Euler #30: Digit Nth powers 
 // number of k digits = sum of digit to nth power
 class DigitPower
@@ -63,7 +65,7 @@ public:
 TEST_CASE("Project Euler #30: Digit Nth powers", "[NEW]")
 {
 	DigitPower dpow(6);
-	CHECK(dpow.sum_digit_power(5) == 553839);
+	CHECK(dpow.sum_digit_power(5) == 443839);
 	CHECK(dpow.sum_digit_power(3) == 1301);
 	CHECK(dpow.sum_digit_power(4) == 19316);
 	CHECK(dpow.sum_digit_power(6) == 548834);
