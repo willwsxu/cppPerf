@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
-int count_digits(int64_t val) {
+
+inline int count_digits(int64_t val) {
 	if (val >= 10000) {
 		if (val >= 1000000) {
 			if (val >= 100000000) {
@@ -35,7 +36,7 @@ int count_digits(int64_t val) {
 }
 
 
-char* itoa_new2(int64_t val, char *szValue, int size)
+inline char* itoa_new2(int64_t val, char *szValue, int size)
 {
 	//assert size>12
 	if (val == 0) {
