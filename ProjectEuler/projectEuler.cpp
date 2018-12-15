@@ -922,7 +922,7 @@ int spiralDiagnoalSum(long long N)
 	if (N == 1)
 		return 1;
 	long long ans = (4 * sum_odd_square(N, MOD7) - 3) % MOD7;
-	ans -= 6 * sum_arithmetic_sequence(2, N - 1, 2, MOD7);
+	ans -= 6 * sum_arithmetic_sequence(2, N - 1, 2, MOD7)%MOD7;
 	if (ans < 0)
 		ans += MOD7;
 	else
@@ -931,7 +931,7 @@ int spiralDiagnoalSum(long long N)
 }
 TEST_CASE("Project Euler #28: Number spiral diagonals", "[NEW]")
 {
+	CHECK(spiralDiagnoalSum(99999999) == 370999997);
 	CHECK(spiralDiagnoalSum(5) == 101);
 	CHECK(spiralDiagnoalSum(10001) == 916705339);
-	CHECK(spiralDiagnoalSum(99999999) == 370999997);
 }
