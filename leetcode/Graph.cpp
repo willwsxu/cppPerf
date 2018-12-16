@@ -357,7 +357,7 @@ public:
 	// 952. Largest Component Size by Common Factor, A[i]<=100000, A[i] is unique
 	int largestComponentSize(vector<int>& A) {
 		UnionFind uf(A.size() - 1);   // store index
-		auto primes = make_primes(sqrt(100000)+1);
+		auto primes = make_primes(static_cast<int>(sqrt(100000))+1);
 		unordered_map<int, int> factor_index; // using map to link array index sharing same prime factor
 		auto try_factor = [&factor_index, &uf](int p, int v) {
 			auto found = factor_index.find(p);
@@ -367,7 +367,7 @@ public:
 				uf.union_(v, found->second);
 			}
 		};
-		for (int i = 0; i < A.size(); i++) {
+		for (int i = 0; i < (int)A.size(); i++) {
 			int copy = A[i];
 			for (int p : primes) {
 				if (p*p > copy)
@@ -383,7 +383,62 @@ public:
 		}
 		return uf.max_component_size();
 	}
+	// 959. Regions Cut By Slashes, N by N grid
+	// divide each cell into 3x3 grid, fill 1 for slash, rest is 0
+	int regionsBySlashes(vector<string>& grid) {
+		int N = grid.size();
+		int new_N = 3 * N;
+		vector<vector<int>> new_grid(new_N, vector<int>(new_N, 0));
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (grid[i][j] == '/') {  // transform grid to 3N by 3N
+					new_grid[i * 3][j * 3 + 2] = 1;
+					new_grid[i * 3+1][j * 3 + 1] = 1;
+					new_grid[i * 3 + 2][j * 3] = 1;
+				}
+				else if (grid[i][j] == '\\') {
+					new_grid[i * 3][j * 3] = 1;
+					new_grid[i * 3 + 1][j * 3 + 1] = 1;
+					new_grid[i * 3 + 2][j * 3 + 2] = 1;
+				}
+			}
+		}
+		int fill = 2;  // fill each region of 0 with different value
+		for (int i = 0; i < new_N; i++) {
+			for (int j = 0; j < new_N; j++) {
+				if (new_grid[i][j] != 0)
+					continue;
+				deque<pair<int, int>> bfs{ {i,j} };
+				while (!bfs.empty()) { // flood fill all cells in a region
+					auto cur_cell = bfs.front();
+					new_grid[cur_cell.first][cur_cell.second] = fill;
+					auto valid_cell = [new_N, &new_grid](int r, int c) {
+						if (r < 0 || c < 0 || r >= new_N || c >= new_N)
+							return false;
+						return new_grid[r][c] == 0;
+					};
+					if (valid_cell(cur_cell.first - 1, cur_cell.second))  //check 4 connected cells
+						bfs.emplace_back(cur_cell.first - 1, cur_cell.second);
+					if (valid_cell(cur_cell.first + 1, cur_cell.second))	// down
+						bfs.emplace_back(cur_cell.first + 1, cur_cell.second);
+					if (valid_cell(cur_cell.first, cur_cell.second-1))		// left
+						bfs.emplace_back(cur_cell.first, cur_cell.second - 1);
+					if (valid_cell(cur_cell.first, cur_cell.second + 1))	// right
+						bfs.emplace_back(cur_cell.first, cur_cell.second + 1);
+					bfs.pop_front();
+				}
+				fill++;
+			}
+		}
+		return fill - 2;
+	}
 };
+
+TEST_CASE("959. Regions Cut By Slashes", "[NEW]")
+{
+	CHECK(Graph().regionsBySlashes(vector<string>{"/\\", "\\/"}) == 5);
+	CHECK(Graph().regionsBySlashes(vector<string>{"//", "/ "}) == 3);
+}
 TEST_CASE("952. Largest Component Size by Common Factor", "[NEW]")
 {
 	CHECK(Graph().largestComponentSize(vector<int>{20, 50, 9, 63}) == 2);
