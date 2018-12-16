@@ -199,9 +199,37 @@ public:
 		dp = vector<vector<int>>(word1.size(), vector<int>(word2.size(), int(-1)));
 		return minDistance(word1, word2, 0, 0);
 	}
+
+	// 960. Delete Columns to Make Sorted III
+	int minDeletionSize(vector<string>& A) {
+		int cols = A[0].size();
+		vector<int> lcs(cols, 1);  // longest increasing sequence for all rows
+		for (int c = 1; c < cols; c++) {  // compute LCS ends at c
+			for (int i = 0; i < c; i++) {
+				int increasing = 1;
+				for (int r = 0; r < (int)A.size(); r++) {
+					if (A[r][i] > A[r][c]) {
+						increasing = 0;
+						break;
+					}
+				}
+				if (increasing) {
+					lcs[c] = max(lcs[c], lcs[i] + increasing);
+				}
+			}
+		}
+		return cols - *max_element(begin(lcs), end(lcs));
+	}
 };
 
-
+TEST_CASE("960. Delete Columns to Make Sorted III", "[NEW]")
+{
+	CHECK(StringDp().minDeletionSize(vector<string>{"abbbaa"}) == 2);
+	CHECK(StringDp().minDeletionSize(vector<string>{"abbba"}) == 1);
+	CHECK(StringDp().minDeletionSize(vector<string>{"babca", "bbazb"}) == 3);
+	CHECK(StringDp().minDeletionSize(vector<string>{"edcba"}) == 4);
+	CHECK(StringDp().minDeletionSize(vector<string>{"ghi", "def", "abc"}) == 0);
+}
 TEST_CASE("delete char to make string same", "[DP]")
 {
 	StringDp s;

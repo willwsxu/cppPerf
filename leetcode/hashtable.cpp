@@ -385,7 +385,7 @@ public:
 		return patterns.back();
 	}
 };
-TEST_CASE("957. Prison Cells After N Days", "[NEW]")
+TEST_CASE("957. Prison Cells After N Days", "[HASH]")
 {
 	CHECK(MapStuff().prisonAfterNDays(vector<int>{1, 0, 0, 1, 0, 0, 1, 0}, 1000000000) == vector<int>{0, 0, 1, 1, 1, 1, 1, 0});
 	CHECK(MapStuff().prisonAfterNDays(vector<int>{0, 1, 0, 1, 1, 0, 0, 1}, 7) == vector<int>{0, 0, 1, 1, 0, 0, 0, 0});
