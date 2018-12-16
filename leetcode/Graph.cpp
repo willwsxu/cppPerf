@@ -412,19 +412,18 @@ public:
 				while (!bfs.empty()) { // flood fill all cells in a region
 					auto cur_cell = bfs.front();
 					new_grid[cur_cell.first][cur_cell.second] = fill;
-					auto valid_cell = [new_N, &new_grid](int r, int c) {
+					auto update_cell = [fill, new_N, &new_grid, &bfs](int r, int c) {
 						if (r < 0 || c < 0 || r >= new_N || c >= new_N)
-							return false;
-						return new_grid[r][c] == 0;
+							return;
+						if (new_grid[r][c] == 0) {
+							bfs.emplace_back(r, c);
+							new_grid[r][c] = fill;  // update value early to prevent TLE, adding cells repeatedly!
+						}
 					};
-					if (valid_cell(cur_cell.first - 1, cur_cell.second))  //check 4 connected cells
-						bfs.emplace_back(cur_cell.first - 1, cur_cell.second);
-					if (valid_cell(cur_cell.first + 1, cur_cell.second))	// down
-						bfs.emplace_back(cur_cell.first + 1, cur_cell.second);
-					if (valid_cell(cur_cell.first, cur_cell.second-1))		// left
-						bfs.emplace_back(cur_cell.first, cur_cell.second - 1);
-					if (valid_cell(cur_cell.first, cur_cell.second + 1))	// right
-						bfs.emplace_back(cur_cell.first, cur_cell.second + 1);
+					update_cell(cur_cell.first - 1, cur_cell.second);  //check 4 connected cells
+					update_cell(cur_cell.first + 1, cur_cell.second);	// down
+					update_cell(cur_cell.first, cur_cell.second - 1);	// left
+					update_cell(cur_cell.first, cur_cell.second + 1);	// right
 					bfs.pop_front();
 				}
 				fill++;
@@ -436,6 +435,7 @@ public:
 
 TEST_CASE("959. Regions Cut By Slashes", "[NEW]")
 {
+	CHECK(Graph().regionsBySlashes(vector<string>{"\\/ /\\\\ / ", "\\/\\ \\ \\\\/", "//\\ \\/\\\\\\", "\\ //\\/\\\\\\", "/ \\\\/ \\ /", "\\\\/\\ /  \\", " \\/ /   \\", "\\\\\\/  \\\\ ", "\\\\\\ \\//  "}) == 11);
 	CHECK(Graph().regionsBySlashes(vector<string>{"/\\", "\\/"}) == 5);
 	CHECK(Graph().regionsBySlashes(vector<string>{"//", "/ "}) == 3);
 }
