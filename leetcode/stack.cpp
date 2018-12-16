@@ -519,7 +519,7 @@ public:
 	}
 };
 
-TEST_CASE("880. Decoded String at Index", "[NEW]")
+TEST_CASE("880. Decoded String at Index", "[STACK]")
 {
 	CHECK(GeneralStack().decodeAtIndex("ha22", 5) == "h");
 	CHECK(GeneralStack().decodeAtIndex("leet2code3", 10) == "o");

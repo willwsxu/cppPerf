@@ -354,7 +354,42 @@ public:
 		}
 		return ans;
 	}
+	// 957. Prison Cells After N Days
+	vector<int> prisonAfterNDays(vector<int>& cells, int N) {
+		int size = cells.size();
+		if (size < 3)
+			return cells;
+		map<vector<int>, int>  pattern_recurring;
+		deque<vector<int>> patterns;
+		size--;
+		for (int n = 1; n <= N; n++) {
+			vector<int> next(size + 1, 0); // cell config next day
+			for (int k = 1; k < size; k++) {
+				if (cells[k - 1] == cells[k + 1]) // flip to 1 if both neighbor are 1 or 0
+					next[k] = 1;
+			}
+			copy(begin(next), end(next), begin(cells));
+			auto found = pattern_recurring.find(next);
+			if (found == end(pattern_recurring)) {
+				pattern_recurring[next] = n;
+				patterns.push_back(move(next));
+			}
+			else {
+				N -= (found->second - 1);  // repeating pattern from found->second to n
+				N %= (n - found->second);
+				if (N == 0)
+					return patterns.back();  // N-1, index from 0
+				return patterns[N-1 + found->second - 1];  // found->second - 1 cells not in patter
+			}
+		}
+		return patterns.back();
+	}
 };
+TEST_CASE("957. Prison Cells After N Days", "[NEW]")
+{
+	CHECK(MapStuff().prisonAfterNDays(vector<int>{1, 0, 0, 1, 0, 0, 1, 0}, 1000000000) == vector<int>{0, 0, 1, 1, 1, 1, 1, 0});
+	CHECK(MapStuff().prisonAfterNDays(vector<int>{0, 1, 0, 1, 1, 0, 0, 1}, 7) == vector<int>{0, 0, 1, 1, 0, 0, 0, 0});
+}
 
 TEST_CASE("290. Word Pattern", "[HASH]")
 {
@@ -465,11 +500,11 @@ public:
 };
 
 // 955. Delete Columns to Make Sorted II
-TEST_CASE("955. Delete Columns to Make Sorted II", "[NEW]")
+TEST_CASE("955. Delete Columns to Make Sorted II", "[HASH]")
 {
 	CHECK(SetStuff().minDeletionSize(vector<string>{"xc", "yb", "za"}) == 0);
 }
-TEST_CASE("202. Happy Number", "[NEW]")
+TEST_CASE("202. Happy Number", "[HASH]")
 {
 	CHECK(SetStuff().isHappy(358) == false);
 }
@@ -572,7 +607,7 @@ public:
 		return max_count;
 	}
 };
-TEST_CASE("914. X of a Kind in a Deck of Cards", "[NEW]")
+TEST_CASE("914. X of a Kind in a Deck of Cards", "[HASH]")
 {
 	CHECK(ArrayMap().hasGroupsSizeX(vector<int>{1, 1, 1, 1, 2, 2, 2, 2, 2, 2}) == true);
 }
@@ -636,7 +671,7 @@ public:
 };
 
 
-TEST_CASE("874. Walking Robot Simulation", "[NEW]")
+TEST_CASE("874. Walking Robot Simulation", "[HASH]")
 {
 	CHECK(Greedy().robotSim(vector<int>{4, -1, 4, -1, 4, -1, 3}, vector<vector<int>>{ {2, 4}}) == 17);
 	CHECK(Greedy().robotSim(vector<int>{4, -1, 4, -2, 4}, vector<vector<int>>{ {2,4}})==65);
