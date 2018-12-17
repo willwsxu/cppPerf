@@ -953,7 +953,7 @@ long long countDistinctPower(int N)  // 10^5 is about 2^16
 	vector<char> bases_used(N + 1, 0);
 	// count repeat in all base which is some power of prime base
 	long long total_repeats = 0;
-	for (int b = 2; b <= N; b++) {
+	for (int b = 2; b*b <= N; b++) {  // limit b to avoid overflow in inner for loop
 		if (bases_used[b])
 			continue;
 		for (int bp=2, base = b*b; base <= N; base *= b, bp++) {
@@ -961,12 +961,13 @@ long long countDistinctPower(int N)  // 10^5 is about 2^16
 			total_repeats += repeats[bp];
 		}
 	}
-	long long total = (N - 1)*(N - 1);
+	long long total = (long long)(N - 1)*(N-1);
 	return total - total_repeats;
 }
 
 TEST_CASE("Project Euler #29: Distinct powers", "[NEW]")
 {
+	CHECK(countDistinctPower(100000) == 9981236306LL);
 	CHECK(countDistinctPower(5) == 15);
 	CHECK(countDistinctPower(200) == 37774);
 }
