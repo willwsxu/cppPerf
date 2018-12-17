@@ -925,8 +925,6 @@ int spiralDiagnoalSum(long long N)
 	ans -= 6 * sum_arithmetic_sequence(2, N - 1, 2, MOD7)%MOD7;
 	if (ans < 0)
 		ans += MOD7;
-	else
-		ans %= MOD7;
 	return static_cast<int>(ans);
 }
 TEST_CASE("Project Euler #28: Number spiral diagonals", "[NEW]")
@@ -934,4 +932,41 @@ TEST_CASE("Project Euler #28: Number spiral diagonals", "[NEW]")
 	CHECK(spiralDiagnoalSum(99999999) == 370999997);
 	CHECK(spiralDiagnoalSum(5) == 101);
 	CHECK(spiralDiagnoalSum(10001) == 916705339);
+}
+// Project Euler #29: Distinct powers
+// a^b, 2<= a, b <= N (10^5)
+// if c=a^k,   ik is duplicate all i when 2<=iK<=N
+long long countDistinctPower(int N)  // 10^5 is about 2^16
+{
+	int MAX_BASE_POWER = static_cast<int>(log2(N)); // a base is power of another base
+	vector<char> exponents(N*MAX_BASE_POWER+1, 0);  // all possible exponents
+	vector<int> repeats(MAX_BASE_POWER+1, 0);  // power repeats for any base is same
+	for (int bp = 1; bp <= MAX_BASE_POWER; bp++) { 
+		for (int p = 2; p <= N; p++) {
+			int idx = bp*p;
+			if (exponents[idx] == 0)
+				exponents[idx] = bp; // store lower base power
+			else
+				repeats[bp]++;  // (2^3)^2==2^6 ==8^2, count as repeats for bp=3
+		}
+	}
+	vector<char> bases_used(N + 1, 0);
+	// count repeat in all base which is some power of prime base
+	long long total_repeats = 0;
+	for (int b = 2; b <= N; b++) {
+		if (bases_used[b])
+			continue;
+		for (int bp=2, base = b*b; base <= N; base *= b, bp++) {
+			bases_used[base] = 1;
+			total_repeats += repeats[bp];
+		}
+	}
+	long long total = (N - 1)*(N - 1);
+	return total - total_repeats;
+}
+
+TEST_CASE("Project Euler #29: Distinct powers", "[NEW]")
+{
+	CHECK(countDistinctPower(5) == 15);
+	CHECK(countDistinctPower(200) == 37774);
 }
