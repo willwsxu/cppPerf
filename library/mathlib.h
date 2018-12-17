@@ -26,3 +26,32 @@ inline long long sum_arithmetic_sequence(long long first, long long last, int st
 		sum /= 2;
 	return (n%MOD)*(sum%MOD) % MOD;
 }
+
+
+inline bool is_prime(int n)
+{
+	n = abs(n);
+	if (n < 2)
+		return false;
+	for (int i = 2; i*i <= n; i++) {
+		if (n%i == 0)
+			return false;
+	}
+	return true;
+}
+
+inline vector<int> make_primes(int N)  // prime numbers < N
+{
+	vector<int> primes;
+	vector<char> is_primes(N, 1); // initialize to true
+	is_primes[0] = is_primes[1] = 0;
+	for (size_t i = 2; i < is_primes.size(); i++)
+	{
+		if (is_primes[i]) {
+			primes.push_back(i);
+			for (size_t j = i + i; j < is_primes.size(); j += i)
+				is_primes[j] = 0;
+		}
+	}
+	return primes;
+}
