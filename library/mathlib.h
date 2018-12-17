@@ -55,3 +55,17 @@ inline vector<int> make_primes(int N)  // prime numbers < N
 	}
 	return primes;
 }
+
+// enumerate number contain all digits in given set, no duplicate
+template<typename CallBack>
+void pandigital_enumerate(set<int> digits, int val, CallBack f) {
+	if (digits.empty()) {
+		f(val);
+		return;
+	}
+	for (int d : digits) {
+		set<int> digits_next(digits);
+		digits_next.erase(d);
+		pandigital_enumerate(digits_next, val * 10 + d, f);
+	}
+}
