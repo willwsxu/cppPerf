@@ -3,6 +3,7 @@
 
 #include "myalgo.h"
 #include "UnionFind.h"
+#include "mathlib.h"
 using namespace std;
 
 class DirectGraph {

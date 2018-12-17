@@ -590,3 +590,37 @@ TEST_CASE("837. New 21 Game", "[DYN]")
 	CHECK(Game21().new21Game(6, 1, 10) == Approx(0.6).epsilon(.00001));
 	CHECK(Game21().new21Game(21, 17, 10) == Approx(0.73278).epsilon(.00001));
 }
+class Knapsack
+{
+	int tallestBillboard(const vector<int>& rods, int idx, vector<vector<int>>& memo, int b1, int b2, int max_h) {
+		if (b1 > max_h || b2 > max_h)
+			return -1;  // 0 is valid memo as relative value is stored
+		if (idx == rods.size())
+			return b1 == b2 ? b1 : -1;
+		int delta = abs(b1 - b2);
+		if (memo[idx][delta] < -1) {
+			int max_val = max({ tallestBillboard(rods, idx + 1, memo, b1 + rods[idx], b2, max_h),
+				tallestBillboard(rods, idx + 1, memo, b1, b2 + rods[idx], max_h),
+				tallestBillboard(rods, idx + 1, memo, b1, b2, max_h) });
+			memo[idx][delta] = max(-1, max_val - max(b1, b2));  // adjust to store value onward
+			return max_val;
+		} else
+			return memo[idx][delta]>=0? memo[idx][delta] + max(b1, b2):-1;  // add back previous value
+	}
+public:
+	// 956. Tallest Billboard, rods equal size
+	// transform into knapsack, hint from: The sum of rods is at most 5000.
+	int tallestBillboard(vector<int>& rods) {
+		int total = accumulate(begin(rods), end(rods), 0);
+		vector<vector<int>> memo(rods.size(), vector<int>(total / 2 + 1, INT32_MIN));
+		return tallestBillboard(rods, 0, memo, 0, 0, total / 2);
+	}
+};
+TEST_CASE("956. Tallest Billboard", "[NEW]")
+{
+	CHECK(Knapsack().tallestBillboard(vector<int>{1, 2}) == 0);
+	CHECK(Knapsack().tallestBillboard(vector<int>{96, 112, 101, 100, 104, 93, 106, 99, 114, 81, 94}) == 503);
+	CHECK(Knapsack().tallestBillboard(vector<int>{2,4,8,16}) == 0);
+	CHECK(Knapsack().tallestBillboard(vector<int>{1, 2, 3, 4, 5, 6}) == 10);
+	CHECK(Knapsack().tallestBillboard(vector<int>{1, 2, 3, 6}) == 6);
+}
