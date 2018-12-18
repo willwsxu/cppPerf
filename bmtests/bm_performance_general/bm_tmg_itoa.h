@@ -1,6 +1,7 @@
 #pragma once
 #include "Digits-Helper.h"
 
+// test 0 is special for computer, faster!!!
 inline int16_t tmg_itoa_delta(char* dst, int64_t val, char* end, int64_t& check_sum) {
 	if ((int64_t)val < 0) {
 		val = -val;
@@ -28,14 +29,15 @@ inline int16_t tmg_itoa_delta_xu(char* dst, int64_t val, char* end, int64_t& che
 	int digits = count_digits(val);
 	int fill_zero = len > digits ? len - digits : 0;
 	end--;
-	while (len--) {  // compare len to 0 is faster than compare pointer ==
-		char next = '0';
-		if (val > 0) {
-			next = static_cast<char>(val % 10 + '0');
-			val /= 10;
-		}
+	while (digits--) {  // compare len to 0 is faster than compare pointer ==, account for all performance gain
+		char next = static_cast<char>(val % 10 + '0');
+		val /= 10;
 		check_sum += static_cast<int64_t>(next) - static_cast<int64_t>(*end);
 		*end-- = next;  // post fix decrement
+	}
+	while (fill_zero--) {
+		check_sum += static_cast<int64_t>('0') - static_cast<int64_t>(*end);
+		*end-- = '0';  // post fix decrement
 	}
 	return 0;
 }

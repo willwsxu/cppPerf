@@ -1,5 +1,6 @@
 #pragma once
 
+// count_digits is tiny faster than the rest, on the specific test case
 int count_digits_basic(int val)
 {
 	int count = 1;
