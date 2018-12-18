@@ -56,5 +56,11 @@
     <ClInclude Include="bm_tmg_itoa.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="bm_itoa_fix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bm_ftoa.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

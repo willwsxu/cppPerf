@@ -60,3 +60,18 @@ inline char* itoa_new2(int64_t val, char *szValue, int size)
 	}
 	return szValue;
 }
+
+// fill value to string [szValue, pEnd), pad left with 0 if more space left
+inline int itoa_pos_pad_left(int64_t val, char *szValue, char *pEnd)
+{
+	int fill_zero = static_cast<int>((pEnd--) - szValue);
+	int len = std::min(count_digits(val), fill_zero);
+	fill_zero -= len;
+	while (len--) {  // test 0 is fast than compare other values
+		*pEnd-- = val % 10 + '0';
+		val /= 10;
+	}
+	while (fill_zero--)  // less data dependency, two while loop can be done in parallel
+		*szValue++ = '0';
+	return (int)val;
+}
