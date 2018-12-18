@@ -74,3 +74,23 @@ inline int euclid_distance_square(vector<int>& p1, vector<int>& p2)  // share it
 {
 	return (p1[0] - p2[0])*(p1[0] - p2[0]) + (p1[1] - p2[1])*(p1[1] - p2[1]);
 }
+
+inline int repeatingDecimals(int numer, int denom)  // find repeating decimals of a fraction
+{
+	vector<int> decimals;
+	numer %= denom;
+	std::map<int, int> remainders_pos{ { numer, 0 } };
+	int pos = 1;
+	while (numer) {
+		numer *= 10;
+		decimals.push_back(numer / denom);
+		numer %= denom;
+		auto found = remainders_pos.find(numer);
+		if (found == end(remainders_pos)) {
+			remainders_pos[numer] = pos++;
+		}
+		else
+			return (pos - found->second);
+	}
+	return 0;
+}

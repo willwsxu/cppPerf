@@ -1023,7 +1023,7 @@ pair<int, int> solve_coefficient(int N)
 	auto primes = make_primes(N + 1);
 	int max_primes = 0;
 	pair<int, int> ans{ 0,0 };
-	for (int a = -N; a <= N; a++) {
+	for (int a = -N; a <= N; a++) {  // brute force, try all a, b combinations
 		for (int b : primes) {
 			int n = 1;   // no need to start from 0 as b is prime
 			for (;;) {
@@ -1031,7 +1031,7 @@ pair<int, int> solve_coefficient(int N)
 				if (!is_prime(x))
 					break;
 			}
-			if (n > max_primes) {
+			if (n > max_primes) {  // update a, b when there is higher prime
 				ans.first = a;
 				ans.second = b;
 				max_primes = n;
@@ -1040,53 +1040,6 @@ pair<int, int> solve_coefficient(int N)
 	}
 	return ans;
 }
-
-
-// return true if x is prime
-bool isPrime(int x)
-{
-	// reject invalid input
-	if (x <= 1)
-		return false;
-
-	// process all potential divisors
-	for (int factor = 2; factor*factor <= x; factor++)
-		if (x % factor == 0)
-			return false;
-
-	// no such divisor found, it's a prime number
-	return true;
-}
-
-pair<int, int> solve_coefficient2(int limit)
-{
-	// keep track of best sequence:
-	// number of generated primes
-	unsigned int consecutive = 0;
-	// its coefficients
-	int bestA = 0;
-	int bestB = 0;
-
-	// simple brute-force approach
-	for (int a = -limit; a <= +limit; a++)
-		for (int b = -limit; b <= +limit; b++)
-		{
-			// count number of consecutive prime numbers
-			unsigned int length = 0;
-			while (isPrime(length * length + a * length + b))
-				length++;
-
-			// better than before ?
-			if (consecutive < length)
-			{
-				consecutive = length;
-				bestA = a;
-				bestB = b;
-			}
-		}
-	return{ bestA, bestB };
-}
-
 
 TEST_CASE("Project Euler #27: Quadratic primes", "[NEW]")
 {
@@ -1098,25 +1051,6 @@ TEST_CASE("Project Euler #27: Quadratic primes", "[NEW]")
 	CHECK(p2.second == 1601);
 }
 
-int repeatingDecimals(int numer, int denom)
-{
-	vector<int> decimals;
-	numer %= denom;
-	map<int, int> remainders_pos{ { numer, 0 } };
-	int pos = 1;
-	while (numer) {
-		numer *= 10;
-		decimals.push_back(numer / denom);
-		numer %= denom;
-		auto found = remainders_pos.find(numer);
-		if (found == end(remainders_pos)) {
-			remainders_pos[numer] = pos++;
-		}
-		else
-			return (pos - found->second);
-	}
-	return 0;
-}
 TEST_CASE("Project Euler #26: repeatingDecimals", "[NEW]")
 {
 	CHECK(repeatingDecimals(1, 8) == 0);
@@ -1131,7 +1065,7 @@ public:
 		max_repeating[1] = 0; //0 repeating
 		int max_r = 0;
 		for (int i = 3; i <= N; i++) {
-			if (isPrime(i)) {
+			if (is_prime(i)) {
 				int repeat = repeatingDecimals(1, i);
 				if (repeat > max_r) {
 					max_r = repeat;
@@ -1147,7 +1081,7 @@ public:
 	}
 };
 
-class LongestRepeatingDecimals2
+class LongestRepeatingDecimals2  // use vector instead of map
 {
 	vector<int> repeating_smalles_val;  // smallest int with max repeating so far
 public:
@@ -1155,7 +1089,7 @@ public:
 		int max_r = 0;
 		int max_r_val = 1;
 		for (int i = 3; i < N; i++) {
-			if (isPrime(i)) {
+			if (is_prime(i)) {
 				int repeat = repeatingDecimals(1, i);
 				if (repeat > max_r) {
 					max_r = repeat;
