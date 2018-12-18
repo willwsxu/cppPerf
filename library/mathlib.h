@@ -127,3 +127,22 @@ inline vector<int> allPalindrome(int prefix)
 	return palindrome;// RVO
 }
 
+inline string base_conversion(int n, int b) {
+	string s;
+	while (n>0) {
+		s.append(1, n%b + '0');
+		n /= b;
+	}
+	return s;
+}
+
+template<typename RandIter>
+bool isPalindrome(RandIter first, RandIter last) {
+	while (first != --last) {
+		if (*first != *last)
+			return false;
+		if (++first == last)
+			break;
+	}
+	return true;
+}
