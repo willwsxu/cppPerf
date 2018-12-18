@@ -1,8 +1,11 @@
 #include <benchmark/benchmark.h>
 #include "digits-helper.h"
 
-#include "bm_itoa_fix.h"
+#include "bm_ftoa.h"
+//#include "bm_itoa_fix.h"  // and ftoa_fix
 //#include "bm_test_setup.h"
+//#include "bm_tmg_itoa.h"
+//#include "bm_count_digits.h"
 
 // performance on quickbench.com for itoa_, itoa_new2, itoa_new, sprintf
 // 5.9, 5.95, 31, 239  (same for 2 runs)

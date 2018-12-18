@@ -87,7 +87,7 @@ inline char* itoa_new2(int64_t val, char *szValue, int size)
 }
 
 // convert int to string, truncate to fit size
-inline char* itoa_(int64_t val, char *szValue, int size)
+inline char* itoa_(int64_t val, char *szValue, int size) // slightly better than itoa_new2
 {
 	if (val < 0) {
 		val = -val;

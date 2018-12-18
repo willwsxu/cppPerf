@@ -1,5 +1,8 @@
 #pragma once
 
+// ftoa_ reuse ftoa_fix, with some redundant code but it is still much faster on quickbench.com
+// 5 vs 54 vs 72 ns
+// ftoa_ can be improved to reduce code redundancy
 char* ftoa(int val, int dp, char *szValue, int size)
 {
 	size--; // reserve last char to nil
@@ -78,6 +81,31 @@ char* ftoa2(int val, int dp, char *szValue, int size)
 	}
 	return szValue;
 }
+
+char* ftoa_(int val, int dp, char *szValue, int size)
+{
+	if (val < 0) {
+		val = -val;
+		*szValue++ = '-';
+		size--;
+	}
+	int len = std::min(count_digits(val), size - 1);  // save last byte for nil
+	ftoa_fix(val, dp, szValue, szValue+len);
+	szValue[len] = 0;
+	return szValue;
+}
+
+static void BM_ftoa_fast(benchmark::State& state)
+{
+	char szValue[14] = { 0 };
+	char *pVal = szValue;
+	while (state.KeepRunning())
+	{
+		benchmark::DoNotOptimize(pVal = ftoa_(-1234567890, 2, szValue, sizeof(szValue)));
+	}
+}
+BENCHMARK(BM_ftoa_fast);
+
 static void BM_ftoa2(benchmark::State& state)
 {
 	char szValue[14] = { 0 };
