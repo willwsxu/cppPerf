@@ -1,6 +1,9 @@
 #include <benchmark/benchmark.h>
 #include "digits-helper.h"
 
+#include "bm_itoa_fix.h"
+//#include "bm_test_setup.h"
+
 // performance on quickbench.com for itoa_, itoa_new2, itoa_new, sprintf
 // 5.9, 5.95, 31, 239  (same for 2 runs)
 // benchmark on windows laptop is different
@@ -26,7 +29,7 @@ char* itoa_new(int val, char *szValue, int size)  // slow using reverse
 	szValue[idx++] = 0;
 	return szValue;
 }
-
+/*
 static void BM_itoa(benchmark::State& state)
 {
 	char szValue[12] = { 0 };
@@ -81,3 +84,4 @@ static void BM_itoa_best(benchmark::State& state)
 	}
 }
 BENCHMARK(BM_itoa_best);
+*/

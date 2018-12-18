@@ -36,12 +36,13 @@ inline int count_digits(int64_t val) {
 	}
 }
 
-inline void itoa_fill(int64_t val, char *pBack, int len)
+inline int itoa_fill(int64_t val, char *pBack, int len)
 {
-	while (len--) {
+	while (len--) { // test 0 is fast than compare other values
 		*pBack-- = val % 10 + '0';
 		val /= 10;
 	}
+	return (int)val;
 }
 // fill value to string [szValue, pEnd), pad left with 0 if more space left
 inline int itoa_pos_pad_left(int64_t val, int int_len, char *szValue, char *pEnd)
@@ -49,10 +50,7 @@ inline int itoa_pos_pad_left(int64_t val, int int_len, char *szValue, char *pEnd
 	int fill_zero = static_cast<int>((pEnd--) - szValue);
 	int len = std::min(int_len, fill_zero);
 	fill_zero -= len;
-	while (len--) {  // test 0 is fast than compare other values
-		*pEnd-- = val % 10 + '0';
-		val /= 10;
-	}
+	val=itoa_fill(val, pEnd, len);
 	while (fill_zero--)  // less data dependency, two while loop can be done in parallel
 		*szValue++ = '0';
 	return (int)val;
@@ -99,4 +97,29 @@ inline char* itoa_(int64_t val, char *szValue, int size)
 	itoa_fill(val, szValue + len-1, len);
 	szValue[len] = 0;
 	return szValue;
+}
+
+// convert int to string, right justified, pad left with 0
+int itoa_fix(int64_t val, char *szValue, char *pEnd)
+{
+	if (val < 0) {
+		*szValue++ = '-';
+		val = -val;
+	}
+	return itoa_pos_pad_left(val, szValue, pEnd);
+}
+
+bool ftoa_fix(int64_t val, unsigned short dp, char *szValue, char *pEnd)
+{
+	if (dp >= 10)
+		return false;
+	const static int pow10_[10] = { 1,10,100,1000,10000,100000,1000000,10000000,100000000,1000000000 };
+	if (val < 0) {
+		*szValue++ = '-';
+		val = -val;
+	}
+	itoa_fill(val%pow10_[dp], pEnd - 1, dp); // data dependency
+	*(pEnd - dp - 1) = '.';
+	itoa_pos_pad_left(static_cast<int>(val / pow10_[dp]), szValue, pEnd - dp - 1);
+	return true;
 }

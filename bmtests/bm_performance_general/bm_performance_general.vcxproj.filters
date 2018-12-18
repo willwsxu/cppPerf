@@ -62,5 +62,8 @@
     <ClInclude Include="bm_ftoa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bm_test_setup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
