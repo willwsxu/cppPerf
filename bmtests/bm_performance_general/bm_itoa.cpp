@@ -1,64 +1,6 @@
 #include <benchmark/benchmark.h>
 #include "digits-helper.h"
 
-int count_digits_basic(int val)
-{
-	int count = 1;
-	while (val >= 10) {
-		count++;
-		val /= 10;
-	}
-	return count;
-}
-int count_digits2(int val) {
-	int count = 0;
-	while (val >= 10000) {
-		count += 4;
-		val /= 10000;
-	}
-	if (val >= 100) {
-		if (val >= 1000)
-			return 4;
-		return 3;
-	}
-	else {
-		if (val >= 10)
-			return 2;
-		return 1;
-	}
-}
-
-static void BM_count_digits_basic(benchmark::State& state)
-{
-	int count = 0;;
-	while (state.KeepRunning())
-	{
-		benchmark::DoNotOptimize(count = count_digits_basic(1234567890));
-	}
-}
-BENCHMARK(BM_count_digits_basic);
-
-static void BM_count_digits(benchmark::State& state)
-{
-	int count = 0;;
-	while (state.KeepRunning())
-	{
-		benchmark::DoNotOptimize(count = count_digits(1234567890));
-	}
-}
-BENCHMARK(BM_count_digits);
-
-static void BM_count_digits2(benchmark::State& state)
-{
-	int count = 0;;
-	while (state.KeepRunning())
-	{
-		benchmark::DoNotOptimize(count = count_digits2(1234567890));
-	}
-}
-BENCHMARK(BM_count_digits2);
-
-
 static void BM_itoa_new2(benchmark::State& state)
 {
 	char szValue[12] = { 0 };
@@ -330,30 +272,3 @@ static void BM_ftoa(benchmark::State& state)
 }
 BENCHMARK(BM_ftoa);
 
-inline int16_t tmg_itoa_delta(char* dst, int64_t val, char* end, int64_t& check_sum) {
-	if ((int64_t)val < 0) {
-		val = -val;
-		check_sum += static_cast<int64_t>('-') - static_cast<int64_t>(*dst);
-		*dst++ = '-';
-	}
-	while (--end >= dst) {
-		uint64_t rem = val % 10;
-		char next = static_cast<char>(rem + '0');
-		check_sum += static_cast<int64_t>(next) - static_cast<int64_t>(*end);
-		*end = next;
-		val /= 10;
-	}
-	return val == 0 ? 0 : count_digits(val);
-}
-
-static void BM_tmg_itoa(benchmark::State& state)
-{
-	char szValue[12] = { 0 };
-	int len = 0;
-	int64_t check_sum = 0;
-	while (state.KeepRunning())
-	{
-		benchmark::DoNotOptimize(len = tmg_itoa_delta(szValue, -1234567890, szValue + sizeof(szValue), check_sum));
-	}
-}
-BENCHMARK(BM_tmg_itoa);

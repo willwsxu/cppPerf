@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bm_call_once.h" />
+    <ClInclude Include="bm_count_digits.h" />
     <ClInclude Include="bm_slist.h" />
     <ClInclude Include="branch.h" />
     <ClInclude Include="constructors.h" />

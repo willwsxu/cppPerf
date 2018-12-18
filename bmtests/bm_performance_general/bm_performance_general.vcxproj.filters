@@ -50,5 +50,8 @@
     <ClInclude Include="bm_slist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bm_count_digits.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
