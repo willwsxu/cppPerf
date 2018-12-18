@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <algorithm>
 
 inline int count_digits(int64_t val) {
 	if (val >= 10000) {
@@ -35,6 +36,32 @@ inline int count_digits(int64_t val) {
 	}
 }
 
+inline void itoa_fill(int64_t val, char *pBack, int len)
+{
+	while (len--) {
+		*pBack-- = val % 10 + '0';
+		val /= 10;
+	}
+}
+// fill value to string [szValue, pEnd), pad left with 0 if more space left
+inline int itoa_pos_pad_left(int64_t val, int int_len, char *szValue, char *pEnd)
+{
+	int fill_zero = static_cast<int>((pEnd--) - szValue);
+	int len = std::min(int_len, fill_zero);
+	fill_zero -= len;
+	while (len--) {  // test 0 is fast than compare other values
+		*pEnd-- = val % 10 + '0';
+		val /= 10;
+	}
+	while (fill_zero--)  // less data dependency, two while loop can be done in parallel
+		*szValue++ = '0';
+	return (int)val;
+}
+// fill value to string [szValue, pEnd), pad left with 0 if more space left
+inline int itoa_pos_pad_left(int64_t val, char *szValue, char *pEnd)
+{
+	return itoa_pos_pad_left(val, count_digits(val), szValue, pEnd);
+}
 
 inline char* itoa_new2(int64_t val, char *szValue, int size)
 {
@@ -61,17 +88,15 @@ inline char* itoa_new2(int64_t val, char *szValue, int size)
 	return szValue;
 }
 
-// fill value to string [szValue, pEnd), pad left with 0 if more space left
-inline int itoa_pos_pad_left(int64_t val, char *szValue, char *pEnd)
+// convert int to string, truncate to fit size
+inline char* itoa_(int64_t val, char *szValue, int size)
 {
-	int fill_zero = static_cast<int>((pEnd--) - szValue);
-	int len = std::min(count_digits(val), fill_zero);
-	fill_zero -= len;
-	while (len--) {  // test 0 is fast than compare other values
-		*pEnd-- = val % 10 + '0';
-		val /= 10;
+	if (val < 0) {
+		val = -val;
+		*szValue++ = '-';
 	}
-	while (fill_zero--)  // less data dependency, two while loop can be done in parallel
-		*szValue++ = '0';
-	return (int)val;
+	int len = std::min(count_digits(val), size-1);  // save last byte for nil
+	itoa_fill(val, szValue + len-1, len);
+	szValue[len] = 0;
+	return szValue;
 }
