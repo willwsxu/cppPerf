@@ -3,6 +3,7 @@
 
 #include "myalgo.h"
 #include "helper.h"
+#include "mathlib.h"
 using namespace std;
 
 class Math
@@ -629,3 +630,85 @@ TEST_CASE("883. Projection Area of 3D Shapes", "[MATH]")
 {
 	CHECK(MathEasy().projectionArea(vector<vector<int>>{ {1, 1, 1}, { 1,0,1 }, { 1,1,1 }})==14);
 }
+
+class MathStuff {
+public:
+	// 885. Spiral Matrix III, (0,0) is at north west (top left), (R-1, C-1) is at south east (bottom right)
+	// start at (r0, c0) facing east (right), ok to walk outside
+	vector<vector<int>> spiralMatrixIII(int R, int C, int r0, int c0) {  // beat 76%
+		int radius = max(max(r0, c0), max(R - r0, C - c0));
+		static const vector<vector<int>> spiral{ { 0,1 },{ 1,1 },{ 1,0 },{ 1,-1 },{ 0,-1 },{ -1,-1 },{ -1,0 },{ -1,1 } };
+		vector<vector<int>> ans;
+		ans.reserve(R*C);
+		ans.push_back(vector<int>{r0, c0});
+		for (int dist = 1; dist <= radius; dist++) { //divide each spiral into 4 sections
+													 // top down at col c0+dist
+			if (c0 + dist < C) {
+				for (int r = r0 - dist + 1; r <= r0 + dist; r++) {
+					if (r >= 0 && r < R)
+						ans.push_back(vector<int>{r, c0 + dist});
+				}
+			}
+			// right to left at row r0+dist
+			if (r0 + dist < R) {
+				for (int c = c0 + dist - 1; c >= c0 - dist; c--) {
+					if (c >= 0 && c<C)
+						ans.push_back(vector<int>{r0 + dist, c});
+				}
+			}
+			// bottom up at col c0-dist
+			if (c0 - dist >= 0) {
+				for (int r = r0 + dist - 1; r >= r0 - dist; r--) {
+					if (r >= 0 && r < R)
+						ans.push_back(vector<int>{r, c0 - dist});
+				}
+			}
+			// left to right at row r0-dist
+			if (r0 - dist >= 0) {
+				for (int c = c0 - dist + 1; c <= c0 + dist; c++) {
+					if (c >= 0 && c<C)
+						ans.push_back(vector<int>{r0 - dist, c});
+				}
+			}
+		}
+		return ans;
+	}
+	// 593. Valid Square
+	bool validSquare_v1(vector<int>& p1, vector<int>& p2, vector<int>& p3, vector<int>& p4) {  // beat 100%,4ms
+		auto test = [](vector<int>& p1, vector<int>& p2, vector<int>& p3, vector<int>& p4) {
+			vector<int> dist{ euclid_distance_square(p1,p2), euclid_distance_square(p1,p3),euclid_distance_square(p1,p4) }; // from p1 to other 3 points
+			sort(begin(dist), end(dist));
+			if (dist[0] != dist[1])
+				return false;
+			return dist[0] > 0 && dist[0] == dist[1] && dist[2] == (dist[0] << 1);
+		};
+		return test(p1, p2, p3, p4) && test(p2, p4, p1, p3) && test(p3, p4, p1, p2) && test(p4, p2, p1, p3);
+	}
+	bool validSquare(vector<int>& p1, vector<int>& p2, vector<int>& p3, vector<int>& p4) {  // beat 100%, 4ms	
+		set<int> edges{ euclid_distance_square(p1,p2), euclid_distance_square(p1,p3),euclid_distance_square(p1,p4),
+			euclid_distance_square(p2,p3),euclid_distance_square(p2,p4) ,euclid_distance_square(p3,p4) };
+		return *begin(edges) != 0 && edges.size() == 2;
+	}
+	// 396. Rotate Function, N<10^5
+	// Bi=sum of A[i]*i for i=[0,N), rotate A clockwise to generate new B
+	// F(1)-F(0)=sum of A - n*A[n-1];
+	// F(2)-F(1)= sum of A -n*A[n-2];
+	int maxRotateFunction(vector<int>& A) {  // beat 100%
+		int sumA = accumulate(begin(A), end(A), 0);
+		int F0 = accumulate(begin(A), end(A), 0, [n = 0](int init, int a)mutable { return init + a*n++; });
+		int N = A.size();
+		int ans = F0;
+		for (int i = 1; i < N; i++) {
+			int Fi = sumA - N*A[N - i] + F0;
+			ans = max(ans, Fi);
+			F0 = Fi;
+		}
+		return ans;
+	}
+};
+TEST_CASE("593. Valid Square", "[NEW]")
+{
+	CHECK(MathStuff().validSquare(vector<int>{ 0, 0 }, vector<int>{ 0, 0 }, vector<int>{ 0, 0 }, vector<int>{ 0, 0 }) == false);
+	CHECK(MathStuff().validSquare(vector<int>{ 0, 0 }, vector<int>{ 0, 1 }, vector<int>{ 1, 1 }, vector<int>{ 1, 2 }) == false);
+}
+

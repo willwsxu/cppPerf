@@ -69,3 +69,8 @@ void pandigital_enumerate(set<int> digits, int val, CallBack f) {
 		pandigital_enumerate(digits_next, val * 10 + d, f);
 	}
 }
+
+inline int euclid_distance_square(vector<int>& p1, vector<int>& p2)  // share it
+{
+	return (p1[0] - p2[0])*(p1[0] - p2[0]) + (p1[1] - p2[1])*(p1[1] - p2[1]);
+}
