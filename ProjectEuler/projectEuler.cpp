@@ -971,3 +971,209 @@ TEST_CASE("Project Euler #29: Distinct powers", "[NEW]")
 	CHECK(countDistinctPower(5) == 15);
 	CHECK(countDistinctPower(200) == 37774);
 }
+
+//Project Euler #32: Pandigital products
+// Given N, find numbers a*b =c, combined digits from a, b, c are [1, N], all unique
+// return sum of c
+int pan_digital_prod(int N)
+{
+	const static vector<int> powers{ 1,10,100,1000,10000 };
+	int max_val = powers[N / 2];
+	int sum_ans = 0;
+	for (int i = 12; i < max_val; i++) {  // check each product
+		for (int j = 2; j*j < i; j++) {
+			if (i%j == 0) {
+				set<int> digits;
+				auto add_digits = [&digits, N](int n) {
+					while (n > 0) {
+						int d = n % 10;
+						if (d == 0 || d > N || digits.count(d))
+							return false;
+						digits.insert(d);
+						n /= 10;
+					}
+					return true;
+				};
+				if (add_digits(i) && add_digits(j) && add_digits(i / j) && digits.size() == N) {
+					sum_ans += i;
+					break;
+				}
+			}
+		}
+	}
+	return sum_ans;
+}
+
+TEST_CASE("Project Euler #32: Pandigital products", "[NEW]")
+{
+	CHECK(pan_digital_prod(8) == 13458);
+	CHECK(pan_digital_prod(4) == 12);
+}
+
+
+// Project Euler #27: Quadratic primes, problem stated in Hack Rank is very confusing
+// clarify: find a and b that generate max consecutive primes from n=0, given |a|<=N, |b|<=N
+int quadratic_formular(int n, int a, int b)
+{
+	return n*n + a*n + b;
+}
+
+pair<int, int> solve_coefficient(int N)
+{
+	auto primes = make_primes(N + 1);
+	int max_primes = 0;
+	pair<int, int> ans{ 0,0 };
+	for (int a = -N; a <= N; a++) {
+		for (int b : primes) {
+			int n = 1;   // no need to start from 0 as b is prime
+			for (;;) {
+				auto x = quadratic_formular(n++, a, b);
+				if (!is_prime(x))
+					break;
+			}
+			if (n > max_primes) {
+				ans.first = a;
+				ans.second = b;
+				max_primes = n;
+			}
+		}
+	}
+	return ans;
+}
+
+
+// return true if x is prime
+bool isPrime(int x)
+{
+	// reject invalid input
+	if (x <= 1)
+		return false;
+
+	// process all potential divisors
+	for (int factor = 2; factor*factor <= x; factor++)
+		if (x % factor == 0)
+			return false;
+
+	// no such divisor found, it's a prime number
+	return true;
+}
+
+pair<int, int> solve_coefficient2(int limit)
+{
+	// keep track of best sequence:
+	// number of generated primes
+	unsigned int consecutive = 0;
+	// its coefficients
+	int bestA = 0;
+	int bestB = 0;
+
+	// simple brute-force approach
+	for (int a = -limit; a <= +limit; a++)
+		for (int b = -limit; b <= +limit; b++)
+		{
+			// count number of consecutive prime numbers
+			unsigned int length = 0;
+			while (isPrime(length * length + a * length + b))
+				length++;
+
+			// better than before ?
+			if (consecutive < length)
+			{
+				consecutive = length;
+				bestA = a;
+				bestB = b;
+			}
+		}
+	return{ bestA, bestB };
+}
+
+
+TEST_CASE("Project Euler #27: Quadratic primes", "[NEW]")
+{
+	auto p = solve_coefficient(42);
+	CHECK(p.first == -1);
+	CHECK(p.second == 41);
+	auto p2 = solve_coefficient(2000);
+	CHECK(p2.first == -79);
+	CHECK(p2.second == 1601);
+}
+
+int repeatingDecimals(int numer, int denom)
+{
+	vector<int> decimals;
+	numer %= denom;
+	map<int, int> remainders_pos{ { numer, 0 } };
+	int pos = 1;
+	while (numer) {
+		numer *= 10;
+		decimals.push_back(numer / denom);
+		numer %= denom;
+		auto found = remainders_pos.find(numer);
+		if (found == end(remainders_pos)) {
+			remainders_pos[numer] = pos++;
+		}
+		else
+			return (pos - found->second);
+	}
+	return 0;
+}
+TEST_CASE("Project Euler #26: repeatingDecimals", "[NEW]")
+{
+	CHECK(repeatingDecimals(1, 8) == 0);
+	CHECK(repeatingDecimals(1, 7) == 6);
+}
+// Project Euler #26: Reciprocal cycles
+class LongestRepeatingDecimals
+{
+	map<int, int> max_repeating;  // smallest int with this many repeating 
+public:
+	LongestRepeatingDecimals(int N) {
+		max_repeating[1] = 0; //0 repeating
+		int max_r = 0;
+		for (int i = 3; i <= N; i++) {
+			if (isPrime(i)) {
+				int repeat = repeatingDecimals(1, i);
+				if (repeat > max_r) {
+					max_r = repeat;
+					max_repeating[i] = max_r;
+				}
+			}
+		}
+	}
+	int findSmallestIntWithLongestRepeating(int n) {
+		auto found = max_repeating.lower_bound(n);
+		--found;
+		return found->first;
+	}
+};
+
+class LongestRepeatingDecimals2
+{
+	vector<int> repeating_smalles_val;  // smallest int with max repeating so far
+public:
+	LongestRepeatingDecimals2(int N) :repeating_smalles_val(N, 1) {
+		int max_r = 0;
+		int max_r_val = 1;
+		for (int i = 3; i < N; i++) {
+			if (isPrime(i)) {
+				int repeat = repeatingDecimals(1, i);
+				if (repeat > max_r) {
+					max_r = repeat;
+					max_r_val = i;
+				}
+			}
+			repeating_smalles_val[i] = max_r_val;
+		}
+	}
+	int findSmallestIntWithLongestRepeating(int n) {
+		return repeating_smalles_val[n - 1];  // vector and map had same speed
+	}
+};
+TEST_CASE("Project Euler #26: Reciprocal cycles", "[NEW]")
+{
+	LongestRepeatingDecimals2 repeating(5000);
+	CHECK(repeating.findSmallestIntWithLongestRepeating(7) == 3); // longest repeating < 7
+	CHECK(repeating.findSmallestIntWithLongestRepeating(10) == 7); // longest repeating < 10
+	CHECK(repeating.findSmallestIntWithLongestRepeating(5000) == 4967); // longest repeating < 5000
+}
+

@@ -609,12 +609,13 @@ class Knapsack
 	}
 public:
 	// 956. Tallest Billboard, rods equal size
-	// transform into knapsack, hint from: The sum of rods is at most 5000.
+	// standard DP with twists: 2d memo state using delta, memo value is relative to current value!!
 	int tallestBillboard(vector<int>& rods) {
 		int total = accumulate(begin(rods), end(rods), 0);
 		vector<vector<int>> memo(rods.size(), vector<int>(total / 2 + 1, INT32_MIN));
 		return tallestBillboard(rods, 0, memo, 0, 0, total / 2);
 	}
+	// transform into knapsack, hint from: The sum of rods is at most 5000.
 };
 TEST_CASE("956. Tallest Billboard", "[NEW]")
 {
