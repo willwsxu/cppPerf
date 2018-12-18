@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <algorithm>
 
+// int to string conversion
 inline int count_digits(int64_t val) {
 	if (val >= 10000) {
 		if (val >= 1000000) {
@@ -100,7 +101,7 @@ inline char* itoa_(int64_t val, char *szValue, int size) // slightly better than
 }
 
 // convert int to string, right justified, pad left with 0
-int itoa_fix(int64_t val, char *szValue, char *pEnd)
+inline int itoa_fix(int64_t val, char *szValue, char *pEnd)
 {
 	if (val < 0) {
 		*szValue++ = '-';
@@ -109,7 +110,7 @@ int itoa_fix(int64_t val, char *szValue, char *pEnd)
 	return itoa_pos_pad_left(val, szValue, pEnd);
 }
 
-bool ftoa_fix(int64_t val, unsigned short dp, char *szValue, char *pEnd)
+inline bool ftoa_fix(int64_t val, unsigned short dp, char *szValue, char *pEnd)
 {
 	if (dp >= 10)
 		return false;

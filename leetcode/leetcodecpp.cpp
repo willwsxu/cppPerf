@@ -529,18 +529,6 @@ public:
 		return true;
 	}
 	// 9. Palindrome Number
-	bool isPalindrome(int x) {  // beat 72%
-		if (x < 0)
-			return false;
-
-		int y = x;
-		int p = 0;
-		while (y > 0) {  // reverse x in value
-			p = p * 10 + y % 10;
-			y /= 10;
-		}
-		return x == p;
-	}
 
 	int64_t buildPalindromFromLeftHalf(int left, int n)
 	{
