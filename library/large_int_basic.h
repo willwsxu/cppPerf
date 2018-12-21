@@ -17,8 +17,10 @@ int sum_int(RandRevIter first1, RandRevIter last1, RandRevIter first2, RandRevIt
 	}
 	return carry;
 }
+
 // add value v2 to v1
-inline void sum(std::vector<int>& v1, std::vector<int>& v2)
+template<typename T>
+inline void sum(std::vector<T>& v1, std::vector<T>& v2)
 {
 	if (v1.size() < v2.size())
 		fill_n(back_inserter(v1), v2.size() - v1.size(), 0);
@@ -30,6 +32,7 @@ inline void sum(std::vector<int>& v1, std::vector<int>& v2)
 		carry /= 10;
 	}
 }
+
 // multiply large int with regular int, digit is int, not char type
 template<typename RandRevIter>
 int large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, int factor)
