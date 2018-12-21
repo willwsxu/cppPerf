@@ -96,16 +96,20 @@ std::ostream& operator<<(std::ostream&os, const Schedule& s2)
 template <typename T>
 class cstring_iterator : public iterator<forward_iterator_tag, T>  // T is the underlying value type
 {
-	const char **str;
+	const char **str=nullptr;
 	size_t count;
 	size_t increment;
-	const char **end;
+	const char **last=nullptr;
 public:
-	cstring_iterator(size_t c, const char *argv[], size_t inc) :str(argv), count(c), increment(inc), end(argv + c) {	}
+	cstring_iterator(size_t c, const char *argv[], size_t inc) :str(argv), count(c), increment(inc), last(argv + c) {	}
 	cstring_iterator() = default;// used as end()
 	bool operator!=(const cstring_iterator&) {  // clever trick, check if it is end, from left hand only
-		return str != end;
+		return str != last;
+	}
+	bool operator==(const cstring_iterator&) {  // debug build fails without this overload
+		return str == last;
 	}
 	T operator*() { return T(str); }  // clever trick, construct T from char *
 	void operator++() { str += increment; }
+	//void operator--() { str -= increment; }
 };
