@@ -27,6 +27,16 @@ inline long long sum_arithmetic_sequence(long long first, long long last, int st
 	return (n%MOD)*(sum%MOD) % MOD;
 }
 
+inline long long sum_arithmetic_sequence(long long first, long long last, int step)
+{
+	long long n = (last - first) / step + 1;
+	long long sum = first + last;
+	if (n % 2 == 0)
+		n /= 2;
+	else
+		sum /= 2;
+	return n*sum;
+}
 
 inline bool is_prime(int n)
 {
@@ -96,7 +106,36 @@ void pandigital_enumerate(set<int> digits, long long val, CallBack f) {
 	}
 }
 
-inline int euclid_distance_square(vector<int>& p1, vector<int>& p2)  // share it
+
+class ChooseAll {  // compute N Choose 0 to n until value exceeds limit
+	vector<long long> choices;
+	int N;
+public:
+	ChooseAll(int N, long long limit) :choices{ 1 }, N(N) { //0!=1
+		choices.reserve(N / 2 + 1);
+		int n = N;
+		int k = 1;
+		while (N - k >= (int)choices.size()) {
+			if ((double)choices.back()*n / k>limit)  // strive to not over flow
+				break;
+			long long choice = choices.back() / k;
+			long long faction = choices.back() % k;
+			choice *= n;
+			choice += n*faction / k;
+			choices.push_back(choice);
+			n--;
+			k++;
+		}
+	}
+	int K_exceed_limit()
+	{
+		int low = choices.size() - 1;
+		int high = N - low;
+		return high == low ? 0 : high - low - 1;
+	}
+};
+
+inline int euclid_distance_square(vector<int>& p1, vector<int>& p2)
 {
 	return (p1[0] - p2[0])*(p1[0] - p2[0]) + (p1[1] - p2[1])*(p1[1] - p2[1]);
 }
@@ -153,8 +192,8 @@ inline vector<int> allPalindrome(int prefix)
 	return palindrome;// RVO
 }
 
-inline string base_conversion(int n, int b) {
-	string s;
+inline std::string base_conversion(int n, int b) {
+	std::string s;
 	while (n>0) {
 		s.append(1, n%b + '0');
 		n /= b;

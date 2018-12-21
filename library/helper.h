@@ -38,7 +38,7 @@ inline std::pair<int, int> multiplyComplex(int r1, int i1, int r2, int i2)
 	return{ r1*r2 - i1*i2, r1*i2 + r2*i1 };
 }
 
-inline int countDecDigit(int n) {
+inline int countDecDigit(int n) {  // prefer count_digits in digit helper
 	int c = 0;
 	while (n) {
 		c++;
