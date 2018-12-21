@@ -56,9 +56,35 @@ inline vector<int> make_primes(int N)  // prime numbers < N
 	return primes;
 }
 
+// find number of distinct factors
+inline int prime_factors(int N, const vector<int>& primes)
+{
+	int count = 0;
+	for (int p : primes) {
+		if (p*p>N)
+			break;
+		if (N%p == 0) {
+			count++;
+			do {
+				N /= p;
+			} while (N%p == 0);
+		}
+	}
+	return count + (N>1);
+}
+inline vector<int> count_digit(int x) {
+	vector<int> count(10, 0);
+	while (x>0) {
+		count[x % 10]++;
+		x /= 10;
+	}
+	return count;
+}
+
 // enumerate number contain all digits in given set, no duplicate
+// much slower than std next permutation (see euler #43)
 template<typename CallBack>
-void pandigital_enumerate(set<int> digits, int val, CallBack f) {
+void pandigital_enumerate(set<int> digits, long long val, CallBack f) {
 	if (digits.empty()) {
 		f(val);
 		return;
