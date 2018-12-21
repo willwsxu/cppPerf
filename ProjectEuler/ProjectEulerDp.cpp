@@ -7,7 +7,7 @@
 #include <numeric>
 #include "myalgo.h"
 #include "helper.h"
-#include "large_int.h"
+#include "large_int_basic.h"
 using namespace std;
 
 // Project Euler #15: Lattice paths 
@@ -79,19 +79,6 @@ TEST_CASE("Project Euler #31: Coin sums ", "[OLD]")
 {
 	WaysMakeChange make_changes(100000, vector<int>{1,2,5,10,20,50,100,200});
 	CHECK(make_changes.get(20) == 41);
-}
-
-void sum(vector<int>& v1, vector<int>& v2)
-{
-	if (v1.size() < v2.size())
-		fill_n(back_inserter(v1), v2.size() - v1.size(), 0);
-	else if (v1.size() > v2.size())
-		fill_n(back_inserter(v2), v1.size() - v2.size(), 0);
-	int carry = sum_int(begin(v1), end(v1), begin(v2), begin(v1), 0);
-	while (carry > 0) {
-		v1.push_back(carry % 10);
-		carry /= 10;
-	}
 }
 
 class FibonacciDigits
