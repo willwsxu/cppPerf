@@ -44,6 +44,9 @@ public:
 	Rank get() const {
 		return rank;
 	}
+	std::vector<int> get_kicker() const {  // debugging
+		return high_cards;
+	}
 private:
 	void eval()
 	{
@@ -67,10 +70,8 @@ private:
 		}
 		if (bFlush) {
 			rank = FLUSH;
-			high_cards.reserve(hand.size());
-			for (const auto& c : hand)  // use all cards as kicker
-				high_cards.push_back(c.card_val);
-			reverse(begin(high_cards), end(high_cards));
+			high_cards.reserve(hand.size()); // use all cards as kicker
+			transform(rbegin(hand), rend(hand), back_inserter(high_cards), [](const auto& c) { return c.card_val; });
 			return;
 		}
 		std::vector<std::pair<int, int>> same_kind;  // scan for same kind of cards
@@ -81,12 +82,10 @@ private:
 			if (c.card_val == prev)
 				same++;
 			else {
-				if (same > 1) {
+				if (same > 1)
 					same_kind.emplace_back(same, prev);  // 2 or 3 or 4 a kind
-				}
-				else if (same==1) {
+				else if (same==1)
 					high_cards.push_back(prev);  // kicker
-				}
 				same = 1;
 				prev = c.card_val;
 			}
