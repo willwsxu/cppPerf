@@ -160,17 +160,22 @@ inline int repeatingDecimals(int numer, int denom)  // find repeating decimals o
 	return 0;
 }
 
-inline bool isPalindrome(int64_t n)
+template<typename T>
+T reverse(T n)
 {
-	int64_t original = n;
-	if (n<0 || n % 10 == 0)  // palindrome last digit cannot be 0
-		return false;
-	int64_t reversed = 0;
+	T reversed = 0;
 	while (n > 0) {
 		reversed = reversed * 10 + n % 10;
 		n /= 10;
 	}
-	return reversed == original;
+	return reversed;
+}
+
+inline bool isPalindrome(int64_t n)
+{
+	if (n<0 || n % 10 == 0)  // palindrome last digit cannot be 0
+		return false;
+	return n == reverse(n);
 }
 
 // generate palindrome number with prefix (first half, digits/2) [1,prefix), produce both odd and even length numbers

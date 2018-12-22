@@ -198,3 +198,24 @@ inline vector<vector<int>> rightTrianglesFundamental(long long N) // primitive r
 	//	cout << "fundamental triangles " << triangles.size() << "\n";
 	return triangles;
 }
+
+template<typename T>  // count T and cache max count
+class count_max
+{
+	std::map<T, int> counter;
+	int max_count = 0;
+	T max_count_val = 0;
+public:
+	void update(T&& n) {
+		auto& x = counter[n];
+		x++;
+		if (x>max_count) {
+			max_count = x;
+			max_count_val = move(n);
+		}
+	}
+	std::pair<T, int> get() const
+	{
+		return { max_count_val, max_count };
+	}
+};

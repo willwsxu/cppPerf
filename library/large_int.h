@@ -210,7 +210,7 @@ private:
 			li.push_back(static_cast<DigitType>(carry));
 		return *this;
 	}
-	std::vector<DigitType> li;  // least significant to most significant digit
+	std::vector<DigitType> li;  // least significant to most significant digit, little endian
 };
 
 template<typename RandIter>
