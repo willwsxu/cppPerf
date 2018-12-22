@@ -62,7 +62,7 @@ public:
 		return accumulate(begin(ans_sum), end(ans_sum), 0);
 	}
 };
-TEST_CASE("Project Euler #30: Digit Nth powers", "[NEW]")
+TEST_CASE("Project Euler #30: Digit Nth powers", "[POWER]")
 {
 	DigitPower dpow(6);
 	CHECK(dpow.sum_digit_power(5) == 443839);

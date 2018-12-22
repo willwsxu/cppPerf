@@ -39,7 +39,7 @@ public:
 		return result;
 	}
 };
-TEST_CASE("Project Euler #15: Lattice paths", "[NEW]")
+TEST_CASE("Project Euler #15: Lattice paths", "[PATH]")
 {
 	LatticePath p(2, 2);
 	CHECK(p.get() == 6);

@@ -24,9 +24,15 @@
     <ClCompile Include="projectEulerCombinatorics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CardGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\library\mathlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CardGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

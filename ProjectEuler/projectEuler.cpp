@@ -390,7 +390,7 @@ public:
 	}
 };
 
-TEST_CASE("Project Euler #16: Power digit sum", "[NEW]")
+TEST_CASE("Project Euler #16: Power digit sum", "[POWER]")
 {
 	Power2DigitSum digitSum(30);
 	CHECK(digitSum.get(9) == 8);
@@ -500,7 +500,7 @@ public:
 		return s;
 	}
 };
-TEST_CASE("Project Euler #17: Number to Words", "[NEW]")
+TEST_CASE("Project Euler #17: Number to Words", "[WORDS]")
 {
 	NumberToWords words;
 	CHECK(words.number2words(900090009999LL) == "Nine Hundred Billion Ninety Million Nine Thousand Nine Hundred Ninety Nine");
@@ -645,7 +645,7 @@ public:
 		return -1;
 	}
 };
-TEST_CASE("Project Euler #12: Highly divisible triangular number", "[NEW]")
+TEST_CASE("Project Euler #12: Highly divisible triangular number", "[TRIANG]")
 {
 	DivisibleTriangluar divisors(1000);
 	CHECK(divisors.get(1) == 3);
@@ -700,7 +700,7 @@ public:
 	}
 };
 
-TEST_CASE("Project Euler #21: Amicable numbers", "[NEW]")
+TEST_CASE("Project Euler #21: Amicable numbers", "[AMIC]")
 {
 	AmicableNumbers amicables(100000);
 	CHECK(amicables.get(1) == 0);
@@ -792,7 +792,7 @@ public:
 	}
 };
 
-TEST_CASE("Project Euler #19: Counting Sundays", "[NEW]")
+TEST_CASE("Project Euler #19: Counting Sundays", "[COUNT]")
 {
 	Calendar cal;
 	CHECK(cal.countSundays(1905, 1, 1, 1909, 8, 2) == 9);
@@ -828,7 +828,7 @@ public:
 	}
 };
 
-TEST_CASE("Project Euler #23: Non - abundant sums", "[NEW]")
+TEST_CASE("Project Euler #23: Non - abundant sums", "[ABUND]")
 {
 	AbundantNumbers abund;
 	for (int i = 1; i < 24; i++)
@@ -866,7 +866,7 @@ public:
 	}
 };
 
-TEST_CASE("Project Euler #24: Lexicographic permutations", "[NEW]")
+TEST_CASE("Project Euler #24: Lexicographic permutations", "[PERMU]")
 {
 	LexicoPerm lexi(13);
 	CHECK(lexi.permu("abcdefghijklm", 1) == "abcdefghijklm");
@@ -901,14 +901,14 @@ public:
 	}
 };
 
-TEST_CASE("Project Euler #34: Digit factorials", "[NEW]")
+TEST_CASE("Project Euler #34: Digit factorials", "[FACT]")
 {
 	DigitFactorial digitFact;
 	CHECK(digitFact.sum_divisible(20) == 19);
 }
 
 const static int MOD7 = 1000000007;
-TEST_CASE("Project Euler #28: sum_odd_square", "[NEW]")
+TEST_CASE("Project Euler #28: sum_odd_square", "[SUM]")
 {
 	CHECK(sum_odd_square(5, MOD7) == 35);
 }
@@ -927,7 +927,7 @@ int spiralDiagnoalSum(long long N)
 		ans += MOD7;
 	return static_cast<int>(ans);
 }
-TEST_CASE("Project Euler #28: Number spiral diagonals", "[NEW]")
+TEST_CASE("Project Euler #28: Number spiral diagonals", "[SPIRAL]")
 {
 	CHECK(spiralDiagnoalSum(99999999) == 370999997);
 	CHECK(spiralDiagnoalSum(5) == 101);
@@ -965,7 +965,7 @@ long long countDistinctPower(int N)  // 10^5 is about 2^16
 	return total - total_repeats;
 }
 
-TEST_CASE("Project Euler #29: Distinct powers", "[NEW]")
+TEST_CASE("Project Euler #29: Distinct powers", "[POWER]")
 {
 	CHECK(countDistinctPower(100000) == 9981236306LL);
 	CHECK(countDistinctPower(5) == 15);
@@ -1004,7 +1004,7 @@ int pan_digital_prod(int N)
 	return sum_ans;
 }
 
-TEST_CASE("Project Euler #32: Pandigital products", "[NEW]")
+TEST_CASE("Project Euler #32: Pandigital products", "[PANDIGIT]")
 {
 	CHECK(pan_digital_prod(8) == 13458);
 	CHECK(pan_digital_prod(4) == 12);
@@ -1041,7 +1041,7 @@ pair<int, int> solve_coefficient(int N)
 	return ans;
 }
 
-TEST_CASE("Project Euler #27: Quadratic primes", "[NEW]")
+TEST_CASE("Project Euler #27: Quadratic primes", "[PRIME]")
 {
 	auto p = solve_coefficient(42);
 	CHECK(p.first == -1);
@@ -1051,7 +1051,7 @@ TEST_CASE("Project Euler #27: Quadratic primes", "[NEW]")
 	CHECK(p2.second == 1601);
 }
 
-TEST_CASE("Project Euler #26: repeatingDecimals", "[NEW]")
+TEST_CASE("Project Euler #26: repeatingDecimals", "[DECIMAL]")
 {
 	CHECK(repeatingDecimals(1, 8) == 0);
 	CHECK(repeatingDecimals(1, 7) == 6);
@@ -1103,7 +1103,7 @@ public:
 		return repeating_smalles_val[n - 1];  // vector and map had same speed
 	}
 };
-TEST_CASE("Project Euler #26: Reciprocal cycles", "[NEW]")
+TEST_CASE("Project Euler #26: Reciprocal cycles", "[DECIMAL]")
 {
 	LongestRepeatingDecimals2 repeating(5000);
 	CHECK(repeating.findSmallestIntWithLongestRepeating(7) == 3); // longest repeating < 7
