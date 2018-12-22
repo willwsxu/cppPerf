@@ -18,9 +18,9 @@ TEST_CASE("Project Euler #54: Poker hands", "[NEW]")
 		CHECK(Hand(vector<string>{"2D", "4D", "5D", "8D", "AD"}).get() == FLUSH);
 		CHECK(Hand(vector<string>{"2D", "4D", "5D", "8D", "AD"}).get_kicker() == vector<int>{14,8,5,4,2});
 		CHECK(Hand(vector<string>{"5H", "5C", "3S", "5S", "3D"}).get() == FULL_HOUSE);
-		CHECK(Hand(vector<string>{"5H", "5C", "3S", "5S", "3D"}).get_kicker() == vector<int>{5,3});
+		CHECK(Hand(vector<string>{"5H", "5C", "QS", "5S", "QD"}).get_kicker() == vector<int>{5,12});
 		CHECK(Hand(vector<string>{"5H", "5C", "3S", "5S", "5D"}).get() == FOUR);
-		CHECK(Hand(vector<string>{"5H", "5C", "3S", "5S", "5D"}).get_kicker() == vector<int>{5,3});
+		CHECK(Hand(vector<string>{"5H", "5C", "TS", "5S", "5D"}).get_kicker() == vector<int>{5,10});
 		CHECK(Hand(vector<string>{"JD", "TD", "QD", "KD", "AD"}).get() == STRAIGHT_FLUSH);
 		CHECK(Hand(vector<string>{"JD", "TD", "QD", "KD", "AD"}).get_kicker() == vector<int>{14});
 	}
