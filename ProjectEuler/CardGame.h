@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 class Card
 {
@@ -27,18 +28,21 @@ public:
 		}
 	}
 };
+enum Rank { High_CARD, ONE_PAIR, TWO_PAIR, THREE, STRAIGHT, FLUSH, FULL_HOUSE, FOUR, STRAIGHT_FLUSH };
 class Hand {
 	std::vector<Card>  hand;  // 5 cards in a hand
-	enum Rank{High_CARD, ONE_PAIR, TWO_PAIR, THREE, STRAIGHT, FLUSH, FULL_HOUSE, FOUR, STRAIGHT_FLUSH} rank;
-	void eval_straight() {
-
-	}
+	Rank rank;
 	std::vector<int> high_cards;
 	friend bool operator<(const Hand& h1, const Hand& h2);
 public:
 	Hand(std::vector<std::string>&& h) {
+		assert(h.size() == 5);
 		for (const auto& s : h)
 			hand.push_back(Card(s));
+		eval();
+	}
+	Rank get() const {
+		return rank;
 	}
 private:
 	void eval()
@@ -56,8 +60,9 @@ private:
 			rank = STRAIGHT;
 			high_cards.push_back(5);
 		}
-		if (rank == STRAIGHT && bFlush) {
-			rank = STRAIGHT_FLUSH;
+		if (rank == STRAIGHT) {
+			if (bFlush)
+				rank = STRAIGHT_FLUSH;
 			return;
 		}
 		if (bFlush) {
@@ -86,6 +91,7 @@ private:
 				prev = c.card_val;
 			}
 		}
+		hand.erase(end(hand) - 1);  // remove sentinel
 		switch (same_kind.size()) {
 		case 0:		rank = High_CARD;	reverse(begin(high_cards), end(high_cards));	break;
 		case 1:
