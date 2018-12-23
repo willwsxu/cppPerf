@@ -19,6 +19,7 @@ int sum_int(RandRevIter first1, RandRevIter last1, RandRevIter first2, RandRevIt
 }
 
 // add value v2 to v1
+// least significant digit at left, little endian
 template<typename T>
 inline void sum(std::vector<T>& v1, std::vector<T>& v2)
 {
@@ -34,10 +35,11 @@ inline void sum(std::vector<T>& v1, std::vector<T>& v2)
 }
 
 // multiply large int with regular int, digit is int, not char type
-template<typename RandRevIter>
-int large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, int factor)
+// least significant digit at left, little endian
+template<typename RandRevIter, typename T>
+T large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, T factor)
 {
-	int carry = 0;
+	T carry = 0;
 	while (first1 != last1) {
 		carry += *first1  * factor;
 		*dest = carry % 10;
