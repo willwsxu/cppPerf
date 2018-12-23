@@ -10,7 +10,7 @@
 #include "myalgo.h"
 #include "helper.h"
 #include "UnionFind.h"
-#include "large_int.h"
+#include "large_int_basic.h"
 #include "digits-helper.h"
 #include "mathlib.h"
 using namespace std;
@@ -424,11 +424,7 @@ public:
 		digitSum.reserve(max_size);
 		vector<char> factorial{ 1 };  // int digits in reverse order, least significant at left
 		for (int n = 2; n <= N; n++) {
-			int carry = large_int_multiply(begin(factorial), end(factorial), begin(factorial), n);
-			while (carry > 0) {
-				factorial.push_back(carry % 10);
-				carry /= 10;
-			}
+			large_int_multiply(factorial, n);
 			digitSum.push_back(accumulate(begin(factorial), end(factorial), 0));
 		}
 	}

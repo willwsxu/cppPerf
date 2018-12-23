@@ -216,3 +216,25 @@ bool isPalindrome(RandIter first, RandIter last) {
 	}
 	return true;
 }
+class Power_Large  // compute power in O(log(N)), keep only k digits, K <=19
+{
+public:
+	static long long compute(long long base, int power, int digits) {
+		vector<char> large_int;
+		larget_int_fill(large_int, base);
+		vector<long long> bases;
+		while (power>1) {
+			if (power % 2>0)
+				bases.push_back(base);
+			large_int_multiply(large_int, base);
+			large_int.resize(digits);
+			base = large_int_get<long long>(large_int);
+			power /= 2;
+		}
+		for (long long b : bases) {
+			large_int_multiply(large_int, b);
+			large_int.resize(digits);
+		}
+		return large_int_get<long long>(large_int);
+	}
+};
