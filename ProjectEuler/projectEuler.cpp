@@ -395,6 +395,46 @@ TEST_CASE("Project Euler #16: Power digit sum", "[POWER]")
 	Power2DigitSum digitSum(30);
 	CHECK(digitSum.get(9) == 8);
 }
+int power_digit_sum_max(int a, int N)  // a^b, b<N
+{
+	vector<char> large_int;
+	larget_int_fill(large_int, a);
+	int max_sum = accumulate(begin(large_int), end(large_int), 0);
+	for (int b = 1; b < N; b++) {
+		large_int_multiply(large_int, a);
+		max_sum = max(max_sum, accumulate(begin(large_int), end(large_int), 0));
+	}
+	return max_sum;
+}
+int power_digit_sum_max(int N) { // a^b for a<N, b<N
+	int max_sum = 0;
+	for (int a = 2; a < N; a++) {
+		max_sum = max(max_sum, power_digit_sum_max(a, N));
+	}
+	return max_sum;
+}
+TEST_CASE("Project Euler #56: Powerful digit sum", "[POWER]")
+{
+	CHECK(power_digit_sum_max(5) == 13);
+	CHECK(power_digit_sum_max(200) == 2205);
+}
+vector<long long> power_same_digit_count(int power)
+{
+	if (power == 1)
+		return { 1,2,3,4,5,6,7,8,9 };
+	vector<long long> ans;
+	for (int a = 2; a < 10; a++) {
+		auto result = Power_Large::compute_2(a, power, 19);
+		if (result.second == power)
+			ans.push_back(result.first);
+	}
+	return ans;
+}
+TEST_CASE("Project Euler #63: Powerful digit counts", "[NEW]")
+{
+	CHECK(power_same_digit_count(2) == vector<long long>{16,25,36,49,64,81});
+}
+
 // Project Euler #22: Names scores
 class NameScore
 {

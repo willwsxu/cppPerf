@@ -197,7 +197,7 @@ inline vector<int> allPalindrome(int prefix)
 	return palindrome;// RVO
 }
 
-inline std::string base_conversion(int n, int b) {
+inline std::string base_conversion(int n, int b) { // convert int to any base
 	std::string s;
 	while (n>0) {
 		s.append(1, n%b + '0');
@@ -219,7 +219,7 @@ bool isPalindrome(RandIter first, RandIter last) {
 class Power_Large  // compute power in O(log(N)), keep only k digits, K <=19
 {
 public:
-	static long long compute(long long base, int power, int digits) {
+	static std::pair<long long, int> compute_2(long long base, int power, int digits) {
 		vector<char> large_int;
 		larget_int_fill(large_int, base);
 		vector<long long> bases;
@@ -227,14 +227,19 @@ public:
 			if (power % 2>0)
 				bases.push_back(base);
 			large_int_multiply(large_int, base);
-			large_int.resize(digits);
+			if ((int)large_int.size()>digits)
+				large_int.resize(digits);
 			base = large_int_get<long long>(large_int);
 			power /= 2;
 		}
 		for (long long b : bases) {
 			large_int_multiply(large_int, b);
-			large_int.resize(digits);
+			if ((int)large_int.size()>digits)
+				large_int.resize(digits);
 		}
-		return large_int_get<long long>(large_int);
+		return {large_int_get<long long>(large_int), large_int.size()};
+	}
+	static long long compute(long long base, int power, int digits) {
+		return compute_2(base, power, digits).first;
 	}
 };
