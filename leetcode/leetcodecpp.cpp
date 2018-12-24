@@ -5,6 +5,7 @@
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
 #include "myalgo.h"
+#include "mathlib.h"
 using namespace std;
 
 int findMaxForm(vector<string>& strs, int m, int n) {
@@ -570,9 +571,9 @@ TEST_CASE("125. Valid Palindrome", "[NEW]")
 
 TEST_CASE("9. Palindrome Number", "[NEW]")
 {
-	CHECK(Palindrome2().isPalindrome(-1) == false);
-	CHECK(Palindrome2().isPalindrome(-121) == false);
-	CHECK(Palindrome2().isPalindrome(+121) == true);
+	CHECK(isPalindrome(-1) == false);
+	CHECK(isPalindrome(-121) == false);
+	CHECK(isPalindrome(+121) == true);
 }
 
 TEST_CASE("479. Largest Palindrome Product", "[NEW]")

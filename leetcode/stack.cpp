@@ -727,8 +727,32 @@ public:
 		}
 		return max_area;
 	}
-
+	// 962. Maximum Width Ramp, find max j-i with A[j]>=A[i]
+	int maxWidthRamp(vector<int>& A) {
+		deque<int> decreasing{ 0 };
+		int max_ramp = 0;
+		for (int i = 1; i < (int)A.size(); i++) {
+			if (A[i] < A[decreasing.back()]) {
+				decreasing.push_back(i);
+			}
+			else { // find the previous position > A[i]
+				auto found = upper_bound(rbegin(decreasing), rend(decreasing), A[i], [&A](int target, int idx) { return target < A[idx]; });
+				if (found == rend(decreasing))
+					max_ramp = max(max_ramp, i);  // tricky here
+				else {
+					max_ramp = max(max_ramp, i - *--found); // tricky again
+				}
+			}
+		}
+		return max_ramp;
+	}
 };
+TEST_CASE("962. Maximum Width Ramp", "[NEW]")
+{
+	CHECK(MonotoneStack().maxWidthRamp(vector<int>{3,4,1,2}) == 1);
+	CHECK(MonotoneStack().maxWidthRamp(vector<int>{6, 0, 8, 2, 1, 5}) == 4);
+	CHECK(MonotoneStack().maxWidthRamp(vector<int>{9, 8, 1, 0, 1, 9, 4, 0, 4, 1}) == 7);
+}
 TEST_CASE("84. Largest Rectangle in Histogram", "[NEW]")
 {
 	CHECK(MonotoneStack().largestRectangleArea(vector<int>{0, 9}) == 9);
