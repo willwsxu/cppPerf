@@ -728,7 +728,7 @@ public:
 		return max_area;
 	}
 	// 962. Maximum Width Ramp, find max j-i with A[j]>=A[i]
-	int maxWidthRamp(vector<int>& A) {
+	int maxWidthRamp_NlogN(vector<int>& A) {
 		deque<int> decreasing{ 0 };
 		int max_ramp = 0;
 		for (int i = 1; i < (int)A.size(); i++) {
@@ -743,6 +743,25 @@ public:
 					max_ramp = max(max_ramp, i - *--found); // tricky again
 				}
 			}
+		}
+		return max_ramp;
+	}
+	int maxWidthRamp(vector<int>& A) { // O(n) fast idea: generating decreasing stack from L to R, then scan from R to L
+		deque<int> decreasing{ 0 };
+		int max_ramp = 0;
+		for (int i = 1; i < (int)A.size(); i++) {
+			if (A[i] < A[decreasing.back()])
+				decreasing.push_back(i);
+		}
+		if (decreasing.size() == A.size())  // A is in decreasing order
+			return 0;
+		// second phase, scan from R to L to find the first that is not smaller than stack top
+		int fromR = A.size()-1;  // initialize to invalid
+		while (!decreasing.empty()) {
+			while (A[fromR] < A[decreasing.back()])
+				fromR--;
+			max_ramp = max(max_ramp, fromR - decreasing.back());
+			decreasing.pop_back();
 		}
 		return max_ramp;
 	}
