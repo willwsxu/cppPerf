@@ -4,6 +4,7 @@
 using namespace std;
 
 #include "..\library\myalgo.h"
+#include "mathlib.h"
 
 struct BitHashAG
 {
@@ -496,6 +497,33 @@ public:
 			good.insert(begin(row_larger), end(row_larger));  // store good rows with larger values
 		}
 		return ans;
+	}	
+	// 963. Minimum Area Rectangle II, 3 loops to find 3 points of a rectangle, check if forth is in the set
+	double minAreaFreeRect(vector<vector<int>>& points) {
+		set < vector<int>> point_set(points.begin(), points.end());
+		int size = points.size();
+		double area = numeric_limits<double>::max();
+		for (int i = 0; i < size; i++) {  // p1
+			for (int j = 0; j < size; j++) {  // P2
+				if (j == i)
+					continue;
+				for (int k = 0; k < size; k++) { // P4
+					if (k == i || k == j)
+						continue;
+					int leg1 = euclid_distance_square(points[i], points[j]);
+					int leg2 = euclid_distance_square(points[i], points[k]);
+					int diagonal = euclid_distance_square(points[k], points[j]);
+					if (leg1 + leg2 != diagonal)
+						continue;  // P1 P2 P4 form right triangle
+								   // geometry, compute p3
+					int x3 = points[j][0] + points[k][0] - points[i][0];
+					int y3 = points[j][1] + points[k][1] - points[i][1];
+					if (point_set.find(vector<int>{x3, y3}) != end(point_set))
+						area = min(area, sqrt(leg1)*sqrt(leg2));
+				}
+			}
+		}
+		return area == numeric_limits<double>::max() ? 0 : area;
 	}
 };
 
