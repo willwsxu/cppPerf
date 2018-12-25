@@ -219,3 +219,19 @@ public:
 		return { max_count_val, max_count };
 	}
 };
+
+
+namespace std  // hash for pair class
+{
+	template<typename PAIR_T1, typename PAIR_T2> struct hash<pair<PAIR_T1, PAIR_T2>>
+	{
+		typedef pair<PAIR_T1, PAIR_T2> argument_type;
+		typedef std::size_t result_type;
+		result_type operator()(argument_type const& s) const noexcept
+		{
+			result_type const h1(std::hash<PAIR_T1>{}(s.first));
+			result_type const h2(std::hash<PAIR_T2>{}(s.second));
+			return h1 ^ (h2 << 1);
+		}
+	};
+}

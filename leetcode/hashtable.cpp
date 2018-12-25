@@ -409,7 +409,6 @@ TEST_CASE("447. Number of Boomerangs", "[HASH]")
 	CHECK(MapStuff().numberOfBoomerangs(x) == 2);
 }
 
-
 class SetStuff
 {
 	set<string> str_to_set(string& A, set<string>& dup)
@@ -531,7 +530,9 @@ public:
 	// step 3: find if they exist, find in set
 	// step 4: if rectangle is good, compute area
 	int minAreaRect(vector<vector<int>>& points) {
-		set < vector<int>> point_set(points.begin(), points.end());
+		unordered_set < pair<int,int>> point_set;
+		for (const auto& p : points)
+			point_set.emplace(p[0],p[1]);
 		int area = INT32_MAX;
 		for (const auto& diag1 : points) {
 			for (const auto& diag2 : points) {
