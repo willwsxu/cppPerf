@@ -533,6 +533,8 @@ public:
 		unordered_set < pair<int,int>> point_set;
 		for (const auto& p : points)
 			point_set.emplace(p[0],p[1]);
+		//sort(begin(points), end(points), [](const auto&p1, const auto&p2) { return p1.first < p2.first; });
+		// could use sort to eliminate points that has no others on its horizontal or vertical lines
 		int area = INT32_MAX;
 		for (const auto& diag1 : points) {
 			for (const auto& diag2 : points) {

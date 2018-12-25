@@ -510,8 +510,55 @@ public:
 			ends_with[ch - 'a'] = (accumulate(begin(ends_with), end(ends_with), (long long)0) + 1) % MOD;
 		return accumulate(begin(ends_with), end(ends_with), (long long)0) % MOD;
 	}
+	// 964. Least Operators to Express Number no parenthesis. 1<= target <= 2x10^8, x=[2,100]
+	// x=100
+	// building blocks: 1=100/100, 100, 100*100, etc. 100^x, x=0,1,2,...
+	// 
+	int cost(int exp) {
+		if (exp == 0)
+			return 2;
+		return exp;
+	}
+	int leastOpsExpressTarget(int target, const vector<int>& powers, int exp, map<int,int>& dp) {
+		if (exp== powers.size() || target == powers[exp - 1])
+			return cost(exp - 1)*target/powers[exp-1];
+		if (dp[target] == 0) {
+			int remain = target%powers[exp];
+			int new_target = target / powers[exp] * powers[exp];
+			if (remain > 0) {  // two choices, e.g. 124=120+4 or 125-1
+				int c1 = leastOpsExpressTarget(new_target, powers, exp + 1, dp) + cost(exp - 1)*remain / powers[exp - 1];
+				remain = powers[exp] - remain;
+				int c2 = leastOpsExpressTarget(new_target + powers[exp], powers, exp + 1, dp) + cost(exp - 1)*remain / powers[exp - 1];
+				dp[target] = min(c1, c2);
+			}
+			else
+				dp[target] = leastOpsExpressTarget(new_target, powers, exp + 1, dp);
+		}
+		return dp[target];
+	}
+	int leastOpsExpressTarget(int x, int target)
+	{
+		vector<int> powers{ 1, x };
+		int pow_of_x = x;
+		while (pow_of_x < target) {
+			pow_of_x *= x;
+			powers.push_back(pow_of_x);
+		}
+		map<int, int> dp; // result of intermediate target
+		return leastOpsExpressTarget(target, powers, 1, dp)-1;
+	}
 };
-TEST_CASE("935. Knight Dialer", "[NEW]")
+TEST_CASE("964. Least Operators to Express Number no parenthesis", "[NEW]")
+{
+	CHECK(SpecialDp().leastOpsExpressTarget(5, 126) == 4); // 5*5*5+5/5
+	CHECK(SpecialDp().leastOpsExpressTarget(5, 3) == 4);   // 5-5/5-5/5 or 5/5+5/5+5/5
+	CHECK(SpecialDp().leastOpsExpressTarget(5, 125) == 2);
+	CHECK(SpecialDp().leastOpsExpressTarget(5, 124) == 4);
+	CHECK(SpecialDp().leastOpsExpressTarget(5, 4) == 2);
+	CHECK(SpecialDp().leastOpsExpressTarget(5, 2) == 3);
+	CHECK(SpecialDp().leastOpsExpressTarget(5, 1) == 1);
+}
+TEST_CASE("935. Knight Dialer", "[DP]")
 {
 	CHECK(SpecialDp().knightDialer(1) == 10);
 	CHECK(SpecialDp().knightDialer(2) == 20);
