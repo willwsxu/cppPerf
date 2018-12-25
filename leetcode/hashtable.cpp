@@ -525,8 +525,33 @@ public:
 		}
 		return area == numeric_limits<double>::max() ? 0 : area;
 	}
+	// 939. Minimum Area Rectangle, side parallel to axis
+	// step 1: iterate all possible diagonal points of a rectangle
+	// step 2: compute other 2 points of the rectangle
+	// step 3: find if they exist, find in set
+	// step 4: if rectangle is good, compute area
+	int minAreaRect(vector<vector<int>>& points) {
+		set < vector<int>> point_set(points.begin(), points.end());
+		int area = INT32_MAX;
+		for (const auto& diag1 : points) {
+			for (const auto& diag2 : points) {
+				if (diag1[0] == diag2[0] || diag1[1] == diag2[1]) // cannot be on a vertical or horizontal line
+					continue;
+				if (point_set.find({ diag1[0], diag2[1] }) == end(point_set))
+					continue;
+				if (point_set.find({ diag2[0], diag1[1] }) == end(point_set))
+					continue;
+				area = min(area, abs(diag2[0] - diag1[0])*abs(diag1[1] - diag2[1]));
+			}
+		}
+		return area == INT32_MAX ? 0 : area;
+	}
 };
-
+TEST_CASE("939. Minimum Area Rectangle", "[NEW]")
+{
+	CHECK(SetStuff().minAreaRect(vector<vector<int>> { {1, 1}, { 1,3 }, { 3,1 }, { 3,3 }, { 2,2 }}) == 4);
+	CHECK(SetStuff().minAreaRect(vector<vector<int>> { {1, 2}, { 1, 3 }, { 3, 3 }, { 4, 4 }, { 2, 1 }, { 1, 4 }, { 2, 2 }, { 1, 0 }, { 0, 2 }}) == 0);
+}
 // 955. Delete Columns to Make Sorted II
 TEST_CASE("955. Delete Columns to Make Sorted II", "[HASH]")
 {
