@@ -519,22 +519,23 @@ public:
 			return 2;
 		return exp;
 	}
-	int leastOpsExpressTarget(int target, const vector<int>& powers, int exp, map<int,int>& dp) {
-		if (exp== powers.size() || target == powers[exp - 1])
-			return cost(exp - 1)*target/powers[exp-1];
-		if (dp[target] == 0) {
-			int remain = target%powers[exp];
-			int new_target = target / powers[exp] * powers[exp];
+	int leastOpsExpressTarget(int x, int target, const vector<int>& powers, int exp, map<pair<int,int>,int>& dp) {
+		if (exp== powers.size() || target == 1)
+			return cost(exp - 1)*target;
+		if (dp[{target, exp}] == 0) {
+			int remain = target%x;
+			target /= x;
+			int c1 = cost(exp - 1)*remain;
+			c1 += leastOpsExpressTarget(x, target, powers, exp + 1, dp);
 			if (remain > 0) {  // two choices, e.g. 124=120+4 or 125-1
-				int c1 = leastOpsExpressTarget(new_target, powers, exp + 1, dp) + cost(exp - 1)*remain / powers[exp - 1];
-				remain = powers[exp] - remain;
-				int c2 = leastOpsExpressTarget(new_target + powers[exp], powers, exp + 1, dp) + cost(exp - 1)*remain / powers[exp - 1];
-				dp[target] = min(c1, c2);
+				remain = x - remain;
+				int c2 = cost(exp - 1)*remain;
+				c2 += leastOpsExpressTarget(x, target + 1, powers, exp + 1, dp);
+				c1 = min(c1, c2);
 			}
-			else
-				dp[target] = leastOpsExpressTarget(new_target, powers, exp + 1, dp);
+			dp[{target, exp}] = c1;
 		}
-		return dp[target];
+		return dp[{target, exp}];
 	}
 	int leastOpsExpressTarget(int x, int target)
 	{
@@ -544,12 +545,13 @@ public:
 			pow_of_x *= x;
 			powers.push_back(pow_of_x);
 		}
-		map<int, int> dp; // result of intermediate target
-		return leastOpsExpressTarget(target, powers, 1, dp)-1;
+		map<pair<int,int>, int> dp; // result of intermediate target
+		return leastOpsExpressTarget(x, target, powers, 1, dp)-1;
 	}
 };
 TEST_CASE("964. Least Operators to Express Number no parenthesis", "[NEW]")
 {
+	CHECK(SpecialDp().leastOpsExpressTarget(2, 84500083) == 133);
 	CHECK(SpecialDp().leastOpsExpressTarget(5, 126) == 4); // 5*5*5+5/5
 	CHECK(SpecialDp().leastOpsExpressTarget(5, 3) == 4);   // 5-5/5-5/5 or 5/5+5/5+5/5
 	CHECK(SpecialDp().leastOpsExpressTarget(5, 125) == 2);
