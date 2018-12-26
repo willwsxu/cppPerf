@@ -519,27 +519,40 @@ public:
 			return 2;
 		return exp;
 	}
-	int leastOpsExpressTarget(int x, int target, int exp, map<pair<int,int>,int>& dp) {
+
+	map<pair<int, int>, int> dp964; // result of intermediate target
+	int leastOpsExpressTarget(int x, int target, int exp) {
 		if (target <= 1)
 			return cost(exp - 1)*target;
-		if (dp[{target, exp}] == 0) {
+		if (dp964[{target, exp}] == 0) {
 			int remain = target%x;
 			target /= x;
 			int c1 = cost(exp - 1)*remain;
-			c1 += leastOpsExpressTarget(x, target, exp + 1, dp);
+			c1 += leastOpsExpressTarget(x, target, exp + 1);
 			if (remain > 0) {  // two choices, e.g. 124=120+4 or 125-1
 				int c2 = cost(exp - 1)*(x - remain);
-				c2 += leastOpsExpressTarget(x, target + 1, exp + 1, dp);
+				c2 += leastOpsExpressTarget(x, target + 1, exp + 1);
 				c1 = min(c1, c2);
 			}
-			dp[{target, exp}] = c1;
+			dp964[{target, exp}] = c1;
 		}
-		return dp[{target, exp}];
+		return dp964[{target, exp}];
 	}
+	// x=2, target=1023
+	// exp=1, 1022+2/2, or 1024-2/2, new target 501 or 502
+
 	int leastOpsExpressTarget(int x, int target)
 	{
-		map<pair<int,int>, int> dp; // result of intermediate target
-		return leastOpsExpressTarget(x, target, 1, dp)-1;
+		dp964.clear();    //top down
+		return leastOpsExpressTarget(x, target, 1)-1;
+		/*int remain = target%x;
+		int prev_plus_count = remain * 2;
+		int prev_minus_count = remain > 0 ? (x - remain) * 2 : 0;
+		int plus_count = prev_plus_count, minus_count = prev_minus_count;
+		int exp = 2;
+		while ((target /= x) > 0) {
+			remain = target%x;
+		}*/
 	}
 };
 TEST_CASE("964. Least Operators to Express Number no parenthesis", "[NEW]")
