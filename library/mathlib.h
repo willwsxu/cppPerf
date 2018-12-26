@@ -1,5 +1,13 @@
 #pragma once
 #include "large_int_basic.h"
+#include <set>
+#include <map>
+#include <algorithm>
+#include <numeric>
+
+using std::vector;
+using std::set;
+
 // formula n(2n-1)(2n+1)/3
 // https://brilliant.org/wiki/sum-of-n-n2-or-n3/
 inline long long sum_odd_square(long long N, int MOD) { // 1 to n, odd

@@ -3,6 +3,7 @@
 
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
+#include "mathlib.h"
 #include <map>
 #include <set>
 #include <unordered_set>
@@ -10,9 +11,7 @@
 #include "myalgo.h"
 #include "helper.h"
 #include "UnionFind.h"
-#include "large_int_basic.h"
 #include "digits-helper.h"
-#include "mathlib.h"
 using namespace std;
 
 // reference

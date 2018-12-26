@@ -52,7 +52,7 @@ T large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, T 
 }
 
 template<typename T>
-void larget_int_fill(vector<char>& large_int, T init)
+void larget_int_fill(std::vector<char>& large_int, T init)
 {
 	while (init>0) {
 		large_int.push_back(init % 10);
@@ -60,13 +60,13 @@ void larget_int_fill(vector<char>& large_int, T init)
 	}
 }
 template<typename T>
-T large_int_get(vector<char>& large_int)  // little endian
+T large_int_get(std::vector<char>& large_int)  // little endian
 {    // compute from back
 	return accumulate(rbegin(large_int), rend(large_int), T(), [](T t, char c) { return t * 10 + c; });
 }
 
 template<typename T>
-void large_int_multiply(vector<char>& product, T factor)
+void large_int_multiply(std::vector<char>& product, T factor)
 {
 	T carry = large_int_multiply(begin(product), end(product), begin(product), factor);
 	larget_int_fill(product, carry);
