@@ -1,4 +1,6 @@
 #pragma once
+
+#include "large_int_basic.h"
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -6,10 +8,6 @@
 #include <string>
 #include <cassert>
 
-using std::vector;
-using std::transform;
-
-#include "large_int_basic.h"
 #include "mathlib.h"
 
 class LargeIntBasic

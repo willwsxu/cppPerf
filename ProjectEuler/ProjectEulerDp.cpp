@@ -1,14 +1,16 @@
 
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
+#include "large_int_basic_cls.h"
+#include "myalgo.h"
+#include "helper.h"
+#include "mathlib_largeInt.h"
+
 #include <map>
 #include <set>
 #include <unordered_set>
 #include <numeric>
-#include "myalgo.h"
-#include "helper.h"
-#include "large_int_basic.h"
-#include "large_int_basic_cls.h"
+
 using namespace std;
 
 // Project Euler #15: Lattice paths 
@@ -87,18 +89,15 @@ class FibonacciDigits
 	map<int, int>  digits_term;  // digits of first
 public:
 	FibonacciDigits(int N) {
-		vector<int> f1{ 1 }, f2{ 1 };
-		f1.reserve(N);
-		f2.reserve(N);
+		Fibonacci_Large fib(1, 1, N);
 		int term = 3;
 		unsigned int digits = 1;
-		while ((int)f1.size() < N) {
-			sum(f1, f2);  // add f2 to f1
-			if (f1.size() > digits) {
-				digits = f1.size();
+		while ((int)fib.get().size() < N) {
+			auto& F2 = fib.compute_next();
+			if (F2.size() > digits) {
+				digits = F2.size();
 				digits_term[digits] = term;
 			}
-			swap(f1, f2);
 			term++;
 		}
 	}
@@ -108,7 +107,7 @@ public:
 		return found->second;
 	}
 };
-TEST_CASE("Project Euler #25: N-digit Fibonacci number", "[SLOW]")
+TEST_CASE("Project Euler #25: N-digit Fibonacci number", "[NEW]")
 {
 	FibonacciDigits digitFib(5000);
 	CHECK(digitFib.terms(3) == 12);

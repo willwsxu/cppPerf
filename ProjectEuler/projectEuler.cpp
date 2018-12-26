@@ -4,6 +4,8 @@
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
 #include "mathlib.h"
+#include "mathlib_largeInt.h"
+#include "large_int_basic.h"
 #include <map>
 #include <set>
 #include <unordered_set>

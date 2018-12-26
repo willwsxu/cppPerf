@@ -38,5 +38,8 @@
     <ClInclude Include="..\library\large_int_basic_cls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mathlib_largeInt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
