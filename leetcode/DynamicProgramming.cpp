@@ -519,18 +519,17 @@ public:
 			return 2;
 		return exp;
 	}
-	int leastOpsExpressTarget(int x, int target, const vector<int>& powers, int exp, map<pair<int,int>,int>& dp) {
-		if (exp== powers.size() || target == 1)
+	int leastOpsExpressTarget(int x, int target, int exp, map<pair<int,int>,int>& dp) {
+		if (target <= 1)
 			return cost(exp - 1)*target;
 		if (dp[{target, exp}] == 0) {
 			int remain = target%x;
 			target /= x;
 			int c1 = cost(exp - 1)*remain;
-			c1 += leastOpsExpressTarget(x, target, powers, exp + 1, dp);
+			c1 += leastOpsExpressTarget(x, target, exp + 1, dp);
 			if (remain > 0) {  // two choices, e.g. 124=120+4 or 125-1
-				remain = x - remain;
-				int c2 = cost(exp - 1)*remain;
-				c2 += leastOpsExpressTarget(x, target + 1, powers, exp + 1, dp);
+				int c2 = cost(exp - 1)*(x - remain);
+				c2 += leastOpsExpressTarget(x, target + 1, exp + 1, dp);
 				c1 = min(c1, c2);
 			}
 			dp[{target, exp}] = c1;
@@ -539,14 +538,8 @@ public:
 	}
 	int leastOpsExpressTarget(int x, int target)
 	{
-		vector<int> powers{ 1, x };
-		int pow_of_x = x;
-		while (pow_of_x < target) {
-			pow_of_x *= x;
-			powers.push_back(pow_of_x);
-		}
 		map<pair<int,int>, int> dp; // result of intermediate target
-		return leastOpsExpressTarget(x, target, powers, 1, dp)-1;
+		return leastOpsExpressTarget(x, target, 1, dp)-1;
 	}
 };
 TEST_CASE("964. Least Operators to Express Number no parenthesis", "[NEW]")
