@@ -8,7 +8,7 @@
 #include "myalgo.h"
 #include "helper.h"
 #include "large_int_basic.h"
-#include "large_int_plus_minus.h"
+#include "large_int_basic_cls.h"
 using namespace std;
 
 // Project Euler #15: Lattice paths 

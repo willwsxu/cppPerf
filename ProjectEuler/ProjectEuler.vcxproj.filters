@@ -35,5 +35,8 @@
     <ClInclude Include="CardGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\library\large_int_basic_cls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
