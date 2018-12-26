@@ -253,3 +253,133 @@ TEST_CASE("Valid Parenthesis", "[BT]")
 	CHECK(p.checkValidString2("(*()())") == true);
 	CHECK(p.checkValidString2("(*))") == true);
 }
+
+class NQueens {
+	class DiagMask
+	{
+	protected:
+		vector<bool> mask;
+		DiagMask(int n) :mask(2 * n - 1, false)
+		{
+
+		}
+		bool get(int idx) {
+			if (idx < (int)mask.size())
+				return mask[idx];
+			return false;
+		}
+		void set(int idx, bool v)
+		{
+			if (idx < (int)mask.size())
+				mask[idx] = v;
+		}
+	};
+	class ForwardDiagMask : public DiagMask
+	{
+	public:
+		ForwardDiagMask(int n) :DiagMask(n)
+		{
+		}
+		void set(int r, int c) {
+			DiagMask::set(r + c, true);
+		}
+		void reset(int r, int c) {
+			DiagMask::set(r + c, false);
+		}
+		bool get(int r, int c) {
+			return DiagMask::get(r + c);
+		}
+	};
+	class BackwardDiagMask : public DiagMask
+	{
+		int offset;
+	public:
+		BackwardDiagMask(int n) :DiagMask(n), offset(n - 1)
+		{
+		}
+		void set(int r, int c) {
+			DiagMask::set(offset + r - c, true);
+		}
+		void reset(int r, int c) {
+			DiagMask::set(offset + r - c, false);
+		}
+		bool get(int r, int c) {
+			return DiagMask::get(offset + r - c);
+		}
+	};
+	void backtracking(vector<vector<string>>& ans, int n, vector<int>& rows, vector<bool>& mCol, ForwardDiagMask& fwd, BackwardDiagMask& bwd)
+	{
+		if (rows.size() == n) {
+			vector<string> board;
+			for (int c : rows) {
+				string r(n, '.');     // default row config
+				r[c] = 'Q';					// set Q position
+				board.push_back(r);  // speed up to 6ms from 10ms after switch to use string, instead of vector to ostream 
+			}
+			ans.push_back(board);
+			return;
+		}
+		int r = rows.size();
+		for (int c = 0; c < n; c++) {  // try each col
+			if (mCol[c] || fwd.get(r, c) || bwd.get(r, c))  // invalid
+				continue;
+			mCol[c] = true;  // set masks for row, and 2 diagonals
+			fwd.set(r, c);
+			bwd.set(r, c);
+			rows.push_back(c); // add col value for this row
+			backtracking(ans, n, rows, mCol, fwd, bwd);
+			mCol[c] = false;   // reset all states
+			fwd.reset(r, c);
+			bwd.reset(r, c);
+			rows.pop_back();
+		}
+	}
+
+	int backtrackingCount(int r, vector<bool>& mCol, ForwardDiagMask& fwd, BackwardDiagMask& bwd)
+	{
+		if (r<0) {
+			return 1;
+		}
+		int ans = 0;
+		for (size_t c = 0; c < mCol.size(); c++) {  // try each col
+			if (mCol[c] || fwd.get(r, c) || bwd.get(r, c))  // invalid
+				continue;
+			mCol[c] = true;  // set masks for row, and 2 diagonals
+			fwd.set(r, c);
+			bwd.set(r, c);
+			ans += backtrackingCount(r - 1, mCol, fwd, bwd);
+			mCol[c] = false;   // reset all states
+			fwd.reset(r, c);
+			bwd.reset(r, c);
+		}
+		return ans;
+	}
+public:
+	vector<vector<string>> solveNQueens(int n) {  // beat 74%
+		vector<int> rows;  // rows of the board, its value is the column at each row
+		vector<bool> mCol(n, false);
+		ForwardDiagMask fwd(n);
+		BackwardDiagMask bwd(n);
+		vector<vector<string>> ans;
+		backtracking(ans, n, rows, mCol, fwd, bwd);
+		return ans;
+	}
+	int totalNQueens(int n) {  // beat 88%
+		vector<bool> mCol(n, false);
+		ForwardDiagMask fwd(n);
+		BackwardDiagMask bwd(n);
+		return  backtrackingCount(n - 1, mCol, fwd, bwd);
+	}
+};
+
+
+void testNQueens()
+{
+	NQueens nq;
+	vector<vector<string>> ans = nq.solveNQueens(4);
+	for (auto& v : ans) {
+		copy(begin(v), end(v), std::ostream_iterator<string>(cout, "\n"));
+		cout << endl;
+	}
+	cout << nq.totalNQueens(8) << endl;  // 92
+}
