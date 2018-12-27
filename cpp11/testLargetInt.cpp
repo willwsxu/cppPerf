@@ -110,7 +110,7 @@ TEST_CASE("large int with large scale", "[NEW]")
 	int factor = 999999;
 	for (int i = 0; i < 10; i++)
 	{
-		large_int_multiply_fast(bln_scale, factor, 1000000000);
+		large_int_multiply(bln_scale, factor, 1000000000);
 		large_int_multiply(char_scale, factor);
 		auto bln_2_char = scale_down(bln_scale, 9);
 		CHECK(char_scale == bln_2_char);

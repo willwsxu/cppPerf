@@ -69,19 +69,12 @@ T large_int_get(std::vector<char>& large_int)  // little endian
 	return accumulate(rbegin(large_int), rend(large_int), T(), [](T t, char c) { return t * 10 + c; });
 }
 
-template<typename T>
-void large_int_multiply(std::vector<char>& product, T factor)
-{
-	auto carry = large_int_multiply(begin(product), end(product), begin(product), factor);
-	if (carry>0)
-		large_int_fill(product, carry);
-}
-
-template<typename T>
-void large_int_multiply_fast(std::vector<int>& product, T factor, int scale=1000000000)
+// each vector element can store one digit or many digits up to 9 (scale =1000000000)
+template<typename T, typename ValueType=char>
+void large_int_multiply(std::vector<ValueType>& product, T factor, int scale=10)
 {
 	auto carry = large_int_multiply(begin(product), end(product), begin(product), factor, scale);
-	if (carry )
+	if (carry>0)
 		large_int_fill(product, carry, scale);
 }
 
