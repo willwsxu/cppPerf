@@ -43,17 +43,19 @@ TEST_CASE("larget int math", "[NEW]")
 }
 
 string fibonacciModified(int t1, int t2, int n) {
-	const static int SIZE = 110000;
+	const static int SIZE = 12000;
 	LargeInt lt1(t1, SIZE);
 	LargeInt lt2(t2, SIZE);
-	LargeInt output(0, SIZE);
-	LargeInt temp_copy(0, SIZE);
+	//LargeInt output(0, SIZE);
+	//LargeInt temp_copy(0, SIZE);
 	while (n-- > 2) {
-		multiply(output, temp_copy, lt2, lt2);
-		output += lt1;
-		lt1.swap(lt2);
-		lt2.swap(output);
-		cout << lt2.get() << "\n";
+		//multiply(output, temp_copy, lt2, lt2);
+		//output += lt1;
+		lt1 += lt2*lt2;
+		//lt1.swap(lt2);
+		//.swap(output);
+		swap(lt1, lt2);
+		//cout << lt2.get().size() << " vec size\n";
 	}
 	return lt2.get();
 }
@@ -78,6 +80,7 @@ TEST_CASE("large int fibonacci", "[NEW]")
 	CHECK(fibonacciModified(0, 1, 6) == "27");
 
 	CHECK(fibonacciModified(0, 1, 10) == "84266613096281243382112");
+	//fibonacciModified(2, 2, 20);
 	//CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
 	//CHECK(fibonacciModified_fast(0, 1, 20) == fibonacciModified(0, 1, 20));
 	/*
@@ -96,7 +99,7 @@ TEST_CASE("large int fibonacci", "[NEW]")
 		std::cout << " fibonacciModified slow " << nanos.count() << "\n";  // 692 ms
 	}
 	*/
-	auto t1=fibonacciModified_fast(2, 2, 20);
+	//auto t1=fibonacciModified_fast(2, 2, 20);
 	//CHECK(t1.size()==46952);
 	//CHECK(fibonacciModified_fast(1, 1, 20) == t1);
 	//auto t2 = fibonacciModified(2, 2, 20);

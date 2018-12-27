@@ -21,14 +21,16 @@ public:
 		lhs += rhs;
 		return lhs;
 	}
-	LargeInt& operator+=(LargeInt& rhs)
+	LargeInt& operator+=(LargeInt& rhs)  // or overload LargeInt& operator+=(LargeInt rhs)  
 	{
 		sum(this->li, rhs.li, scale);
 		return *this;
 	}
-
-	template<typename RandIter>
-	friend LargeInt add(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e);
+	LargeInt& operator+=(LargeInt&& rhs)
+	{
+		sum(this->li, rhs.li, scale);
+		return *this;
+	}
 
 	LargeInt& operator-=(const LargeInt& rhs)  // this - rh2
 	{
@@ -86,12 +88,7 @@ public:
 	template<typename RandIter>
 	friend LargeInt multiply1(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e);
 	friend LargeInt operator*(const LargeInt& lhs, const LargeInt& rhs);
-
-	// divide operands into half, left half (least siginicant) ceil(n/2), right half floor(n/2)
-	template<typename RandIter>
-	friend LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e);
-	friend LargeInt multiply_fast(LargeInt& lhs, LargeInt& rhs);
-
+	
 	LargeInt(int n, int capacity=5)
 	{
 		li.reserve(capacity);
@@ -142,19 +139,16 @@ public:
 		}
 	}
 private:
-	/*LargeInt& operator*=(int rhs)
-	{
-		int carry = 0;
-		std::transform(begin(li), end(li), begin(li), [rhs, &carry](DigitType n) {
-			int multi = n*rhs + carry;
-			carry = multi / 10;
-			return static_cast<DigitType>(multi % 10);
-		});
-		if (carry > 0)
-			li.push_back(static_cast<DigitType>(carry));
-		return *this;
-	}*/
 	std::vector<DigitType> li;  // least significant to most significant digit, little endian
+
+	// faster multiply algorithm, needs test
+	template<typename RandIter>
+	friend LargeInt add(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e);
+public:
+	// divide operands into half, left half (least siginicant) ceil(n/2), right half floor(n/2)
+	template<typename RandIter>
+	friend LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e);
+	friend LargeInt multiply_fast(LargeInt& lhs, LargeInt& rhs);
 };
 
 template<typename RandIter>
