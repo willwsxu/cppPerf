@@ -9,7 +9,7 @@ class Power_Large  // compute power in O(log(N)), keep only k digits, K <=19
 public:
 	static std::pair<long long, int> compute_2(long long base, int power, int digits) {
 		vector<char> large_int;
-		larget_int_fill(large_int, base);
+		large_int_fill(large_int, base);
 		vector<long long> bases;
 		while (power>1) {
 			if (power % 2>0)
@@ -40,8 +40,8 @@ public:
 	Fibonacci_Large(int f1, int f2, int capacity = 1000) {
 		F1.reserve(capacity);
 		F2.reserve(capacity);
-		larget_int_fill(F1, f1);
-		larget_int_fill(F2, f2);
+		large_int_fill(F1, f1);
+		large_int_fill(F2, f2);
 	}
 	const vector<char>& get() const {
 		return F2;

@@ -399,7 +399,7 @@ TEST_CASE("Project Euler #16: Power digit sum", "[POWER]")
 int power_digit_sum_max(int a, int N)  // a^b, b<N
 {
 	vector<char> large_int;
-	larget_int_fill(large_int, a);
+	large_int_fill(large_int, a);
 	int max_sum = accumulate(begin(large_int), end(large_int), 0);
 	for (int b = 1; b < N; b++) {
 		large_int_multiply(large_int, a);

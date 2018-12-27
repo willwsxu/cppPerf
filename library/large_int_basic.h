@@ -37,27 +37,31 @@ inline void sum(std::vector<T>& v1, std::vector<T>& v2)
 
 // multiply large int with regular int, digit is int, not char type
 // least significant digit at left, little endian
-template<typename RandRevIter, typename T>
-T large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, T factor)
+template<typename RandRevIter, typename T, typename Result_Type=long long>
+Result_Type large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, T factor, int scale=10)
 {
-	T carry = 0;
+	using Value_Type = std::remove_reference<decltype(*dest)>::type;
+	Result_Type carry = 0;
 	while (first1 != last1) {
-		carry += *first1  * factor;
-		*dest = carry % 10;
-		carry /= 10;
+		carry += Result_Type(*first1)  * factor;
+		*dest = static_cast<Value_Type>(carry % scale);
+		carry /= scale;
 		++first1;
 		++dest;
 	}
 	return carry;
 }
 
-template<typename T>
-void larget_int_fill(std::vector<char>& large_int, T init)
+template<typename T, typename Value_Type=char>
+void large_int_fill(std::vector<Value_Type>& large_int, T init, int scale=10)
 {
-	while (init>0) {
-		large_int.push_back(init % 10);
-		init /= 10;
+	if (init < 0) {  // allow positive only
+		init = -init;
 	}
+	do {
+		large_int.push_back(static_cast<Value_Type>(init % scale));
+		init /= scale;
+	} while (init > 0);
 }
 template<typename T>
 T large_int_get(std::vector<char>& large_int)  // little endian
@@ -68,6 +72,30 @@ T large_int_get(std::vector<char>& large_int)  // little endian
 template<typename T>
 void large_int_multiply(std::vector<char>& product, T factor)
 {
-	T carry = large_int_multiply(begin(product), end(product), begin(product), factor);
-	larget_int_fill(product, carry);
+	auto carry = large_int_multiply(begin(product), end(product), begin(product), factor);
+	if (carry>0)
+		large_int_fill(product, carry);
+}
+
+template<typename T>
+void large_int_multiply_fast(std::vector<int>& product, T factor, int scale=1000000000)
+{
+	auto carry = large_int_multiply(begin(product), end(product), begin(product), factor, scale);
+	if (carry )
+		large_int_fill(product, carry, scale);
+}
+
+template<typename Value_Type=int>
+std::vector<char> scale_down(std::vector<Value_Type>& product, int scale_digits) {
+	std::vector<char> dest;
+	dest.reserve(product.size() * 8);
+	for (Value_Type n : product) {
+		if (!dest.empty()) {
+			int digits = dest.size() % scale_digits;
+			if (digits != 0)
+				fill_n(back_inserter(dest), scale_digits - digits, 0);
+		}
+		large_int_fill(dest, n);
+	}
+	return dest;
 }

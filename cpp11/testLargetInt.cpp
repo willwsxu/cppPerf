@@ -1,4 +1,5 @@
 #include "..\catch.hpp"
+#include "large_int_basic.h"
 #include "large_int.h"
 #include <chrono>
 using namespace std;
@@ -71,7 +72,7 @@ string fibonacciModified_fast(int t1, int t2, int n) {
 }
 
 
-TEST_CASE("larget int fibonacci", "NEW")
+TEST_CASE("large int fibonacci", "SLOW")
 {
 	CHECK(fibonacciModified(0, 1, 6) == "27");
 
@@ -99,4 +100,19 @@ TEST_CASE("larget int fibonacci", "NEW")
 	//CHECK(fibonacciModified_fast(1, 1, 20) == t1);
 	//auto t2 = fibonacciModified(2, 2, 20);
 	//cout << t2.size() << "\n";
+}
+
+TEST_CASE("large int with large scale", "[NEW]")
+{
+	vector<char> char_scale;
+	vector<int>  bln_scale{ 999999 };
+	large_int_fill(char_scale, 999999);
+	int factor = 999999;
+	for (int i = 0; i < 10; i++)
+	{
+		large_int_multiply_fast(bln_scale, factor, 1000000000);
+		large_int_multiply(char_scale, factor);
+		auto bln_2_char = scale_down(bln_scale, 9);
+		CHECK(char_scale == bln_2_char);
+	}
 }
