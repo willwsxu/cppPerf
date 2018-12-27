@@ -7,7 +7,7 @@
 template<typename RandRevIter, typename ResultType=long long>
 ResultType sum_int(RandRevIter first1, RandRevIter last1, RandRevIter first2, RandRevIter dest, int offset = '0', int scale=10)
 {
-	using Value_Type = std::remove_reference<decltype(*dest)>::type;
+	using Value_Type = typename std::remove_reference<decltype(*dest)>::type;
 	ResultType carry = 0;
 	while (first1 != last1) {
 		carry += (long long)(*first1) - offset + *first2 - offset;
@@ -18,6 +18,18 @@ ResultType sum_int(RandRevIter first1, RandRevIter last1, RandRevIter first2, Ra
 		++dest;
 	}
 	return carry;
+}
+
+template<typename T, typename Value_Type = char>
+void large_int_fill(std::vector<Value_Type>& large_int, T init, int scale = 10)
+{
+	if (init < 0) {  // allow positive only
+		init = -init;
+	}
+	do {
+		large_int.push_back(static_cast<Value_Type>(init % scale));
+		init /= scale;
+	} while (init > 0);
 }
 
 // add value v2 to v1
@@ -39,7 +51,7 @@ void sum(std::vector<T>& v1, std::vector<T>& v2, int scale=10)
 template<typename RandRevIter, typename T, typename Result_Type=long long>
 Result_Type large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIter dest, T factor, int scale=10)
 {
-	using Value_Type = std::remove_reference<decltype(*dest)>::type;
+	using Value_Type = typename std::remove_reference<decltype(*dest)>::type;
 	Result_Type carry = 0;
 	while (first1 != last1) {
 		carry += Result_Type(*first1)  * factor;
@@ -51,17 +63,6 @@ Result_Type large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIte
 	return carry;
 }
 
-template<typename T, typename Value_Type=char>
-void large_int_fill(std::vector<Value_Type>& large_int, T init, int scale=10)
-{
-	if (init < 0) {  // allow positive only
-		init = -init;
-	}
-	do {
-		large_int.push_back(static_cast<Value_Type>(init % scale));
-		init /= scale;
-	} while (init > 0);
-}
 template<typename T>
 T large_int_get(std::vector<char>& large_int)  // little endian
 {    // compute from back
