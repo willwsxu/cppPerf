@@ -104,15 +104,70 @@ TEST_CASE("large int fibonacci", "SLOW")
 
 TEST_CASE("large int with large scale", "[NEW]")
 {
-	vector<char> char_scale;
-	vector<int>  bln_scale{ 999999 };
-	large_int_fill(char_scale, 999999);
-	int factor = 999999;
-	for (int i = 0; i < 10; i++)
-	{
-		large_int_multiply(bln_scale, factor, 1000000000);
-		large_int_multiply(char_scale, factor);
-		auto bln_2_char = scale_down(bln_scale, 9);
-		CHECK(char_scale == bln_2_char);
+	SECTION("large in using scale 1000000000. multiply 999999") {
+		vector<char> char_scale;
+		vector<int>  bln_scale{ 999999 };
+		large_int_fill(char_scale, 999999);
+		int factor = 999999;
+		for (int i = 0; i < 10; i++)
+		{
+			large_int_multiply(bln_scale, factor, 1000000000);
+			large_int_multiply(char_scale, factor);
+			auto bln_2_char = scale_down(bln_scale, 9);
+			CHECK(char_scale == bln_2_char);
+		}
+	}
+	SECTION("large in using scale 1000000000. multiply 999999999") {
+		int factor = 999999999;
+		vector<char> char_scale;
+		vector<int>  bln_scale{ factor };
+		large_int_fill(char_scale, factor);
+		for (int i = 0; i < 10; i++)
+		{
+			large_int_multiply(bln_scale, factor, 1000000000);
+			large_int_multiply(char_scale, factor);
+			auto bln_2_char = scale_down(bln_scale, 9);
+			CHECK(char_scale == bln_2_char);
+		}
+	}
+	SECTION("large in using scale 1000000000. multiply 2000000001") {
+		int factor = 2000000001;
+		vector<char> char_scale;
+		vector<int>  bln_scale{ factor };
+		large_int_fill(char_scale, factor);
+		for (int i = 0; i < 10; i++)
+		{
+			large_int_multiply(bln_scale, factor, 1000000000);
+			large_int_multiply(char_scale, factor);
+			auto bln_2_char = scale_down(bln_scale, 9);
+			CHECK(char_scale == bln_2_char);
+		}
+	}
+
+	SECTION("large in using scale 1000000000. add 2000000001") {
+		int factor = 2000000001;
+		vector<char> char_scale;
+		vector<int>  bln_scale{ factor };
+		large_int_fill(char_scale, factor);
+		for (int i = 0; i < 10; i++)
+		{
+			sum(bln_scale, bln_scale, 1000000000);
+			sum(char_scale, char_scale);
+			auto bln_2_char = scale_down(bln_scale, 9);
+			CHECK(char_scale == bln_2_char);
+		}
+	}
+	SECTION("large in using scale 1000000000. add 999999999") {
+		int factor = 999999999;
+		vector<char> char_scale;
+		vector<int>  bln_scale{ factor };
+		large_int_fill(char_scale, factor);
+		for (int i = 0; i < 10; i++)
+		{
+			sum(bln_scale, bln_scale, 1000000000);
+			sum(char_scale, char_scale);
+			auto bln_2_char = scale_down(bln_scale, 9);
+			CHECK(char_scale == bln_2_char);
+		}
 	}
 }
