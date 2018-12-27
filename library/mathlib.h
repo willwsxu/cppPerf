@@ -223,3 +223,15 @@ bool isPalindrome(RandIter first, RandIter last) {
 	}
 	return true;
 }
+long long get_largest_permu(long long num) { // find digit permutation with largest value, function as key
+	std::vector<char> largest;
+	while (num>0) {
+		largest.push_back(num % 10);
+		num /= 10;
+	}
+	sort(largest.begin(), largest.end(), greater<>());
+	num = 0;
+	for (int i : largest)
+		num = num * 10 + i;
+	return num;
+}
