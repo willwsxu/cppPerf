@@ -64,29 +64,6 @@ public:
 		return *this;
 	}
 
-	friend void multiply(LargeInt& ans, LargeInt& temp_copy, const LargeInt& lhs, const LargeInt& rhs)
-	{
-		multiply(ans, temp_copy, begin(lhs.li), end(lhs.li), begin(rhs.li), end(rhs.li));
-	}
-
-	template<typename RandIter>
-	friend void multiply(LargeInt& ans, LargeInt& temp_copy, RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e)
-	{
-		ans.li.assign(1, 0);
-		int power = 0;
-		for (auto y = rhs_s; y != rhs_e; ++y, power++) {
-			if (*y > 0) {
-				temp_copy.li.assign(power, 0); // add some zero before copy from lhs
-				std::copy(lhs_s, lhs_e, back_inserter(temp_copy.li));
-				large_int_multiply(temp_copy.li, *y, LargeInt::scale);
-				if (ans.li.size() < temp_copy.li.size())
-					std::swap(ans.li, temp_copy.li);
-				ans += temp_copy;
-			}
-		}
-	}
-	template<typename RandIter>
-	friend LargeInt multiply1(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e);
 	friend LargeInt operator*(const LargeInt& lhs, const LargeInt& rhs);
 	
 	LargeInt(int n, int capacity=5)
@@ -140,6 +117,29 @@ public:
 	}
 private:
 	std::vector<DigitType> li;  // least significant to most significant digit, little endian
+	friend void multiply(LargeInt& ans, LargeInt& temp_copy, const LargeInt& lhs, const LargeInt& rhs)
+	{
+		multiply(ans, temp_copy, begin(lhs.li), end(lhs.li), begin(rhs.li), end(rhs.li));
+	}
+
+	template<typename RandIter>
+	friend void multiply(LargeInt& ans, LargeInt& temp_copy, RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e)
+	{
+		ans.li.assign(1, 0);
+		int power = 0;
+		for (auto y = rhs_s; y != rhs_e; ++y, power++) {
+			if (*y > 0) {
+				temp_copy.li.assign(power, 0); // add some zero before copy from lhs
+				std::copy(lhs_s, lhs_e, back_inserter(temp_copy.li));
+				large_int_multiply(temp_copy.li, *y, LargeInt::scale);
+				if (ans.li.size() < temp_copy.li.size())
+					std::swap(ans.li, temp_copy.li);
+				ans += temp_copy;
+			}
+		}
+	}
+	template<typename RandIter>
+	friend LargeInt multiply1(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e);
 
 	// faster multiply algorithm, needs test
 	template<typename RandIter>

@@ -1,5 +1,6 @@
 #include "..\catch.hpp"  // don't put this file in stdafx.h
-#include <vector>
+
+#include "mathlib.h"
 #include "helper.h"
 #include <numeric>
 #include <stack>

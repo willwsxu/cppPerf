@@ -46,15 +46,9 @@ string fibonacciModified(int t1, int t2, int n) {
 	const static int SIZE = 12000;
 	LargeInt lt1(t1, SIZE);
 	LargeInt lt2(t2, SIZE);
-	//LargeInt output(0, SIZE);
-	//LargeInt temp_copy(0, SIZE);
 	while (n-- > 2) {
-		//multiply(output, temp_copy, lt2, lt2);
-		//output += lt1;
 		lt1 += lt2*lt2;
-		//lt1.swap(lt2);
-		//.swap(output);
-		swap(lt1, lt2);
+		lt1.swap(lt2);
 		//cout << lt2.get().size() << " vec size\n";
 	}
 	return lt2.get();
