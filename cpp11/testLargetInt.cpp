@@ -4,7 +4,7 @@
 #include <chrono>
 using namespace std;
 
-TEST_CASE("larget int math", "NEW")
+TEST_CASE("larget int math", "[NEW]")
 {
 	LargeInt a(1234), b(9345);
 	LargeInt c = a + b;
@@ -53,6 +53,7 @@ string fibonacciModified(int t1, int t2, int n) {
 		output += lt1;
 		lt1.swap(lt2);
 		lt2.swap(output);
+		cout << lt2.get() << "\n";
 	}
 	return lt2.get();
 }
@@ -72,13 +73,13 @@ string fibonacciModified_fast(int t1, int t2, int n) {
 }
 
 
-TEST_CASE("large int fibonacci", "SLOW")
+TEST_CASE("large int fibonacci", "[NEW]")
 {
 	CHECK(fibonacciModified(0, 1, 6) == "27");
 
 	CHECK(fibonacciModified(0, 1, 10) == "84266613096281243382112");
-	CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
-	CHECK(fibonacciModified_fast(0, 1, 20) == fibonacciModified(0, 1, 20));
+	//CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
+	//CHECK(fibonacciModified_fast(0, 1, 20) == fibonacciModified(0, 1, 20));
 	/*
 	{
 		auto start = chrono::high_resolution_clock::now();

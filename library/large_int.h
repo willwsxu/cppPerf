@@ -1,4 +1,5 @@
 #pragma once
+#include "large_int_basic.h"
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -9,44 +10,20 @@
 using std::vector;
 using std::transform;
 
+//template<typename DigitType=char, int scale=10>
 class LargeInt
 {
 public:
-	using DigitType = char;
+	using DigitType = int;
+	static const int scale = 1000000000;
 	friend LargeInt operator+(LargeInt lhs, LargeInt rhs)
 	{
-		if (lhs.li.size() < rhs.li.size()) {
-			rhs += lhs;
-			return rhs;
-		}
 		lhs += rhs;
 		return lhs;
 	}
-	LargeInt& operator+=(const LargeInt& rhs)
+	LargeInt& operator+=(LargeInt& rhs)
 	{
-		return add(begin(rhs.li), end(rhs.li));
-	}
-	template<typename RandIter>
-	LargeInt& add(RandIter rhs_s, RandIter rhs_e)
-	{
-		size_t short_size = distance(rhs_s, rhs_e);
-		assert(li.size() >= short_size);
-		int carry = 0;
-		transform(rhs_s, rhs_e, begin(li), begin(li), [&carry](DigitType c1, DigitType c2) {
-			int sum = c1 + c2 + carry;
-			carry = sum / 10;
-			return static_cast<DigitType>(sum % 10);
-		});
-		if (carry && li.size() > short_size) {
-			auto start = begin(li) + short_size;
-			transform(start, end(li), start, [&carry](DigitType c1) {
-				int sum = c1 + carry;
-				carry = sum / 10;
-				return static_cast<DigitType>(sum % 10);
-			});
-		}
-		if (carry)
-			li.push_back(static_cast<DigitType>(carry));
+		sum(this->li, rhs.li, scale);
 		return *this;
 	}
 
@@ -99,7 +76,7 @@ public:
 			if (*y > 0) {
 				temp_copy.li.assign(power, 0); // add some zero before copy from lhs
 				std::copy(lhs_s, lhs_e, back_inserter(temp_copy.li));
-				temp_copy *= (*y);
+				large_int_multiply(temp_copy.li, *y, LargeInt::scale);
 				if (ans.li.size() < temp_copy.li.size())
 					std::swap(ans.li, temp_copy.li);
 				ans += temp_copy;
@@ -118,27 +95,25 @@ public:
 	LargeInt(int n, int capacity=5)
 	{
 		li.reserve(capacity);
-		if (n == 0) {
-			li.push_back(static_cast<DigitType>(0));
-			return;
-		}
-		while (n > 0) {
-			li.push_back(static_cast<DigitType>(n % 10));
-			n /= 10;
-		}
+		large_int_fill(li, n, scale);
 	}
-	std::string get() const {
+	std::string get() {
 		if (li.empty())
-			return "";
-		std::string str;
-		str.reserve(li.size() + 1);
-		auto start = rbegin(li);
-		while (start !=rend(li) && *start == 0)  // trim leading 0
-			++start;
-		if (start == rend(li))
-			return "0";
-		std::transform(start, rend(li), back_inserter(str), [](char c) { return c + '0'; });
-		return str;
+			return std::string();
+		auto get_str=[](auto start, auto last) {
+			std::string str;
+			while (start != last && *start == 0)  // trim leading 0
+				++start;
+			if (start == last)
+				return std::string("0");
+			str.reserve(distance(start, last) + 1);
+			std::transform(start, last, back_inserter(str), [](char c) { return c + '0'; });
+			return str;
+		};
+		if (scale == 10)
+			return get_str(rbegin(li), rend(li));
+		vector<char> char_scale = scale_down(li, 9);
+		return get_str(rbegin(char_scale), rend(char_scale));
 	}
 	LargeInt(LargeInt&& rhs):li(move(rhs.li))
 	{
@@ -167,7 +142,7 @@ public:
 		}
 	}
 private:
-	LargeInt& operator*=(int rhs)
+	/*LargeInt& operator*=(int rhs)
 	{
 		int carry = 0;
 		std::transform(begin(li), end(li), begin(li), [rhs, &carry](DigitType n) {
@@ -178,7 +153,7 @@ private:
 		if (carry > 0)
 			li.push_back(static_cast<DigitType>(carry));
 		return *this;
-	}
+	}*/
 	std::vector<DigitType> li;  // least significant to most significant digit, little endian
 };
 
@@ -190,14 +165,19 @@ LargeInt add(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e)
 	size_t size = max(left_size, right_size);
 	LargeInt ans(0, size + 1);
 	ans.li.clear();
+	long long carry = 0;
 	if (left_size < right_size) {
-		copy(rhs_s, rhs_e, back_inserter(ans.li));
-		ans.add(lhs_s, lhs_e);
+		copy(lhs_s, lhs_e, back_inserter(ans.li));
+		ans.li.resize(right_size, 0);  // extend short one to equal
 	}
 	else {
-		copy(lhs_s, lhs_e, back_inserter(ans.li));
-		ans.add(rhs_s, rhs_e);
+		copy(rhs_s, rhs_e, back_inserter(ans.li));
+		if (left_size > right_size)
+			ans.li.resize(left_size, 0);
+		carry = sum_int(lhs_s, lhs_e, begin(ans.li), begin(ans.li), 0, LargeInt::scale);
 	}
+	if (carry)
+		large_int_fill(ans.li, carry, LargeInt::scale);
 	return ans;
 }
 
