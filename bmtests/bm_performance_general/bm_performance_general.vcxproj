@@ -125,6 +125,7 @@
     <ClInclude Include="bm_count_digits.h" />
     <ClInclude Include="bm_ftoa.h" />
     <ClInclude Include="bm_itoa_fix.h" />
+    <ClInclude Include="bm_price.h" />
     <ClInclude Include="bm_slist.h" />
     <ClInclude Include="bm_test_setup.h" />
     <ClInclude Include="bm_tmg_itoa.h" />
