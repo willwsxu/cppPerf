@@ -75,24 +75,24 @@ TEST_CASE("large int fibonacci", "[NEW]")
 
 	CHECK(fibonacciModified(0, 1, 10) == "84266613096281243382112");
 	//fibonacciModified(2, 2, 20);
-	//CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
-	//CHECK(fibonacciModified_fast(0, 1, 20) == fibonacciModified(0, 1, 20));
-	/*
+	CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
+	CHECK(fibonacciModified_fast(0, 1, 20) == fibonacciModified(0, 1, 20));
+	
 	{
 		auto start = chrono::high_resolution_clock::now();
-		auto fast = fibonacciModified_fast(0, 1, 19);
+		auto fast = fibonacciModified_fast(0, 1, 20);
 		auto end = chrono::high_resolution_clock::now();
 		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-		std::cout << " fibonacciModified_fast " << nanos.count() << "\n";  // 188 ms
+		std::cout << " fibonacciModified_fast " << nanos.count() << "\n";  // 91 ms
 	}
 	{
 		auto start = chrono::high_resolution_clock::now();
-		auto slow = fibonacciModified(0, 1, 19);
+		auto slow = fibonacciModified(0, 1, 20);
 		auto end = chrono::high_resolution_clock::now();
 		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
-		std::cout << " fibonacciModified slow " << nanos.count() << "\n";  // 692 ms
+		std::cout << " fibonacciModified slow " << nanos.count() << "\n";  // 305 ms
 	}
-	*/
+	
 	//auto t1=fibonacciModified_fast(2, 2, 20);
 	//CHECK(t1.size()==46952);
 	//CHECK(fibonacciModified_fast(1, 1, 20) == t1);

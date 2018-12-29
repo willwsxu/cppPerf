@@ -40,7 +40,7 @@ public:
 			int sum = c2 - c1 - borrow;
 			if (sum < 0) {
 				borrow = 1;
-				sum += 10;
+				sum += scale;
 			}
 			else
 				borrow = 0;
@@ -53,7 +53,7 @@ public:
 				int sum = c1 - borrow;
 				if (sum < 0) {
 					borrow = 1;
-					sum += 10;
+					sum += scale;
 				}
 				else
 					borrow = 0;
@@ -203,7 +203,7 @@ LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter 
 		return multiply1(lhs_s, lhs_e, rhs_s, rhs_e);
 	}
 	int right_half = size_r / 2;
-	int left_half = size_r - right_half;
+	int left_half = size_r - right_half;  // left_half >= right_half
 	auto XrYr = multiply_fast(lhs_s + left_half, lhs_e, rhs_s + left_half, rhs_e);  // first term in formula
 	auto XlYl = multiply_fast(lhs_s, lhs_s + left_half, rhs_s, rhs_s + left_half);  // last term in formula
 
@@ -215,6 +215,8 @@ LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter 
 	auto XlXr = add(lhs_s, lhs_s + left_half, lhs_s + left_half, lhs_e);
 	auto YlYr = add(rhs_s, rhs_s + left_half, rhs_s + left_half, rhs_e);
 	auto mid_part=multiply_fast(XlXr, YlYr);
+	XlYl.trim0();
+	XrYr.trim0();
 	mid_part -= XlYl;
 	mid_part -= XrYr;
 	mid_part.trim0();
