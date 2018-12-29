@@ -6,18 +6,20 @@
 using namespace std;
 
 template<typename RandIter>
-RandIter my_partition(RandIter first, RandIter last, int target) {  // return a pivot where all elements before is < target
+RandIter my_partition(RandIter first, RandIter last, RandIter target) {  // return a pivot where all elements before is < target
 	while (first != last) {
-		if (*first < target) {
+		if (*first < *target) {
 			++first;
 			continue;
 		}
-		if (*--last >= target)
+		if (*--last >= *target)
 			continue;
 		iter_swap(first, last);
 		++first;
 		--last;
 	}
+	if (--first != target)
+		iter_swap(first, target);  // pivot has value of target
 	return first;
 }
 int nth_smallest(vector<int> arr, int n)
@@ -25,17 +27,14 @@ int nth_smallest(vector<int> arr, int n)
 	auto first = begin(arr);
 	auto last = end(arr);
 	while(true) {
-		auto target = first;
-		auto pivot = my_partition(first+1, last, *target);  // bug 1: ++first
+		auto pivot = my_partition(first+1, last, first);  // bug 1: ++first
 		int pos = distance(begin(arr), pivot);
-		if (pos == n)  // all n element left of pivot is <target, except the target itself
-			return *target;
-		if (pos < n)   // nth smallest lie to right of pivot, or pivot
-			first = pivot;
-		else {         // nth smallest lie left of pivot
-			last = --pivot;   // safe to skip the target value too
-			iter_swap(first, last); // make the target value last
-		}
+		if (pos == n-1)  // all n-1 element left of pivot is <target
+			return *pivot;
+		if (pos < n-1)   // nth smallest lie to right of pivot, or pivot
+			first = pivot+1;
+		else       // nth smallest lie left of pivot
+			last = pivot;  // pivot is the last target value
 	}
 }
 TEST_CASE("find nth smallest", "[NEW]")
