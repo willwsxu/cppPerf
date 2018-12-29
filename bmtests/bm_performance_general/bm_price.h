@@ -1,7 +1,9 @@
 #pragma once
 #include <cstdint>
 
-// quickbench.com show both price functions are fast, 1ns.
+// quickbench.com show both price functions are fast, 1ns.  Observe difference on windows platform
+// benchmark with arguments introduces performance issue. just test one for now
+
 using LONGLONG = long long;
 using INT32 = long;
 using UINT16 = unsigned short;
@@ -199,3 +201,108 @@ static void BM_GetInt64Price(benchmark::State& state) {
 	}
 }
 BENCHMARK(BM_GetInt64Price);// ->Arg(9)->Arg(10)->Arg(11)->Arg(12)->Arg(13)->Arg(14)->Arg(15)->Arg(16);
+
+/*  test about static variable is inconclusive
+int testStatic()
+{
+	static int count = 0;
+	if (count++ < 10)
+		return 1;
+	return count;
+}
+int testStack()
+{
+	int count = 0;
+	if (count++ < 10)
+		return 1;
+	return count;
+}
+static void BM_static_var1(benchmark::State& state) {
+	int count = 0;
+	for (auto _ : state) {
+		count = testStatic();
+	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(count));
+}
+BENCHMARK(BM_static_var1);//->Range(8, 8 << 10);
+
+static void BM_stack_var(benchmark::State& state) {
+	int count = 0;
+	for (auto _ : state) {
+		count = testStack();
+	}
+	state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(count));
+}
+BENCHMARK(BM_stack_var);//->Range(8, 8 << 10);
+
+static const int64_t Pow10[19] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000,  10000000000,  100000000000,  1000000000000, 10000000000000, 100000000000000, 1000000000000000, 10000000000000000, 100000000000000000, 1000000000000000 };
+static const int Pow10L = sizeof(Pow10) / sizeof(Pow10[0]);
+__inline int pow10(int i)
+{
+	const int _Pow10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000,1000000000 };
+	return _Pow10[i];
+}
+
+void TEST_STATIC(int64_t priceRaw, int  decimalPoints, int maxExp = 7) {
+	static int count = 0;
+	count++;
+}
+
+
+void TEST_STATIC2(int64_t priceRaw, int  decimalPoints, int maxExp = 7) {
+	static int count = 0;
+	count++;
+	int8_t ind = 0;
+	while (ind < decimalPoints) { //remove trailing 0s
+		if (priceRaw%pow10(ind + 1) != 0)
+			break;
+		++ind;
+	}
+}
+
+void TEST_STATIC3(int64_t priceRaw, int  decimalPoints, int maxExp = 7) {
+	static int count = 0;
+	count++;
+	int8_t ind = 0;
+	while (ind < decimalPoints) { //remove trailing 0s
+		if (priceRaw%pow10(ind + 1) != 0)
+			break;
+		++ind;
+	}
+
+	while (decimalPoints > maxExp + ind || priceRaw / pow10(ind) > INT32_MAX || priceRaw / pow10(ind) < INT32_MIN) { // check for overflow
+		++ind;
+		if (ind > decimalPoints || ind > 9) // decimalPoints can't be negative, 9 - max valid index for the internal array in pow10 function 
+		{
+			return;
+		}
+	}
+}
+
+static void BM_static_var(benchmark::State& state) {
+	long long longPrice2 = 12345600000000000000;
+	int dp = (int)state.range(0);
+	for (auto _ : state) {
+		TEST_STATIC(longPrice2, dp);
+	}
+}
+BENCHMARK(BM_static_var)->Arg(9)->Arg(11)->Arg(13)->Arg(15)->Arg(16);
+
+static void BM_static_var2(benchmark::State& state) {
+	long long longPrice2 = 12345600000000000000;
+	int dp = (int)state.range(0);
+	for (auto _ : state) {
+		TEST_STATIC2(longPrice2, dp);
+	}
+}
+BENCHMARK(BM_static_var2)->Arg(9)->Arg(11)->Arg(13)->Arg(15)->Arg(16);
+
+static void BM_static_var3(benchmark::State& state) {
+	long long longPrice2 = 12345600000000000000;
+	int dp = (int)state.range(0);
+	for (auto _ : state) {
+		TEST_STATIC3(longPrice2, dp);
+	}
+}
+BENCHMARK(BM_static_var3)->Arg(9)->Arg(11)->Arg(13)->Arg(15)->Arg(16);
+*/
