@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+
+// quickbench.com show both price functions are fast, 1ns.
 using LONGLONG = long long;
 using INT32 = long;
 using UINT16 = unsigned short;
@@ -89,3 +91,111 @@ static void BM_ToLPACK(benchmark::State& state) {
 	}
 }
 BENCHMARK(BM_ToLPACK);// ->Arg(1)->Arg(10)->Arg(100)->Arg(1000)->Arg(10000)->Arg(100000)->Arg(1000000)->Arg(10000000)->Arg(100000000);
+
+
+#define DP_OK 0
+#define DP_NOCHANGE 1
+#define DP_MODIFIED 2
+#define DP_OVERFLOW 3
+#define DP_INVALID  4
+
+#define NO_BASECODE (WORD)-1
+#define BC_UNITS	'e'
+#define BC_1DP  	'i'
+#define BC_2DP  	'm'
+#define BC_3DP  	'n'
+#define BC_4DP  	'o'
+#define BC_5DP  	'p'
+#define BC_6DP  	'w'
+#define BC_7DP  	'y'
+#define BC_8DP  	'z'
+#define BC_256THS  	'r'
+
+
+__inline int pow10(int i)
+{
+	const int _Pow10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000,1000000000 };
+	return _Pow10[i];
+}
+void PriceTrimInPlace(INT32 * lVal, int *denomDp, int minDp)
+{
+	while ((*denomDp > minDp) && ((*lVal % 10) == 0))
+	{
+		*lVal /= 10L;
+		--(*denomDp);
+	}
+}
+int	GetInt64Price(LONGLONG i64Val, int numDecimals, INT32 *plVal, WORD *pwBase, int minDp = -1)
+{
+	LONGLONG tmpNum = i64Val;
+	int rv = DP_OK;
+
+	if (numDecimals < 0) {
+		*pwBase = szDecimalBC[0];
+		*plVal = 0;
+		return DP_INVALID;
+	}
+
+	// Make sure that the number of decimals is less than or equal to 8(which is 
+	// what is current supported
+	if (numDecimals > maxDecimal)
+	{
+		if (tmpNum != 0)
+		{
+			WORD divIndex = (numDecimals - maxDecimal);// < maxDecimal ? (numDecimals - maxDecimal) : maxDecimal;
+			rv = (tmpNum % pow10(divIndex) != 0) ? DP_MODIFIED : DP_NOCHANGE;
+			tmpNum /= pow10(divIndex);
+		}
+		numDecimals = maxDecimal;
+	}
+
+	// Initialize default values
+	*pwBase = szDecimalBC[numDecimals];
+	*plVal = 0;
+
+	if (i64Val == 0)
+		return rv;
+
+	// Avoid overflow
+	while (((tmpNum >= 0x000000007FFFFFFF) || (-tmpNum >= 0x000000007FFFFFFF)) && numDecimals > 0)
+	{
+		rv = tmpNum % 10 == 0 ? DP_NOCHANGE : DP_MODIFIED;
+		tmpNum /= 10;
+		numDecimals -= 1;
+	}
+
+	// Make sure that we are still not in the overflow condition
+	if ((tmpNum >= 0x000000007FFFFFFF) || (-tmpNum >= 0x000000007FFFFFFF))
+	{
+		//How shall we handle the case were we cant reduce the precision and we still are overflowed
+		//		tb_sev_msg(SEV_WARN, "Price Overflow:%llu", i64Val);
+		*pwBase = NO_BASECODE;
+		*plVal = (LONG)0x7FFFFFFF;
+		rv = DP_OVERFLOW;
+	}
+	else
+	{
+		*pwBase = szDecimalBC[numDecimals];
+		*plVal = (LONG)tmpNum;
+	}
+
+	if (minDp >= 0 && (*pwBase - 'a' <= 25))
+	{
+		int denomDp = Bc2DP[*pwBase - 'a'];
+		PriceTrimInPlace(plVal, &denomDp, minDp);
+		*pwBase = szDecimalBC[denomDp];
+	}
+
+	return rv;
+}
+
+static void BM_GetInt64Price(benchmark::State& state) {
+	int rv = 0;
+	LONGLONG longPrice2 = 1234567890000000000;
+	long lVal = 0;
+	WORD wBase = 0;
+	for (auto _ : state) {
+		benchmark::DoNotOptimize(rv = GetInt64Price(longPrice2, 11, &lVal, &wBase));
+	}
+}
+BENCHMARK(BM_GetInt64Price);// ->Arg(9)->Arg(10)->Arg(11)->Arg(12)->Arg(13)->Arg(14)->Arg(15)->Arg(16);
