@@ -1,5 +1,5 @@
 #pragma once
-#include <random>
+#include <utility>
 
 // 5 Goals
 // no Incomplete types
@@ -45,19 +45,6 @@ void sort_subrange(In first, In last, In sf, In sl)
 		++sf; // sf is already sorted
 	}
 	partial_sort(sf, sl, last);
-}
-
-template <typename RandI> // I models RandomAccessIterator
-void shuffle(RandI f, RandI l) {
-	//thread_local std::default_random_engine engine;    
-	std::random_device rd;
-	thread_local std::mt19937 engine(rd());
-	shuffle(f, l, engine);
-}
-template<typename Container>
-void shuffle(Container& cont)
-{
-	shuffle(begin(cont), end(cont));
 }
 
 template<typename RandI>

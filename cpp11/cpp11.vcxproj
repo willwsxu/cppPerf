@@ -115,6 +115,7 @@
     <ClInclude Include="..\library\eraseRemove.h" />
     <ClInclude Include="..\library\large_int.h" />
     <ClInclude Include="..\library\meta_math.h" />
+    <ClInclude Include="..\library\myalgo.h" />
     <ClInclude Include="..\library\RingBufferAtomic.h" />
     <ClInclude Include="..\library\SmallObject.h" />
     <ClInclude Include="..\library\SortedVector.h" />
@@ -157,6 +158,7 @@
     <ClCompile Include="meta_test.cpp" />
     <ClCompile Include="SeanParentTest.cpp" />
     <ClCompile Include="slistTest.cpp" />
+    <ClCompile Include="practice.cpp" />
     <ClCompile Include="testLargetInt.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

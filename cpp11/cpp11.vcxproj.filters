@@ -111,6 +111,9 @@
     <ClInclude Include="large_int_basic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\library\myalgo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -147,6 +150,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="testLargetInt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="practice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

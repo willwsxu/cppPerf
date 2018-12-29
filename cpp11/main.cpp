@@ -11,6 +11,7 @@ using namespace std;
 #include "dynBuffer.h"
 #include "DynMsg.h"
 #include "matrix2D.h"
+#include "myalgo.h"
 
 typedef Matrix2D<int, vector> MatrixVii;
 typedef Matrix2D<int, vector>::ColIterator vii_col_iter;
@@ -115,9 +116,7 @@ TEST_CASE("Matrix 2", "[MATRIX]")
 	stable_sort(vii.begin(1), vii.end(1));
 	CHECK(vii[0][1] == 3);
 
-	std::random_device rd;
-	std::mt19937 g(rd());
-	shuffle(vii.begin(1), vii.end(1),g);
+	WXU::shuffle(vii.begin(1), vii.end(1));
 	sort(vii.begin(1), vii.end(1));
 	CHECK(vii[1][1] == 4);
 	CHECK(is_sorted(vii.begin(1), vii.end(1)) == true);

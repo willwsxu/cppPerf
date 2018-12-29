@@ -67,7 +67,7 @@ string fibonacciModified_fast(int t1, int t2, int n) {
 }
 
 
-TEST_CASE("large int fibonacci", "[NEW]")
+TEST_CASE("large int fibonacci", "[LONG]")
 {
 	//fibonacciModified(2, 2, 20);
 	CHECK(fibonacciModified(0, 1, 6) == "27");
@@ -75,7 +75,7 @@ TEST_CASE("large int fibonacci", "[NEW]")
 	CHECK(fibonacciModified(0, 1, 10) == "84266613096281243382112");
 	CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
 	CHECK(fibonacciModified_fast(0, 1, 20) == fibonacciModified(0, 1, 20));
-	
+
 	{
 		auto start = chrono::high_resolution_clock::now();
 		auto fast = fibonacciModified_fast(0, 1, 20);
@@ -90,12 +90,6 @@ TEST_CASE("large int fibonacci", "[NEW]")
 		auto nanos = chrono::duration_cast<chrono::nanoseconds> (end - start);
 		std::cout << " fibonacciModified slow " << nanos.count() << "\n";  // 305 ms
 	}
-	
-	//auto t1=fibonacciModified_fast(2, 2, 20);
-	//CHECK(t1.size()==46952);
-	//CHECK(fibonacciModified_fast(1, 1, 20) == t1);
-	//auto t2 = fibonacciModified(2, 2, 20);
-	//cout << t2.size() << "\n";
 }
 
 TEST_CASE("large int with large scale", "[NEW]")

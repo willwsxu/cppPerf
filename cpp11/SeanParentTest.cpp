@@ -1,9 +1,11 @@
 #include "seanparentBetterCode.h"
 
+#include "..\catch.hpp"
+
 #include <vector>
 #include <iterator>
 #include <functional>
-#include "..\catch.hpp"
+#include "myalgo.h"
 
 using namespace std;
 
@@ -21,7 +23,7 @@ TEST_CASE("stable partition position", "[NEW]")
 TEST_CASE("sort subrange", "[SUBR]")
 {
 	vector<int>  target{ 1,2,3,4,5,6,7,8,9 };
-	shuffle(target);
+	WXU::shuffle(target);
 	sort_subrange(begin(target), end(target), begin(target) + 3, begin(target) + 6);
 	vector<int> ans;
 	copy(begin(target)+3, begin(target) + 6, back_inserter(ans));
