@@ -56,14 +56,12 @@ string fibonacciModified(int t1, int t2, int n) {
 
 
 string fibonacciModified_fast(int t1, int t2, int n) {
-	const static int SIZE = 110000;
+	const static int SIZE = 12000;
 	LargeInt lt1(t1, SIZE);
 	LargeInt lt2(t2, SIZE);
 	while (n-- > 2) {
-		auto output = multiply_fast(lt2, lt2);
-		output += lt1;
+		lt1 += multiply_fast(lt2, lt2);
 		lt1.swap(lt2);
-		lt2.swap(output);
 	}
 	return lt2.get();
 }
@@ -71,10 +69,10 @@ string fibonacciModified_fast(int t1, int t2, int n) {
 
 TEST_CASE("large int fibonacci", "[NEW]")
 {
+	//fibonacciModified(2, 2, 20);
 	CHECK(fibonacciModified(0, 1, 6) == "27");
 
 	CHECK(fibonacciModified(0, 1, 10) == "84266613096281243382112");
-	//fibonacciModified(2, 2, 20);
 	CHECK(fibonacciModified_fast(0, 1, 10) == "84266613096281243382112");
 	CHECK(fibonacciModified_fast(0, 1, 20) == fibonacciModified(0, 1, 20));
 	
