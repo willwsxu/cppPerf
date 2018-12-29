@@ -539,20 +539,26 @@ public:
 		return dp964[{target, exp}];
 	}
 	// x=2, target=1023
-	// exp=1, 1022+2/2, or 1024-2/2, new target 501 or 502
-
-	int leastOpsExpressTarget(int x, int target)
+	// exp=0, remain=1, new target=511, plus count (1022+2/2)=2, minus count(1024-2/2)=2
+	// exp=1, remain=1, new target=255, plus count (2*510+2) =3, minus count( 2*512-2 ) = 3
+	int leastOpsExpressTarget(int x, int target)  // borrow idea of bottom up, need to review again
 	{
-		dp964.clear();    //top down
-		return leastOpsExpressTarget(x, target, 1)-1;
-		/*int remain = target%x;
+		//dp964.clear();    //top down
+		//return leastOpsExpressTarget(x, target, 1)-1;
+		int remain = target%x;
 		int prev_plus_count = remain * 2;
 		int prev_minus_count = remain > 0 ? (x - remain) * 2 : 0;
 		int plus_count = prev_plus_count, minus_count = prev_minus_count;
-		int exp = 2;
+		int exp = 1;
 		while ((target /= x) > 0) {
 			remain = target%x;
-		}*/
+			plus_count = min(remain * exp + prev_plus_count, (remain + 1) * exp + prev_minus_count);
+			minus_count = min((x - remain)*exp + prev_plus_count, (x - remain - 1)*exp + prev_minus_count);
+			prev_minus_count = minus_count;
+			prev_plus_count = plus_count;
+			exp++;
+		}
+		return min(exp+minus_count, plus_count) - 1; // why k+minus_count?
 	}
 };
 TEST_CASE("964. Least Operators to Express Number no parenthesis", "[NEW]")
