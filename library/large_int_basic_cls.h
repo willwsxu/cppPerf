@@ -9,6 +9,7 @@
 #include <cassert>
 
 #include "mathlib.h"
+#include "large_int_basic.h"
 
 class LargeIntBasic
 {

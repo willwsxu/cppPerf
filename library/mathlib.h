@@ -225,7 +225,8 @@ bool isPalindrome(RandIter first, RandIter last) {
 	return true;
 }
 
-inline long long get_largest_permu(long long num) { // find digit permutation with largest value, function as key
+// find digit permutation with largest value(sort digit in reverse order), function as key
+inline long long get_largest_permu(long long num) {
 	std::vector<char> largest;
 	while (num>0) {
 		largest.push_back(num % 10);
@@ -237,3 +238,38 @@ inline long long get_largest_permu(long long num) { // find digit permutation wi
 		num = num * 10 + i;
 	return num;
 }
+// similar to above but one more improvement for factorial
+// e.g 870 and 871 have same sum of digit factorial, replace 0 with 1 as 0!=1!
+inline long long get_largest_permu_factorial(long long num) {
+	std::vector<char> largest;
+	while (num>0) {
+		largest.push_back(num % 10);
+		num /= 10;
+	}
+	sort(largest.begin(), largest.end(), std::greater<char>());
+	num = 0;
+	for (int i : largest) {
+		if (i == 0)
+			i++;
+		num = num * 10 + i;
+	}
+	return num;
+}
+
+class FactorialDigit
+{
+	vector<int> factorials;  // cache factorial of digits
+public:
+	FactorialDigit() :factorials(10, 1) {
+		for (int i = 1; i<10; i++)
+			factorials[i] = i*factorials[i - 1];
+	}
+	int get_factorial_digit_sum(int n) {  // sum of digit factorial
+		int sum = 0;
+		while (n>0) {
+			sum += factorials[n % 10];
+			n /= 10;
+		}
+		return sum;
+	}
+};
