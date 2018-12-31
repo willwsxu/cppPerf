@@ -222,8 +222,8 @@ public:
 };
 
 
-namespace std  // hash for pair class
-{
+namespace std 
+{	// hash for pair class
 	template<typename PAIR_T1, typename PAIR_T2> struct hash<pair<PAIR_T1, PAIR_T2>>
 	{
 		typedef pair<PAIR_T1, PAIR_T2> argument_type;
@@ -235,4 +235,70 @@ namespace std  // hash for pair class
 			return h1 ^ (h2 << 1);
 		}
 	};
+
+	// overload for pair class
+	template<typename T1, typename T2>
+	ostream& operator<<(ostream& os, const pair<T1, T2>& p)
+	{
+		os << "(" << p.first << ", " << p.second << ")";
+		return os;
+	}
 }
+
+// Project Euler #61: Cyclical figurate numbers
+// Problem description: n nodes (or polygon number type)
+//   a pair of cyclic number generate an edge from node a to b
+// find complete set of node with number in cycle, number can not duplicate
+// print sum of all cyclic numbers
+// store all edges from one polygon type to another, based on cyclic number
+// use dfs to search all edges for result of a complete set without duplicate polygon or cyclic value
+// Trick case to remove polygon from result when dfs return false
+//   need to remember if it existed before dfs call
+template<typename T1, typename T2>  // T1 is node index, T2 is node value
+class Cycle_Finder
+{
+	map<pair<T1, T2>, set<pair<T1, T2>>>  edges;
+public:
+	void add(pair<T1, T2> left, pair<T1, T2> right) {
+		//cout << " edge " << left << " -> " << right << "\n";
+		edges[left].insert(right);
+	}
+	bool dfs(const pair<T1, T2>& from, const pair<T1, T2>& first, map<T1, T2>& result, int size) {
+		if (result.find(from.first) != end(result)) { // exist already
+			if ((int)result.size() != size || from != first)  // last one circle back to first
+				return false;
+			set<int> uniq_val;
+			for (const auto& r : result)
+				uniq_val.insert(r.second);
+			return (int)uniq_val.size() == size; //result must have unique values
+		}
+		result[from.first] = from.second;
+		//cout << "add " << from << " result size " << result.size() << "\n";
+		for (const auto& p : edges[from]) {
+			bool exist = result.find(p.first) != end(result); // BUG source: save state if it exists
+			if (dfs(p, first, result, size))
+				return true;
+			auto last = result.find(p.first);
+			if (!exist && last != end(result)) {  // BUG source: make sure last one was added!!!
+				result.erase(p.first);  // remove last added
+										//cout << "remove " << p << "\n";
+			}
+			//else
+			//    cout << "no remove " << p << "\n";
+		}
+		return false;
+	}
+	set<int> sum_cycle(int size) {
+		set<int> ans;
+		//int loop=0;
+		for (const auto& e : edges) {
+			map<int, int> result;
+			//cout << loop++ << " start\n";
+			if (dfs(e.first, e.first, result, size)) {
+				int sum = accumulate(begin(result), end(result), 0, [](int init, const auto& p) { return init + p.second; });
+				ans.insert(sum);
+			}
+		}
+		return ans;
+	}
+};
