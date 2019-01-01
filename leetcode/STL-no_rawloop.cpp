@@ -242,12 +242,12 @@ public:
 	// 345. Reverse Vowels of a String
 	string reverseVowels(string s) {  // beat 98%
 		const static set<char> vowels{ 'a','e','i','o','u','A','E','I','O','U' };
-		reverse_string_if(s.begin(), s.end(), [](char c) { return vowels.count(c); });
+		WXU::reverse_string_if(s.begin(), s.end(), [](char c) { return vowels.count(c); });
 		return s;
 	}
 	// 917. Reverse Only Letters
 	string reverseOnlyLetters(string S) {
-		reverse_string_if(begin(S), end(S), [](char c) { return isalpha(c); });
+		WXU::reverse_string_if(begin(S), end(S), [](char c) { return isalpha(c); });
 		return S;
 	}
 	// 937. Reorder Log Files

@@ -163,7 +163,7 @@ public:
 	//930. Binary Subarrays With Sum
 	int numSubarraysWithSum(vector<int>& A, int S) {
 		if (S == 0) {  // special case
-			auto counts = count_consecutive(begin(A), end(A), S);
+			auto counts = WXU::count_consecutive(begin(A), end(A), S);
 			return accumulate(begin(counts), end(counts), 0,
 				[](int init, int c) { return init + c*(c + 1) / 2; });
 		}

@@ -821,7 +821,7 @@ public:
 					continue;
 				}
 			}
-			auto found = subsequence(begin(s), end(s), begin(word), end(word));
+			auto found = WXU::subsequence(begin(s), end(s), begin(word), end(word));
 			if (found ) {
 				ans = &word;
 			}
@@ -1596,7 +1596,7 @@ public:
 		}
 		if (part == end(digits))
 			return ori;
-		auto target = max_element_last(part, end(digits)); // e.g 1993
+		auto target = WXU::max_element_last(part, end(digits)); // e.g 1993
 		auto ins = upper_bound(begin(digits), part, *target, greater<int>());
 		iter_swap(ins, target);
 		num = 0;

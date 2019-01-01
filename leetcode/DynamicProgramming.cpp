@@ -115,7 +115,7 @@ public:
 			return 0;
 		for (int i = 0; i < (int)prices.size() - 1; i++)
 			prices[i] = prices[i+1] - prices[i];
-		return maxSubSum(prices.begin(), prices.end() - 1, 0).first;
+		return WXU::maxSubSum(prices.begin(), prices.end() - 1, 0).first;
 	}
 	// 122. Best Time to Buy and Sell Stock II, many transactions, but only one transaction at a time
 	int maxProfit2(vector<int>& prices) { // easy, Gredy, sum up all positive diff prices, beat 98%
@@ -445,7 +445,7 @@ class SpecialDp
 public:
 	int maxSubArray(vector<int>& nums) {  // beat 100%
 		// refactor to a template, slowed 50%???
-		return maxSubSum(nums.begin(), nums.end(), INT32_MIN).first; // in case sum is negative!
+		return WXU::maxSubSum(nums.begin(), nums.end(), INT32_MIN).first; // in case sum is negative!
 	}
 
 	//918. Maximum Sum Circular Subarray

@@ -11,6 +11,8 @@
 
 using std::vector;
 using std::set;
+using std::map;
+using std::pair;
 
 inline void print(std::vector<int>& v)
 {

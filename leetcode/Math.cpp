@@ -509,7 +509,7 @@ public:
 		string s = to_string(abs(x));
 
 		// why std::reverse don't work on string?
-		reverse_string(s.begin(), s.end());
+		WXU::reverse_string(s.begin(), s.end());
 		int sign = x >= 0 ? 1 : -1;
 		long ans = stol(s)*sign;
 		if (ans > INT32_MAX || ans < INT32_MIN)

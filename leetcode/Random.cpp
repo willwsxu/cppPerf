@@ -183,11 +183,11 @@ public:
 	vector<int> flip() { // Fisher–Yates shuffle
 		auto r = uniform_int_distribution<>(0, --total)(g);  // random position of matrix with values 0
 		if (r == total) {  //last value selected
-			r = map_get_or_default(matrix, r, r); // last value could be mapped to something else
+			r = WXU::map_get_or_default(matrix, r, r); // last value could be mapped to something else
 			return { r / cols, r%cols };
 		}
-		int x = map_get_or_default(matrix, r, r); // look for existing mapping
-		matrix[r]= map_get_or_default(matrix, total, total); // update random selected cell to last elementas last element will drop out in next call
+		int x = WXU::map_get_or_default(matrix, r, r); // look for existing mapping
+		matrix[r]= WXU::map_get_or_default(matrix, total, total); // update random selected cell to last elementas last element will drop out in next call
 		return{ x / cols, x%cols };
 	}
 
@@ -342,7 +342,7 @@ class HeavyHitter
 		}
 		vector<int> ans;
 		const int threshold = nums.size() / (k + 1);
-		transform_if(begin(maj), end(maj), back_inserter(ans), [](const auto& p) { return p.first; }, [threshold](const auto& p) { return p.second>threshold; });
+		WXU:: transform_if(begin(maj), end(maj), back_inserter(ans), [](const auto& p) { return p.first; }, [threshold](const auto& p) { return p.second > threshold; });
 		return ans;
 	}
 

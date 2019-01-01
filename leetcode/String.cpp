@@ -103,7 +103,7 @@ public:
 			}
 		}
 		vector<vector<string>> ans;
-		transform_if(begin(contents), end(contents), back_inserter(ans), [](auto&p) {return move(p.second); }, [](const auto&p) {return p.second.size() > 1; });
+		WXU::transform_if(begin(contents), end(contents), back_inserter(ans), [](auto&p) {return move(p.second); }, [](const auto&p) {return p.second.size() > 1; });
 		return ans;
 	}
 
@@ -131,7 +131,7 @@ public:
 
 	int minDifference(vector<int>& minutes)
 	{
-		bucket_sort(begin(minutes), end(minutes), 24 * 60);
+		WXU::bucket_sort(begin(minutes), end(minutes), 24 * 60);
 		int ans = INT_MAX;
 		int n = minutes.size();
 		for (int i = 1; i < n; i++)
@@ -195,10 +195,10 @@ public:
 		map<string, vector<string>> group;
 		for (const auto& s : strs) {
 			string key = s;
-			bucket_sort(begin(key), end(key), 128); // sort string as key
+			WXU::bucket_sort(begin(key), end(key), 128); // sort string as key
 			group[key].emplace_back(s); // group sring by sorted key
 		}
-		return map2vec(group);
+		return WXU::map2vec(group);
 	}
 };
 
@@ -545,7 +545,7 @@ public:
 			auto range = equal_range(start, end(strs), *start, comp); // find range of string of same length
 			for (auto it = range.first; it != range.second; ++it) {   // examine each string  in this range
 				if (count_if(strs.begin(), range.second, // search from begining to end of this range
-					[it](const string&a) { return subsequence(a.begin(), a.end(), it->begin(), it->end()); }) == 1)
+					[it](const string&a) { return WXU::subsequence(a.begin(), a.end(), it->begin(), it->end()); }) == 1)
 					return ans;  // find a string that is not subsequence of any string of equal or longer length, ==1 means find just itself
 			}
 			start = range.second; // try a shorter string if no solution found yet
@@ -897,9 +897,9 @@ public:
 		while (first != s.end()) {
 			int remain = distance(first, last);
 			if (remain <= k)
-				reverse_string(first, last);
+				WXU::reverse_string(first, last);
 			else
-				reverse_string(first, first + k);
+				WXU::reverse_string(first, first + k);
 			if (remain <= step)
 				break;
 			first += step;
@@ -911,7 +911,7 @@ public:
 		auto first = s.begin();
 		do {
 			auto space = find(first, end(s), ' ');
-			reverse_string(first, space);
+			WXU::reverse_string(first, space);
 			first = space;
 			if (space == end(s))
 				break;
