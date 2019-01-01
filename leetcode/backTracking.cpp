@@ -76,7 +76,45 @@ public:
 		grayCode2(n, code, 0, ans);
 		return ans;
 	}
+	// 967. Numbers of digit With Same Consecutive Differences
+	void numsSameConsecDiff(int N, int K, vector<int>&digits, vector<int>& result)
+	{
+		if (digits.back() < 0 || digits.back() > 9)
+			return;
+		if (N == digits.size()) {
+			int ans = 0;
+			for (int i : digits)
+				ans = ans * 10 + i;
+			result.push_back(ans);
+			return;
+		}
+		int last = digits.back();
+		digits.push_back(last + K);
+		numsSameConsecDiff(N, K, digits, result);
+		if (K > 0) {
+			digits.back() = last - K;
+			numsSameConsecDiff(N, K, digits, result);
+		}
+		digits.pop_back();
+	}
+	vector<int> numsSameConsecDiff(int N, int K) {
+		vector<int> result;
+		if (N == 1)
+			result.push_back(0);
+		for (int i = 1; i < 10; i++) {
+			vector<int> digits{ i };
+			numsSameConsecDiff(N, K, digits, result);
+		}
+		return result;
+	}
 };
+TEST_CASE("967. Numbers With Same Consecutive Differences", "[NEW]")
+{
+	CHECK(BackTracking().numsSameConsecDiff(2, 0) == vector<int>{11, 22, 33, 44, 55, 66, 77, 88, 99});
+	CHECK(BackTracking().numsSameConsecDiff(1, 7) == vector<int>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+	CHECK(BackTracking().numsSameConsecDiff(3, 7) == vector<int>{181, 292, 707, 818, 929});
+	CHECK(BackTracking().numsSameConsecDiff(2, 1) == vector<int>{12, 10, 23, 21, 34, 32, 45, 43, 56, 54, 67, 65, 78, 76, 89, 87, 98});
+}
 
 TEST_CASE("89. Gray Code", "[NEW]")
 {
