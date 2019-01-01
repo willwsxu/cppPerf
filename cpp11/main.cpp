@@ -5,13 +5,15 @@
 #include <list>
 #include <random>
 #include <string>
-using namespace std;
 
 #include "ConsoleLogger.h"
 #include "dynBuffer.h"
 #include "DynMsg.h"
 #include "matrix2D.h"
 #include "myalgo.h"
+
+using namespace std;
+
 
 typedef Matrix2D<int, vector> MatrixVii;
 typedef Matrix2D<int, vector>::ColIterator vii_col_iter;
@@ -322,4 +324,10 @@ TEST_CASE("test construction", "[NEW]")
 
 	Str2 s20 = string("test20 "); // up to 2 conversions, string -> Str -> Str2
 	//Str2 s20 = "test20 ";  can't compile
+}
+
+#include "mathlib_largeInt.h"
+TEST_CASE("large power", "[NEW]")
+{
+	CHECK(Power_Large::compute(12345, 12345, 12)== 291259765625);
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <numeric>
 
 // store digit in little endian format, from least to most significant
 // add string of equal length, return carry
@@ -66,7 +67,7 @@ Result_Type large_int_multiply(RandRevIter first1, RandRevIter last1, RandRevIte
 template<typename T>
 T large_int_get(std::vector<char>& large_int)  // little endian
 {    // compute from back
-	return accumulate(rbegin(large_int), rend(large_int), T(), [](T t, char c) { return t * 10 + c; });
+	return std::accumulate(rbegin(large_int), rend(large_int), T(), [](T t, char c) { return t * 10 + c; });
 }
 
 // each vector element can store one digit or many digits up to 9 (scale =1000000000)
