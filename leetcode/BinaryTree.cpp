@@ -359,6 +359,7 @@ public:
 			return false;
 		return flipEquiv(root1->left, root2->left) && flipEquiv(root1->right, root2->right) || flipEquiv(root1->right, root2->left) && flipEquiv(root1->left, root2->right);
 	}
+
 	bool is_leaf_or_none(TreeNode *r) {
 		if (r) {
 			if (r->left || r->right)
@@ -368,6 +369,11 @@ public:
 	}
 	bool need_camera_cover(TreeNode *r) {
 		if (r && r->val == 0)
+			return true;
+		return false;
+	}
+	bool camera_installed(TreeNode *r) {
+		if (r && r->val == 1)
 			return true;
 		return false;
 	}
@@ -381,30 +387,40 @@ public:
 	// find minimal cameras needed to cover all
 	int dfs(TreeNode* root) {
 		if (!root || (root->left == nullptr && root->right == nullptr))
-			return 1;  // only apply if tree is single node
+			return 0;
 		if (is_leaf_or_none(root->left) && is_leaf_or_none(root->right)) {
 			root->val = 1;
 			return 1;
 		}
-		// extra check here to distinguish from single node tree
-		int cameras = is_leaf_or_none(root->left) ? 0 : minCameraCover(root->left);
-		cameras += is_leaf_or_none(root->right) ? 0 : minCameraCover(root->right);
+		int cameras = dfs(root->left)+ dfs(root->right);
 		if (need_camera_cover(root->left) || need_camera_cover(root->right)) {
 			root->val = 1;
 			cameras++;
 		}
-		if (camera_covered(root->left) && camera_covered(root->right))
+		else if (camera_installed(root->left) || camera_installed(root->right))
 			root->val = 2;  // covered by its children
 		return cameras;
 	}
 	int minCameraCover(TreeNode* root) {
-		return dfs(root);
+		int ans = dfs(root);
+		if (ans == 0)
+			return root ? 1 : 0;
+		if (root->val == 0 && !camera_installed(root->left) && !camera_installed(root->right))
+			ans++;
+		return ans;
 	}
 };
 
 TEST_CASE("968. Binary Tree Cameras", "[NEW]")
 {
+	SECTION("4 node edge case") {
+		auto t = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "null", "0", "null", "0", "null", "0"});
+		CHECK(Tree().minCameraCover(t) == 2);
+	}
 	SECTION("longer Tree of more nodes") {
+		auto t2 = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "null", "0", "null", "0", "null", "0", "0", "0", "null", "0", "null", "0", "0"});
+		CHECK(Tree().minCameraCover(t2) == 3);
+
 		auto t = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "0", "null", "null", "0", "0", "null", "null", "0", "0"});
 		CHECK(Tree().minCameraCover(t) == 2);
 	}
