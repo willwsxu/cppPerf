@@ -1,5 +1,12 @@
 #pragma once
 #include <cassert>
+#include <deque>
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using std::deque;
+using std::cout;
 
 struct TreeNode {
 	int val;
@@ -56,7 +63,7 @@ struct TreeNode {
 
 	static int getHeight(TreeNode* r)
 	{
-		return r == nullptr ? 0 : max(getHeight(r->left), getHeight(r->right)) + 1;
+		return r == nullptr ? 0 : std::max(getHeight(r->left), getHeight(r->right)) + 1;
 	}
 	static TreeNode *ConstructBinaryTreePerLevel(const vector<string>& nodes) { // level traversal
 		if (nodes.empty())
@@ -84,6 +91,7 @@ struct TreeNode {
 		return root;
 	}
 
+	// deprecated
 	static TreeNode *CreateBinaryTree(const vector<int>& nodes) { // INT32_MIN as null node, level traversal
 		if (nodes.empty())
 			return nullptr;
@@ -116,8 +124,8 @@ struct TreeNode {
 		if (!t)
 			return "";
 		if (!t->left && !t->right)
-			return to_string(t->val);
-		string result = to_string(t->val);
+			return std::to_string(t->val);
+		string result = std::to_string(t->val);
 		result.append(1, '(').append(tree2str(t->left)).append(1, ')');
 		if (t->right)
 			result.append(1, '(').append(tree2str(t->right)).append(1, ')');

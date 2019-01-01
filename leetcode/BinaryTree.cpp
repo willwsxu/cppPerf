@@ -359,8 +359,74 @@ public:
 			return false;
 		return flipEquiv(root1->left, root2->left) && flipEquiv(root1->right, root2->right) || flipEquiv(root1->right, root2->left) && flipEquiv(root1->left, root2->right);
 	}
+	bool is_leaf_or_none(TreeNode *r) {
+		if (r) {
+			if (r->left || r->right)
+				return false;
+		}
+		return true;
+	}
+	bool need_camera_cover(TreeNode *r) {
+		if (r && r->val == 0)
+			return true;
+		return false;
+	}
+	bool camera_covered(TreeNode *r) {
+		if (!r || r->val == 1)
+			return true;
+		return false;
+	}
+public:
+	// 968. Binary Tree Cameras. a camera on a node covers parent and immediate children
+	// find minimal cameras needed to cover all
+	int dfs(TreeNode* root) {
+		if (!root || (root->left == nullptr && root->right == nullptr))
+			return 1;  // only apply if tree is single node
+		if (is_leaf_or_none(root->left) && is_leaf_or_none(root->right)) {
+			root->val = 1;
+			return 1;
+		}
+		// extra check here to distinguish from single node tree
+		int cameras = is_leaf_or_none(root->left) ? 0 : minCameraCover(root->left);
+		cameras += is_leaf_or_none(root->right) ? 0 : minCameraCover(root->right);
+		if (need_camera_cover(root->left) || need_camera_cover(root->right)) {
+			root->val = 1;
+			cameras++;
+		}
+		if (camera_covered(root->left) && camera_covered(root->right))
+			root->val = 2;  // covered by its children
+		return cameras;
+	}
+	int minCameraCover(TreeNode* root) {
+		return dfs(root);
+	}
 };
 
+TEST_CASE("968. Binary Tree Cameras", "[NEW]")
+{
+	SECTION("longer Tree of more nodes") {
+		auto t = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "0", "null", "null", "0", "0", "null", "null", "0", "0"});
+		CHECK(Tree().minCameraCover(t) == 2);
+	}
+	SECTION("Tree of more nodes") {
+		auto t2 = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "null", "0", "0", "0", "null", "null", "null", "0"});
+		CHECK(Tree().minCameraCover(t2) == 2);
+		auto t = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "0", "null", "0", "null", "0", "null", "null", "0"});
+		CHECK(Tree().minCameraCover(t) == 2);
+	}
+	SECTION("Tree of 1 node") {
+		auto t1 = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "null", "null"});
+		CHECK(Tree().minCameraCover(t1) == 1);
+	}
+	SECTION("Tree of 2 nodes") {
+		auto t = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "0", "null", "null"});
+		CHECK(Tree().minCameraCover(t) == 1);
+	}
+	SECTION("Tree of 4 nodes") {
+		auto t = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0", "0", "null", "0", "0"});
+		CHECK(Tree().minCameraCover(t) == 1);
+	}
+}
 TEST_CASE("865. Smallest Subtree with all the Deepest Nodes", "[NEW]")
 {
 	auto *x = TreeNode::CreateBinaryTree({ 3,5,1,6,2,0,8,INT32_MIN,INT32_MIN,7,4 });

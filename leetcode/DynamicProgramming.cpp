@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 #include "myalgo.h"
+#include "TreeNode.h"
 using namespace std;
 
 std::unique_ptr<int[]> dp;
@@ -164,7 +165,7 @@ public:
 	}
 };
 
-TEST_CASE("123. Best Time to Buy and Sell Stock III", "[NEW]")
+TEST_CASE("123. Best Time to Buy and Sell Stock III", "[STOCK]")
 {
 	CHECK(BuyStock().maxProfit3(vector<int>{3, 2, 6, 5, 0, 3}) == 7);
 }
@@ -222,7 +223,7 @@ public:
 	}
 };
 
-TEST_CASE("960. Delete Columns to Make Sorted III", "[NEW]")
+TEST_CASE("960. Delete Columns to Make Sorted III", "[DP]")
 {
 	CHECK(StringDp().minDeletionSize(vector<string>{"abbbaa"}) == 2);
 	CHECK(StringDp().minDeletionSize(vector<string>{"abbba"}) == 1);
@@ -561,7 +562,7 @@ public:
 		return min(exp+minus_count, plus_count) - 1; // why k+minus_count?
 	}
 };
-TEST_CASE("964. Least Operators to Express Number no parenthesis", "[NEW]")
+TEST_CASE("964. Least Operators to Express Number no parenthesis", "[DP]")
 {
 	CHECK(SpecialDp().leastOpsExpressTarget(2, 84500083) == 133);
 	CHECK(SpecialDp().leastOpsExpressTarget(5, 126) == 4); // 5*5*5+5/5
@@ -579,7 +580,7 @@ TEST_CASE("935. Knight Dialer", "[DP]")
 	CHECK(SpecialDp().knightDialer(3) == 46);
 	CHECK(SpecialDp().knightDialer(5000) == 406880451);
 }
-TEST_CASE("918. Maximum Sum Circular Subarray", "[NEW]")
+TEST_CASE("918. Maximum Sum Circular Subarray", "[DP]")
 {
 	CHECK(SpecialDp().maxSubarraySumCircular(vector<int>{-2, -3, -1}) == -1);
 	CHECK(SpecialDp().maxSubarraySumCircular(vector<int>{-1, -3, -2}) == -1);
@@ -678,7 +679,7 @@ public:
 	}
 	// transform into knapsack, hint from: The sum of rods is at most 5000.
 };
-TEST_CASE("956. Tallest Billboard", "[NEW]")
+TEST_CASE("956. Tallest Billboard", "[DP]")
 {
 	CHECK(Knapsack().tallestBillboard(vector<int>{1, 2}) == 0);
 	CHECK(Knapsack().tallestBillboard(vector<int>{96, 112, 101, 100, 104, 93, 106, 99, 114, 81, 94}) == 503);
@@ -686,3 +687,7 @@ TEST_CASE("956. Tallest Billboard", "[NEW]")
 	CHECK(Knapsack().tallestBillboard(vector<int>{1, 2, 3, 4, 5, 6}) == 10);
 	CHECK(Knapsack().tallestBillboard(vector<int>{1, 2, 3, 6}) == 6);
 }
+class BinaryTreeDp
+{
+
+};
