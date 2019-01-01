@@ -8,11 +8,13 @@
 #include <unordered_map>
 #include <iterator>
 #include <iostream>
+#include <string>
 
 using std::vector;
 using std::set;
 using std::map;
 using std::pair;
+using std::string;
 
 inline void print(std::vector<int>& v)
 {
@@ -26,6 +28,11 @@ inline int to_int(const std::string& S, int start, int last)
 	if (len == 10 && S[start] > '2')  // overflow
 		return -1;
 	return atoi(S.substr(start, len).c_str());
+}
+
+inline string to_lower(string s) {
+	transform(begin(s), end(s), begin(s), [](char c) { return tolower(c); });
+	return s;
 }
 
 inline std::vector<std::string> tokenizer(std::string::const_iterator sb, std::string::const_iterator se, const char *sep)

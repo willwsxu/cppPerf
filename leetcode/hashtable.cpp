@@ -385,6 +385,49 @@ public:
 		}
 		return patterns.back();
 	}
+	// 966. Vowel Spellchecker
+	vector<string> spellchecker(vector<string>& wordlist, vector<string>& queries) {
+		map<string, string> lower_cases, replace_vowels;
+		set<string> exact(begin(wordlist), end(wordlist));
+		set<char> vowels{ 'a','e','i','o','u','A','E','I','O','U' };
+		auto replace_vower = [&vowels](string s) {
+			for (char& c : s) {
+				if (vowels.count(c))
+					c = '_';
+				else
+					c = tolower(c);
+			}
+			return s;
+		};
+		for (const string& s : wordlist) {
+			auto& l_c = lower_cases[to_lower(s)];
+			if (l_c.empty())
+				l_c = s;
+			auto& r_v = replace_vowels[replace_vower(s)];
+			if (r_v.empty())
+				r_v = s;
+		}
+		vector<string> ans;
+		ans.reserve(queries.size());
+		for (const string& q : queries) {  // 3 step spelling check
+			if (exact.count(q)) {  // return same word if exact match
+				ans.push_back(q);
+				continue;
+			}
+			auto found = lower_cases.find(to_lower(q));
+			if (found != end(lower_cases)) {  // return first math if match on condition of case insensitive
+				ans.push_back(found->second);
+				continue;
+			}
+			auto found2 = replace_vowels.find(replace_vower(q)); // return first match if vowels are replaced
+			if (end(replace_vowels) != found2) {
+				ans.push_back(found2->second);
+				continue;
+			}
+			ans.push_back("");
+		}
+		return ans;
+	}
 };
 TEST_CASE("957. Prison Cells After N Days", "[HASH]")
 {
