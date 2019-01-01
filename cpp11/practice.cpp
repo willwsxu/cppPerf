@@ -2,6 +2,8 @@
 
 #include "myalgo.h"
 #include <vector>
+#include <iterator>
+#include <iostream>
 
 using namespace std;
 
@@ -16,7 +18,6 @@ RandIter my_partition(RandIter first, RandIter last, RandIter target) {  // retu
 			continue;
 		iter_swap(first, last);
 		++first;
-		--last;
 	}
 	if (--first != target)
 		iter_swap(first, target);  // pivot has value of target
@@ -39,9 +40,16 @@ int nth_smallest(vector<int> arr, int n)
 }
 TEST_CASE("find nth smallest", "[NEW]")
 {
+	SECTION("corner case") {
+		auto case1 = vector<int>{ 40, 50, 20, 10, 30 };
+		CHECK(nth_smallest(case1, 2) == 20);  // fix bug in partition
+		CHECK(nth_smallest(case1, 1) == 10);
+	}
 	SECTION("in random order") {
 		auto rand_v = vector<int>{ 50, 40, 30, 20, 10 };
 		WXU::shuffle(rand_v);
+		copy(begin(rand_v), end(rand_v), ostream_iterator<int>(cout, " "));
+		cout << "\n";
 		CHECK(nth_smallest(rand_v, 2) == 20);
 		CHECK(nth_smallest(rand_v, 1) == 10);
 		REQUIRE(nth_smallest(rand_v, 5) == 50);
