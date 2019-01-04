@@ -1147,4 +1147,22 @@ TEST_CASE("Project Euler #26: Reciprocal cycles", "[DECIMAL]")
 	CHECK(repeating.findSmallestIntWithLongestRepeating(10) == 7); // longest repeating < 10
 	CHECK(repeating.findSmallestIntWithLongestRepeating(5000) == 4967); // longest repeating < 5000
 }
-
+// 
+// phi(n)=n(1-1/p)(1-1/q)... so n/phi(n)=p/(p-1) * q/(q-1) *...
+// to maximize it, choose smallest prime factors made of n < N
+long long totient_max(long long N) {
+	auto primes = make_primes(100); // enough to make up value 10^18
+	long long n = 1;
+	//double ans = 1;
+	for (int p : primes) {
+		if (n*p >= N || n*p<0)
+			break;
+		n *= p;
+		//ans *= (double)p / (p - 1);
+	}
+	return n;
+}
+TEST_CASE("Project Euler #69: Totient maximum", "[NEW]")
+{
+	CHECK(totient_max(1000000000000000000) == 614889782588491410);
+}

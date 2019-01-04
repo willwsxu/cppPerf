@@ -377,15 +377,10 @@ public:
 			return true;
 		return false;
 	}
-	bool camera_covered(TreeNode *r) {
-		if (!r || r->val == 1)
-			return true;
-		return false;
-	}
 public:
 	// 968. Binary Tree Cameras. a camera on a node covers parent and immediate children
 	// find minimal cameras needed to cover all
-	int dfs(TreeNode* root) {
+	int dfs(TreeNode* root) {  // greedy always start from leaf and install camera on leaf's parent
 		if (!root || (root->left == nullptr && root->right == nullptr))
 			return 0;
 		if (is_leaf_or_none(root->left) && is_leaf_or_none(root->right)) {
