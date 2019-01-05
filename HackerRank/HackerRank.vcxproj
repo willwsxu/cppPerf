@@ -144,6 +144,7 @@
     <ClCompile Include="HackerLRUCache.cpp" />
     <ClCompile Include="HackerRank.cpp" />
     <ClCompile Include="HackerRankDp.cpp" />
+    <ClCompile Include="hackerRankGraph.cpp" />
     <ClCompile Include="HackerRankSearch.cpp" />
     <ClCompile Include="HackerRankStack.cpp" />
   </ItemGroup>

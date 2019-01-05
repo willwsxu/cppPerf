@@ -391,7 +391,7 @@ vector<int> maxSubarray(vector<int> arr) {
 		}
 		return ans;
 	};
-	return{ maxSubSum(arr.begin(), arr.end(), INT32_MIN).first, maxSubSeq() };
+	return{ WXU::maxSubSum(arr.begin(), arr.end(), INT32_MIN).first, maxSubSeq() };
 }
 
 // find a minimal section to replace with a new sequence to make it steady
