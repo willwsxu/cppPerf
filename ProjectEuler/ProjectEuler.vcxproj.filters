@@ -27,6 +27,9 @@
     <ClCompile Include="CardGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\library\ProjectEulerOptimize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\library\mathlib.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\library\large_int_basic_cls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library\mathlib_primes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

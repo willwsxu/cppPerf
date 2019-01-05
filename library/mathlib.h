@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include <vector>
 
 using std::vector;
 using std::set;

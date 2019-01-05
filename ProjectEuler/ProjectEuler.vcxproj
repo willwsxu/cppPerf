@@ -116,6 +116,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\library\ProjectEulerOptimize.cpp" />
     <ClCompile Include="projectEuler.cpp" />
     <ClCompile Include="projectEulerCombinatorics.cpp" />
     <ClCompile Include="ProjectEulerDp.cpp" />
@@ -124,6 +125,7 @@
   <ItemGroup>
     <ClInclude Include="..\library\large_int_basic_cls.h" />
     <ClInclude Include="..\library\mathlib.h" />
+    <ClInclude Include="..\library\mathlib_primes.h" />
     <ClInclude Include="CardGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
