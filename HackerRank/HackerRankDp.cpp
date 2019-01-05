@@ -89,7 +89,7 @@ vector<int> longestCommonSubsequence(vector<int> a, vector<int> b) {
 	longestCommonSubsequence(begin(a),end(a),begin(b),end(b), back_inserter(ans));
 	return ans;
 }
-TEST_CASE("Hackerrank DP longest Common subsequence", "[NEW]")
+TEST_CASE("Hackerrank DP longest Common subsequence", "[DP]")
 {
 	string s1 = "michelangelo";
 	string s2="hieroglyphology";
@@ -126,7 +126,7 @@ int substrings(string n) {
 	return static_cast<int>(dp[1]);
 }
 
-TEST_CASE("Hackerrank DP substring sum", "[NEW]")
+TEST_CASE("Hackerrank DP substring sum", "[OLD]")
 {
 	CHECK(substrings("213676822290") == 546421488);
 	CHECK(substrings("0") == 0);
