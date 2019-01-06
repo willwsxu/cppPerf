@@ -37,14 +37,14 @@ public:
 		int removed_edges = 0;
 		while (!leaf_queue.empty()) {
 			int old_size = leaf_queue.size();
-			cout << " bfs queue " << old_size << "\n";
+			//cout << " bfs queue " << old_size << "\n";
 			while (old_size--) {
 				int left_node = leaf_queue.front();
 				leaf_queue.pop_front();
 				if (adjList[left_node].empty())  // node used by its neighbor
 					continue;
 				int right_node = 0;
-				cout << "forests " << forests.size() <<" left node " << left_node  << "\n";
+				//cout << "forests " << forests.size() <<" left node " << left_node  << "\n";
 				vector<set<int> *> removed;
 				for (auto& s : forests) {
 					if (!s.count(left_node))
@@ -66,7 +66,7 @@ public:
 				if (!adjList[left_node].empty()) { // edge from this node is not used
 					removed_edges++;
 					right_node = adjList[left_node][0];
-					cout << " edge not used:" << left_node << " " << right_node << "\n";
+					//cout << " edge not used:" << left_node << " " << right_node << "\n";
 					vector_erase(adjList[right_node], left_node);
 					adjList[left_node].clear();
 					auto found = find_if(begin(forests), end(forests), [right_node](const auto& s) { return s.count(right_node) > 0; });
@@ -77,11 +77,11 @@ public:
 					leaf_queue.push_back(right_node);
 			}
 			// check if there is even forests after each round of leaf
-			for (auto& s : forests) {
+			/*for (auto& s : forests) {
 				copy(begin(s), end(s), ostream_iterator<int>(cout, " "));
 				cout << "\n";
 			}
-			cout << "forests before removing even\n";
+			cout << "forests before removing even\n";*/
 			auto evenForest = remove_if(begin(forests), end(forests), [this](const set<int> &s) {
 				if  (s.size() % 2 != 0)
 					return false;
@@ -91,14 +91,14 @@ public:
 				}
 				return true;
 			});
-			cout << "even forests removed " << distance(evenForest, end(forests)) << "\n";
+			//cout << "even forests removed " << distance(evenForest, end(forests)) << "\n";
 			forests.erase(evenForest, end(forests));
-			for (auto& s: forests) {
+			/*for (auto& s: forests) {
 				copy(begin(s), end(s), ostream_iterator<int>(cout, " "));
 				cout<<"\n";
 			}
 			copy(begin(leaf_queue), end(leaf_queue), ostream_iterator<int>(cout, " "));
-			cout << "forests size " << forests.size() << " leaf queue size " << leaf_queue.size()  << "\n";
+			cout << "forests size " << forests.size() << " leaf queue size " << leaf_queue.size()  << "\n";*/
 		}
 		return removed_edges;
 	}
