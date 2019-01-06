@@ -47,50 +47,6 @@ inline long long sum_arithmetic_sequence(long long first, long long last, int st
 	return n*sum;
 }
 
-inline bool is_prime(int n)
-{
-	n = abs(n);
-	if (n < 2)
-		return false;
-	for (int i = 2; i*i <= n; i++) {
-		if (n%i == 0)
-			return false;
-	}
-	return true;
-}
-
-inline vector<int> make_primes(int N)  // prime numbers < N
-{
-	vector<int> primes;
-	vector<char> is_primes(N, 1); // initialize to true
-	is_primes[0] = is_primes[1] = 0;
-	for (size_t i = 2; i < is_primes.size(); i++)
-	{
-		if (is_primes[i]) {
-			primes.push_back(i);
-			for (size_t j = i + i; j < is_primes.size(); j += i)
-				is_primes[j] = 0;
-		}
-	}
-	return primes;
-}
-
-// find number of distinct factors
-inline int prime_factors(int N, const vector<int>& primes)
-{
-	int count = 0;
-	for (int p : primes) {
-		if (p*p>N)
-			break;
-		if (N%p == 0) {
-			count++;
-			do {
-				N /= p;
-			} while (N%p == 0);
-		}
-	}
-	return count + (N>1);
-}
 inline vector<int> count_digit(int x) {
 	vector<int> count(10, 0);
 	while (x>0) {

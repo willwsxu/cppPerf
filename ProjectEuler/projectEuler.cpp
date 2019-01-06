@@ -14,6 +14,7 @@
 #include "helper.h"
 #include "UnionFind.h"
 #include "digits-helper.h"
+#include "mathlib_primes.h"
 using namespace std;
 
 // reference
@@ -1167,32 +1168,6 @@ TEST_CASE("Project Euler #69: Totient maximum", "[NEW]")
 	CHECK(totient_max(1000000000000000000) == 614889782588491410);
 }
 
-vector<int> get_prime_factors(int N, const vector<int>& primes)
-{
-	vector<int> factors;
-	for (int p : primes) {
-		if (p*p>N)
-			break;
-		if (N%p == 0) {
-			factors.push_back(p);
-			do {
-				N /= p;
-			} while (N%p == 0);
-		}
-	}
-	if (N>1)
-		factors.push_back(N);
-	return factors;
-}
-
-int euler_phi(int n, const vector<int>& primes) {
-	auto factors = get_prime_factors(n, primes);
-	int phi = n;
-	for (int f : factors) {
-		phi = phi * (f - 1) / f;
-	}
-	return phi;
-}
 TEST_CASE("Project Euler: Euler Totient function phi", "[NEW]")
 {
 	auto primes = make_primes(10000);

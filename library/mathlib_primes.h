@@ -2,7 +2,82 @@
 #include "mathlib.h"
 #include <random>
 
-unsigned long long russianPeasant_mul_mod(unsigned long long a, unsigned long long b, unsigned long long mod)
+// math related to primes
+
+inline bool is_prime(int n)
+{
+	n = abs(n);
+	if (n < 2)
+		return false;
+	for (int i = 2; i*i <= n; i++) {
+		if (n%i == 0)
+			return false;
+	}
+	return true;
+}
+
+inline vector<int> make_primes(int N)  // prime numbers < N
+{
+	vector<int> primes;
+	vector<char> is_primes(N, 1); // initialize to true
+	is_primes[0] = is_primes[1] = 0;
+	for (size_t i = 2; i < is_primes.size(); i++)
+	{
+		if (is_primes[i]) {
+			primes.push_back(i);
+			for (size_t j = i + i; j < is_primes.size(); j += i)
+				is_primes[j] = 0;
+		}
+	}
+	return primes;
+}
+
+// find number of distinct factors
+inline int prime_factors(int N, const vector<int>& primes)
+{
+	int count = 0;
+	for (int p : primes) {
+		if (p*p>N)
+			break;
+		if (N%p == 0) {
+			count++;
+			do {
+				N /= p;
+			} while (N%p == 0);
+		}
+	}
+	return count + (N>1);
+}
+
+inline vector<int> get_prime_factors(int N, const vector<int>& primes)
+{
+	vector<int> factors;
+	for (int p : primes) {
+		if (p*p>N)
+			break;
+		if (N%p == 0) {
+			factors.push_back(p);
+			do {
+				N /= p;
+			} while (N%p == 0);
+		}
+	}
+	if (N>1)
+		factors.push_back(N);
+	return factors;
+}
+
+// phi(n)=n*(1-1/p)(1-1/q)...   p, q, are prime factors of n
+inline int euler_phi(int n, const vector<int>& primes) {
+	auto factors = get_prime_factors(n, primes);
+	int phi = n;
+	for (int f : factors) {
+		phi = phi * (f - 1) / f;
+	}
+	return phi;
+}
+
+inline unsigned long long russianPeasant_mul_mod(unsigned long long a, unsigned long long b, unsigned long long mod)
 {
 	unsigned long long res = 0;  // initialize result 
 	a %= mod;
@@ -28,7 +103,8 @@ unsigned long long russianPeasant_mul_mod(unsigned long long a, unsigned long lo
 	}
 	return res;
 }
-unsigned long long pow_mod(unsigned long long base, unsigned long long exp, unsigned long long mod) // a^b % mod
+
+inline unsigned long long pow_mod(unsigned long long base, unsigned long long exp, unsigned long long mod) // a^b % mod
 {
 	unsigned long long res = 1;  // initialize result 
 	while (exp > 0) {
