@@ -5,6 +5,7 @@
 #include <deque>
 #include <iterator>
 #include <iostream>
+#include <queue>
 using namespace std;
 
 template<typename VEC>
@@ -103,7 +104,7 @@ public:
 		return removed_edges;
 	}
 };
-TEST_CASE("Hacker rank DP graph: even tree", "[NEW]")
+TEST_CASE("Hacker rank graph: even tree", "[NEW]")
 {
 	SECTION("test medium merge edge case") {
 		Graph g(12);
@@ -133,4 +134,49 @@ TEST_CASE("Hacker rank DP graph: even tree", "[NEW]")
 			g.add_undirect_edge(e.first, e.second);
 		REQUIRE(g.build_even_forests() == 3);
 	}
+}
+
+vector<int> shortestReach(int n, vector<vector<int>> edges, int s) {
+	vector<int> distTo(n + 1, INT32_MAX);  // 1 based, 0 not used
+	vector<char> done(n + 1, 0);
+	vector<vector<pair<int, int>>> adjList(n + 1); // edge with weight, per vertex
+	for (const auto& e : edges) {
+		adjList[e[0]].push_back({ e[1], e[2] });
+		adjList[e[1]].push_back({ e[0], e[2] });  // un-directed graph
+	}
+	auto cmp = [&distTo](int u, int v) { return distTo[u] > distTo[v]; }; // min heap
+	priority_queue<int, vector<int>, decltype(cmp)> bfs_queue(cmp);
+	distTo[s] = 0;
+	bfs_queue.push(s);
+	while (!bfs_queue.empty()) {
+		int from = bfs_queue.top();
+		bfs_queue.pop();
+		if (done[from])
+			continue;
+		done[from] = 1;
+		sort(begin(adjList[from]), end(adjList[from]), [](const auto&p1, const auto&p2) { return p1.second < p2.second; });  // sort by edges, prevent longer one used if 2 edges exist between same nodes
+		for (const auto& to : adjList[from]) {
+			if (done[to.first])
+				continue;
+			int dist = distTo[from] + to.second;
+			if (dist < distTo[to.first]) {
+				distTo[to.first] = dist;
+				bfs_queue.push(to.first);
+			}
+		}
+	}
+	vector<int> ans;
+	ans.reserve(n - 1);
+	for (int i = 1; i <= n; i++)
+	{
+		if (i != s) {
+			ans.push_back(distTo[i] == INT32_MAX ? -1 : distTo[i]);
+		}
+	}
+	return ans;
+}
+
+TEST_CASE("Hacker rank graph: Dijkstra: Shortest Reach 2", "[NEW]")
+{
+	auto ans = shortestReach(10, vector<vector<int>>{}, 1);
 }
