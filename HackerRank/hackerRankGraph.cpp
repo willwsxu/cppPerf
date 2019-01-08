@@ -2,6 +2,7 @@
 //#include "eraseRemove.h"
 #include <vector>
 #include <set>
+#include <map>
 #include <deque>
 #include <iterator>
 #include <iostream>
@@ -138,45 +139,42 @@ TEST_CASE("Hacker rank graph: even tree", "[NEW]")
 
 vector<int> shortestReach(int n, vector<vector<int>> edges, int s) {
 	vector<int> distTo(n + 1, INT32_MAX);  // 1 based, 0 not used
-	vector<char> done(n + 1, 0);
-	vector<vector<pair<int, int>>> adjList(n + 1); // edge with weight, per vertex
+	vector<map<int, int>> adjList(n + 1);  // edge with weight, per vertex
 	for (const auto& e : edges) {
-		adjList[e[0]].push_back({ e[1], e[2] });
-		adjList[e[1]].push_back({ e[0], e[2] });  // un-directed graph
+		auto update_smaller = [](auto& edge_weight, int w) {
+			if (edge_weight == 0 || edge_weight> w)
+				edge_weight=w;
+		};  // update weight if weight is smaller
+		update_smaller(adjList[e[0]][e[1]], e[2]);
+		update_smaller(adjList[e[1]][e[0]], e[2]);  // un-directed graph
 	}
-	auto cmp = [&distTo](int u, int v) { return distTo[u] > distTo[v]; }; // min heap
-	priority_queue<int, vector<int>, decltype(cmp)> bfs_queue(cmp);
+	//auto cmp = [&distTo](int u, int v) { return distTo[u] > distTo[v]; }; // min heap
+	// it is incorrect to use distTo to compare in priority queue!!  (idea from Halim book)
+	using pii = pair<int, int>;  // weight and vertex
+	priority_queue<pii, vector<pii>, greater<pii>> bfs_queue;  // weight to this vertex when it is added to queue
 	distTo[s] = 0;
-	bfs_queue.push(s);
+	bfs_queue.push({ 0,s });
 	while (!bfs_queue.empty()) {
-		int from = bfs_queue.top();
+		auto from = bfs_queue.top();
 		bfs_queue.pop();
-		if (done[from])
+		int u = from.second;
+		if (from.first > distTo[u])  // this vertex now has shorter distance, discard it!!!!!
 			continue;
-		done[from] = 1;
-		sort(begin(adjList[from]), end(adjList[from]), [](const auto&p1, const auto&p2) { return p1.second < p2.second; });  // sort by edges, prevent longer one used if 2 edges exist between same nodes
-		for (const auto& to : adjList[from]) {
-			if (done[to.first])
-				continue;
-			int dist = distTo[from] + to.second;
+		for (const auto& to : adjList[u]) {
+			int dist = distTo[u] + to.second;
 			if (dist < distTo[to.first]) {
 				distTo[to.first] = dist;
-				bfs_queue.push(to.first);
+				bfs_queue.push({ distTo[to.first], to.first });
 			}
 		}
 	}
-	vector<int> ans;
-	ans.reserve(n - 1);
-	for (int i = 1; i <= n; i++)
-	{
-		if (i != s) {
-			ans.push_back(distTo[i] == INT32_MAX ? -1 : distTo[i]);
-		}
-	}
-	return ans;
+	replace(begin(distTo), end(distTo), INT32_MAX, -1); distTo[0] = 0;
+	distTo.erase(remove_if(begin(distTo), end(distTo), [](int d) { return d == 0; }), end(distTo));
+	return distTo;
 }
 
 TEST_CASE("Hacker rank graph: Dijkstra: Shortest Reach 2", "[NEW]")
 {
-	auto ans = shortestReach(10, vector<vector<int>>{}, 1);
+	auto ans = shortestReach(8, vector<vector<int>>{ {1, 2, 4}, { 1,4,8 }, { 2,4,3 }, { 2,3,10 }, { 3,4,5 }, { 4,6,6 }, { 6,8,2 }, { 3,8,100 }, { 2,4,30 }, {4,8,1}}, 1);
+	CHECK(ans == vector<int>{4, 12, 7, -1, 10, -1, 8});
 }

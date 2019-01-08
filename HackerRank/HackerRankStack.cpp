@@ -1,6 +1,7 @@
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 
 #include "mathlib.h"
+#include "mathlib_primes.h"
 #include "helper.h"
 #include <numeric>
 #include <stack>
