@@ -1176,3 +1176,46 @@ TEST_CASE("Project Euler: Euler Totient function phi", "[NEW]")
 	CHECK(euler_phi(10, primes) == 4);
 	CHECK(euler_phi(87109, primes) == 79180);
 }
+
+vector<vector<int>> prime_permutation(int N, int K)
+{
+	auto primes = make_primes(1000000);
+	map<int, vector<int>> prime_permu;
+	for (int p : primes) {
+		prime_permu[get_largest_permu(p)].push_back(p);
+	}
+	vector<vector<int>> result;
+	for (const auto& permu : prime_permu) {
+		const vector<int>& AP = permu.second;
+		int size = AP.size();
+		if (size<K)
+			continue;
+		if (AP[0] >= N)
+			continue;
+		//copy(begin(AP), end(AP), ostream_iterator<int>(cout, " "));
+		//cout << "\n";
+		for (int i = 0; i <= size - K; i++) {  // pick first term
+			for (int j = i + 1; j <= size - K - 1; j++)  // pick second
+			{
+				int d = AP[j] - AP[i];
+				//cout << d << " AP d\n";
+				vector<int> ans{ AP[i], AP[j] };
+				int term = AP[j] + d;
+				for (int k = 0; k<K - 2; k++, term += d) {  // find rest of the terms
+					auto found = lower_bound(begin(AP), end(AP), term);
+					if (found == end(AP) || *found != term)
+						break;
+					ans.push_back(term);
+				}
+				if (ans.size() == K) {
+					auto found = lower_bound(begin(AP), end(AP), term);
+					if (found == end(AP))  // exact K size
+						result.push_back(ans);
+				}
+			}
+		}
+	}
+	sort(begin(result), end(result), [](const auto&v1, const auto&v2) { return v1[0]<v2[0]; });
+	return result;
+}
+// Project Euler #49: Prime permutations, and arithmetic progression
