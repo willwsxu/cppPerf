@@ -1177,12 +1177,15 @@ TEST_CASE("Project Euler: Euler Totient function phi", "[NEW]")
 	CHECK(euler_phi(87109, primes) == 79180);
 }
 
+// requirements not clear:
+// 1. sort answer by first term
+// 2. if the progression has more than K, count all, one, or none?
 vector<vector<int>> prime_permutation(int N, int K)
 {
 	auto primes = make_primes(1000000);
 	map<int, vector<int>> prime_permu;
 	for (int p : primes)
-		prime_permu[get_largest_permu(p)].push_back(p);
+		prime_permu[get_largest_permu(p)].push_back(p);  // group prime numbers by same permutation
 	vector<vector<int>> result;
 	for (const auto& permu : prime_permu) {
 		const vector<int>& AP = permu.second;
@@ -1191,25 +1194,25 @@ vector<vector<int>> prime_permutation(int N, int K)
 			continue;
 		//copy(begin(AP), end(AP), ostream_iterator<int>(cout, " "));
 		//cout << "\n";
-		map<int, int> ap_diff;
+		map<int, int> ap_diff;  // count by difference, for all pairs of numbers
 		for (int i = 0; i < size - 1; i++) {  // pick first term
 			for (int j = i + 1; j < size; j++)  // pick second
-			{
 				ap_diff[AP[j] - AP[i]]++;
-			}
 		}
 		set<int> ap_set(begin(AP), end(AP));
 		for (const auto& p : ap_diff) {
-			if (p.second == K - 1) {  // find K terms AP
-				for (int i = 0; i < size - K + 1; i++) {
-					bool found = true;
-					for (int j = 1; j < K; j++) {
-						if (ap_set.count(AP[i] + j*p.first) == 0) {
-							found = false;
-							break;
+			if (p.second >= K - 1) {  // find K or more terms with same diff!!
+				for (int i = 0; i < size - K + 1; i++) { // check start number and see if rest of terms in the set
+					if (AP[i] >= N)  // check constraint again here
+						break;
+					auto validate_AP = [&ap_set, K, term1=AP[i], diff= p.first]() {
+						for (int j = 1; j < K; j++) {
+							if (ap_set.count(term1 + j*diff) == 0)
+								return false;
 						}
-					}
-					if (found) {
+						return true;
+					};
+					if (validate_AP()) {
 						vector<int> valid_ap{ AP[i] };
 						for (int j = 1; j < K; j++)
 							valid_ap.push_back(AP[i] + j*p.first);
@@ -1226,5 +1229,5 @@ vector<vector<int>> prime_permutation(int N, int K)
 TEST_CASE("Project Euler #49: Prime permutations, and arithmetic progression", "[NEW]")
 {
 	CHECK(prime_permutation(100000, 4) == vector<vector<int>>{ {83987, 88937, 93887, 98837}});
-	CHECK(prime_permutation(100000, 3) == vector<vector<int>>{ {83987, 88937, 93887, 98837}});
+	CHECK(prime_permutation(10000, 3) == vector<vector<int>>{ {1487, 4817, 8147}, {2969, 6299, 9629}});
 }
