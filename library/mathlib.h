@@ -183,7 +183,8 @@ bool isPalindrome(RandIter first, RandIter last) {
 }
 
 // find digit permutation with largest value(sort digit in reverse order), function as key
-inline long long get_largest_permu(long long num) {
+template<typename T>
+T get_largest_permu(T num) {
 	std::vector<char> largest;
 	while (num>0) {
 		largest.push_back(num % 10);

@@ -1156,7 +1156,7 @@ long long totient_max(long long N) {
 	long long n = 1;
 	//double ans = 1;
 	for (int p : primes) {
-		if (n*p >= N || n*p<0)
+		if (n*p >= N || n*p < 0)
 			break;
 		n *= p;
 		//ans *= (double)p / (p - 1);
@@ -1181,36 +1181,40 @@ vector<vector<int>> prime_permutation(int N, int K)
 {
 	auto primes = make_primes(1000000);
 	map<int, vector<int>> prime_permu;
-	for (int p : primes) {
+	for (int p : primes)
 		prime_permu[get_largest_permu(p)].push_back(p);
-	}
 	vector<vector<int>> result;
 	for (const auto& permu : prime_permu) {
 		const vector<int>& AP = permu.second;
 		int size = AP.size();
-		if (size<K)
-			continue;
-		if (AP[0] >= N)
+		if ( size < K || AP[0] >= N)
 			continue;
 		//copy(begin(AP), end(AP), ostream_iterator<int>(cout, " "));
 		//cout << "\n";
-		for (int i = 0; i <= size - K; i++) {  // pick first term
-			for (int j = i + 1; j <= size - K - 1; j++)  // pick second
+		map<int, int> ap_diff;
+		for (int i = 0; i < size - 1; i++) {  // pick first term
+			for (int j = i + 1; j < size; j++)  // pick second
 			{
-				int d = AP[j] - AP[i];
-				//cout << d << " AP d\n";
-				vector<int> ans{ AP[i], AP[j] };
-				int term = AP[j] + d;
-				for (int k = 0; k<K - 2; k++, term += d) {  // find rest of the terms
-					auto found = lower_bound(begin(AP), end(AP), term);
-					if (found == end(AP) || *found != term)
-						break;
-					ans.push_back(term);
-				}
-				if (ans.size() == K) {
-					auto found = lower_bound(begin(AP), end(AP), term);
-					if (found == end(AP))  // exact K size
-						result.push_back(ans);
+				ap_diff[AP[j] - AP[i]]++;
+			}
+		}
+		set<int> ap_set(begin(AP), end(AP));
+		for (const auto& p : ap_diff) {
+			if (p.second == K - 1) {  // find K terms AP
+				for (int i = 0; i < size - K + 1; i++) {
+					bool found = true;
+					for (int j = 1; j < K; j++) {
+						if (ap_set.count(AP[i] + j*p.first) == 0) {
+							found = false;
+							break;
+						}
+					}
+					if (found) {
+						vector<int> valid_ap{ AP[i] };
+						for (int j = 1; j < K; j++)
+							valid_ap.push_back(AP[i] + j*p.first);
+						result.push_back(valid_ap);
+					}
 				}
 			}
 		}
@@ -1218,4 +1222,9 @@ vector<vector<int>> prime_permutation(int N, int K)
 	sort(begin(result), end(result), [](const auto&v1, const auto&v2) { return v1[0]<v2[0]; });
 	return result;
 }
-// Project Euler #49: Prime permutations, and arithmetic progression
+// 
+TEST_CASE("Project Euler #49: Prime permutations, and arithmetic progression", "[NEW]")
+{
+	CHECK(prime_permutation(100000, 4) == vector<vector<int>>{ {83987, 88937, 93887, 98837}});
+	CHECK(prime_permutation(100000, 3) == vector<vector<int>>{ {83987, 88937, 93887, 98837}});
+}
