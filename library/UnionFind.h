@@ -4,6 +4,39 @@
 #include <algorithm>
 #include <set>
 
+class UnionFindSimple
+{
+	vector<int> parent;
+	vector<int> size;
+	int union_count = 0;
+public:
+	UnionFindSimple(int N) :parent(N), size(N, 0) {
+		iota(begin(parent), end(parent), 0);
+	}
+	int find(int u) {
+		while (parent[u] != u) {
+			u = parent[u];
+		}
+		return u;
+	}
+	bool add_edge(int u, int v) {  // union
+		int p_u = find(u - 1);
+		int p_v = find(v - 1);
+		if (p_u != p_v) {
+			if (size[p_u] > size[p_v])
+				swap(p_v, p_u);
+			parent[p_u] = parent[p_v];  // merge small to big
+			size[p_v] += size[p_u];
+			union_count++;
+			return true;
+		}
+		return false;
+	}
+	int components() const {
+		return parent.size() - union_count;
+	}
+};
+
 class UnionFind
 {
 	std::vector<int> parents;
