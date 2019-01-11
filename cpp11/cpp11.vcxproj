@@ -153,6 +153,7 @@
     <ClCompile Include="HashTableBaseFileTest.cpp" />
     <ClCompile Include="HashTableBaseTest.cpp" />
     <ClCompile Include="HashTableBucketTest.cpp" />
+    <ClCompile Include="InterviewBook.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MessageTest.cpp" />
     <ClCompile Include="meta_test.cpp" />
