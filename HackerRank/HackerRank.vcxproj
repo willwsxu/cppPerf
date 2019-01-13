@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FourSquare.cpp" />
     <ClCompile Include="HackerLRUCache.cpp" />
     <ClCompile Include="HackerRank.cpp" />
     <ClCompile Include="HackerRankDp.cpp" />
