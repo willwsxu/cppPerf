@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <cassert>
 #include <map>
 using namespace std;
 
@@ -54,7 +55,7 @@ TEST_CASE("four square interview Jan 12", "[NEW]")
 	CHECK(uncovered_invervals(vii{ { 2, 6 } }) == vii{});
 	CHECK(uncovered_invervals(vii{ {2, 6}, { 9,12 }, { 8,9 }, { 18,21 }, {4,7}, {10,11} }) == vii{ {7,8},{12,18} });
 	CHECK(uncovered_invervals(vii{ { 2, 60 },{ 9,12 },{ 8,9 },{ 18,21 },{ 4,7 },{ 10,11 } }) == vii{ });
-	CHECK(uncovered_invervals(vii{ { 2, 60 },{ 900,1200 },{ 8,9 },{ 18,21 },{ 4,7 },{ 10,11 } }) == vii{ {60,900} });
+	CHECK(uncovered_invervals(vii{ { 2, 60 },{ 60,120 },{ 8,9 },{ 18,21 },{ 4,7 },{ 121,122 } }) == vii{ {120,121} });
 
 	//read_stdin();
 }
@@ -72,6 +73,10 @@ vector<string> get_tokens(string&& str, char sep=' ') {
 	for (string token; getline(strm, token, sep); ) {
 		tokens.push_back(move(token));
 	}
+	if (!tokens.empty() && tokens.front().empty())  // remove blank from front
+		tokens.erase(begin(tokens));
+	if (!tokens.empty() && tokens.back().empty())   // remove blank from end
+		tokens.erase(end(tokens)-1);
 	return tokens;
 }
 
@@ -85,21 +90,23 @@ class EndPointDispatch
 			node.endPoint = endpoint;
 			return;
 		}
+		assert(patterns[idx].empty() == false);
 		put(node.next[move(patterns[idx])], move(patterns), idx + 1, move(endpoint));
 	}
 	// recursively look up component node
 	string find(Component& node, const vector<string>& requestPath, int idx) {
 		if (idx == requestPath.size())
 			return node.endPoint;
+		assert(requestPath[idx].empty() == false);
 		auto next = node.next.find(requestPath[idx]);
 		string result;
 		if ( next != end(node.next) ) {  // first try to match component exactly
-			result= find(next->second, requestPath, idx + 1);
+			result = find(next->second, requestPath, idx + 1);
 		}
 		if (result.empty()) { // no exact match
 			next = node.next.find("X");  // wildcard search
 			if (next != end(node.next))
-				return find(next->second, requestPath, idx + 1);
+				result = find(next->second, requestPath, idx + 1);
 		}
 		return result;
 	}
@@ -121,27 +128,34 @@ public:
 // assume number of components in request path are relatively small
 //   comparing to total requests
 // assume wildcard matches one whole component, not partial, not more than one
-// if at each level there is 1000 different components, 
+//
 // using trie to store endpoint by component patterns
-// from root, each component is child node of previous component, store end point at leaf child
+// from root, each component is child node of previous component,
+// store endpoint at leaf child
 // wildcard component is created with component name X
-// to find, from root, and follow next pointer to find the leaf component child.
-// at each level, if component is not found or result is empty, search for wildcard
+//
+// find matching endpoint from request:
+// from root, follow next pointer to find the leaf component child.
+// at each level, if component is not found or result is empty, search for
+// wildcard
+//
 // runtime analysis:
-// N=number of endpoints, K=number of components in request path, M=total requests
-// because we potentially have to search both exact and wildcard match at each component level, 
-// it takes O(logK) to find child in map
+// N=number of endpoints, K=number of components in request path, M=total
+// requests
+// We potentially have to search both exact and wildcard match at each
+// level, it takes O(logK) to find child in map
 // so dispatch find routine complexity is O(LogK * 2^K)
 // It is only advantageuous to old regex match if K is much smaller than N
 // and there is very few wildcard along the search path
 // if that is the case, complexity can be close to O(KlogK)
-// overall program complexity is O(MKlogK), since logK is small, it is roughly O(MK)
-// space complexity:
-// It has at most N leaf trie nodes, which implies O(N) total trie nodes
-// each node has next pointer, with size P=unique component count,
-// say len of component name is L,
-// final space complexity for adding trie is O(N * P * *L)
-// if N=1000, P=10, L=20, total memory added is 200K, would fit in L2 cache
+// overall program complexity is O(MKlogK), since logK is small, it is roughly
+// O(MK) 
+// space complexity: 
+// It has at most N leaf trie nodes, which implies O(N) total trie nodes,
+// each node has next pointer, with size P=unique component
+// count at a level, Let L = len of component name, final space complexity for
+// adding trie is O(N * P *L) 
+// if N=1000, P=10, L=20, total memory added is 200K, would fit in L2 cache 
 // It should be much faster than the old regex matching
 void read_stdin2()
 {
@@ -170,6 +184,7 @@ void read_stdin2()
 TEST_CASE("four square interview 2 Jan 12", "[NEW]")
 {
 	EndPointDispatch dispatch;
+	dispatch.add_config("/ RootEndpoint");
 	dispatch.add_config("/user userRootEndpoint");
 	dispatch.add_config("/user/friends userFriendsEndpoint");
 	dispatch.add_config("/user/lists userListsEndpoint");
@@ -178,7 +193,6 @@ TEST_CASE("four square interview 2 Jan 12", "[NEW]")
 	dispatch.add_config("/user/X/lists userListsEndpoint");
 	dispatch.add_config("/user/X/lists/X userListsIdEndpoint");
 	dispatch.add_config("/X/X/lists/X ListsIdEndpoint");
-	dispatch.add_config("/ RootEndpoint");
 	dispatch.add_config("/X/friends userFriendsEndpoint");
 	dispatch.add_config("/X/lists userListsEndpoint");
 	dispatch.add_config("/settings settingsEndpoint");
@@ -198,10 +212,20 @@ TEST_CASE("four square interview 2 Jan 12", "[NEW]")
 
 	CHECK(dispatch.match("/abc/def/lists/123") == "ListsIdEndpoint");
 
-	dispatch.add_config("/X/X/X/X/default defaultEndpoint");
-	CHECK(dispatch.match("/user/friends/lists/friends/default") == "defaultEndpoint");
-	CHECK(dispatch.match("/abc/def/lists/123/default") == "defaultEndpoint");
 	CHECK(dispatch.match("/user/friends/lists/friends/X") == "404");
 	CHECK(dispatch.match("/user/friends/friends/friends") == "404");
+	dispatch.add_config("/X/X/X/X/X emptyEndpoint");
+	dispatch.add_config("/X/X/X/X/default defaultEndpoint");
+	dispatch.add_config("/X/s1/X/X/X s1Endpoint");
+	dispatch.add_config("/s0/X/s2/X/X s02Endpoint");
+	dispatch.add_config("/s0/s11/s2/X/X s0112Endpoint");
+	CHECK(dispatch.match("/user/friends/lists/friends/default") == "defaultEndpoint");
+	CHECK(dispatch.match("/abc/def/lists/123/456") == "emptyEndpoint");
+	CHECK(dispatch.match("/abc/s1/lists/123/456") == "s1Endpoint");
+	CHECK(dispatch.match("/s0/s1/lists/123/default") == "s1Endpoint");
+	CHECK(dispatch.match("/s0/s1/s2/123/456") == "s02Endpoint");
+	CHECK(dispatch.match("/s0/s11/s2/123/456") == "s0112Endpoint");
+	dispatch.add_config("/X/X/X/X/ emptyEndpoint");
+	CHECK(dispatch.match("/user/friends/") == "userFriendsEndpoint");
 	CHECK(dispatch.match("/user/friends/friends") == "userFriendsEndpoint");
 }
