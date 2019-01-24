@@ -1,3 +1,6 @@
+
+#include "..\catch.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -27,12 +30,12 @@ struct calc_data_2
 };
 
 
-struct ref
+struct ref_data
 {
 	uint32_t cat_id;
 	uint32_t ref_seq_id;
 	uint32_t payload;
-	ref(uint32_t cat = 0, uint32_t seq = 0, uint32_t pay = 0) :cat_id(cat), ref_seq_id(seq), payload(pay) {}
+	ref_data(uint32_t cat = 0, uint32_t seq = 0, uint32_t pay = 0) :cat_id(cat), ref_seq_id(seq), payload(pay) {}
 };
 
 // same category
@@ -45,7 +48,7 @@ class AtomicSet
 {
 	map<uint32_t, vector<calc_data_1>>  data1;
 	map<uint32_t, vector<calc_data_2>>  data2;
-	map<uint32_t, vector<ref>>          data3;
+	map<uint32_t, vector<ref_data>>          data3;
 	map<uint32_t, map<uint32_t, uint32_t>>  msg_seq_count;
 
 	void send_atomic(uint32_t cat_id, uint32_t seq_id)
@@ -76,7 +79,7 @@ public:
 		data2[data.cat_id].push_back(data);
 		send_atomic(data.cat_id, data.ref_seq_id);
 	}
-	void add_meesage(const ref& data) {
+	void add_meesage(const ref_data& data) {
 		data3[data.cat_id].push_back(data);
 		send_atomic(data.cat_id, data.ref_seq_id);
 	}
@@ -84,13 +87,10 @@ public:
 };
 
 
-
-
-int main() {
-	/* Enter your code here. Read input from STDIN. Print output to STDOUT */
+TEST_CASE("Akuna interview", "[NEW]")
+{
 	AtomicSet aset;
 	aset.add_meesage(calc_data_1(1, 1, 10));
 	aset.add_meesage(calc_data_2(1, 1, 10));
-	aset.add_meesage(ref(1, 1, 10));
-	return 0;
+	aset.add_meesage(ref_data(1, 1, 10));
 }

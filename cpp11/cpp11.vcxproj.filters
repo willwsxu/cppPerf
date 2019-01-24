@@ -158,5 +158,8 @@
     <ClCompile Include="InterviewBook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="atomic_set.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

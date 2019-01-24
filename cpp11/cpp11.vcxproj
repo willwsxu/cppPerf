@@ -160,6 +160,7 @@
     <ClCompile Include="SeanParentTest.cpp" />
     <ClCompile Include="slistTest.cpp" />
     <ClCompile Include="practice.cpp" />
+    <ClCompile Include="atomic_set.cpp" />
     <ClCompile Include="testLargetInt.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
