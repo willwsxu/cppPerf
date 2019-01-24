@@ -2,6 +2,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <numeric>
 #include <set>
 
 class UnionFindSimple
@@ -11,7 +12,7 @@ class UnionFindSimple
 	int union_count = 0;
 public:
 	UnionFindSimple(int N) :parent(N), size(N, 0) {
-		iota(begin(parent), end(parent), 0);
+		std::iota(begin(parent), end(parent), 0);
 	}
 	int find(int u) {
 		while (parent[u] != u) {
@@ -24,7 +25,7 @@ public:
 		int p_v = find(v - 1);
 		if (p_u != p_v) {
 			if (size[p_u] > size[p_v])
-				swap(p_v, p_u);
+				std::swap(p_v, p_u);
 			parent[p_u] = parent[p_v];  // merge small to big
 			size[p_v] += size[p_u];
 			union_count++;
@@ -35,6 +36,43 @@ public:
 	int components() const {
 		return parent.size() - union_count;
 	}
+};
+
+class UnionFind_Map {
+	map<int, int> parents;
+	map<int, int> size;
+	int max_size = 0;
+
+public:
+	int find_parent(int a) {
+		auto p = parents.find(a);
+		if (p == end(parents))
+			return a; // return self
+		return find_parent(p->second);
+	}
+	void join(int a, int b) {
+		int pa = find_parent(a);
+		int pb = find_parent(b);
+		if (pa == pb)  // same component
+			return;
+		int &sa = size[pa];
+		int &sb = size[pb];
+		if (sa == 0)
+			sa++;
+		if (sb == 0)
+			sb++;
+		if (sa > sb) { // swap(sa, sab),swap(pa,pb) does not work
+			parents[pb] = pa;
+			sa += sb;
+			max_size = max(max_size, sa);
+		}
+		else {
+			parents[pa] = pb;
+			sb += sa;
+			max_size = max(max_size, sb);
+		}
+	}
+	int largest_CC() const { return max_size; }  // connected component
 };
 
 class UnionFind
