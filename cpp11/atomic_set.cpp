@@ -90,7 +90,17 @@ public:
 TEST_CASE("Akuna interview", "[NEW]")
 {
 	AtomicSet aset;
-	aset.add_meesage(calc_data_1(1, 1, 10));
+	aset.add_meesage(calc_data_1(1, 2, 10));
 	aset.add_meesage(calc_data_2(1, 1, 10));
-	aset.add_meesage(ref_data(1, 1, 10));
+	aset.add_meesage(ref_data(1, 3, 10));
+	aset.add_meesage(calc_data_2(1, 2, 10));
+	aset.add_meesage(calc_data_2(1, 3, 10));
+	aset.add_meesage(calc_data_1(2, 4, 10));
+	aset.add_meesage(calc_data_1(1, 3, 10));
+	aset.add_meesage(ref_data(2, 4, 10));
+	aset.add_meesage(calc_data_2(2, 4, 10));
+
+	aset.add_meesage(ref_data(1, 4, 100));
+	aset.add_meesage(calc_data_2(1, 4, 100));
+	aset.add_meesage(calc_data_1(1, 4, 100));
 }
