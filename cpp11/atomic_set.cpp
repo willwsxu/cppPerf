@@ -51,6 +51,8 @@ class AtomicSet
 	map<uint32_t, vector<ref_data>>          data3;
 	map<uint32_t, map<uint32_t, uint32_t>>  msg_seq_count;
 
+	map<uint32_t, vector<int>>	atomic_set;  // seq_num of all atomic sets
+
 	void send_atomic(uint32_t cat_id, uint32_t seq_id)
 	{
 		auto& d1 = data1[cat_id];
@@ -62,7 +64,8 @@ class AtomicSet
 		auto d2end = remove_if(begin(d2), end(d2), [seq_id](const auto&d) { return d.ref_seq_id <seq_id; });
 		auto d3end = remove_if(begin(d3), end(d3), [seq_id](const auto&d) { return d.ref_seq_id <seq_id; });
 
-		cout << cat_id << "," << seq_id << ":" << d1[0].payload << " " << d2[0].payload << " " << d3[0].payload << "\n";
+		//cout << cat_id << "," << seq_id << ":" << d1[0].payload << " " << d2[0].payload << " " << d3[0].payload << "\n";
+		atomic_set[cat_id].push_back(seq_id);
 		d1end = remove_if(begin(d1), d1end, [seq_id](const auto&d) { return d.ref_seq_id == seq_id; });
 		d2end = remove_if(begin(d2), d2end, [seq_id](const auto&d) { return d.ref_seq_id == seq_id; });
 		d3end = remove_if(begin(d3), d3end, [seq_id](const auto&d) { return d.ref_seq_id == seq_id; });
@@ -84,6 +87,10 @@ public:
 		send_atomic(data.cat_id, data.ref_seq_id);
 	}
 
+	// for testing
+	vector<int>& get_atomic_Sets(uint32_t cat_id) {
+		return atomic_set[cat_id];
+	}
 };
 
 
@@ -96,11 +103,40 @@ TEST_CASE("Akuna interview", "[NEW]")
 	aset.add_meesage(calc_data_2(1, 2, 10));
 	aset.add_meesage(calc_data_2(1, 3, 10));
 	aset.add_meesage(calc_data_1(2, 4, 10));
+	CHECK(aset.get_atomic_Sets(1) == vector<int>{});
 	aset.add_meesage(calc_data_1(1, 3, 10));
+	CHECK(aset.get_atomic_Sets(1) == vector<int>{3});
 	aset.add_meesage(ref_data(2, 4, 10));
 	aset.add_meesage(calc_data_2(2, 4, 10));
+	CHECK(aset.get_atomic_Sets(2) == vector<int>{4});
 
 	aset.add_meesage(ref_data(1, 4, 100));
 	aset.add_meesage(calc_data_2(1, 4, 100));
 	aset.add_meesage(calc_data_1(1, 4, 100));
+	CHECK(aset.get_atomic_Sets(1) == vector<int>{3,4});
+}
+
+#include <random>
+vector<int> randdom_seq(int n, int gap_freq) {
+	std::random_device rd;
+	thread_local std::mt19937 engine(rd());
+	uniform_int_distribution<> dis(1, gap_freq);  // 
+	vector<int> seq_num;
+	generate_n(back_inserter(seq_num), n, [n = 0,&dis,&rd]() mutable {
+		++n;
+		if (dis(engine) == 1)
+			return 0;
+		return n;
+	});
+	return seq_num;
+}
+
+
+TEST_CASE("Akuna interview- large test", "[NEW]")
+{
+	int messages = 2000000;
+	int gap_freq = 3;  // gap 1 in 3
+	auto seq1 = randdom_seq(messages, gap_freq);
+	auto seq2 = randdom_seq(messages, gap_freq);
+	auto seq3 = randdom_seq(messages, gap_freq);
 }
