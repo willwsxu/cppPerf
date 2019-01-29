@@ -161,5 +161,8 @@
     <ClCompile Include="atomic_set.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MineSweeper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
