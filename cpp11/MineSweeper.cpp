@@ -93,21 +93,31 @@ public:
 		return true;  // return false if bomb
 	}
 	void mark(int r, int c) {  // mark a cell as bomb
-
+		if (!valid(r, c) || board[r][c].state == Opened) {
+			cout << "invalid move or already opened, try again\n";
+			return;
+		}
+		if (board[r][c].state == Unopened)  // toggle buess if cell is a bomb
+			board[r][c].state = Marked;
+		else
+			board[r][c].state = Unopened;
 	}
 	void print(bool debug=false) {
 		cout << " |0|1|2|3|4|5|6|7|8|9|\n";
 		for (int i = 0; i < rows; i++) {
 			cout << i << "|";
 			for (int j = 0; j < cols; j++) {
-				if (!debug && board[i][j].state == Unopened)
-					cout << "-";
-				else if (board[i][j].mine < 0)
-					cout << '!';
-				else if (board[i][j].mine == 0)
-					cout << " ";
-				else
-					cout << board[i][j].mine;
+				if (debug || board[i][j].state == Opened) {
+					if (board[i][j].mine < 0)
+						cout << '!';
+					else if (board[i][j].mine == 0)
+						cout << " ";
+					else
+						cout << board[i][j].mine;
+				}
+				else {
+					cout <<( board[i][j].state == Marked? "?": "-");
+				}
 				cout << "|";
 			}
 			cout << "\n";
