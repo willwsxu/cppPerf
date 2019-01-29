@@ -1,6 +1,7 @@
 #include "..\catch.hpp"
 
 #include <vector>
+#include <deque>
 #include <iostream>
 #include <random>
 
@@ -13,8 +14,15 @@ class Board
 		int		mine=0; // -1 mine or count of mines surround
 		Cell_State		state= Unopened;
 	};
+	vector<vector<int>> dir{ { -1,-1 },{ -1,0 },{ -1,1 },{ 0,-1 },{ 0,1 },{ 1,-1 },{ 1,0 },{ 1,1 } };
 	vector<vector<Cell>>  board;
+	int		opened = 0;
+	int		mines;
 	int rows, cols;
+
+	bool valid(int r, int c) {
+		return r >= 0 && c >= 0 && r < rows && c < cols;
+	}
 	void shuffleBoard()
 	{
 		std::random_device rd;
@@ -34,18 +42,35 @@ class Board
 			for (int j = 0; j < cols; j++) {
 				if (board[i][j].mine >= 0)
 					continue;
-				vector<vector<int>> dir{ {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{ 1,-1 },{ 1,0 },{ 1,1 } };
 				for (const auto& d : dir) {  // add 1 to all cells surrounding a mine
 					int r = i + d[0];
 					int c = j + d[1];
-					if (r >= 0 && c >= 0 && r < rows && c < cols)
+					if ( valid (r,c) && board[r][c].mine>=0 )
 						board[r][c].mine++;
 				}
 			}
 		}
 	}
+	void openBlankCells(int r, int c)
+	{
+		deque<pair<int, int>> q{ {r,c} };
+		while (!q.empty()) {
+			auto blank = q.front();
+			q.pop_front();
+			for (const auto& d : dir) {  // add 1 to all cells surrounding a mine
+				int r = blank.first + d[0];
+				int c = blank.second + d[1];
+				if (valid(r, c) && board[r][c].state != Opened && board[r][c].mine >= 0) {
+					opened++;
+					board[r][c].state=Opened;
+					if (board[r][c].mine == 0)
+						q.emplace_back(r, c);
+				}
+			}
+		}
+	}
 public:
-	Board(int r, int c, int mines):board(r, vector<Cell>(c)), rows(r), cols(c)
+	Board(int r, int c, int mines):board(r, vector<Cell>(c)), rows(r), cols(c),mines(mines)
 	{
 		for (int i = 0; i < mines; i++) {
 			board[i / r][i%c].mine = -1;
@@ -55,13 +80,25 @@ public:
 	}
 
 	bool play(int r, int c) {  // open this cell
+		if (!valid(r, c) || board[r][c].state==Opened) {
+			cout << "invalid move or already opened, try again\n";
+			return true;
+		}
+		if (board[r][c].mine < 0)  // bomb, lost
+			return false;
+		opened++;
+		board[r][c].state = Opened;
+		if (board[r][c].mine == 0)
+			openBlankCells(r, c);
 		return true;  // return false if bomb
 	}
 	void mark(int r, int c) {  // mark a cell as bomb
 
 	}
 	void print(bool debug=false) {
+		cout << " |0|1|2|3|4|5|6|7|8|9|\n";
 		for (int i = 0; i < rows; i++) {
+			cout << i << "|";
 			for (int j = 0; j < cols; j++) {
 				if (!debug && board[i][j].state == Unopened)
 					cout << "-";
@@ -77,7 +114,7 @@ public:
 		}
 	}
 	bool done() {
-		return true;
+		return opened + mines == rows*cols;
 	}
 };
 
@@ -123,6 +160,7 @@ public:
 				int rows, cols, mines;
 				cin >> rows >> cols >> mines;
 				Board board(rows, cols, mines);
+				board.print(true);
 				if (playBame(board))
 					cout << "You won! ";
 				cout << "Play again?\n";
@@ -134,7 +172,8 @@ public:
 
 TEST_CASE("minesweeper test", "[NEW]")
 {
-	Board board(10, 10, 20);
-	board.print(true);
-	board.print();
+	//Board board(10, 10, 20);
+	//board.print(true);
+	//board.print();
+	MineSweeperGame().GameLoop();
 }
