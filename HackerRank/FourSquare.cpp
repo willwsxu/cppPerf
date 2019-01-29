@@ -225,6 +225,10 @@ TEST_CASE("four square interview 2 Jan 12", "[NEW]")
 	CHECK(dispatch.match("/s0/s1/lists/123/default") == "s1Endpoint");
 	CHECK(dispatch.match("/s0/s1/s2/123/456") == "s02Endpoint");
 	CHECK(dispatch.match("/s0/s11/s2/123/456") == "s0112Endpoint");
+
+	dispatch.add_config("/X/friends/X/lists/ FriendsListsEndpoint");
+	CHECK(dispatch.match("/user/friends/lists/lists") == "userListsIdEndpoint");
+	CHECK(dispatch.match("/user/friends/123/lists") == "FriendsListsEndpoint");
 	dispatch.add_config("/X/X/X/X/ emptyEndpoint");
 	CHECK(dispatch.match("/user/friends/") == "userFriendsEndpoint");
 	CHECK(dispatch.match("/user/friends/friends") == "userFriendsEndpoint");

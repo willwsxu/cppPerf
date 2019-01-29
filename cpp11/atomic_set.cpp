@@ -187,7 +187,7 @@ vector<int> randdom_seq(int n, int gap_freq) {
 }
 
 #include <chrono>
-TEST_CASE("Akuna interview- large test", "[NEW]")
+TEST_CASE("Akuna interview- large test", "[LARGE]")
 {
 	int messages = 2000000;
 	int gap_freq = 3;  // gap 1 in 3
