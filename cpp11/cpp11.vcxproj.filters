@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="interviews">
+      <UniqueIdentifier>{1c0f7987-7de6-42ba-9f9d-1fc532fe0bfe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DynBuffer.h">
@@ -158,11 +161,11 @@
     <ClCompile Include="InterviewBook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="atomic_set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MineSweeper.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="atomic_set.cpp">
+      <Filter>interviews</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

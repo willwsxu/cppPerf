@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="interview">
+      <UniqueIdentifier>{0db63c27-8d15-4608-bb78-5dffb94a1d66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HackerRank.cpp">
@@ -34,7 +37,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FourSquare.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>interview</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
