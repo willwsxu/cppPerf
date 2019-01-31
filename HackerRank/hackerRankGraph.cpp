@@ -178,3 +178,35 @@ TEST_CASE("Hacker rank graph: Dijkstra: Shortest Reach 2", "[NEW]")
 	auto ans = shortestReach(8, vector<vector<int>>{ {1, 2, 4}, { 1,4,8 }, { 2,4,3 }, { 2,3,10 }, { 3,4,5 }, { 4,6,6 }, { 6,8,2 }, { 3,8,100 }, { 2,4,30 }, {4,8,1}}, 1);
 	CHECK(ans == vector<int>{4, 12, 7, -1, 10, -1, 8});
 }
+
+// DFS: Connected Cell in a Grid, of 1s. find the largest region
+int maxRegion(vector<vector<int>> grid) {
+	if (grid.empty() || grid[0].empty())
+		return 0;
+	const int R = grid.size();
+	const int C = grid[0].size();
+	int fill = 2;  // fill region from value 2
+	auto dfs_flood = [&](auto&& self, int r1, int c1, int fill) {
+		if (r1<0 || c1<0 || r1 >= R || c1 >= C || grid[r1][c1] != 1)
+			return 0;
+		grid[r1][c1] = fill;
+		int size = 1 + self(self, r1 - 1, c1, fill);
+		size += self(self, r1 + 1, c1, fill);
+		size += self(self, r1, c1 - 1, fill);
+		size += self(self, r1, c1 + 1, fill);
+		size += self(self, r1 - 1, c1 - 1, fill);
+		size += self(self, r1 - 1, c1 + 1, fill);
+		size += self(self, r1 + 1, c1 - 1, fill);
+		size += self(self, r1 + 1, c1 + 1, fill);
+		return size;
+	};
+	int region_max = 0;
+	for (int r = 0; r<R; r++) {
+		for (int c = 0; c<C; c++) {
+			if (grid[r][c] != 1)
+				continue;
+			region_max = max(region_max, dfs_flood(dfs_flood, r, c, fill++));
+		}
+	}
+	return region_max;
+}
