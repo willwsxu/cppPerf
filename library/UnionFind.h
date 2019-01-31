@@ -64,12 +64,12 @@ public:
 		if (sa > sb) { // swap(sa, sab),swap(pa,pb) does not work
 			parents[pb] = pa;
 			sa += sb;
-			max_size = max(max_size, sa);
+			max_size = std::max(max_size, sa);
 		}
 		else {
 			parents[pa] = pb;
 			sb += sa;
-			max_size = max(max_size, sb);
+			max_size = std::max(max_size, sb);
 		}
 	}
 	int largest_CC() const { return max_size; }  // connected component

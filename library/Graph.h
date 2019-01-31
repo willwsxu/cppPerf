@@ -35,3 +35,39 @@ public:
 private:
 	vector<vector<int>>  adjList;
 };
+
+class Graph {
+	vector<vector<int>> adjList;
+public:
+	Graph(int n) : adjList(n) {     // 0 based      
+	}
+
+	void add_edge(int u, int v) { //0 based
+		adjList[u].push_back(v);
+		adjList[v].push_back(u);
+	}
+
+	vector<int> shortest_reach(int start) { // 0 based
+		vector<int> distTo(adjList.size(), -1);
+		deque<int> bfs_q{ start };
+		distTo[start] = 0;
+		int dist = 0;
+		while (!bfs_q.empty()) {
+			dist += 6;
+			int old_size = bfs_q.size();
+			while (old_size--) {
+				int from = bfs_q.front();
+				bfs_q.pop_front();
+				for (int to : adjList[from]) {
+					if (distTo[to] >= 0)  // seen it before
+						continue;
+					distTo[to] = dist;
+					bfs_q.push_back(to);
+				}
+			}
+		}
+		//distTo.erase(remove(begin(distTo), end(distTo), 0), end(distTo));
+		return distTo;
+	}
+
+};

@@ -4,6 +4,7 @@
 #include "myalgo.h"
 #include "UnionFind.h"
 #include "mathlib.h"
+#include "mathlib_primes.h"
 using namespace std;
 
 class DirectGraph {
