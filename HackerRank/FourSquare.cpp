@@ -87,10 +87,10 @@ class EndPointDispatch
 	void put(Component& node, vector<string>&& patterns, int idx, string&& endpoint)
 	{
 		if (idx == patterns.size()) {
-			node.endPoint = endpoint;
+			node.endPoint = move(endpoint);
 			return;
 		}
-		assert(patterns[idx].empty() == false);
+		assert(patterns[idx].empty() == false);// empty token in middle of path is not allowed
 		put(node.next[move(patterns[idx])], move(patterns), idx + 1, move(endpoint));
 	}
 	// recursively look up component node
@@ -112,7 +112,7 @@ class EndPointDispatch
 	}
 public:
 	void add_config(string&& config) {
-		vector<string> tokens = get_tokens(move(config));
+		vector<string> tokens = get_tokens(move(config)); //path,endpoint
 		vector<string> patterns= get_tokens(move(tokens[0]), '/');
 		put(root, move(patterns), 0, move(tokens[1]));
 	}

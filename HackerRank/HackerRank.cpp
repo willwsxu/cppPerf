@@ -655,3 +655,70 @@ TEST_CASE("sorted vector", "[OLD]")
 	SortedVector<int> sorted3 = { begin(unsorted), end(unsorted) };
 	CHECK(sorted3.get() == vector<int>{5, 7, 10, 15});
 }
+
+// idea: s=merge(reverse(s)+any order(s))
+// use half of the letter to construct, from R to L to get correct order
+// Simplified logic:
+// don't add letter unless that letter count not more than half
+// put skipped letter on a non decreasing stack, decrement count
+// when there is letter must be added due to count=half count, 
+//   add any letter on stack that are smaller first
+string reverseShuffleMerge(string s) {
+	vector<int> count(26, 0), half_count(26, 0);
+	for (char c : s)
+		count[c - 'a']++;
+	// half of letter count is needed to construct original string
+	transform(begin(count), end(count), begin(half_count), [](int n) { return n / 2; });
+	copy(begin(count), end(count), ostream_iterator<int>(cout, " "));
+	cout << "\n";
+	copy(begin(half_count), end(half_count), ostream_iterator<int>(cout, " "));
+	cout << "\n";
+	string ans;
+	ans.reserve(s.size() / 2);
+	vector<char> skipped; // stack of non decreasing order of chars skipped
+	skipped.reserve(10);
+	auto erase_back = [&skipped](int c) {
+		while (!skipped.empty() && skipped.back()>c)
+			skipped.pop_back();
+	};
+	for (int i = s.size() - 1; i >= 0; --i) {  // from R to L to construct string
+		int idx = s[i] - 'a';
+		cout << s[i] << " count=" << count[idx] << " half=" << half_count[idx] << "\n";
+		if (half_count[idx] <= 0)
+			continue;
+		if (count[idx] == half_count[idx]) {
+			// must add as if we pass up, there is not enough such letter later
+			auto start = begin(skipped);
+			while (start != end(skipped) && *start <= s[i]) {
+				char c = *start; // add any smaller char
+				if (half_count[c - 'a']-- >0) {
+					ans.append(1, c);
+					cout << "    add back skipped       " << c << "\n";
+				}
+				++start;
+				if (c == s[i])
+					break;
+			}
+			skipped.erase(begin(skipped), start); // erase all added
+		}
+		if (half_count[idx] <= 0) // check again as s[i] could be just added
+			continue;
+		if (count[idx]-- > half_count[idx]) {
+			erase_back(s[i]);
+			skipped.push_back(s[i]); // delay to choose
+			cout << skipped.size() << " skipped size\n";
+		}
+		else {
+			skipped.clear(); // remove all large char
+			ans.append(1, s[i]);
+			half_count[idx]--;
+			cout << s[i] << " must add at       " << i << "\n";
+		}
+	}
+	return ans;
+}
+
+TEST_CASE("HackerRank Greedy string reverse shuffle merge", "[NEW]")
+{
+	CHECK(reverseShuffleMerge("daadaaaaeebddb") == "bddeaaa");
+}
