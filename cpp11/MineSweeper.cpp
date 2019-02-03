@@ -180,7 +180,7 @@ public:
 };
 
 
-TEST_CASE("minesweeper test", "[NEW]")
+TEST_CASE("minesweeper test", "[NO]")
 {
 	//Board board(10, 10, 20);
 	//board.print(true);

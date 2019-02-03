@@ -167,5 +167,8 @@
     <ClCompile Include="atomic_set.cpp">
       <Filter>interviews</Filter>
     </ClCompile>
+    <ClCompile Include="jumpTrading.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
