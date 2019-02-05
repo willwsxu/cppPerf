@@ -147,6 +147,7 @@
     <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ElevatorControl.cpp" />
     <ClCompile Include="FactoryTest.cpp" />
     <ClCompile Include="FunctorTest.cpp" />
     <ClCompile Include="HashMockTest.cpp" />
