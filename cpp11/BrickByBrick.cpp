@@ -57,20 +57,21 @@ void neighbor_pattern(const vector<int>& prev_pattern, int len, vector<int>&patt
 		pattern.pop_back();
 	}
 }
-long build_wall(const vector<int>& prev_pattern, int height, map<vector<int>, vector<vector<int>>>& patterns_no_crack, vector<map<vector<int>, long>>& dp)
+long long build_wall(const vector<int>& prev_pattern, int height, map<vector<int>, vector<vector<int>>>& patterns_no_crack, vector<map<vector<int>, long long>>& dp)
 {
 	if (height == 0)
 		return 1;
 	auto found = dp[height].find(prev_pattern);
-	long result = 0;
 	if (found == end(dp[height])) {
 		const auto& patterns = patterns_no_crack[prev_pattern];
+		long long result = 0;
 		for (const auto& p : patterns) {
 			result += build_wall(p, height - 1, patterns_no_crack, dp);
 		}
 		dp[height][prev_pattern] = result;
+		return result;
 	}
-	return result;
+	return found->second;
 }
 long long W(int width, int height) 
 {
@@ -83,12 +84,16 @@ long long W(int width, int height)
 	}
 	//cout << "no crack done\n";
 	long long ways = 0;
-	int count = 0;
-	vector<map<vector<int>, long>> dp(height);
+	long long small = 99999999999;
+	long long large = -9999999999;
+	vector<map<vector<int>, long long>> dp(height);
 	for (const auto& prev : patterns) {
-		ways += build_wall(prev, height - 1, patterns_no_crack, dp);
-		//cout << count++ << " " << ways << "\n";
+		auto res = build_wall(prev, height - 1, patterns_no_crack, dp);
+		small = min(small, res);
+		large = max(large, res);
+		ways += res;
 	}
+	cout << small << " " << large << "\n";
 	return ways;
 }
 TEST_CASE("XR brick by brick- test", "[TEST]")
@@ -107,5 +112,5 @@ TEST_CASE("XR brick by brick- test", "[TEST]")
 	CHECK(patterns.size() == 3329);
 
 	CHECK(W(9, 3) == 8);
-	CHECK(W(32, 10) == 37120);
+	CHECK(W(32, 10) == 806844323190414LL);
 }
