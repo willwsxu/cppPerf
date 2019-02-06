@@ -5,6 +5,9 @@
 #include <vector>
 #include <deque>
 #include <map>
+#include <iterator>
+#include <sstream>
+#include <set>
 #include <unordered_map>
 #include <algorithm>
 #include <cassert>
@@ -25,7 +28,7 @@ int solution1(int N) {
 	}
 	return result > 100000000 ? -1 : result;
 }
-TEST_CASE("Q1- large test", "[TEST]")
+TEST_CASE("Q1- large test", "[JUMP]")
 {
 	CHECK(solution1(0) == 0);
 	CHECK(solution1(1) == 1);
@@ -38,8 +41,6 @@ TEST_CASE("Q1- large test", "[TEST]")
 }
 
 
-#include <iterator>
-#include <sstream>
 vector<string> get_tokens(const string& str, char sep = ' ') {
 	vector<string> tokens;
 	istringstream strm(str);
@@ -129,7 +130,7 @@ int solution2(string &S) {
 	return machine.top();
 }
 
-TEST_CASE("Q2- unit test", "[TEST2]")
+TEST_CASE("Q2- unit test", "[JUMP]")
 {
 	WordMachine machine;
 	CHECK(machine.top() == -1);
@@ -152,7 +153,7 @@ TEST_CASE("Q2- unit test", "[TEST2]")
 	CHECK(machine.add() == false); // overflow
 }
 
-TEST_CASE("Q2- test", "[TEST]")
+TEST_CASE("Q2- test", "[JUMP]")
 {
 	CHECK(solution2(string("13 DUP 4 POP 5 DUP + DUP + -")) == 7);
 	CHECK(solution2(string("5 6 + -")) == -1);
@@ -179,7 +180,6 @@ TEST_CASE("Q2- test", "[TEST]")
 	CHECK(solution2(string("0 1 - DUP POP DUP POP")) == 1);
 }
 
-#include <set>
 string solution3(int A, int B) {
 	// write your code in C++14 (g++ 6.2.0)
 	string decimal=to_string(A/B);
@@ -210,7 +210,7 @@ string solution3(int A, int B) {
 	return decimal;
 }
 
-TEST_CASE("Q3- test", "[TEST]")
+TEST_CASE("Q3- test", "[JUMP]")
 {
 	CHECK(solution3(3, 28) == "0.10(714285)");
 	CHECK(solution3(1000000, 3) == "333333.(3)");
@@ -244,7 +244,7 @@ int solution4(int N) {
 	return sparse;
 }
 
-TEST_CASE("Q4- test", "[TEST]")
+TEST_CASE("Q4- test", "[JUMP]")
 {
 	CHECK(solution4(0) == 0);
 	CHECK(solution4(1) == 1);

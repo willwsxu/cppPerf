@@ -14,36 +14,11 @@ class Elevator
 	vector<bool> stops;	// which floor to stop
 	mutex	mux;
 	condition_variable	cv;
-	ElevatorControl *parent = nullptr;
+	class ElevatorControl *parent = nullptr;
 	int id;
 	int current_level=0;
 
-	void run()
-	{
-		while (!exit) {
-			unique_lock<mutex>(mux);
-			cv.wait(mux, [this] {return !this->is_idle(); });  // wait until it is not idle
-			if (state == MOVE_UP) {
-				// optimization ideas: stop elevator when there is no stops and no button pushed
-				// before go to idle, check if there is still outstanding request
-				for (; current_level < stops.size(); current_level++) {
-					bool open_door = false;
-					if (parent->go_up(current_level)) {
-						open_door = true;
-					}
-					if (stops[current_level]) {
-						open_door = true;
-						stops[current_level] = false;
-					}
-					if (open_door)
-						open();
-				}
-			}
-			else {
-
-			}
-		}
-	}
+	void run();
 	void open() {}  // open for people to get in
 public:
 	Elevator() {
@@ -89,7 +64,7 @@ class ElevatorControl
 
 	void update_button(mutex& m, vector<bool>& buttons, int level)
 	{
-		if (level >= buttons.size())
+		if (level >= (int)buttons.size())
 			return;
 		lock_guard<mutex> g(m);
 		buttons[level] = true;
@@ -130,3 +105,30 @@ public:
 		}
 	}
 };
+
+void Elevator::run()
+{
+	while (!exit) {
+		unique_lock<mutex>(mux);
+		cv.wait(mux, [this] {return !this->is_idle(); });  // wait until it is not idle
+		if (state == MOVE_UP) {
+			// optimization ideas: stop elevator when there is no stops and no button pushed
+			// before go to idle, check if there is still outstanding request
+			for (; current_level < (int)stops.size(); current_level++) {
+				bool open_door = false;
+				if (parent->go_up(current_level)) {
+					open_door = true;
+				}
+				if (stops[current_level]) {
+					open_door = true;
+					stops[current_level] = false;
+				}
+				if (open_door)
+					open();
+			}
+		}
+		else {
+
+		}
+	}
+}
