@@ -561,6 +561,29 @@ public:
 		}
 		return min(exp+minus_count, plus_count) - 1; // why k+minus_count?
 	}
+	// 790. Domino and Tromino Tiling
+	// idea: build 2 types tile, even ended or not
+	// case analysis: add one or two tiles to extend N one at a time
+	int numTilings(int N) {
+		if (N < 2)
+			return N;
+		int MOD = 1000000007;
+		// base cases, tile len 1, 2
+		vector<int> dp2{1, 2}; // domino
+		vector<int> dp3{0, 2}; // tromino, sticking out at last position
+		for (int i = 3; i <= N; i++) {
+			int domino = dp2[0];// one way to add domino to prev prev tile, horizontal
+			domino = (domino + dp2[1]) % MOD;// one way to get domino from prev domino, vertical
+			domino = (domino + dp3[1])%MOD;   // add a tromino to uneven ended tile
+			int tromino = (dp2[0] * 2) % MOD; // add tromino to even ended tile, 2 directions
+			tromino = (tromino + dp3[1]) % MOD; // add a domino to extend from previous tromino
+			swap(dp2[0], dp2[1]);
+			swap(dp3[0], dp3[1]);
+			dp2[1] = domino;
+			dp3[1] = tromino;
+		}
+		return dp2[1];
+	}
 };
 TEST_CASE("964. Least Operators to Express Number no parenthesis", "[DP]")
 {
