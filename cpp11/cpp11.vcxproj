@@ -160,6 +160,8 @@
     <ClCompile Include="MessageTest.cpp" />
     <ClCompile Include="meta_test.cpp" />
     <ClCompile Include="MineSweeper.cpp" />
+    <ClCompile Include="PhoneRegistry.cpp" />
+    <ClCompile Include="requestCounter.cpp" />
     <ClCompile Include="SeanParentTest.cpp" />
     <ClCompile Include="slistTest.cpp" />
     <ClCompile Include="practice.cpp" />

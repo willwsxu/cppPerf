@@ -179,5 +179,11 @@
     <ClCompile Include="BrickByBrick.cpp">
       <Filter>interviews</Filter>
     </ClCompile>
+    <ClCompile Include="requestCounter.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
+    <ClCompile Include="PhoneRegistry.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
