@@ -96,7 +96,7 @@ long long W(int width, int height)
 	cout << small << " " << large << "\n";
 	return ways;
 }
-TEST_CASE("XR brick by brick- test", "[TEST]")
+TEST_CASE("brick by brick- test", "[TEST]")
 {
 	vector<vector<int>> patterns;
 	vector<int> p;
