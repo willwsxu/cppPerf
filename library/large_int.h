@@ -66,7 +66,7 @@ public:
 
 	friend LargeInt operator*(const LargeInt& lhs, const LargeInt& rhs);
 	
-	LargeInt(int n, int capacity=5)
+	LargeInt(int n, size_t capacity=5)
 	{
 		li.reserve(capacity);
 		large_int_fill(li, n, scale);
@@ -180,7 +180,7 @@ LargeInt multiply1(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_
 {
 	LargeInt ans(0);
 	LargeInt temp_copy(0);
-	const int out_size = distance(lhs_s, lhs_e) + distance(rhs_s, rhs_e) + 5;
+	const size_t out_size = distance(lhs_s, lhs_e) + distance(rhs_s, rhs_e) + 5;
 	temp_copy.li.reserve(out_size);
 	ans.li.reserve(out_size);
 	multiply(ans, temp_copy, lhs_s, lhs_e, rhs_s, rhs_e);
@@ -196,14 +196,14 @@ inline LargeInt operator*(const LargeInt& lhs, const LargeInt& rhs)
 template<typename RandIter>
 LargeInt multiply_fast(RandIter lhs_s, RandIter lhs_e, RandIter rhs_s, RandIter rhs_e)
 {
-	int size_l = distance(lhs_s, lhs_e);
-	int size_r = distance(rhs_s, rhs_e);
+	size_t size_l = distance(lhs_s, lhs_e);
+	size_t size_r = distance(rhs_s, rhs_e);
 	assert(size_l == size_r);
 	if (size_l < 10) {
 		return multiply1(lhs_s, lhs_e, rhs_s, rhs_e);
 	}
-	int right_half = size_r / 2;
-	int left_half = size_r - right_half;  // left_half >= right_half
+	size_t right_half = size_r / 2;
+	size_t left_half = size_r - right_half;  // left_half >= right_half
 	auto XrYr = multiply_fast(lhs_s + left_half, lhs_e, rhs_s + left_half, rhs_e);  // first term in formula
 	auto XlYl = multiply_fast(lhs_s, lhs_s + left_half, rhs_s, rhs_s + left_half);  // last term in formula
 

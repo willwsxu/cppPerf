@@ -191,5 +191,8 @@
     <ClCompile Include="SharedPtr.cpp">
       <Filter>interviews</Filter>
     </ClCompile>
+    <ClCompile Include="KnowledgeBase.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
