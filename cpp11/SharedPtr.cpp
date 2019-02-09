@@ -33,15 +33,9 @@ public:
 	}
 	SharedPtr& operator=(const SharedPtr& other) noexcept
 	{
-		if (*this != other) {  // not self
-			if (naked == other.naked) { //  same pointer
-				if (naked)  // make sure pointer is valid
-					(*counter)++;
-			}
-			else {
-				delete_me();
-				copy(other);
-			}
+		if (this != &other && naked != other.naked) {  // not self, same pointer
+			delete_me();
+			copy(other);
 		}
 		return *this;
 	}
@@ -128,11 +122,11 @@ TEST_CASE("Jump Shared Ptr test", "[TEST]")
 		SharedPtr<long long> long_int1(new long long(2));
 		CHECK(long_int1.use_count() == 1);
 
-		SharedPtr<long long> long_int2 = long_int1;
+		SharedPtr<long long> long_int2 = long_int1;  // copy
 		CHECK(long_int1.use_count() == 2);
 		CHECK(long_int2.use_count() == 2);
 
-		SharedPtr<long long> long_int3 = long_int1;
+		SharedPtr<long long> long_int3 = long_int1;  // copy
 		CHECK(long_int1.use_count() == long_int2.use_count());
 		CHECK(long_int3.use_count() == 3);
 
@@ -140,7 +134,7 @@ TEST_CASE("Jump Shared Ptr test", "[TEST]")
 		*long_int3 = 3;
 		CHECK(*long_int2 == 3);
 
-		long_int1.~SharedPtr();
+		long_int1.~SharedPtr();  // delete
 		CHECK(long_int1.use_count() == 0);
 		CHECK(long_int2.use_count() == 2);
 
@@ -150,6 +144,35 @@ TEST_CASE("Jump Shared Ptr test", "[TEST]")
 
 		long_int3.~SharedPtr();
 		CHECK(long_int3.use_count() == 0);
+	}
+	SECTION("test move and copy assignment") {
+		SharedPtr<long long> to_int1(new long long(2));
+		SharedPtr<long long> to_int2;
+		SharedPtr<long long> to_int3;
+		to_int1 = to_int1;   // self
+		CHECK(to_int1.use_count() == 1);
+		to_int3 = to_int2;   // empty
+		CHECK(to_int2.use_count() == 0);
+		to_int2 = to_int1;
+		CHECK(to_int2.use_count() == 2);
+		to_int2 = to_int2;               // self
+		CHECK(to_int2.use_count() == 2);
+
+		SharedPtr<long long> from_int1(new long long(3));
+		to_int3 = from_int1;
+		CHECK(from_int1.use_count() == 2);
+		CHECK(to_int2.use_count() == 2);
+
+		to_int3 = from_int1;  // same pointer, no op
+		CHECK(to_int3.use_count() == 2);
+		to_int2 = from_int1;
+		CHECK(from_int1.use_count() == 3);
+		CHECK(to_int1.use_count() == 1);
+
+
+		to_int1 = from_int1;  // original pointer in to_int1  will be destroyed
+		CHECK(from_int1.use_count() == 4);
+		CHECK(to_int1.use_count() == 4);
 	}
 
 }
