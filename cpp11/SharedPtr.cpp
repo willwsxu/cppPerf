@@ -1,18 +1,22 @@
-#include "..\catch.hpp"
-
 #include <memory>
+#include <atomic>
 using namespace std;
 
 template <typename T>
 class SharedPtr {
+	struct Ref {
+		atomic<int> count;
+		Ref(int i):count(i){
+		}
+	};
 	T * naked=nullptr;
-	int *counter = nullptr;
+	Ref * counter = nullptr;
 public:
 	SharedPtr() { }
 	SharedPtr(nullptr_t ):SharedPtr() {  }  // delegate
 	SharedPtr(T* data) : naked (data){
 		if (naked)
-			counter = new int(1);
+			counter = new Ref(1);
 	}
 	~SharedPtr() noexcept
 	{
@@ -22,7 +26,7 @@ public:
 		if (other.naked) {
 			naked = other.naked;
 			counter = other.counter;
-			(*counter)++;
+			counter->count++;
 		}
 	}
 	SharedPtr(SharedPtr&& other) noexcept {
@@ -44,7 +48,7 @@ public:
 		if (this != &other) {  // not self
 			if (naked == other.naked) { //  same pointer
 				if (naked)  // make sure pointer is valid
-					(*counter)--;
+					counter->count--;
 			}
 			else {
 				delete_me();
@@ -61,7 +65,7 @@ public:
 	SharedPtr(const SharedPtr<Y>& other) noexcept {  // why this is discarded by compiler
 		naked = other.naked;
 		counter = other.counter;
-		(*counter)++;
+		counter->count++;
 	}
 
 	T& operator*() const noexcept {
@@ -71,17 +75,17 @@ public:
 		return naked;
 	}
 	int use_count() const {
-		return counter == nullptr ? 0: *counter;
+		return counter == nullptr ? 0: counter->count.load();
 	}
 private:
 	void delete_me() {
 		if (naked) {
-			if (*counter == 1) {
+			if (counter->count.load() == 1) {
 				delete naked;
 				delete counter;
 			}
 			else
-				(*counter)--;
+				counter->count--;
 			counter = nullptr;
 			naked = nullptr;
 		}
@@ -90,11 +94,12 @@ private:
 		naked = other.naked;
 		counter = other.counter;
 		if (other.naked) {
-			(*counter)++;
+			counter->count++;
 		}
 	}
 };
 
+#include "..\catch.hpp"
 TEST_CASE("Jump Shared Ptr test", "[TEST]")
 {
 	SECTION("test null pointer") {
