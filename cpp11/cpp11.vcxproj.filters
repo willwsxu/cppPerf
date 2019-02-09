@@ -185,5 +185,11 @@
     <ClCompile Include="PhoneRegistry.cpp">
       <Filter>interviews</Filter>
     </ClCompile>
+    <ClCompile Include="DataFeed.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedPtr.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

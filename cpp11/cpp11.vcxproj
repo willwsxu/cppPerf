@@ -147,6 +147,7 @@
     <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DataFeed.cpp" />
     <ClCompile Include="ElevatorControl.cpp" />
     <ClCompile Include="FactoryTest.cpp" />
     <ClCompile Include="FunctorTest.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="PhoneRegistry.cpp" />
     <ClCompile Include="requestCounter.cpp" />
     <ClCompile Include="SeanParentTest.cpp" />
+    <ClCompile Include="SharedPtr.cpp" />
     <ClCompile Include="slistTest.cpp" />
     <ClCompile Include="practice.cpp" />
     <ClCompile Include="atomic_set.cpp" />
