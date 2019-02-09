@@ -142,8 +142,15 @@ TEST_CASE("Jump Shared Ptr test", "[TEST]")
 		CHECK(long_int2.use_count() == 0);
 		CHECK(long_int3.use_count() == 1);
 
-		long_int3.~SharedPtr();
+		SharedPtr<long long> long_int4(move(long_int1)); // move empty
+		CHECK(long_int4.use_count() == 0);
+
+		SharedPtr<long long> long_int5(move(long_int3));
+		CHECK(long_int5.use_count() == 1);  // move long_int3 to long_int5
 		CHECK(long_int3.use_count() == 0);
+
+		long_int5.~SharedPtr();
+		CHECK(long_int5.use_count() == 0);
 	}
 	SECTION("test move and copy assignment") {
 		SharedPtr<long long> to_int1(new long long(2));
