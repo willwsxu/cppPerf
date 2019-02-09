@@ -41,17 +41,17 @@ public:
 	}
 	SharedPtr& operator=(SharedPtr&& other) noexcept
 	{
-		if (*this != other) {  // not self
+		if (this != &other) {  // not self
 			if (naked == other.naked) { //  same pointer
 				if (naked)  // make sure pointer is valid
 					(*counter)--;
 			}
 			else {
 				delete_me();
-				naked = other.naked;
+				naked = other.naked;  // even if other is empty
 				counter = other.counter;
 			}
-			other.naked == nullptr;
+			other.naked = nullptr;
 			other.counter = nullptr;
 		}
 		return *this;
@@ -169,10 +169,30 @@ TEST_CASE("Jump Shared Ptr test", "[TEST]")
 		CHECK(from_int1.use_count() == 3);
 		CHECK(to_int1.use_count() == 1);
 
-
 		to_int1 = from_int1;  // original pointer in to_int1  will be destroyed
 		CHECK(from_int1.use_count() == 4);
 		CHECK(to_int1.use_count() == 4);
+
+		to_int1 = move(to_int1);  // self, no op
+		CHECK(to_int1.use_count() == 4);
+
+		to_int1 = move(from_int1);
+		CHECK(from_int1.use_count() == 0);
+		CHECK(to_int1.use_count() == 3);
+		to_int1 = move(from_int1);  // from_int1 is null
+		CHECK(to_int1.use_count() == 0); // to_int1 become null
+		CHECK(to_int2.use_count() == 2);
+
+		shared_ptr<long long> std_from;
+		shared_ptr<long long> std_to(new long long(2));
+		std_to = move(std_from);
+		CHECK(std_to.use_count() == 0);
+
+		SharedPtr<long long> from_int2(new long long(4));
+		to_int1 = move(from_int2);
+		CHECK(from_int1.use_count() == 0);
+		CHECK(to_int1.use_count() == 1);
+		CHECK(to_int2.use_count() == 2);
 	}
 
 }
