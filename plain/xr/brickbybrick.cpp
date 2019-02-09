@@ -90,9 +90,10 @@ long long W(int width, int height)
     }
     return ways;
 }
-
+/*
 int main(int argc, char* argv[]) {
 	//cout << W(9, 3) << "\n";
     cout << W(32, 10) << "\n";  // 806844323190414
     return 0;
 }
+*/
