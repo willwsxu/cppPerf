@@ -100,7 +100,7 @@ private:
 };
 
 #include "..\catch.hpp"
-TEST_CASE("Jump Shared Ptr test", "[TEST]")
+TEST_CASE("Jump Shared Ptr test", "[JUMP]")
 {
 	SECTION("test null pointer") {
 		SharedPtr<long long> empty;

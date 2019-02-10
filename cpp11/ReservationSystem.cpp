@@ -18,7 +18,7 @@ class Schedule
 		string	restaurant;
 		string	location;
 	};
-	map<string, Reservation>  reservations; // per day
+	//map<string, Reservation>  reservations; // per day
 	vector<int>  schedule;
 	int			 open_time;
 	int			 tables = 10;
@@ -37,12 +37,13 @@ public:
 
 	bool take_reservation(string user, int start_time, int people) {
 		auto slot = time_to_slot(start_time);
+		if (slot + 6 >= (int)schedule.size())
+			return false;
 		int sum = 0;
 		for (int i = 0; i < slot; i++)
 			sum += schedule[i];
 		int tables_needed = ceil_int(people, persons_per_table);
-		auto end = min((int)schedule.size() - 1, slot + 6);  // [start, end)
-		for (int i = slot; i < end; i++) {  // check next 6 slots (90 min) for tables available
+		for (int i = slot; i < slot + 6; i++) {  // check next 6 slots (90 min) for tables available
 			sum += schedule[i];
 			if (sum + tables_needed > tables)
 				return false;

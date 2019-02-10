@@ -63,7 +63,7 @@ struct TEST
 	TEST(int y) :x(y) {}
 };
 #include "..\catch.hpp"
-TEST_CASE("Jump small vector optimization test", "[TEST]")
+TEST_CASE("Jump small vector optimization test", "[JUMP]")
 {
 	vector_small_op<TEST, 2> small;
 	small.push_back(TEST(1));

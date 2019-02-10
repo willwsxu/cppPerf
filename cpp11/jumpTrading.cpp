@@ -28,7 +28,7 @@ int solution1(int N) {
 	}
 	return result > 100000000 ? -1 : result;
 }
-TEST_CASE("Q1- large test", "[JUMP]")
+TEST_CASE("takehome Q1- large test", "[JUMP]")
 {
 	CHECK(solution1(0) == 0);
 	CHECK(solution1(1) == 1);

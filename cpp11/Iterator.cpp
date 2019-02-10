@@ -53,7 +53,7 @@ auto count_iter = [](auto& iter) {
 	return count;
 };
 
-TEST_CASE("Foursquare iterator test", "[TEST]")
+TEST_CASE("Foursquare iterator test", "[FOUR]")
 {
 	vector<int> d1{}, d3{};
 	vector<int> d2{ 1,2,3,4,5 };
@@ -105,7 +105,7 @@ public:
 };
 
 
-TEST_CASE("Foursquare iterator test 2", "[TEST]")
+TEST_CASE("Foursquare iterator test 2", "[FOUR]")
 {
 	vector<int> d1{}, d3{};
 	vector<int> d2{ 1,2,3,4,5 };
