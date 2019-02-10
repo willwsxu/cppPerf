@@ -150,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataFeed.cpp" />
+    <ClCompile Include="DockingSchedule.cpp" />
     <ClCompile Include="ElevatorControl.cpp" />
     <ClCompile Include="FactoryTest.cpp" />
     <ClCompile Include="FunctorTest.cpp" />

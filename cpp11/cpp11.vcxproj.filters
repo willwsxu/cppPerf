@@ -203,5 +203,8 @@
     <ClCompile Include="ReservationSystem.cpp">
       <Filter>interviews</Filter>
     </ClCompile>
+    <ClCompile Include="DockingSchedule.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

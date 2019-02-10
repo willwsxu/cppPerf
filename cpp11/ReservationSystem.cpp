@@ -10,7 +10,7 @@ using namespace std;
 // reservation duration is 90 min
 class Schedule
 {
-	struct Reservation
+	struct Reservation  // moved to central system
 	{
 		int		start_time;
 		int		people;
@@ -148,7 +148,7 @@ public:
 
 #include "..\catch.hpp"
 
-TEST_CASE("Foursquare Restaurant reservation system design test", "[TEST]")
+TEST_CASE("Foursquare Restaurant reservation system design test", "[FOUR]")
 {
 	Schedule sched(0, 330);  // 5.5 hours
 	CHECK(sched.take_reservation("me", 90, 21)==true);
