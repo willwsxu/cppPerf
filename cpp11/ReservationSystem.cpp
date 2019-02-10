@@ -92,8 +92,17 @@ TEST_CASE("Foursquare Restaurant reservation system design test", "[TEST]")
 	CHECK(sched.take_reservation("me", 90, 21)==true);
 	CHECK(sched.take_reservation("me", 0, 40) == true);
 	CHECK(sched.take_reservation("me", 150, 17)==false);
+	// 10 0  0  0  0  0 -4 0 0 0 0 0 -6 0 0 0 0  0  0  0 0 0 0
+	// 10 10 10 10 10 10 6 6 6 6 6 6  0 0 0 0 0  0  0  0 0 0 0
+	CHECK(sched.take_reservation("me", 150, 17) == false);
+	CHECK(sched.alternate_reservation_within_2hr("me", 150, 17) == vector<int>{12,13,14,15,16});
+	CHECK(sched.alternate_reservation_within_2hr("me", 270, 16) == vector<int>{10, 11, 12, 13, 14, 15, 16});
+	CHECK(sched.alternate_reservation_within_2hr("me", 75, 16) == vector<int>{6,7,8,9,10,11,12,13});
+
 	CHECK(sched.take_reservation("me", 150, 16) == true);
 	CHECK(sched.take_reservation("me", 210, 20)==true);
 	CHECK(sched.take_reservation("me", 270, 5)==false);
 	CHECK(sched.take_reservation("me", 240, 20) == true);
+	// 10 0  0  0  0  0 -4 0 0 0 4  0 -6 0 5 0 1  0  0  0 -5 0 -5
+	// 10 10 10 10 10 10 6 6 6 6 10 10 4 4 9 0 10 10 10 10 5 5 0
 }
