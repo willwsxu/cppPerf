@@ -14,6 +14,7 @@ class Schedule
 	{
 		int		start_time;
 		int		people;
+		bool	checkedIn=false;
 		string	restaurant;
 		string	location;
 		Reservation() :Reservation(0, 0) {}
@@ -36,6 +37,7 @@ class Schedule
 	}
 public:
 	Schedule(int open, int close) : open_time(open), schedule((close - open) / 15 + 1) {}
+	Schedule() :Schedule(0, 24 * 60) {} // default open close hour, required by map container
 
 	bool take_reservation(string user, int start_time, int people) {
 		auto slot = time_to_slot(start_time);
@@ -82,7 +84,43 @@ public:
 		}
 		return alternate;
 	}
+	bool checkin(string user) {
+		auto found = reservations.find(user);
+		if (found == end(reservations))
+			return false;
+		found->second.checkedIn = true;
+		return true;
+	}
 };
+
+class ReservationSystem
+{
+	struct Date {
+		short year;
+		char  month;
+		char  day;
+		friend bool operator<(const Date& lhs, const Date& rhs) {
+			if (lhs.year != rhs.year)
+				return lhs.year < rhs.year;
+			if (lhs.month != rhs.month)
+				return lhs.month < rhs.month;
+			return lhs.day < rhs.day;
+		}
+	};
+	map<string, map<Date, Schedule>>  all_reservations;  // per restaurant, per day
+public:
+	bool take_reservation(string user, int start_time, int people, Date date, string restaurant) {
+		return all_reservations[restaurant][date].take_reservation(move(user), start_time, people);
+	}
+	vector<int> alternate_reservation_within_2hr(string user, int start_time, int people, Date date, string restaurant)
+	{
+		return all_reservations[restaurant][date].alternate_reservation_within_2hr(move(user), start_time, people);
+	}
+	bool checkin(string user, Date date, string restaurant) {
+		return all_reservations[restaurant][date].checkin(move(user));
+	}
+};
+
 
 #include "..\catch.hpp"
 
