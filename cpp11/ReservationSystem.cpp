@@ -96,9 +96,9 @@ public:
 class ReservationSystem
 {
 	struct Date {
-		short year;
-		char  month;
-		char  day;
+		short year=0;
+		char  month=0;
+		char  day=0;
 		friend bool operator<(const Date& lhs, const Date& rhs) {
 			if (lhs.year != rhs.year)
 				return lhs.year < rhs.year;
@@ -107,20 +107,44 @@ class ReservationSystem
 			return lhs.day < rhs.day;
 		}
 	};
-	map<string, map<Date, Schedule>>  all_reservations;  // per restaurant, per day
+	map<string, map<Date, Schedule>>  all_schedule;     // per restaurant, per day
+
+	struct Reservation
+	{
+		int		start_time;
+		int		people;
+		bool	checkedIn = false;
+		string	restaurant;  // include location
+		Date    date;
+		Reservation() :Reservation(0, 0, "", Date()) {}
+		Reservation(int t, int p, string r, Date d) : start_time(t), people(p), restaurant(r),date(d) {}
+	};
+	map<string, map<string, map<Date, Reservation>>>  all_reservations; // reservation made by a user
 public:
 	bool take_reservation(string user, int start_time, int people, Date date, string restaurant) {
-		return all_reservations[restaurant][date].take_reservation(move(user), start_time, people);
+		if ( !all_schedule[restaurant][date].take_reservation(move(user), start_time, people) )
+			return false;
+		all_reservations[user][restaurant][date]=Reservation(start_time, people, restaurant, date);
 	}
 	vector<int> alternate_reservation_within_2hr(string user, int start_time, int people, Date date, string restaurant)
 	{
-		return all_reservations[restaurant][date].alternate_reservation_within_2hr(move(user), start_time, people);
+		return all_schedule[restaurant][date].alternate_reservation_within_2hr(move(user), start_time, people);
 	}
 	bool checkin(string user, Date date, string restaurant) {
-		return all_reservations[restaurant][date].checkin(move(user));
+		auto u = all_reservations.find(user);
+		if (u == end(all_reservations))
+			return false;  // user not found
+		auto rest = u->second.find(restaurant);
+		if (rest == end(u->second))
+			return false;  // restaurant not found
+		auto reservation = rest->second.find(date);
+		if (reservation == end(rest->second))
+			return false;  // date not found
+		reservation->second.checkedIn = true;
+		return true;
 	}
 };
-
+// user is now kept in a central system
 
 #include "..\catch.hpp"
 
