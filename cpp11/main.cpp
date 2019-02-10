@@ -286,26 +286,6 @@ TEST_CASE("member fun test multi inheritance pointer offset", "[NEW]")
 
 	CHECK(test2(obj, &MultiInheritance::mf2) == 2);
 }
-class Empty
-{
-	void empty() {}
-};
-class EmptyV
-{
-public:
-	virtual ~EmptyV() {}
-};
-class EmptyD : public Empty, EmptyV
-{
-public:
-	virtual ~EmptyD() {}
-};
-TEST_CASE("class size test ", "[TEST]")
-{
-	CHECK(sizeof(Empty) == 1);
-	CHECK(sizeof(EmptyV) == 4);
-	CHECK(sizeof(EmptyD) == 4);
-}
 
 #include "str.h"
 TEST_CASE("test construction", "[NEW]")
