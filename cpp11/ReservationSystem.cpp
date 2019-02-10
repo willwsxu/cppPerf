@@ -12,14 +12,16 @@ class Schedule
 {
 	struct Reservation
 	{
-		string	user;
 		int		start_time;
 		int		people;
 		string	restaurant;
 		string	location;
+		Reservation() :Reservation(0, 0) {}
+		Reservation(int t, int p) : start_time(t), people(p) {}
 	};
-	//map<string, Reservation>  reservations; // per day
 	vector<int>  schedule;
+	// map has memory alignment issue if it is before schedule in destructor call to deallocate string. not sure why??
+	map<string, Reservation>  reservations; // per day
 	int			 open_time;
 	int			 tables = 10;
 	int			 persons_per_table = 4;
@@ -50,6 +52,7 @@ public:
 		}
 		schedule[slot] += tables_needed;
 		schedule[slot+6] -= tables_needed;
+		reservations[user] = Reservation(start_time, people);
 		return true;
 	}
 
