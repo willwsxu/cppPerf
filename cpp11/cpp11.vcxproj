@@ -172,6 +172,7 @@
     <ClCompile Include="practice.cpp" />
     <ClCompile Include="atomic_set.cpp" />
     <ClCompile Include="BrickByBrick.cpp" />
+    <ClCompile Include="smallVec.cpp" />
     <ClCompile Include="testLargetInt.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

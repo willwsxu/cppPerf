@@ -194,5 +194,8 @@
     <ClCompile Include="KnowledgeBase.cpp">
       <Filter>interviews</Filter>
     </ClCompile>
+    <ClCompile Include="smallVec.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
