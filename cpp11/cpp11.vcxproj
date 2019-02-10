@@ -158,6 +158,7 @@
     <ClCompile Include="HashTableBaseTest.cpp" />
     <ClCompile Include="HashTableBucketTest.cpp" />
     <ClCompile Include="InterviewBook.cpp" />
+    <ClCompile Include="Iterator.cpp" />
     <ClCompile Include="jumpTrading.cpp" />
     <ClCompile Include="KnowledgeBase.cpp" />
     <ClCompile Include="main.cpp" />

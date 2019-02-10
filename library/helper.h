@@ -244,6 +244,19 @@ namespace std
 			return h1 ^ (h2 << 1);
 		}
 	};
+	// hash for vector class
+	template<> struct hash<vector<int>>
+	{
+		std::size_t operator()(vector<int> const& vec) const noexcept
+		{
+			std::size_t h1 = 0;
+			int shift = 0;
+			for (int v : vec) {
+				h1 ^= (hash<int>{}(v) << shift++);
+			}
+			return h1;
+		}
+	};
 
 	// overload for pair class
 	template<typename T1, typename T2>
