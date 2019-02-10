@@ -79,3 +79,14 @@ TEST_CASE("multi inheritance", "[TEST]")
 	CHECK(sizeof(Dv) == 12);  // 2 vtable, one base class A
 	CHECK(sizeof(Dvv) == 12);
 }
+
+class AException {
+	virtual void test() noexcept {}
+	virtual void test2() throw (...) {}
+};
+
+class BException : public AException
+{
+	//void test() throw(out_of_range) override  {}  // exceptions in override function should be same or more restrictive
+	void test2() noexcept override;
+};
