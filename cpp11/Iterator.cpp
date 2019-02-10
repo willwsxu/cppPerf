@@ -33,8 +33,6 @@ public:
 			it.reset();
 	}
 	T next() {
-		while (idx < (int)iters.size() && !iters[idx].hasNext())
-			idx++;
 		return iters[idx].next();
 	}
 	bool hasNext() {

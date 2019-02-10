@@ -167,6 +167,7 @@
     <ClCompile Include="MineSweeper.cpp" />
     <ClCompile Include="PhoneRegistry.cpp" />
     <ClCompile Include="requestCounter.cpp" />
+    <ClCompile Include="ReservationSystem.cpp" />
     <ClCompile Include="SeanParentTest.cpp" />
     <ClCompile Include="SharedPtr.cpp" />
     <ClCompile Include="slistTest.cpp" />
