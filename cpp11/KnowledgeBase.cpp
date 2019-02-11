@@ -131,4 +131,4 @@ TEST_CASE("shared pointer cyclic dependency, use weak_ptr test", "[TEST]")
 }
 
 // exit vs abort
-// unique_lock  lock on two mutex, without deadlock deadlock
+// unique_lock  lock on two mutex, without incurring deadlock

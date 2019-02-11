@@ -154,6 +154,7 @@
     <ClCompile Include="ElevatorControl.cpp" />
     <ClCompile Include="FactoryTest.cpp" />
     <ClCompile Include="FunctorTest.cpp" />
+    <ClCompile Include="gaussian.cpp" />
     <ClCompile Include="HashMockTest.cpp" />
     <ClCompile Include="HashTableBaseFileTest.cpp" />
     <ClCompile Include="HashTableBaseTest.cpp" />

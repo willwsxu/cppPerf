@@ -206,5 +206,8 @@
     <ClCompile Include="DockingSchedule.cpp">
       <Filter>interviews</Filter>
     </ClCompile>
+    <ClCompile Include="gaussian.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
