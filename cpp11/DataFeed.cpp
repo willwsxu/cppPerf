@@ -43,10 +43,11 @@ public:
 				bids[ex.second.bid] = ex.first;
 				asks[ex.second.ask] = ex.first;
 			}
-			for (const auto& bid : bids)
-				cout << bid.second << " " << bid.first << "\n";
-			for (const auto& ask : asks)
-				cout << ask.second << " " << ask.first << "\n";
+			istringstream two_sides;
+			auto a = begin(asks);
+			for (auto b = begin(bids); b != end(bids); ++b) {
+				cout << b->second << " " << b->first << " " << a->first << " " << a->second << "\n";
+			}
 		}
 	}
 };
