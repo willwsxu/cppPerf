@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 using namespace std;
 
@@ -90,3 +91,44 @@ class BException : public AException
 	//void test() throw(out_of_range) override  {}  // exceptions in override function should be same or more restrictive
 	void test2() noexcept override;
 };
+// prevailing practice is to not write exception spec on function as it provides few benefits to compiler
+// noexcept is the only case that has some benefitsS
+
+enum Unscoped { A=0,B=0,C,D};
+enum class Scoped {A=0, B=0, C, D};
+TEST_CASE("enum test", "[TEST]")
+{
+	CHECK(A == B);
+	CHECK(int(Scoped::C) == C);
+}
+
+class SharedB;
+class SharedA
+{
+public:
+	//shared_ptr<SharedB> pB;
+	weak_ptr<SharedB>	  pB;  // avoid cycle
+	~SharedA()
+	{
+	}
+};
+class SharedB
+{
+public:
+	//shared_ptr<SharedA> pA;
+	weak_ptr<SharedA> pA;
+	~SharedB()
+	{
+	}
+};
+
+TEST_CASE("shared pointer cyclic dependency, use weak_ptr test", "[TEST]")
+{
+	shared_ptr<SharedA> a(new SharedA());
+	shared_ptr<SharedB> b(new SharedB());
+	a->pB = b;
+	b->pA = a;
+}
+
+// exit vs abort
+// unique_lock  lock on two mutex, without deadlock deadlock
