@@ -543,7 +543,7 @@ public:
 			return;
 		col_row_map[col][row].push_back(root->val);
 		verticalTraversal(root->left, col - 1, row + 1, col_row_map);
-		verticalTraversal(root->right, col + 11, row + 1, col_row_map);
+		verticalTraversal(root->right, col + 1, row + 1, col_row_map);
 	}
 public:
 	vector<vector<int>> verticalTraversal(TreeNode* root) {
@@ -551,11 +551,14 @@ public:
 		verticalTraversal(root, 0, 0, col_row_map);
 		vector<vector<int>> ans;
 		for (auto& col : col_row_map) {
+			//cout << col.first << "=col\n";
 			ans.push_back(vector<int>());
 			for (auto& row : col.second) {
 				sort(begin(row.second), end(row.second));
 				copy(begin(row.second), end(row.second), back_inserter(ans.back()));
 			}
+			//copy(begin(ans.back()), end(ans.back()), ostream_iterator<int>(cout, " "));
+			//cout << "\n";
 		}
 		return ans;
 	}
