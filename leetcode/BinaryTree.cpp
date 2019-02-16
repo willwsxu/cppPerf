@@ -536,6 +536,29 @@ public:
 		reverse(begin(ans), end(ans));
 		return ans;
     }
+
+	// 987. Vertical Order Traversal of a Binary Tree
+	void verticalTraversal(TreeNode* root, int col, int row, map<int, map<int, vector<int>>>& col_row_map) {
+		if (!root)
+			return;
+		col_row_map[col][row].push_back(root->val);
+		verticalTraversal(root->left, col - 1, row + 1, col_row_map);
+		verticalTraversal(root->right, col + 11, row + 1, col_row_map);
+	}
+public:
+	vector<vector<int>> verticalTraversal(TreeNode* root) {
+		map<int, map<int, vector<int>>> col_row_map;
+		verticalTraversal(root, 0, 0, col_row_map);
+		vector<vector<int>> ans;
+		for (auto& col : col_row_map) {
+			ans.push_back(vector<int>());
+			for (auto& row : col.second) {
+				sort(begin(row.second), end(row.second));
+				copy(begin(row.second), end(row.second), back_inserter(ans.back()));
+			}
+		}
+		return ans;
+	}
 };
 TEST_CASE("145. Binary Tree Postorder Traversal", "[NEW]")
 {
