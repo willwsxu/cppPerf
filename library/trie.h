@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 
 class Trie
 {
@@ -82,3 +83,57 @@ bool Trie::Node<std::string>::complete()
 {
 	return !val.empty();
 }
+
+
+class BinaryTrie  // binary number digit
+{
+	struct Node {
+		char val = 0;
+		std::unique_ptr<Node> children[2];
+		Node(char v = 0) :val(v) {}
+	};
+	Node root; // root value is always 0
+	std::vector<int> binary;    // used for converting number to binary digits
+	void num_to_binary(unsigned int num) {
+		fill(begin(binary), end(binary), 0);
+		int index = binary.size() - 1;
+		while (num>0) {
+			binary[index--] = num % 2;
+			num /= 2;
+		}
+		//copy(begin(binary),end(binary), ostream_iterator<int>(cout, " "));
+		//cout << "\n";
+	}
+	void put(Node& node, const vector<int>& digits, int idx)
+	{
+		if (idx == digits.size())
+			return;
+		if (!node.children[digits[idx]])
+			node.children[digits[idx]] = std::make_unique<Node>(digits[idx]);
+		put(*node.children[digits[idx]].get(), digits, idx + 1);
+	}
+	int find_xor_max(Node& node, const vector<int>& digits, int idx, int value)
+	{
+		if (idx == digits.size())
+			return value;
+		int d = 1 - digits[idx];
+		Node * child = node.children[d].get();  // look for child of opposite
+		if (!child) {
+			d = 1 - d;
+			child = node.children[d].get();
+		}
+		return find_xor_max(*child, digits, idx + 1, value * 2 + d);
+	}
+public:
+	BinaryTrie(int bits = 31) :binary(bits, 0) {}
+	void add(unsigned int num) {
+		num_to_binary(num);
+		put(root, binary, 0);
+	}
+	int find_xor_max(unsigned int num) {
+		num_to_binary(num);
+		int found = find_xor_max(root, binary, 0, 0);
+		//cout << num << " " << found << "\n";
+		return num^found;
+	}
+};

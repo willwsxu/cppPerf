@@ -30,7 +30,7 @@ int count_digits2(int val) {
 }
 
 int count_digits3(unsigned int val) { // idea from Andrei Alexandrescu
-	int count = 0;
+	int count = 0; // strength reduction
 	for (;;)
 	{
 		if (val < 10)
