@@ -9,15 +9,18 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="interviews">
       <UniqueIdentifier>{1c0f7987-7de6-42ba-9f9d-1fc532fe0bfe}</UniqueIdentifier>
     </Filter>
     <Filter Include="Design">
       <UniqueIdentifier>{654ba2c8-10f6-465f-aad2-0bf10dd27480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI">
+      <UniqueIdentifier>{68d2eb59-8a85-4bc7-a9bd-0504273e09f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -207,6 +210,12 @@
       <Filter>interviews</Filter>
     </ClCompile>
     <ClCompile Include="gaussian.cpp">
+      <Filter>interviews</Filter>
+    </ClCompile>
+    <ClCompile Include="TicTacToe.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="arbitrate.cpp">
       <Filter>interviews</Filter>
     </ClCompile>
   </ItemGroup>

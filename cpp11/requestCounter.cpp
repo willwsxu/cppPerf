@@ -21,6 +21,7 @@ time_seconds now_in_seconds()
 	auto epoch = chrono::steady_clock::now().time_since_epoch();
 	return chrono::duration_cast<chrono::seconds>(epoch).count();
 }
+// Google screen
 // objective: get request count for last 60s
 class RequestCounter {
 	deque<Count> counts;

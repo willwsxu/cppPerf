@@ -149,6 +149,7 @@
     <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="arbitrate.cpp" />
     <ClCompile Include="DataFeed.cpp" />
     <ClCompile Include="DockingSchedule.cpp" />
     <ClCompile Include="ElevatorControl.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="BrickByBrick.cpp" />
     <ClCompile Include="smallVec.cpp" />
     <ClCompile Include="testLargetInt.cpp" />
+    <ClCompile Include="TicTacToe.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
