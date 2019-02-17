@@ -14,7 +14,7 @@ public:
 	}
 	bool row_won(int r) {
 		r *= DIMENSION;
-		return board[r + 1] = board[r] && board[r + 2] == board[r];
+		return board[r + 1] == board[r] && board[r + 2] == board[r];
 	}
 	bool col_won(int c) {
 		return board[c + 3] == board[c] && board[c + 6] == board[c];
@@ -87,10 +87,11 @@ public:
 				set_move(isMax ? PLAYER : COMPUTER, r, c);
 				int next_score = minimax(0, !isMax, -10000, 10000);
 				set_move(' ', r, c); // roll back
-				if (isMax && next_score>score || !isMax && next_score < score)
+				if (isMax && next_score > score || !isMax && next_score < score) {
 					score = next_score;
-				best.first = r;
-				best.second = c;
+					best.first = r;
+					best.second = c;
+				}
 			}
 		}
 		return best;
@@ -101,4 +102,19 @@ public:
 #include "..\catch.hpp"
 TEST_CASE("Tic Tac Toe test", "[TEST]")
 {
+	SECTION("test 1") {
+		TicTacToeBoard board;
+		board.set_move('X', 2, 1);
+		board.set_move('X', 2, 2);
+		board.set_move('O', 2, 0);
+		board.set_move('O', 1, 1);
+		CHECK(board.find_best_move(true) == pair<int, int>{0, 2});
+	}
+	SECTION("test 2") {
+		TicTacToeBoard board;
+		board.set_move('X', 2, 0);
+		board.set_move('X', 0, 2);
+		board.set_move('O', 0, 0);
+		CHECK(board.find_best_move(false) == pair<int, int>{1, 1});
+	}
 }
