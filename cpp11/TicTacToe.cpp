@@ -14,18 +14,18 @@ public:
 	}
 	bool row_won(int r) {
 		r *= DIMENSION;
-		return board[r + 1] == board[r] && board[r + 2] == board[r];
+		return board[r + 1] == board[r] && board[r + 2] == board[r] && board[r]!=' ';
 	}
 	bool col_won(int c) {
-		return board[c + 3] == board[c] && board[c + 6] == board[c];
+		return board[c + 3] == board[c] && board[c + 6] == board[c] && board[c] != ' ';
 	}
 	bool forward_diag_won()  // 2 4 6
 	{
-		return board[2] == board[4] && board[2] == board[6];
+		return board[2] == board[4] && board[2] == board[6] && board[2] != ' ';
 	}
 	bool backward_diag_won()  // 0 4 8
 	{
-		return board[0] == board[4] && board[0] == board[8];
+		return board[0] == board[4] && board[0] == board[8] && board[4] != ' ';
 	}
 	bool game_over() const {
 		return find(begin(board), end(board), ' ') == end(board);
