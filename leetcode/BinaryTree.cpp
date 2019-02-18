@@ -1266,6 +1266,53 @@ public:
 		DfsLength(root, longest);
 		return longest;
 	}
+
+	// 993. Cousins in Binary Tree
+	// node at same depth but different parent
+	int ans = -1;
+	int isCousins(TreeNode* root, int x, int y, int depth) {
+		if (ans >= 0 || !root)
+			return -1;
+		if (root->val == x || root->val == y)
+			return depth;
+		int left = isCousins(root->left, x, y, depth + 1);
+		int right = isCousins(root->right, x, y, depth + 1);
+		if (left>0 && right>0) {
+			//cout << depth << " " << left << " " << right << "\n";
+			ans = (left == right && left - depth>1 ? 1 : 0);
+		}
+		else if (left>0)
+			return left;
+		return right;
+	}
+	TreeNode *pX, *pY;
+	int dX=-1, dY=-1;
+	void cousin_helper(TreeNode* root, int x, int y, int depth, TreeNode *parent)
+	{
+		if (!root || dX>=0 && dY>=0)
+			return;
+		if (root->val==x) {
+			dX = depth;
+			pX = parent;
+		}
+		if (root->val == y) {
+			dY = depth;
+			pY = parent;
+		}
+		cousin_helper(root->left, x, y, depth + 1, root);
+		cousin_helper(root->right, x, y, depth + 1, root);
+	}
+public:
+	bool isCousins(TreeNode* root, int x, int y) {
+		ans = -1;
+		(void)isCousins(root, x, y, 0);
+		return ans>0;
+	}
+
+	bool isCousins2(TreeNode* root, int x, int y) {
+		cousin_helper(root, x, y, 0, nullptr);
+		return dX==dY && pX!=pY;
+	}
 };
 
 TEST_CASE("687. Longest Univalue Path", "[TREE]")
