@@ -119,14 +119,15 @@ public:
 	int numSquarefulPerms(int remaining, int prev, map<int, int>& count, map<int, set<int>>&  square_pairs) {
 		if (remaining == 0)  // permutation complete
 			return 1;
+
+		count[prev]--;
 		int ans = 0;
 		for (int next : square_pairs[prev]) {  // iterator all numbers that forms square with prev
 			if (count[next] == 0)  // number is used up
 				continue;
-			count[next]--;
 			ans += numSquarefulPerms(remaining - 1, next, count, square_pairs);
-			count[next]++;
 		}
+		count[prev]++;  // backtracking
 		return ans;
 	}
 public:
@@ -154,11 +155,7 @@ public:
 			return 0;
 		int total = 0;
 		for (auto& c : count) {
-			if (c.second == 0)  // number is used up
-				continue;
-			c.second--;
 			total += numSquarefulPerms(A.size() - 1, c.first, count, square_pairs);
-			c.second++;  // backtracking
 		}
 		return total;
 	}
