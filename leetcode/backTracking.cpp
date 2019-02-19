@@ -107,6 +107,61 @@ public:
 		}
 		return result;
 	}
+
+	// 996. Number of Squareful Arrays (backtracking + Graph)
+	// similar to XR project Brick By Brick
+	// sum of 2 numbers form a square, generate all edges to use this requirement
+	// start from any number, try all possible ways to fill next numbers so all neighbors form a square sum
+	bool is_square(int s) {
+		int r = static_cast<int>(sqrt(s) + 0.1);
+		return r*r == s;
+	}
+	int numSquarefulPerms(int remaining, int prev, map<int, int>& count, map<int, set<int>>&  square_pairs) {
+		if (remaining == 0)  // permutation complete
+			return 1;
+		int ans = 0;
+		for (int next : square_pairs[prev]) {  // iterator all numbers that forms square with prev
+			if (count[next] == 0)  // number is used up
+				continue;
+			count[next]--;
+			ans += numSquarefulPerms(remaining - 1, next, count, square_pairs);
+			count[next]++;
+		}
+		return ans;
+	}
+public:
+	int numSquarefulPerms(vector<int>& A) {
+		if (A.size() == 1)  // special case?
+			return 1;
+		map<int, int> count;  // count of unique number
+		for (int a : A)
+			count[a]++;
+		map<int, set<int>>  square_pairs;  // all numbers can form a square with another number
+		for (auto a = begin(count); a != end(count); ++a) {
+			if (a->second>1 && is_square(a->first * 2))
+			{
+				square_pairs[a->first].insert(a->first);  // e.g. 2+2 is a square
+			}
+			auto b = a;
+			for (++b; b != end(count); ++b) {
+				if (is_square(a->first + b->first)) {  // 2+7 is a square
+					square_pairs[a->first].insert(b->first);
+					square_pairs[b->first].insert(a->first);
+				}
+			}
+		}
+		if (count.size() != square_pairs.size())  // at least one number cannot form a square with any
+			return 0;
+		int total = 0;
+		for (auto& c : count) {
+			if (c.second == 0)  // number is used up
+				continue;
+			c.second--;
+			total += numSquarefulPerms(A.size() - 1, c.first, count, square_pairs);
+			c.second++;  // backtracking
+		}
+		return total;
+	}
 };
 TEST_CASE("967. Numbers With Same Consecutive Differences", "[NEW]")
 {
