@@ -1,8 +1,8 @@
 #include "..\catch.hpp"
 #include <chrono>
 #include <iostream>
+#include <future>
 #include "slist.h"
-#include "RingBufferAtomic.h"
 using slist_shared_ptr = slist<int>;
 using namespace std;
 
@@ -118,6 +118,7 @@ TEST_CASE("slist single thread memory tracker atomic raw ptr", "[NEW]")
 }
 
 
+#include "RingBufferAtomic.h"
 TEST_CASE("atomic queue", "[NEW]")
 {
 	circular_queue<size_t, 3> lrQ; // lock free queue
@@ -141,4 +142,28 @@ TEST_CASE("atomic queue", "[NEW]")
 	CHECK(lrQ.size() == 0);
 	CHECK(lrQ.pop() == pair<size_t, bool>{0, false});
 	CHECK(lrQ.push(6) == true);
+}
+
+using QL3000 = circular_queue<size_t, 3000>;
+void lock_free_Q_consumer(QL3000& lrq, size_t total, std::promise<int> ret)
+{
+	int error = 0;
+	for (size_t i = 0; i < total; i++) {
+		if (lrq.pop_wait()!=i)
+			error++;
+	}
+	ret.set_value(error);
+}
+TEST_CASE("atomic queue test events", "[NEW]")
+{
+	QL3000 lrQ; // lock free queue
+	std::promise<int> read_error_promise;
+	std::future<int> read_error_future = read_error_promise.get_future();
+	size_t total = 1000000;
+	thread consumer(lock_free_Q_consumer, std::ref(lrQ), total, move(read_error_promise));
+	for (size_t i = 0; i < total; i++)
+		lrQ.push_wait(move(i));
+	read_error_future.wait();
+	CHECK(read_error_future.get() == 0);
+	consumer.join();
 }
