@@ -6,22 +6,40 @@ enum { SEV_INFO, SEV_WARN };
 #define LOG_INFO __FILE__,__LINE__
 #define LOG_WARN SEV_WARN,__FILE__,__LINE__
 
+
+inline void tprintf(std::ostream& os, const char *fmt) {
+	os << fmt;
+}
+
+// void tprintf(const char *fmt, T val, Targs ...Fargs, std::ostream& os = std::cout)  won't work, use overload
+// default argument parameter should not precede none-default parameter
+// Variadic template parameters should not precede non-variadic template parameters
+// Defaulted template parameters should not precede non-defaulted template parameters
+
+template <typename T, typename ... Targs>
+void tprintf(std::ostream& os, const char *fmt, T val, Targs ...Fargs)
+{
+	while (*fmt) {
+		if (*fmt == '%') {
+			os << val;
+			tprintf(os, fmt + 2, Fargs...); // expand parameter pack
+			return;  // must return to avoid repeat
+		}
+		else
+			os << *fmt++;
+	}
+}
+
+// overloads to use cout
 inline void tprintf(const char *fmt) {
-	std::cout << fmt;
+	tprintf(std::cout, fmt);
 }
 template <typename T, typename ... Targs>
 void tprintf(const char *fmt, T val, Targs ...Fargs)
 {
-	while (*fmt) {
-		if (*fmt == '%') {
-			cout << val;
-			tprintf(fmt + 2, Fargs...); // expand parameter pack
-			return;  // must return to avoid repeat
-		}
-		else
-			cout << *fmt++;
-	}
+	tprintf(std::cout, fmt, Fargs...);
 }
+
 class Console
 {
 public:

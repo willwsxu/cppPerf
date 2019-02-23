@@ -1,14 +1,14 @@
 #pragma once
 
 template<typename ... Targs, typename = void, typename U>
-void testPattern(U fmt, Targs...targs)
+void testPattern(std::ostream& os, U fmt, Targs...targs)
 {
-	tprintf(fmt, targs ...);
+	tprintf(os, fmt, targs ...);
 }
 template<typename ... Targs, typename = void, typename U>
-void testPattern2(U fmt, Targs...targs)
+void testPattern2(std::ostream& os, U fmt, Targs...targs)
 {
-	testPattern(fmt, &targs ...);
+	testPattern(os, fmt, &targs ...);
 }
 
 template<class Ch, class Tr, class Tuple, std::size_t... Is>

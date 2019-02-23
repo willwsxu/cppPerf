@@ -39,9 +39,13 @@ TEST_CASE("Variadic template", "[META]")
 	c(LOG_INFO, "[%p] DynBuffer (from [%p]) resize to max allowed %d", &c, 10, 20);
 
 	int i = 1;
-	float f = 2.0f;
-	testPattern("%f %f", i, f);	cout << endl;
-	testPattern2("%p %p", i, f); cout << endl;  // print address
+	float f = 2.1f;
+	ostringstream oss;
+	testPattern(oss, "%f %f", i, f);
+	CHECK(oss.str() == "1 2.1");
+	oss.clear();
+	testPattern2(oss, "%p %p", i, f);  // print address
+	CHECK(oss.str() != "1 2.1");
 
 	CHECK(variadicTuple(i, f) == tuple<int, float>{i, f});
 
