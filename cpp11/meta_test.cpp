@@ -50,14 +50,19 @@ TEST_CASE("Variadic template", "[META]")
 		CHECK(oss2.str() != "1 2.1");
 	}
 
-	CHECK(variadicTuple(i, f) == tuple<int, float>{i, f});
+	SECTION("tuple test ") {
+		CHECK(variadicTuple(i, f) == tuple<int, float>{i, f});
+		//ostringstream oss;
+		//oss << tuple<int, float>{i, f};  // print_tuple_impl does not compile
+		//CHECK(oss.str() == "1,2.1");
+	}
 
 	CHECK(Min(2, 3, 4, 1, 6) == 1);
 	stringstream ostr;
 	expression(ostr, 1, 2, "bar");
 	CHECK(ostr.str() == "1 2 bar ");
 
-	Compose<int, float, char> test(1, 2.0f, '3');  //?
+	Compose<int, float, char> test(1, 2.0f, '3');  //? no idea why it is useful
 
 	//tuple piecewise constructor
 	pair<vector<int>, vector<string>> p(piecewise_construct, forward_as_tuple(3, 0), forward_as_tuple(2, "TT"));
@@ -65,6 +70,7 @@ TEST_CASE("Variadic template", "[META]")
 	CHECK(p.second.size() == 2);
 	CHECK(p.second[0] == "TT");
 	CHECK(get<vector<int>>(p) == vector<int>{0, 0, 0});
+
 	tuple<int, double,char> x=make_tuple( 1, 1.2,'x' );
 	CHECK(get_back<tuple<int, double,char>>(x) == 'x');
 }
@@ -118,12 +124,14 @@ TEST_CASE("meta math test", "[META]")
 {
 	CHECK(PowerOf2<3>::pow == 8);
 	CHECK(PowerX<3, 2>::pow == 9);
-	CHECK(Power3<long, 30>()(2L) == 1073741824);
-	CHECK(Power3<long, 29>()(2L) == 536870912);
-	CHECK(pow1(2, 30) == 1073741824);  // constexpr
-	CHECK(pow2(2, 29) == 536870912);  // constexpr
-	CHECK(pow_const<int, 2, 29>::value == 536870912);  // constexpr forced
-	CHECK(pow_const<int, 2, 29>() == 536870912);  // constexpr forced
+	long x = 2;
+	CHECK(Power_bisect<long, 30>()(x) == 1073741824);
+	CHECK(Power_bisect<long, 29>()(2L) == 536870912);
+
+	CHECK(pow_const(2, 30) == 1073741824);  // constexpr
+	CHECK(pow_const_bisect(2, 29) == 536870912);  // constexpr
+	CHECK(pow_const_force<int, 2, 29>::value == 536870912);  // constexpr forced
+	CHECK(pow_const_force<int, 2, 29>() == 536870912);  // constexpr forced
 	//CHECK(power4<29, int>(2) == 536870912);  fail to compile
 
 	CHECK(GCD<1200, 800>::value == 400);
@@ -140,6 +148,7 @@ TEST_CASE("fibonacci test", "[META]")
 
 TEST_CASE("n choose 2 test", "[META]")
 {
+	// 2C5 = 5*1C4 / 2 = 5 * (4 * 0C3 / 1 ) / 2 = 5 * 4 /2 =10
 	CHECK(nChooseK < 5, 2 >::value == 10);
 }
 

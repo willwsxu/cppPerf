@@ -31,11 +31,11 @@ struct IsConvertibleHelper {
 private:
 	static void aux(TO);
 	template <typename F, typename=decltype(aux(declval<F>()))>
-	static true_type test(void *);
+	static true_type test(void *);  // overload choice for nullptr
 	template <typename>
 	static false_type test(...);
 public:
-	using Type = decltype(test<FROM>(nullptr));
+	using Type = decltype(test<FROM>(nullptr)); // nullptr match first overload test func better if FROM can be converted to TO
 };
 template <typename FROM, typename TO>
 struct IsConvertibleT : IsConvertibleHelper<FROM, TO>::Type {};

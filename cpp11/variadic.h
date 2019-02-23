@@ -94,9 +94,9 @@ public:
 	First value;
 };
 
-template<size_t idx, typename Tuple_t> struct TupleElement;
+template<size_t idx, typename Tuple_t> struct TupleElement;  // primary template
 template<typename First, typename...Rest>
-struct TupleElement<0, Tuple<First, Rest...>> {
+struct TupleElement<0, Tuple<First, Rest...>> {  // partial specialization
 	using value_type = First;
 	using tuple_type = Tuple<First, Rest...>;
 };
@@ -105,6 +105,7 @@ struct TupleElement<idx, Tuple<First, Rest...>> : public TupleElement<idx - 1, T
 {
 };
 
+// use TupleElement to implement tuple get
 template<size_t idx, typename...ARGS>
 typename TupleElement<idx, Tuple<ARGS...>>::value_type& Get(Tuple<ARGS...>& t) {
 	using tuple_type = TupleElement<idx, Tuple<ARGS...>>::tuple_type;

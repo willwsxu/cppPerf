@@ -1,16 +1,5 @@
 #pragma once
 
-template <int p>
-struct PowerOf2  // 2^p
-{
-	enum { pow = PowerOf2<p - 1>::pow * 2 };
-};
-
-template <>   // specialization, must be defined after general template
-struct PowerOf2<0> {
-	enum { pow = 1 };
-};
-
 template <int X, int p>  // X^p
 struct PowerX  // can not overload clas name Power
 {
@@ -22,6 +11,11 @@ struct PowerX<X, 0> {
 	enum { pow = 1 };
 };
 
+template <int p>
+struct PowerOf2  // 2^p
+{
+	const static long pow = PowerX<2, p>::pow;
+};
 /*
 template<class T>
 inline constexpr T power4(const T x, integral_constant<T, 0>)
@@ -40,50 +34,50 @@ return power4(x, integral_constant<T, N>);
 }
 */
 template <typename T, int N, bool odd = N % 2>
-struct Power3  // can not overload class name Power
+struct Power_bisect  // can not overload class name Power
 {
 	T operator()(T x) {
-		return Power3<T, N / 2>()(x) * Power3<T, N / 2>()(x);
+		return Power_bisect<T, N / 2>()(x) * Power_bisect<T, N / 2>()(x);
 	}
 };
 
 template <typename T, int N>
-struct Power3<T, N, true>  // specialize odd power
+struct Power_bisect<T, N, true>  // specialize odd power
 {
 	T operator()(T x) {
-		return x *Power3<T, (N - 1) / 2>()(x) *Power3<T, (N - 1) / 2>()(x);
+		return x *Power_bisect<T, (N - 1) / 2>()(x) *Power_bisect<T, (N - 1) / 2>()(x);
 	}
 };
 
 template <typename T>   // specialization, must be defined after general template
-struct Power3<T, 0, false> {
+struct Power_bisect<T, 0, false> {
 	T operator()(T x) {
 		return 1;
 	}
 };
 
 template <typename T>   // specialization, must be defined after general template
-struct Power3<T, 1, true> {
+struct Power_bisect<T, 1, true> {
 	T operator()(T x) {
 		return x;
 	}
 };
 // constexpr template function, cannot specialize template function
 template <class T>
-constexpr T pow1(const T base, unsigned exp) {  // must use recursion, one line restriction in c+=11
-	return exp == 0 ? 1 : base * pow1(base, exp - 1);
+constexpr T pow_const(const T base, unsigned exp) {  // must use recursion, one line restriction in c+=11
+	return exp == 0 ? 1 : base * pow_const(base, exp - 1);
 }
 
 template <class T>
-constexpr T pow2(const T base, unsigned exp) { // bisection method, faster
+constexpr T pow_const_bisect(const T base, unsigned exp) { // bisection method, faster
 	return exp == 0 ? 1 :
-		exp % 2 == 0 ? pow2(base, exp / 2) * pow2(base, exp / 2) :
-		base * pow2(base, (exp - 1) / 2) * pow2(base, (exp - 1) / 2);
+		exp % 2 == 0 ? pow_const_bisect(base, exp / 2) * pow_const_bisect(base, exp / 2) :
+		base * pow_const_bisect(base, (exp - 1) / 2) * pow_const_bisect(base, (exp - 1) / 2);
 }
 
 // force constexpr
 template <class T, T base, unsigned exp>
-using pow_const = integral_constant<T, pow2(base, exp)>;
+using pow_const_force = integral_constant<T, pow_const_bisect(base, exp)>;
 
 // examples from cppcon2014 Walter Brown
 // gcd
@@ -99,16 +93,15 @@ struct GCD<P, 0>
 	const static long long value = P;
 };
 
-template <size_t N> struct Factorial;
-template<> struct Factorial<0> {
-	static const int value = 1;
-};
 template <size_t N> struct Factorial
 {
 	static const int value = N*Factorial<N - 1>::value;
 };
+template<> struct Factorial<0> {
+	static const int value = 1;
+};
 
-template<size_t N> struct Fibonacci;
+template<size_t N> struct Fibonacci; // primary template, forward declaration
 template<> struct Fibonacci<0> { static const int value = 0; };
 template<> struct Fibonacci<1> { static const int value = 1; };
 template<size_t N> struct Fibonacci
