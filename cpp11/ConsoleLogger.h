@@ -43,11 +43,26 @@ void tprintf(const char *fmt, T val, Targs ...Fargs)
 class Console
 {
 public:
+	// add overloads for any ostream
+	template<typename... Targs>
+	void operator()(std::ostream& os, const char *filename, int lineNo, const char *fmt, Targs...Fargs)  // info level logging
+	{
+		tprintf(os, fmt, Fargs...);
+		os << " (" << filename << ":" << lineNo << ")" << "\n";
+	}
+
+	template<typename... Targs>
+	void operator()(std::ostream& os, int sev, const char *filename, int lineNo, const char *fmt, Targs...Fargs)  // warning level logging
+	{
+		os << "WARN ";
+		tprintf(os, filename, lineNo, fmt, Fargs...);
+	}
+
 	template<typename... Targs>
 	void operator()(const char *filename, int lineNo, const char *fmt, Targs...Fargs)  // info level logging
 	{
 		tprintf(fmt, Fargs...);
-		cout << " (" << filename << ":" << lineNo << ")" << endl;
+		cout << " (" << filename << ":" << lineNo << ")" << "\n";
 	}
 
 	template<typename... Targs>

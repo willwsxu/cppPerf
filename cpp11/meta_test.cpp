@@ -35,17 +35,24 @@ TEST_CASE("type conversion check", "[NEW]")
 
 TEST_CASE("Variadic template", "[META]")
 {
-	Console c;
-	c(LOG_INFO, "[%p] DynBuffer (from [%p]) resize to max allowed %d", &c, 10, 20);
+	SECTION("console test") {
+		ostringstream oss;
+		Console c;
+		c(oss, LOG_INFO, "[%p] DynBuffer (from [%p]) resize to max allowed %d", &c, 10, 20);
+		CHECK(oss.str().substr(9, 48) == "] DynBuffer (from [10]) resize to max allowed 20");
+	}
 
 	int i = 1;
 	float f = 2.1f;
-	ostringstream oss;
-	testPattern(oss, "%f %f", i, f);
-	CHECK(oss.str() == "1 2.1");
-	oss.clear();
-	testPattern2(oss, "%p %p", i, f);  // print address
-	CHECK(oss.str() != "1 2.1");
+	SECTION("Variadic expand pattern test ") {
+		ostringstream oss;
+		testPattern(oss, "%f %f", i, f);
+		CHECK(oss.str() == "1 2.1");
+
+		ostringstream oss2;
+		testPattern2(oss2, "%p %p", i, f);  // print address
+		CHECK(oss2.str() != "1 2.1");
+	}
 
 	CHECK(variadicTuple(i, f) == tuple<int, float>{i, f});
 
