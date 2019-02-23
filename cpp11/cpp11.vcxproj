@@ -173,7 +173,7 @@
     <ClCompile Include="ReservationSystem.cpp" />
     <ClCompile Include="SeanParentTest.cpp" />
     <ClCompile Include="SharedPtr.cpp" />
-    <ClCompile Include="slistTest.cpp" />
+    <ClCompile Include="TestslistRingBuffer.cpp" />
     <ClCompile Include="practice.cpp" />
     <ClCompile Include="atomic_set.cpp" />
     <ClCompile Include="BrickByBrick.cpp" />

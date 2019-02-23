@@ -206,5 +206,20 @@ TEST_CASE("Jump Shared Ptr test", "[JUMP]")
 		CHECK(to_int1.use_count() == 1);
 		CHECK(to_int2.use_count() == 2);
 	}
+}
 
+// weak ptr contain the reference count and underlying pointer
+// lock() constructor shared ptr if count>0, else nullptr
+TEST_CASE("Jump trading Greenlight weak Ptr test", "[NEW]")
+{
+	weak_ptr<long>  weak;
+	SECTION("test 1 weak valid") {
+		shared_ptr<long> shp(new long(1));
+		weak = shp;
+		CHECK(weak.expired() == false);
+		CHECK(*weak.lock() == 1);
+	}
+
+	CHECK(weak.expired() == true);
+	CHECK(weak.lock().get() == nullptr);
 }
