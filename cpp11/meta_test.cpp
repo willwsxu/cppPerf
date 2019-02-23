@@ -4,12 +4,7 @@
 #include "..\catch.hpp"
 
 #include "ConsoleLogger.h"
-#include "variadic.h"
-#include "dynBuffer.h"
-#include "DynMsg.h"
-#include "matrix2D.h"
 
-#include "meta_math.h"
 using namespace std;
 
 struct Base {
@@ -20,7 +15,7 @@ struct Derived : public Base {
 };
 
 #include "meta_book_example.h"
-TEST_CASE("type conversion check", "[NEW]")
+TEST_CASE("type conversion check", "[META]")
 {
 	CHECK(Conversion<Derived, Base>::result == 1);
 	CHECK(Conversion<Base, Derived>::result == 0);
@@ -33,6 +28,7 @@ TEST_CASE("type conversion check", "[NEW]")
 	CHECK(IsConvertibleT<Base, Derived>::value == false);
 }
 
+#include "variadic.h"
 TEST_CASE("Variadic template", "[META]")
 {
 	SECTION("console test") {
@@ -76,17 +72,6 @@ TEST_CASE("Variadic template", "[META]")
 #include "meta.h"
 TEST_CASE("Meta Programming", "[META]")
 {
-	CHECK(PowerOf2<3>::pow == 8);
-	CHECK(PowerX<3, 2>::pow == 9);
-	CHECK(Power3<long, 30>()(2L) == 1073741824);
-	CHECK(Power3<long, 29>()(2L) == 536870912);
-	CHECK(pow1(2, 30) == 1073741824);  // constexpr
-	CHECK(pow2(2, 29) == 536870912);  // constexpr
-	CHECK(pow_const<int, 2, 29>::value == 536870912);  // constexpr forced
-	CHECK(pow_const<int, 2, 29>() == 536870912);  // constexpr forced
-												  //CHECK(power4<29, int>(2) == 536870912);  fail to compile
-
-	CHECK(GCD<1200, 800>::value == 400);
 	using array_t = int[2][3][4];
 	CHECK(Rank<array_t>::value == 3);
 	CHECK(Rank2<array_t>::value == 3);
@@ -120,7 +105,7 @@ vector<typename C::value_type*> find_all(C& c, const V&v) // must use const V to
 	return ans;
 }
 
-TEST_CASE("template example from Stroustrup", "example")
+TEST_CASE("template example from Stroustrup", "[META]")
 {
 	string s{ "Mary has a little lamb" };
 	for (const auto p : find_all(s, 'a'))
@@ -128,17 +113,32 @@ TEST_CASE("template example from Stroustrup", "example")
 	REQUIRE(find_all(s, 'a').size() == 4);
 }
 
+#include "meta_math.h"
+TEST_CASE("meta math test", "[META]")
+{
+	CHECK(PowerOf2<3>::pow == 8);
+	CHECK(PowerX<3, 2>::pow == 9);
+	CHECK(Power3<long, 30>()(2L) == 1073741824);
+	CHECK(Power3<long, 29>()(2L) == 536870912);
+	CHECK(pow1(2, 30) == 1073741824);  // constexpr
+	CHECK(pow2(2, 29) == 536870912);  // constexpr
+	CHECK(pow_const<int, 2, 29>::value == 536870912);  // constexpr forced
+	CHECK(pow_const<int, 2, 29>() == 536870912);  // constexpr forced
+	//CHECK(power4<29, int>(2) == 536870912);  fail to compile
+
+	CHECK(GCD<1200, 800>::value == 400);
+}
 TEST_CASE("factorial test", "[META]")
 {
 	CHECK(Factorial < 3 >::value == 6);
 }
 
-TEST_CASE("fibonacci test", "META")
+TEST_CASE("fibonacci test", "[META]")
 {
 	CHECK(Fibonacci<5>::value == 5);
 }
 
-TEST_CASE("n choose 2 test", "META")
+TEST_CASE("n choose 2 test", "[META]")
 {
 	CHECK(nChooseK < 5, 2 >::value == 10);
 }

@@ -1,10 +1,6 @@
 #pragma once
 #include <type_traits>
 
-// force constexpr
-template <class T, T base, unsigned exp>
-using pow_const = integral_constant<T, pow2(base, exp)>;
-
 // following are in c++11, use upper case to avoid conflict
 template <typename T>
 struct Rank  // scalar base case

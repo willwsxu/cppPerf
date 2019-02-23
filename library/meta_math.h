@@ -81,6 +81,9 @@ constexpr T pow2(const T base, unsigned exp) { // bisection method, faster
 		base * pow2(base, (exp - 1) / 2) * pow2(base, (exp - 1) / 2);
 }
 
+// force constexpr
+template <class T, T base, unsigned exp>
+using pow_const = integral_constant<T, pow2(base, exp)>;
 
 // examples from cppcon2014 Walter Brown
 // gcd

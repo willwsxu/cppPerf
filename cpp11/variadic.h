@@ -1,11 +1,11 @@
 #pragma once
 
-template<typename ... Targs, typename = void, typename U>
+template<typename ... Targs, typename U>
 void testPattern(std::ostream& os, U fmt, Targs...targs)
 {
 	tprintf(os, fmt, targs ...);
 }
-template<typename ... Targs, typename = void, typename U>
+template<typename ... Targs, typename U>
 void testPattern2(std::ostream& os, U fmt, Targs...targs)
 {
 	testPattern(os, fmt, &targs ...);
