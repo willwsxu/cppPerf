@@ -54,7 +54,7 @@ struct Enable_if : type_is<T> {};
 template<typename T>
 struct Enable_if<false, T> {};  // no type when false
 
-//SFINAE and enable_if
+//SFINAE and enable_if, 3 ways to place enable_if_t in function template
 template<class T, std::enable_if_t < is_class_v<T>, int > = 0 >
 int enable_if_test() {
 	return 0;
@@ -70,7 +70,7 @@ int enable_if_test() {
 
 template<typename T>
 struct Enable_If_Test_SFINAE_NOT_WORKING  // correct impl is the class below
-{
+{  // because type is fixed already, malformed function is an error
 	template<std::enable_if_t < is_class_v<T>, int > = 0 >
 	int enable_if_test() {
 		return 0;
