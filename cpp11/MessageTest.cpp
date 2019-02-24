@@ -2,22 +2,30 @@
 
 #include "..\catch.hpp"
 
-TEST_CASE("message concept", "NEW")
+TEST_CASE("message concept", "[MSG]")
 {
 	{
 		request<string_body> req;
-		write(cout, req);
+		ostringstream oss;
+		write(oss, req);
+		CHECK(oss.str() == "");
 	}
 	{
 		response<vector_body<char>> res;
-		write(cout, res);
+		ostringstream oss;
+		write(oss, res);
+		CHECK(oss.str() == "");
 	}
 	{
 		response<list_body<string>> res;
-		write(cout, res);
+		ostringstream oss;
+		write(oss, res);
+		CHECK(oss.str() == "");
 	}
 	{
 		response<empty_body> res;
-		write(cout, res);
+		ostringstream oss;
+		write(oss, res);
+		CHECK(oss.str() == "");
 	}
 }
