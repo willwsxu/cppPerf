@@ -47,7 +47,7 @@ public:
 				default: 				return 0;
 				}
 			};
-			long long ways = 0;
+			long long ways = 0; // decode 2 digit first
 			if (c2 == '*') {
 				ways =(long long) get_count2(c1) * prev_prev;
 			}
@@ -57,7 +57,7 @@ public:
 				if (val_2digit < 27) // two ways to decode if first digit is 1 or 2
 					ways = prev_prev;
 			}
-			ways += prev;
+			ways += prev;  // decode 1 digit to letter
 			return ways%MOD;
 		};
 		while (++scanner != rend(s)) {
@@ -69,6 +69,7 @@ public:
 			case '*':
 				for (int i = 1; i < 10; i++)
 					current += get_count_wild(i + '0', *(scanner - 1));
+				break;
 			default:
 				current += get_count_wild(*scanner, *(scanner - 1));
 			}
@@ -81,6 +82,8 @@ public:
 #include "..\catch.hpp"  // don't put this file in stdafx.h
 TEST_CASE("decode digit to letter with wild card test", "[NEW]")
 {
+	CHECK(DP().numDecodings2("***") == 999);
+	CHECK(DP().numDecodings2("*1") == 11);
 	CHECK(DP().numDecodings2("**") == 96);
 	CHECK(DP().numDecodings2("1*") == 18);
 	CHECK(DP().numDecodings2("2*") == 15);
