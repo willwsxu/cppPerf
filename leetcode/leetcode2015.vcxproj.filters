@@ -140,5 +140,8 @@
     <ClCompile Include="Google.cpp">
       <Filter>interview</Filter>
     </ClCompile>
+    <ClCompile Include="decodeways.cpp">
+      <Filter>interview</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

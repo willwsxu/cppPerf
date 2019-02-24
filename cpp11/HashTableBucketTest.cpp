@@ -1,6 +1,4 @@
-#include "..\catch.hpp"
-
-#include "string"
+#include <string>
 #include "ConsoleLogger.h"
 #include "HashTable.h"
 #include "HashTableBucketHashing.h"
@@ -10,6 +8,7 @@ using namespace std;
 
 using HashTableMock = HASH_TABLE_NEW<Console, string, HASH_TABLE_BUCKET, FileNone>;
 
+#include "..\catch.hpp"
 TEST_CASE("Bucket Hashing table Test", "[NEW]")
 {
 	HashTableMock t(10);

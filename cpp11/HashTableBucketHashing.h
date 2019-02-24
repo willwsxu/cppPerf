@@ -9,6 +9,8 @@ class data_type_traits
 	using const_data_type = const T *;
 };
 
+// allocate a few buckets for each hash to resolve collision
+// more collision will be put to overflow area
 // improve hash elements locality
 template <class Logger, class HASH_DATA, template<typename> class HashFun >
 class HASH_TABLE_BUCKET

@@ -165,6 +165,9 @@
     <ClCompile Include="Board2D.cpp" />
     <ClCompile Include="calculator.cpp" />
     <ClCompile Include="CircularDataStruct.cpp" />
+    <ClCompile Include="decodeways.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="designHash.cpp" />
     <ClCompile Include="designHeap.cpp" />
     <ClCompile Include="designIterator.cpp" />

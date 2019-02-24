@@ -9,9 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="interviews">
-      <UniqueIdentifier>{1c0f7987-7de6-42ba-9f9d-1fc532fe0bfe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Design">
       <UniqueIdentifier>{654ba2c8-10f6-465f-aad2-0bf10dd27480}</UniqueIdentifier>
     </Filter>
@@ -21,6 +18,12 @@
     <Filter Include="AI\Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="interview-examples">
+      <UniqueIdentifier>{7b1e6bb0-e092-4883-8266-0bb4b0b111fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="my_interviews">
+      <UniqueIdentifier>{1c0f7987-7de6-42ba-9f9d-1fc532fe0bfe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -158,17 +161,11 @@
     <ClCompile Include="testLargetInt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="practice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InterviewBook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="atomic_set.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="jumpTrading.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="MineSweeper.cpp">
       <Filter>Design</Filter>
@@ -177,46 +174,52 @@
       <Filter>Design</Filter>
     </ClCompile>
     <ClCompile Include="BrickByBrick.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="requestCounter.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="PhoneRegistry.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="DataFeed.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="SharedPtr.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="KnowledgeBase.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="smallVec.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="Iterator.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="ReservationSystem.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="DockingSchedule.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="gaussian.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="TicTacToe.cpp">
       <Filter>AI</Filter>
     </ClCompile>
     <ClCompile Include="arbitrate.cpp">
-      <Filter>interviews</Filter>
+      <Filter>my_interviews</Filter>
     </ClCompile>
     <ClCompile Include="TestslistRingBuffer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InterviewBook.cpp">
+      <Filter>interview-examples</Filter>
+    </ClCompile>
+    <ClCompile Include="practice.cpp">
+      <Filter>interview-examples</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
