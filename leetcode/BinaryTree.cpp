@@ -502,7 +502,7 @@ public:
 	}
 
 	// 144. Binary Tree Preorder Traversal
-	vector<int> preorderTraversal(TreeNode* root) {  // beats 96%
+	vector<int> preorderTraversal(TreeNode* root) {  // beats 96%, iterative
 		stack<TreeNode*> nodes;
 		if (root)
 			nodes.push(root);
