@@ -6,7 +6,7 @@
 using slist_shared_ptr = slist<int>;
 using namespace std;
 
-TEST_CASE("slist single thread shared_ptr", "NEW")
+TEST_CASE("slist single thread shared_ptr", "[QUEUE]")
 {
 	slist_shared_ptr simple;
 	simple.push_front(1);
@@ -17,7 +17,7 @@ TEST_CASE("slist single thread shared_ptr", "NEW")
 	CHECK(*simple.peek() == 2);
 }
 
-TEST_CASE("slist single thread unique_ptr", "[NEW]")
+TEST_CASE("slist single thread unique_ptr", "[QUEUE]")
 {
 	using slist_unique_ptr = slist<int, false>;
 	slist_unique_ptr simple;
@@ -58,7 +58,7 @@ slist unique_ptr nano seconds:  81200800 count 2
 slist raw ptr nano seconds:     67407500 count 2
 */
 
-TEST_CASE("slist single thread memory tracker share_ptr", "[NEW]")
+TEST_CASE("slist single thread memory tracker share_ptr", "[QUEUE]")
 {
 	using slistTracker = slist<MemoryTracker>;
 	slistTracker simple;
@@ -88,7 +88,7 @@ TEST_CASE("slist single thread memory tracker unique_ptr", "[NEW]")
 	CHECK(unique.peek()->myCount == 3);
 	CHECK(MemoryTracker::count == 3);
 }
-TEST_CASE("slist single thread memory tracker raw ptr", "[NEW]")
+TEST_CASE("slist single thread memory tracker raw ptr", "[QUEUE]")
 {
 	using slistTrackerR = slist_r<MemoryTracker, bool*>;
 	slistTrackerR raw;
@@ -102,7 +102,7 @@ TEST_CASE("slist single thread memory tracker raw ptr", "[NEW]")
 	CHECK(raw.peek()->myCount == 3);
 	CHECK(MemoryTracker::count == 3);
 }
-TEST_CASE("slist single thread memory tracker atomic raw ptr", "[NEW]")
+TEST_CASE("slist single thread memory tracker atomic raw ptr", "[QUEUE]")
 {
 	using slistTrackerRAtomic = slist_r<MemoryTracker, std::atomic<bool>>;
 	slistTrackerRAtomic x;
@@ -119,7 +119,7 @@ TEST_CASE("slist single thread memory tracker atomic raw ptr", "[NEW]")
 
 
 #include "RingBufferAtomic.h"
-TEST_CASE("atomic queue", "[NEW]")
+TEST_CASE("atomic queue", "[QUEUE]")
 {
 	circular_queue<size_t, 3> lrQ; // lock free queue
 	CHECK(lrQ.push(1));
@@ -154,7 +154,7 @@ void lock_free_Q_consumer(QL3000& lrq, size_t total, std::promise<int> ret)
 	}
 	ret.set_value(error);
 }
-TEST_CASE("atomic queue test events", "[NEW]")
+TEST_CASE("atomic queue test events", "[QUEUE]")
 {
 	QL3000 lrQ; // lock free queue
 	std::promise<int> read_error_promise;
