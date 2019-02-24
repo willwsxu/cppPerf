@@ -185,5 +185,6 @@ TEST_CASE("minesweeper test", "[NO]")
 	//Board board(10, 10, 20);
 	//board.print(true);
 	//board.print();
-	MineSweeperGame().GameLoop();
+
+	//MineSweeperGame().GameLoop();
 }
