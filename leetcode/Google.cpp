@@ -1,4 +1,3 @@
-#include "..\catch.hpp"  // don't put this file in stdafx.h
 #include <vector>
 #include <string>
 #include <iterator>
@@ -61,7 +60,8 @@ vector<string> phone_numbers(vector<vector<int>> digits, int num)
 	return result;
 }
 
-TEST_CASE("google phone number test", "[NEW]")
+#include "..\catch.hpp"  // don't put this file in stdafx.h
+TEST_CASE("google phone number test", "[INTERVIEW]")
 {
 	auto numbers = phone_numbers(vector<vector<int>>{ {1, 2, 3}, { 4,5,6 }, { 7,8,9 }}, 4);
 	//copy(begin(numbers), end(numbers), ostream_iterator<string>(cout, " "));
