@@ -32,7 +32,7 @@ namespace
 	const bool registered = factory2.Register(2, []()-> TestBase * {return new Test2(); });  // fail to compile without assignment??
 };
 
-TEST_CASE("Object Factory", "NEW")
+TEST_CASE("Object Factory", "[FACT]")
 {
 	TestFactory& factory = TestFactory::Instance();
 	factory.Register(1, &createTest1);
@@ -41,7 +41,7 @@ TEST_CASE("Object Factory", "NEW")
 	CHECK(factory.CreateObject(100) == nullptr);
 }
 
-TEST_CASE("Object Factory, variadic", "NEW")
+TEST_CASE("Object Factory, variadic", "[FACT]")
 {
 	using TestFactory = Factory<TestBase, int, TestBase * (*)(const string&), DefaultError>;
 	TestFactory& factory = TestFactory::Instance();	

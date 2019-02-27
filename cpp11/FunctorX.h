@@ -8,7 +8,7 @@ template<class...T> struct param_list {};
 template <typename R, typename...Param>
 struct FunctorImpl : param_list<Param...>
 {
-	virtual R operator()(Param&&...args) = 0;  // template function cannot be virtual
+	virtual R operator()(Param&&...args) = 0;  // function template cannot be virtual
 	virtual FunctorImpl* Clone() const = 0;
 	virtual ~FunctorImpl() {}
 };
@@ -56,7 +56,6 @@ class Functor
 {
 public:
 	typedef ResultType  R;  // these typedefs are necessary for other class to refer to
-	//typedef type_list<Param...>		TL;  // cannot typedef Param...
 	using Impl = FunctorImpl<R, Param...>;
 	Functor() = default;
 	Functor(const Functor&) = default;  // copy constructor is not allowed if there is unique_ptr data memeber
