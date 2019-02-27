@@ -26,7 +26,7 @@ class RegionalBook
 		int ask;
 		Quote(int b=0, int a=0) : bid(b), ask(a) {}
 	};
-	map<string, map<string, Quote>> book;
+	map<string, map<string, Quote>> book;  // quote by exchange, per symbol
 public:
 	void update_message(string&& msg) {
 		auto parsed = get_tokens(move(msg));
@@ -34,10 +34,10 @@ public:
 			return;
 		book[parsed[2]][parsed[1]] = Quote(stoi(parsed[3]), stoi(parsed[4]));
 	}
-	void display()
+	void display(ostream& os)
 	{
 		for (const auto& sym : book) {
-			cout << "Symbol: " << sym.first << "\n";
+			os << "Symbol: " << sym.first << "\n";
 			map<int, string, greater<int>> bids;
 			map<int, string> asks;
 			for (const auto& ex : sym.second) {
@@ -46,8 +46,8 @@ public:
 			}
 			istringstream two_sides;
 			auto a = begin(asks);
-			for (auto b = begin(bids); b != end(bids); ++b) {
-				cout << b->second << " " << b->first << " " << a->first << " " << a->second << "\n";
+			for (auto b = begin(bids); b != end(bids); ++b,++a) {
+				os << b->second << " " << b->first << " " << a->first << " " << a->second << "\n";
 			}
 		}
 	}
@@ -62,8 +62,8 @@ class OrderTiers {  // for one symbol
 		char		side; // B, S
 	};
 	unordered_map<int64_t, OrderMsg> order_book;
-	map<int64_t, int64_t, greater<int64_t>>  bids;
-	map<int64_t, int64_t>  asks;
+	map<int64_t, int64_t, greater<int64_t>>  bids;  // depth book, sorted by bid price in descending order
+	map<int64_t, int64_t>  asks;					// ask price is sorted by ascending order
 public:
 	void add_order(int64_t id, const OrderMsg& order)
 	{
@@ -77,7 +77,7 @@ public:
 		auto old = order_book.find(id);
 		if (old == end(order_book))  // original order not found
 			return false;
-		auto update_inside = [](auto& quote, const OrderMsg& original, const OrderMsg& modify) {
+		auto mod_tier = [](auto& quote, const OrderMsg& original, const OrderMsg& modify) {
 			// easy but less efficient way
 			auto& old_ref = quote[original.price];
 			old_ref -= original.size;
@@ -86,9 +86,9 @@ public:
 				quote.erase(original.price);
 		};
 		if (old->second.side == 'B')
-			update_inside(bids, old->second, order);
+			mod_tier(bids, old->second, order);
 		else
-			update_inside(asks, old->second, order);
+			mod_tier(asks, old->second, order);
 		old->second.price = order.price;
 		old->second.size = order.size;
 		return true;
@@ -98,7 +98,7 @@ public:
 		auto old = order_book.find(id);
 		if (old == end(order_book))  // original order not found
 			return false;
-		auto del = [](auto& quote, const OrderMsg& original) {
+		auto del_tier = [](auto& quote, const OrderMsg& original) {
 			// easy but less efficient way
 			auto& old_ref = quote[original.price];
 			old_ref -= original.size;
@@ -106,9 +106,9 @@ public:
 				quote.erase(original.price);
 		};
 		if (old->second.side == 'B')
-			del(bids, old->second);
+			del_tier(bids, old->second);
 		else
-			del(asks, old->second);
+			del_tier(asks, old->second);
 		order_book.erase(id);
 		return true;
 	}
@@ -127,16 +127,18 @@ public:
 };
 
 #include "..\catch.hpp"
-TEST_CASE("Peak6 data feed test", "[FEED]")
+TEST_CASE("Peak6 data feed test", "[NEW]")
 {
 	RegionalBook book;
 	book.update_message("Q|NYS|IBM|99|105|");
 	book.update_message("Q|NAS|IBM|98|102|");
 	book.update_message("Q|ARC|IBM|101|103|");
-	book.display();
+	ostringstream oss;
+	book.display(oss);
+	CHECK(oss.str() == "Symbol: IBM\nARC 101 102 NAS\nNYS 99 103 ARC\nNAS 98 105 NYS\n");
 }
 
-TEST_CASE("XR trading data feed test", "[NEW]")
+TEST_CASE("XR trading data feed test", "[FEED]")
 {
 	OrderTiers orders;
 	orders.add_order(1, { 50, 100, 'B' });

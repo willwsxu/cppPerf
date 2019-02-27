@@ -210,7 +210,7 @@ TEST_CASE("Jump Shared Ptr test", "[JUMP]")
 
 // weak ptr contain the reference count and underlying pointer
 // lock() constructor shared ptr if count>0, else nullptr
-TEST_CASE("Jump trading Greenlight weak Ptr test", "[NEW]")
+TEST_CASE("Jump trading Greenlight weak Ptr test", "[JUMP]")
 {
 	weak_ptr<long>  weak;
 	SECTION("test 1 weak valid") {

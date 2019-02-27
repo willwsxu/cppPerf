@@ -149,7 +149,7 @@ public:
 };
 
 
-TEST_CASE("Akuna interview", "[NEW]")
+TEST_CASE("Akuna interview", "[INTERVIEW]")
 {
 	AtomicSet aset;
 	aset.add_meesage(calc_data_1(1, 2, 10));

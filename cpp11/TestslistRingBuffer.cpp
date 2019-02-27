@@ -74,7 +74,7 @@ TEST_CASE("slist single thread memory tracker share_ptr", "[QUEUE]")
 	CHECK(simple.peek()->myCount == 3);
 	CHECK(MemoryTracker::count == 3);
 }
-TEST_CASE("slist single thread memory tracker unique_ptr", "[NEW]")
+TEST_CASE("slist single thread memory tracker unique_ptr", "[QUEUE]")
 {
 	using slistTrackerU = slist<MemoryTracker, false>;
 	slistTrackerU unique;

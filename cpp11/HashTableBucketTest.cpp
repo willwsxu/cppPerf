@@ -9,7 +9,7 @@ using namespace std;
 using HashTableMock = HASH_TABLE_NEW<Console, string, HASH_TABLE_BUCKET, FileNone>;
 
 #include "..\catch.hpp"
-TEST_CASE("Bucket Hashing table Test", "[NEW]")
+TEST_CASE("Bucket Hashing table Test", "[HASH]")
 {
 	HashTableMock t(10);
 	auto ins1=t.insert("test");
@@ -43,7 +43,7 @@ TEST_CASE("Bucket Hashing table Test", "[NEW]")
 
 using HashTableProbe = HASH_TABLE_NEW<Console, string, HASH_TABLE_PROBING, FileNone>;
 
-TEST_CASE("probing Hashing table Test", "[NEW]")
+TEST_CASE("probing Hashing table Test", "[HASH]")
 {
 	HashTableProbe t(10);
 	auto ins1 = t.insert("test");  // test insert
