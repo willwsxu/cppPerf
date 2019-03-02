@@ -10,13 +10,13 @@ using std::deque;
 class GraphUnweighted
 {
 public:
-	GraphUnweighted(int N) :adjList(N + 1, vector<int>()) {}
+	GraphUnweighted(int N) :adjList(N, vector<int>()) {}
 
-	void undirectEdges(const vector<vector<int>>& edges)
+	void undirectEdges(const vector<vector<int>>& edges, int base=1)  // node [1,N]
 	{
 		for (const auto& e : edges) {
-			adjList[e[0]].push_back(e[1]);
-			adjList[e[1]].push_back(e[0]);
+			adjList[e[0] - base].push_back(e[1] - base);  // convert node to 0 based
+			adjList[e[1] - base].push_back(e[0] - base);
 		}
 	}
 	vector<int> bfs(int s)
@@ -34,6 +34,29 @@ public:
 			q.pop_front();
 		}
 		return weight;
+	}
+
+	vector<int> component_size() {  // find size of connected components of a graph, alternate solution to Union Find
+		int N = adjList.size();
+		vector<char> visited(N, 0);
+		vector<int> components;
+		for (int u = 0; u < N; ++u) {
+			if (!visited[u]) {
+				int size = dfs_count(u, visited);
+				components.push_back(size);
+			}
+		}
+		return components;
+	}
+	int dfs_count(int s, vector<char>& visited) {  // count nodes from one dfs visit
+		if (visited[s])
+			return 0;
+		int count = 0;
+		visited[s] = 1;
+		for (int v : adjList[s]) {
+			count += dfs_count(v, visited);
+		}
+		return count;
 	}
 private:
 	vector<vector<int>>  adjList;
