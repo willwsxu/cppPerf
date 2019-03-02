@@ -137,3 +137,34 @@ public:
 		return nodes_added + bad.size();
 	}*/
 };
+
+// keep track of size of connected components, invalidate merged sub component to size=0
+class UnionFind3
+{
+	vector<int> parents;
+	vector<int> size;
+public:
+	UnionFind3(int n) :parents(n, -1), size(n, 1) {    }
+	int find(int u) {
+		while (parents[u] >= 0)
+			u = parents[u];
+		return u;
+	}
+	bool connect(int u, int v) {
+		int pu = find(u);
+		int pv = find(v);
+		if (pu == pv)
+			return false;
+		if (size[pu]>size[pv])
+			swap(pu, pv);
+		parents[pu] = pv; // smaller component join to larger one
+		size[pv] += size[pu];
+		size[pu] = 0;  // erase smaller component
+		return true;
+	}
+	vector<int> get_components() {
+		vector<int> components(begin(size), end(size));
+		components.erase(remove(begin(components), end(components), 0), end(components));
+		return components;
+	}
+};
