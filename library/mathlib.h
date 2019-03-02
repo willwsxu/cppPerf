@@ -231,3 +231,19 @@ public:
 		return sum;
 	}
 };
+
+// two items a, b. total2=axb
+// three items, a,b,c. total3=a*b+a*c+b*c = total2 + (a+b)*c
+// 4 items, a,b,c,d. total=total3+(a+b+c)d
+long pairwise_multiply(const vector<int>& components) // hackerrank -> Graph Theory -> Journey to the Moon
+{
+	//copy(begin(components), end(components), ostream_iterator<int>(cout, " "));
+	//cout << "\n";
+	long total = 0;
+	long prefix_sum = 0;
+	for (int i = 1; i<components.size(); i++) { // optimize pairwise multiply
+		prefix_sum += components[i - 1];
+		total += prefix_sum*components[i];
+	}
+	return total;
+}

@@ -36,6 +36,7 @@ public:
 		return weight;
 	}
 
+	// hackerrank -> Graph Theory -> Journey to the Moon
 	vector<int> component_size() {  // find size of connected components of a graph, alternate solution to Union Find
 		int N = adjList.size();
 		vector<char> visited(N, 0);
@@ -56,7 +57,7 @@ public:
 		for (int v : adjList[s]) {
 			count += dfs_count(v, visited);
 		}
-		return count;
+		return count + 1;
 	}
 private:
 	vector<vector<int>>  adjList;
