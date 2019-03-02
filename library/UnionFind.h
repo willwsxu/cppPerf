@@ -156,7 +156,7 @@ public:
 		if (pu == pv)
 			return false;
 		if (size[pu]>size[pv])
-			swap(pu, pv);
+			std::swap(pu, pv);
 		parents[pu] = pv; // smaller component join to larger one
 		size[pv] += size[pu];
 		size[pu] = 0;  // erase smaller component

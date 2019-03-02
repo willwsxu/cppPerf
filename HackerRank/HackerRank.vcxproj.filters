@@ -16,6 +16,9 @@
     <Filter Include="interview">
       <UniqueIdentifier>{0db63c27-8d15-4608-bb78-5dffb94a1d66}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI">
+      <UniqueIdentifier>{ef9e5dfb-3a0d-41be-8d92-cbe8a03c42e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HackerRank.cpp">
@@ -38,6 +41,9 @@
     </ClCompile>
     <ClCompile Include="FourSquare.cpp">
       <Filter>interview</Filter>
+    </ClCompile>
+    <ClCompile Include="BotBuilding.cpp">
+      <Filter>AI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
