@@ -137,3 +137,66 @@ TEST_CASE("Hacker rank stack Largest Rectangle", "[NEW]")
 {
 	CHECK(largestRectangle(vector<int>{1, 3, 5, 9, 11}) == 18);
 }
+
+
+// use stack of stack to find all decreasing sequences
+// a sequence stops when next value is not greater than last value of previous sequence
+// e.g. 4 7 7 7 10 9 8 10 9 7 6 5 5 5 5 5 2 3 3 3 3 3 3 
+// step 1, all values > 4 will be poisoned: 7 7 7 10 9 8 10 9 7 6 5 5 5 5 5
+// step 2, find decreasing sequences:
+// 7 7 7
+// 10 9 8 < ended due to 7>
+// 10 9 <ended due to 7>
+// extend first sequence: 7 7 7 7 6 5 5 5 5 5 5 
+template<typename value_type>
+class StackOfStack
+{
+public:
+	size_t longest_decreasing(const vector<value_type>& values, int start, int end) {
+		vector<vector<value_type>> stacks;
+		stacks.push_back({ values[start] });
+		size_t max_seq = 1;
+		for (int i = start + 1; i<end; i++) {
+			if (values[i] <= stacks.back().back()) {
+				// checking all previous sequences
+				while (stacks.size()>1 && values[i] <= stacks[stacks.size() - 2].back()) {
+					// end of last decreasing sequence
+					max_seq = max(max_seq, stacks.back().size());
+					stacks.pop_back();
+				}
+				stacks.back().push_back(values[i]);
+			}
+			else {  // a new stack for high value
+				stacks.push_back({ values[i] });
+			}
+		}
+		// case 3 7 1 2 4 8 2 7 10: check multiple stacks
+		for (const auto& v : stacks)
+			max_seq = max(max_seq, v.size());
+		return max_seq;
+	}
+};
+
+// Data Structures->Stacks->Poisonous Plants
+int poisonousPlants(vector<int> p) {
+	StackOfStack<int> poison_stacks;
+	size_t days = 0;  // days for plants to die of poison
+	size_t i = 0;
+	while (++i<p.size()) {
+		if (p[i]>p[i - 1]) {
+			size_t j = i + 1;
+			while (j<p.size() && p[j]>p[i - 1])
+				j++;
+			days = max(days, poison_stacks.longest_decreasing(p, i, j));
+			i = j;
+		}
+	}
+	return static_cast<int>(days);
+}
+TEST_CASE("Hacker rank Poisonous Plants", "[NEW]")
+{
+	CHECK(poisonousPlants(vector<int>{3, 7, 10, 9, 8, 7, 5}) == 5);
+	CHECK(poisonousPlants(vector<int>{3, 7, 1, 2, 4, 8, 2, 7, 10}) == 2);
+	CHECK(poisonousPlants(vector<int>{10, 9, 8, 7, 6, 6, 6}) == 0);
+	CHECK(poisonousPlants(vector<int>{10, 90, 80, 700, 60, 62, 60}) == 4);
+}

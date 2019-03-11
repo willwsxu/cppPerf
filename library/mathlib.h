@@ -241,7 +241,7 @@ long pairwise_multiply(const vector<int>& components) // hackerrank -> Graph The
 	//cout << "\n";
 	long total = 0;
 	long prefix_sum = 0;
-	for (int i = 1; i<components.size(); i++) { // optimize pairwise multiply
+	for (size_t i = 1; i<components.size(); i++) { // optimize pairwise multiply
 		prefix_sum += components[i - 1];
 		total += prefix_sum*components[i];
 	}
