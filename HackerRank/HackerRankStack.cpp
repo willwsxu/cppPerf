@@ -138,41 +138,42 @@ TEST_CASE("Hacker rank stack Largest Rectangle", "[NEW]")
 	CHECK(largestRectangle(vector<int>{1, 3, 5, 9, 11}) == 18);
 }
 
-
-// use stack of stack to find all decreasing sequences
+// use stack to find all decreasing sequences, keep track of last value and count
 // a sequence stops when next value is not greater than last value of previous sequence
-// e.g. 4 7 7 7 10 9 8 10 9 7 6 5 5 5 5 5 2 3 3 3 3 3 3 
-// step 1, all values > 4 will be poisoned: 7 7 7 10 9 8 10 9 7 6 5 5 5 5 5
+// e.g. 4 7 10 9 8 10 9 7 6 5 2 3 3 3 3 3 3 
+// step 1, all values > 4 will be poisoned: 7 10 9 8 10 9 7 6 5
 // step 2, find decreasing sequences:
-// 7 7 7
-// 10 9 8 < ended due to 7>
-// 10 9 <ended due to 7>
-// extend first sequence: 7 7 7 7 6 5 5 5 5 5 5 
+// 7  {7,1}
+// 10 9 8 {8, 3}
+// 10 9 {9,2}
+// next number is 7, trigger merge of sequence, take the larger count {7,3}
+// 7 7 6 5 {7, 6}
 template<typename value_type>
 class StackOfStack
 {
 public:
-	size_t longest_decreasing(const vector<value_type>& values, int start, int end) {
-		vector<vector<value_type>> stacks;
-		stacks.push_back({ values[start] });
-		size_t max_seq = 1;
+	int longest_decreasing(const vector<value_type>& values, int start, int end) {
+		vector<pair<value_type, int>> stacks;  // stack to keep count and last elem
+		stacks.push_back({ values[start],1 });
+		int max_seq = 1;
 		for (int i = start + 1; i<end; i++) {
-			if (values[i] <= stacks.back().back()) {
+			if (values[i] <= stacks.back().first) {
 				// checking all previous sequences
-				while (stacks.size()>1 && values[i] <= stacks[stacks.size() - 2].back()) {
+				while (stacks.size()>1 && values[i] <= stacks[stacks.size() - 2].first) {
 					// end of last decreasing sequence
-					max_seq = max(max_seq, stacks.back().size());
+					stacks[stacks.size() - 2].second = max(stacks[stacks.size() - 2].second, stacks.back().second);
 					stacks.pop_back();
 				}
-				stacks.back().push_back(values[i]);
+				stacks.back().first = values[i];
+				stacks.back().second++;
 			}
 			else {  // a new stack for high value
-				stacks.push_back({ values[i] });
+				stacks.push_back({ values[i], 1 });
 			}
 		}
 		// case 3 7 1 2 4 8 2 7 10: check multiple stacks
-		for (const auto& v : stacks)
-			max_seq = max(max_seq, v.size());
+		for (const auto& p : stacks)
+			max_seq = max(max_seq, p.second);
 		return max_seq;
 	}
 };
@@ -180,7 +181,7 @@ public:
 // Data Structures->Stacks->Poisonous Plants
 int poisonousPlants(vector<int> p) {
 	StackOfStack<int> poison_stacks;
-	size_t days = 0;  // days for plants to die of poison
+	int days = 0;  // days for plants to die of poison
 	size_t i = 0;
 	while (++i<p.size()) {
 		if (p[i]>p[i - 1]) {
@@ -195,6 +196,7 @@ int poisonousPlants(vector<int> p) {
 }
 TEST_CASE("Hacker rank Poisonous Plants", "[NEW]")
 {
+	CHECK(poisonousPlants(vector<int>{4, 7, 10, 9, 8, 10, 9, 7, 6, 5, 2, 3, 3, 3, 3, 3, 3}) == 6);
 	CHECK(poisonousPlants(vector<int>{3, 7, 10, 9, 8, 7, 5}) == 5);
 	CHECK(poisonousPlants(vector<int>{3, 7, 1, 2, 4, 8, 2, 7, 10}) == 2);
 	CHECK(poisonousPlants(vector<int>{10, 9, 8, 7, 6, 6, 6}) == 0);
