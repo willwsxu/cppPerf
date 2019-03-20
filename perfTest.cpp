@@ -1,7 +1,6 @@
 // perfTest.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
 #include <Windows.h>
 #include <vector>
 #include <algorithm>
@@ -83,19 +82,21 @@ void testArrayVector(__int64 loops)
 
 extern int testNum();
 //extern void testmain();
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
-	//testList1();
-	//testSlist();
-	//testString();
+//	testList1();
+	testBaseline();
+//	testAtomicSlist();
+//	testAtomicQueue();
+	testAtomicQueueInt();
+//	testSlist();
 	//testArrayVector(1000000000);
 
 	//HttpListener www;
-	//testStringConcat();
 	//testNewDelete();
 	//testLamda();
 	//(void)testNum();
-	testLocks();
+	// testLocks();
 	//testmain();
 	//testThreads();
 	return 0;

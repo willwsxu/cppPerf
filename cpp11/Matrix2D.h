@@ -8,21 +8,18 @@ public:
 
 	typedef typename CONT<CONT<T>>::size_type size_type;
 
-	class ColIterator : public std::iterator<std::random_access_iterator_tag,
-		Matrix2D,
-		ptrdiff_t,
-		Matrix2D*,
-		Matrix2D&>
+	class ColIterator : public std::iterator<std::random_access_iterator_tag, T>  // value_type is T!, not Matrix2D
 	{
-		friend class Matrix2D;
+		friend class Matrix2D;  // allow aceess to constructor
 		// Matrix2D& matrix;  // no copy assignment constructor due to reference data member
 		Matrix2D *matrix;
 		//int m, n;  // matrix dimension
-		int col;   // col to iterate
-		int row;   // row, [0, m]
+		size_t col;   // col to iterate
+		size_t row;   // row, [0, m]
 		ColIterator(Matrix2D & mx, size_type col, bool end=false) :matrix(&mx), col(col), row(0) 
 		{ if (end) row = mx.size(); }  // constructor for begin() and end()
 	public:
+		ColIterator() = default; // needed by stable_sort
 		ColIterator(const ColIterator&) = default;  // copy constructor
 		ColIterator& operator=(const ColIterator& v) = default;  // lower_bound require copy assignment
 		~ColIterator() = default;
@@ -37,8 +34,8 @@ public:
 		ColIterator& operator-=(const ptrdiff_t& movement) { row -= movement; return (*this); }
 		ColIterator& operator++() { ++row; return (*this); }  // prefix
 		ColIterator& operator--() { --row; return (*this); }
-		ColIterator operator++(ptrdiff_t) { auto temp(*this); ++row; return temp; } // postfix
-		ColIterator operator--(ptrdiff_t) { auto temp(*this); --row; return temp; }
+		ColIterator operator++(int) { auto temp(*this); ++row; return temp; } // postfix
+		ColIterator operator--(int) { auto temp(*this); --row; return temp; }
 		ColIterator operator+(const ptrdiff_t& movement) { 
 			auto temp(*this); temp.row=row + movement; return temp; }
 		ColIterator operator-(const ptrdiff_t& movement) {
@@ -63,18 +60,12 @@ public:
 	}
 
 
-	class const_ColIterator : public std::iterator<std::random_access_iterator_tag,
-		Matrix2D,
-		ptrdiff_t,
-		Matrix2D*,
-		Matrix2D&>
+	class const_ColIterator : public std::iterator<std::forward_iterator_tag, T> //random_access_iterator_tag
 	{
 		friend class Matrix2D;
-		// Matrix2D& matrix;  // no copy assignment constructor due to reference data member
 		const Matrix2D *matrix;
-		//int m, n;  // matrix dimension
-		int col;   // col to iterate
-		int row;   // row, [0, m]
+		size_t col;   // col to iterate
+		size_t row;   // row, [0, m]
 		const_ColIterator(const Matrix2D & mx, size_type col, bool end = false) :matrix(&mx), col(col), row(0)
 		{
 			if (end) row = mx.size();
@@ -94,8 +85,8 @@ public:
 		const_ColIterator& operator-=(const ptrdiff_t& movement) { row -= movement; return (*this); }
 		const_ColIterator& operator++() { ++row; return (*this); }  // prefix
 		const_ColIterator& operator--() { --row; return (*this); }
-		const_ColIterator operator++(ptrdiff_t) { auto temp(*this); ++row; return temp; } // postfix
-		const_ColIterator operator--(ptrdiff_t) { auto temp(*this); --row; return temp; }
+		const_ColIterator operator++(int) { auto temp(*this); ++row; return temp; } // postfix
+		const_ColIterator operator--(int) { auto temp(*this); --row; return temp; }
 		const_ColIterator operator+(const ptrdiff_t& movement) {
 			auto temp(*this); temp.row = row + movement; return temp;
 		}

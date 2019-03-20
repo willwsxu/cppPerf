@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -27,26 +27,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -74,6 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\library</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -81,6 +82,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\\library</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -90,6 +92,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\\library</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -103,6 +106,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\\library</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -110,12 +114,72 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\library\eraseRemove.h" />
+    <ClInclude Include="..\library\large_int.h" />
+    <ClInclude Include="..\library\meta_math.h" />
+    <ClInclude Include="..\library\myalgo.h" />
+    <ClInclude Include="..\library\RingBufferAtomic.h" />
+    <ClInclude Include="..\library\SmallObject.h" />
+    <ClInclude Include="..\library\SortedVector.h" />
+    <ClInclude Include="Digits-Helper.h" />
+    <ClInclude Include="large_int_basic.h" />
+    <ClInclude Include="meta_book_example.h" />
+    <ClInclude Include="courseSchedule.h" />
     <ClInclude Include="DynBuffer.h" />
     <ClInclude Include="DynMsg.h" />
+    <ClInclude Include="ConsoleLogger.h" />
+    <ClInclude Include="FileReadMock.h" />
+    <ClInclude Include="Functor.h" />
+    <ClInclude Include="FunctorX.h" />
+    <ClInclude Include="HashTable.h" />
+    <ClInclude Include="HashTableBase.h" />
+    <ClInclude Include="hashTableFileRead.h" />
+    <ClInclude Include="HashTableFileReadSimple.h" />
+    <ClInclude Include="HashTableBucketHashing.h" />
+    <ClInclude Include="HashTableMockImpl.h" />
+    <ClInclude Include="HashTableProbing.h" />
+    <ClInclude Include="MessageConcept.h" />
+    <ClInclude Include="ObjectFactory.h" />
+    <ClInclude Include="SeanParentBetterCode.h" />
+    <ClInclude Include="slist.h" />
     <ClInclude Include="Matrix2D.h" />
+    <ClInclude Include="meta.h" />
+    <ClInclude Include="MoveCtor.h" />
+    <ClInclude Include="str.h" />
+    <ClInclude Include="variadic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="arbitrate.cpp" />
+    <ClCompile Include="DataFeed.cpp" />
+    <ClCompile Include="DockingSchedule.cpp" />
+    <ClCompile Include="ElevatorControl.cpp" />
+    <ClCompile Include="FactoryTest.cpp" />
+    <ClCompile Include="FunctorTest.cpp" />
+    <ClCompile Include="gaussian.cpp" />
+    <ClCompile Include="HashMockTest.cpp" />
+    <ClCompile Include="HashTableBaseFileTest.cpp" />
+    <ClCompile Include="HashTableBaseTest.cpp" />
+    <ClCompile Include="HashTableBucketTest.cpp" />
+    <ClCompile Include="InterviewBook.cpp" />
+    <ClCompile Include="Iterator.cpp" />
+    <ClCompile Include="jumpTrading.cpp" />
+    <ClCompile Include="KnowledgeBase.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MessageTest.cpp" />
+    <ClCompile Include="meta_test.cpp" />
+    <ClCompile Include="MineSweeper.cpp" />
+    <ClCompile Include="PhoneRegistry.cpp" />
+    <ClCompile Include="requestCounter.cpp" />
+    <ClCompile Include="ReservationSystem.cpp" />
+    <ClCompile Include="SeanParentTest.cpp" />
+    <ClCompile Include="SharedPtr.cpp" />
+    <ClCompile Include="TestslistRingBuffer.cpp" />
+    <ClCompile Include="practice.cpp" />
+    <ClCompile Include="atomic_set.cpp" />
+    <ClCompile Include="BrickByBrick.cpp" />
+    <ClCompile Include="smallVec.cpp" />
+    <ClCompile Include="testLargetInt.cpp" />
+    <ClCompile Include="TicTacToe.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
