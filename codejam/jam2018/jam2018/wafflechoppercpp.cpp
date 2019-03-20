@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <numeric>
 
 using namespace std;
 // problem description: given a panccake of size RxC, each cell may or may not contain a chocolate chip
@@ -62,16 +63,63 @@ bool cut_horizonal(const vector<string>& grid, vector<int>& h_cuts, const int H,
 	return false;
 }
 
-bool pancake_cuts(const vector<string>& grid, int H, int V) {
+bool pancake_cuts(const vector<string>& grid, const int H, const int V) {
 	int total_chips = 0;
 	for (const auto& row : grid)
-		total_chips += count(begin(row), end(row), '@');
+		total_chips += std::count(begin(row), end(row), '@');
 	int chips = total_chips / (H + 1) / (V + 1);
 	if (chips*(H + 1)*(V + 1) != total_chips)
 		return false;
 	vector<int> h_cuts{0};  // [0,1,2] example for 1 cut 2 rows
 	return cut_horizonal(grid, h_cuts, H, V, chips);
 }
+
+// implement editorial idea
+bool pancake_cuts_edit(const vector<string>& grid, const int H, const int V) {
+	vector<int> row_count;
+	row_count.reserve(grid.size());
+	for (const auto& row : grid) {
+		row_count.push_back(std::count(begin(row), end(row), '@'));
+	}
+	partial_sum(begin(row_count), end(row_count), begin(row_count));
+	int chips = row_count.back() / (H + 1) / (V + 1);
+	if (chips*(H + 1)*(V + 1) != row_count.back())
+		return false;
+	int row_cut_count = row_count.back() / (H + 1); // chip count per row cut
+	int col_cut_count = row_count.back() / (V + 1);	// chip count per col cut
+	int h_cut = row_cut_count;
+	vector<int> h_cuts{ 0 };  // [0,1,2] example for 1 cut 2 rows
+	for (size_t r = 0; r < row_count.size(); r++) {  // verify each row cut
+		if (row_count[r] == h_cut) {
+			h_cuts.push_back(r + 1);
+			h_cut += row_cut_count;
+		}
+		else if (row_count[r] > h_cut)
+			return false;
+	}
+	if (h_cut - row_cut_count != row_count.back())
+		return false;
+	int col_start = 0;
+	int col_count = 0;
+	for (size_t c = 0; c < grid[0].size(); c++) {
+		for (size_t r = 0; r < grid.size(); r++) {
+			if (grid[r][c] == '@')
+				col_count++;
+		}
+		if (col_count > col_cut_count)
+			return false;
+		if (col_count < col_cut_count)
+			continue;
+		for (size_t r = 1; r < h_cuts.size(); r++) {
+			if (count_chips(grid, h_cuts[r - 1], h_cuts[r], col_start, c + 1) != chips)
+				return false;
+		}
+		col_start = c + 1;
+		col_count = 0;
+	}
+	return true;
+}
+
 void test_online()
 {
 	int T;
@@ -87,7 +135,7 @@ void test_online()
 			grid.push_back(move(line));
 		}
 		cout << "Case #" << t;
-		if (pancake_cuts(grid, H, V))
+		if (pancake_cuts_edit(grid, H, V))
 			cout << ": POSSIBLE\n";
 		else
 			cout << ": IMPOSSIBLE\n";
@@ -96,10 +144,10 @@ void test_online()
 int main()
 {
 	vector<string> test5{ "@.@@","@@.@","@.@@" };
-	cout << pancake_cuts(test5, 2, 2) << "\n";
+	cout << pancake_cuts_edit(test5, 2, 2) << "\n";
 	vector<string> test1{ ".@@..@", ".....@", "@.@.@@" };
 	//cout << first_cut(test1, 2, 4, 1, 1, 2) << "\n";
-	cout << pancake_cuts(test1, 1, 1) << "\n";
+	cout << pancake_cuts_edit(test1, 1, 1) << "\n";
 	test_online();
 	return 0;
 }
