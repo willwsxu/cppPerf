@@ -141,7 +141,7 @@ void test_online()
 			cout << ": IMPOSSIBLE\n";
 	}
 }
-int main()
+void test1A()
 {
 	vector<string> test5{ "@.@@","@@.@","@.@@" };
 	cout << pancake_cuts_edit(test5, 2, 2) << "\n";
@@ -149,5 +149,67 @@ int main()
 	//cout << first_cut(test1, 2, 4, 1, 1, 2) << "\n";
 	cout << pancake_cuts_edit(test1, 1, 1) << "\n";
 	test_online();
+}
+
+// Given C cashiers, each can checkout at most Mi bits, takes Si for each bit, plus cost Pi for packaging
+// There R robot shopper for B bits in total, find optimal distribution so check out time is shortest
+// R<=C, each robot can check out at most once
+int item_from_cost(long long c, int unit_cost, int extra_cost, int capacity)
+{
+	if (c < extra_cost)
+		return 0;
+	return static_cast<int>(min<long long>((c - extra_cost) / unit_cost, capacity));
+}
+long long bitParty(int B, int R, int C, const vector<int>& M, const vector<int>& S, const vector<int>& P, long long low, long long hi)
+{
+	if (low >= hi)
+		return low;
+	long long mid = (low + hi) / 2;
+	vector<int> items;
+	items.reserve(C);
+	for (int i = 0; i < C; i++) {
+		items.push_back(item_from_cost(mid, S[i], P[i], M[i]));
+	}
+	sort(begin(items), end(items), greater<int>());
+	long long total = accumulate(begin(items), begin(items) + R, 0LL); // only robots can shop
+	if (total < B)
+		return bitParty(B, R, C, M, S, P, mid + 1, hi);
+	if (total>B)
+		return bitParty(B, R, C, M, S, P, low, mid - 1);
+	return bitParty(B, R, C, M, S, P, low, mid);
+}
+long long bitParty(int B, int R, int C, const vector<int>& M, const vector<int>& S, const vector<int>& P)
+{
+	return bitParty(B, R, C, M, S, P, 1, 2000000000000000000);
+}
+void test_online2()
+{
+	int T;
+	cin >> T;
+	for (int t = 1; t <= T; t++) {
+		int R, B, C;
+		cin >> R >> B >> C;
+		vector<int> M, S, P;
+		for (int i = 0; i < C; i++) {
+			int m, s, p;
+			cin >> m >> s >> p;
+			M.push_back(m);
+			S.push_back(s);
+			P.push_back(p);
+		}
+		cout << "Case #" << t;
+		cout << ": " << bitParty(B, R, C, M, S, P) << "\n";
+	}
+}
+void test1A2()
+{
+	vector<int> M{1,1};
+	vector<int> S{2,1};
+	vector<int> P{3,2};
+	cout << bitParty(2,2,2,M,S,P) << "\n";
+}
+int main()
+{
+	test_online2();
 	return 0;
 }
