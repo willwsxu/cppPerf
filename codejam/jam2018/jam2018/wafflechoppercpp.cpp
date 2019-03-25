@@ -152,7 +152,7 @@ void test1A()
 }
 
 // Given C cashiers, each can checkout at most Mi bits, takes Si for each bit, plus cost Pi for packaging
-// There R robot shopper for B bits in total, find optimal distribution so check out time is shortest
+// There are R robot shopper for B bits in total, find optimal distribution so check out time is shortest
 // R<=C, each robot can check out at most once
 int item_from_cost(long long c, int unit_cost, int extra_cost, int capacity)
 {
@@ -160,10 +160,11 @@ int item_from_cost(long long c, int unit_cost, int extra_cost, int capacity)
 		return 0;
 	return static_cast<int>(min<long long>((c - extra_cost) / unit_cost, capacity));
 }
-long long bitParty(int B, int R, int C, const vector<int>& M, const vector<int>& S, const vector<int>& P, long long low, long long hi)
+long long bitParty(int R, int B, const vector<int>& M, const vector<int>& S, const vector<int>& P, long long low, long long hi)
 {
 	if (low >= hi)
 		return low;
+	int C = M.size();
 	long long mid = (low + hi) / 2;
 	vector<int> items;
 	items.reserve(C);
@@ -173,14 +174,14 @@ long long bitParty(int B, int R, int C, const vector<int>& M, const vector<int>&
 	sort(begin(items), end(items), greater<int>());
 	long long total = accumulate(begin(items), begin(items) + R, 0LL); // only robots can shop
 	if (total < B)
-		return bitParty(B, R, C, M, S, P, mid + 1, hi);
-	if (total>B)
-		return bitParty(B, R, C, M, S, P, low, mid - 1);
-	return bitParty(B, R, C, M, S, P, low, mid);
+		return bitParty(R, B, M, S, P, mid + 1, hi);
+	return bitParty(R, B, M, S, P, low, mid);  // don't use mid-1 as total>B is valid answer!
 }
-long long bitParty(int B, int R, int C, const vector<int>& M, const vector<int>& S, const vector<int>& P)
+long long bitParty(int R, int B, const vector<int>& M, const vector<int>& S, const vector<int>& P)
 {
-	return bitParty(B, R, C, M, S, P, 1, 2000000000000000000);
+	long long max_time = B;
+	max_time = *max_element(begin(S), end(S)) * max_time + *max_element(begin(P), end(P));
+	return bitParty(R, B, M, S, P, 1, max_time);
 }
 void test_online2()
 {
@@ -198,18 +199,26 @@ void test_online2()
 			P.push_back(p);
 		}
 		cout << "Case #" << t;
-		cout << ": " << bitParty(B, R, C, M, S, P) << "\n";
+		cout << ": " << bitParty(R, B, M, S, P) << "\n";
 	}
 }
 void test1A2()
 {
-	vector<int> M{1,1};
-	vector<int> S{2,1};
-	vector<int> P{3,2};
-	cout << bitParty(2,2,2,M,S,P) << "\n";
+	vector<int> M{1000000000,1000000000};
+	vector<int> S{900000000,1000000000};
+	vector<int> P{400000000,200000000};
+	cout << bitParty(2,2,M,S,P) << "\n";  // 1300000000
+}
+void test1A2t2()
+{
+	vector<int> M{ 1000000000,1000000000,1000000000,1000000000 };
+	vector<int> S{ 900000000,1000000000,800000000,700000000 };
+	vector<int> P{ 400000000,200000000, 600000000,800000000  };
+	cout << bitParty(4, 10, M, S, P) << "\n";   //  3000000000 (bits 2, 2, 3, 3)
+	cout << bitParty(3, 100, M, S, P) << "\n";  // 27400000000 (bits 30, 27, 33, 38)
 }
 int main()
 {
-	test_online2();
+	test1A2t2();
 	return 0;
 }
