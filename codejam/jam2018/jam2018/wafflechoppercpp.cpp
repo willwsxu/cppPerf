@@ -171,7 +171,7 @@ long long bitParty(int R, int B, const vector<int>& M, const vector<int>& S, con
 	for (int i = 0; i < C; i++) {
 		items.push_back(item_from_cost(mid, S[i], P[i], M[i]));
 	}
-	sort(begin(items), end(items), greater<int>());
+	sort(begin(items), end(items), greater<int>());  // count use nth element instead of sorting
 	long long total = accumulate(begin(items), begin(items) + R, 0LL); // only robots can shop
 	if (total < B)
 		return bitParty(R, B, M, S, P, mid + 1, hi);
@@ -217,8 +217,59 @@ void test1A2t2()
 	cout << bitParty(4, 10, M, S, P) << "\n";   //  3000000000 (bits 2, 2, 3, 3)
 	cout << bitParty(3, 100, M, S, P) << "\n";  // 27400000000 (bits 30, 27, 33, 38)
 }
+
+double diagnoal(int x, int y) {
+	return sqrt(x*x + y * y);
+}
+using vii = vector<pair<int, int>>;
+double knapsack(const vii& cookies, int idx, int minV, double maxV, int P, vector<vector<double>>& dp) {
+	if (idx == cookies.size() || maxV>=P )
+		return min<double>(maxV, P);
+	if (dp[idx][minV] < 0) {
+		int min_cut = min(cookies[idx].first, cookies[idx].second) * 2;
+		double result = knapsack(cookies, idx + 1, minV, maxV, P, dp); // skip this cut
+		if (min_cut + minV <= P) {
+			result = max(result, knapsack(cookies, idx + 1, minV + min_cut,
+				diagnoal(cookies[idx].first, cookies[idx].second) * 2 + maxV, P, dp));
+		}
+		dp[idx][minV] = result;
+	}
+	return dp[idx][minV];
+}
+double EdgyBaking(const vii& cookies, int P) {
+	int total = accumulate(begin(cookies), end(cookies), 0, [](int init, const auto& p) {return init + p.first + p.second;})*2;
+	if (total >= P)
+		return P;
+	vector<vector<double>> dp(cookies.size(), vector<double>(P, -1));
+	return knapsack(cookies, 0, 0, 0, P-total, dp)+total;
+}
+void test_online3()
+{
+	int T;
+	cin >> T;
+	for (int t = 1; t <= T; t++) {
+		int N, P;
+		cin >> N >> P;
+		vii cookies;
+		cookies.reserve(N);
+		for (int i = 0; i < N; i++) {
+			int w, h;
+			cin >> w >> h;
+			cookies.emplace_back(w, h);
+		}
+		cout << "Case #" << t;
+		cout << ": " << EdgyBaking(cookies, P) << "\n";
+	}
+}
+
+void test1A3() {
+	cout << EdgyBaking(vii{ {1,1} }, 7) << ", expect 6.828427\n";
+	cout << EdgyBaking(vii{ {50,120}, {50,120} }, 920) << ", expect 920\n";
+	cout << EdgyBaking(vii{ {7,4} }, 32) << ", expect 32\n";
+	cout << EdgyBaking(vii{ {10,20}, {20,30},{30,10} }, 240) << ", expect 240\n";
+}
 int main()
 {
-	test1A2t2();
+	test_online3();
 	return 0;
 }
