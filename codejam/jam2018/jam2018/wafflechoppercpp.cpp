@@ -3,6 +3,8 @@
 #include <iostream>
 #include <algorithm>
 #include <numeric>
+#include <cmath>
+#include <map>
 
 using namespace std;
 // problem description: given a panccake of size RxC, each cell may or may not contain a chocolate chip
@@ -222,10 +224,10 @@ double diagnoal(int x, int y) {
 	return sqrt(x*x + y * y);
 }
 using vii = vector<pair<int, int>>;
-double knapsack(const vii& cookies, int idx, int minV, double maxV, int P, vector<vector<double>>& dp) {
+double knapsack(const vii& cookies, int idx, int minV, double maxV, int P, vector<map<int, double>>& dp) {
 	if (idx == cookies.size() || maxV>=P )
 		return min<double>(maxV, P);
-	if (dp[idx][minV] < 0) {
+	if (dp[idx].find(minV) == end(dp[idx])) {
 		int min_cut = min(cookies[idx].first, cookies[idx].second) * 2;
 		double result = knapsack(cookies, idx + 1, minV, maxV, P, dp); // skip this cut
 		if (min_cut + minV <= P) {
@@ -240,13 +242,15 @@ double EdgyBaking(const vii& cookies, int P) {
 	int total = accumulate(begin(cookies), end(cookies), 0, [](int init, const auto& p) {return init + p.first + p.second;})*2;
 	if (total >= P)
 		return P;
-	vector<vector<double>> dp(cookies.size(), vector<double>(P, -1));
+	vector<map<int, double>> dp(cookies.size());
 	return knapsack(cookies, 0, 0, 0, P-total, dp)+total;
 }
+#include <iomanip>
 void test_online3()
 {
 	int T;
 	cin >> T;
+	cout << fixed << std::setprecision(6);  // watch out for precision
 	for (int t = 1; t <= T; t++) {
 		int N, P;
 		cin >> N >> P;
