@@ -272,8 +272,14 @@ void test1A3() {
 	cout << EdgyBaking(vii{ {7,4} }, 32) << ", expect 32\n";
 	cout << EdgyBaking(vii{ {10,20}, {20,30},{30,10} }, 240) << ", expect 240\n";
 }
-int main()
+
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "catch.hpp"
+
+TEST_CASE("No 3. Edge Baking", "[J1A3]") 
 {
-	test_online3();
-	return 0;
+	CHECK(Approx(EdgyBaking(vii{ {1,1} }, 7)).epsilon(0.000001) == 6.828427);
+	CHECK(Approx(EdgyBaking(vii{ {50,120}, {50,120} }, 920)).epsilon(0.000001) == 920);
+	CHECK(Approx(EdgyBaking(vii{ {7,4} }, 32)).epsilon(0.000001) == 32);
+	CHECK(Approx(EdgyBaking(vii{ {10,20}, {20,30},{30,10} }, 240)).epsilon(0.000001) == 240);
 }
