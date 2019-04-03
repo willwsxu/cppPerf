@@ -9,16 +9,11 @@ namespace std {
 		return os;
 	}
 }
-pair<int, int> road_signs(vector<int> A, vector<int> B, const vector<int> D)
+pair<int, int> road_signs(vector<int> A, vector<int> B)
 {
 	int S = A.size();
 	if (S<2)
 		return { S, S };
-	// west side sign mean dist M=A+D,  east side sign means N=D-B
-	for (int i = 0; i < (int)A.size(); i++) {
-		A[i] += D[i];
-		B[i] = D[i] - B[i];
-	}
 
 	auto calc_seq = [](const vector<int>& a) {// track start and end of a sequence of same number
 		vector<pair<int, int>> m;
@@ -44,36 +39,39 @@ pair<int, int> road_signs(vector<int> A, vector<int> B, const vector<int> D)
 	set<pii> uniq_seq{ {0,0} };  // keep track of sign sequence
 	// M= 9   9 18 22 22 3  5  5
 	// n=-10 -5 7 -1 -1 -1 -1  2
-	auto scan_max = [&max_seq, &uniq_seq](const vector<pair<int, int>>& m, const vector<pair<int, int>>& n) {
-		size_t scan = 0;  // scan sequence from 0
-		while (scan < m.size()) {
+	auto scan_max = [&max_seq, &uniq_seq](const vector<pair<int, int>>& m, const vector<pair<int, int>>& n, 
+		const vector<int>& a, const vector<int>& b) {
+		int start = 0;
+		while (start < m.size()) {
+			size_t scan = start;  // scan sequence from start
 			int len = m[scan].second - m[scan].first + 1;  // len of same distance
-			if (scan > 0) {
-				int new_len = scan - n[scan - 1].first + len;
-				if (new_len > max_seq) {
-					max_seq = new_len;
-					uniq_seq.clear();
-					uniq_seq.emplace(n[scan - 1].first, scan+len-1);
-				}
-				else if (new_len == max_seq)
-					uniq_seq.emplace(n[scan - 1].first, scan + len - 1);
-			}
+			int M_val = a[scan];
 			scan += len;
 			if (scan < m.size()) {
-				//check next seq after
-				int new_len = n[scan].second - scan + 1 + len;
-				if (new_len > max_seq) {
-					max_seq = new_len;
-					uniq_seq.clear();
-					uniq_seq.emplace(scan - len, n[scan].second);
+				int N_val = b[scan];
+				scan = n[scan].second + 1;
+				while (scan < m.size() && a[scan] == M_val) {  // repeat scan of same M and N
+					scan = m[scan].second + 1;
+					if (scan < m.size() && b[scan] == N_val)
+						scan = n[scan].second + 1;
 				}
-				else if (new_len == max_seq)
-					uniq_seq.emplace(scan - len, n[scan].second);
 			}
+			//check next seq after
+			int new_len = scan-start;
+			if (new_len > max_seq) {
+				max_seq = new_len;
+				uniq_seq.clear();
+				uniq_seq.emplace(start, scan);
+			}
+			else if (new_len == max_seq)
+				uniq_seq.emplace(start, scan);
+			if (scan == m.size())
+				break;
+			start = m[start].second + 1;
 		}
 	};
-	scan_max(M, N);
-	scan_max(N, M);
+	scan_max(M, N, A, B);
+	scan_max(N, M, B, A);
 	return { max_seq , uniq_seq.size() };
 }
 
@@ -95,14 +93,21 @@ void test_onlineB2()
 			A.push_back(a);
 			B.push_back(b);
 		}
+		// west side sign mean dist M=A+D,  east side sign means N=D-B
+		for (int i = 0; i < (int)A.size(); i++) {
+			A[i] += D[i];
+			B[i] = D[i] - B[i];
+		}
 		cout << "Case #" << t;
-		cout << ": " << road_signs(A, B, D) << "\n";
+		cout << ": " << road_signs(A, B) << "\n";
 	}
 }
 #include "catch.hpp"
 
 TEST_CASE("No 2. road sign numbering", "[J1B2]")
 {
-	CHECK(road_signs(vector<int>{7,3,10,11,9}, vector<int>{12,11,1,12,14}, vector<int>{2,6,8,11,13}) == pair<int,int>{3, 2});
+	CHECK(road_signs(vector<int>{9,9,8,22,22}, vector<int>{-10,-5,7,-1,-1}) == pair<int,int>{3, 2});
+	CHECK(road_signs(vector<int>{6,8,7,8,8,9}, vector<int>{-1,-1,0,2,2,0}) == pair<int, int>{5, 1});
+	CHECK(road_signs(vector<int>{6, 8, 7, 8, 8, 9}, vector<int>{2,2,1,2,2,1}) == pair<int, int>{5, 2});
 	//test_onlineB2();
 }
