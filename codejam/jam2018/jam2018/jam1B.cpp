@@ -46,13 +46,14 @@ pair<int, int> road_signs(vector<int> A, vector<int> B)
 			size_t scan = start;  // scan sequence from start
 			int len = m[scan].second - m[scan].first + 1;  // len of same distance
 			int M_val = a[scan];
-			scan += len;
+			scan = m[scan].second+1;
 			if (scan < m.size()) {
 				int N_val = b[scan];
 				scan = n[scan].second + 1;
-				while (scan < m.size() && a[scan] == M_val) {  // repeat scan of same M and N
-					scan = m[scan].second + 1;
-					if (scan < m.size() && b[scan] == N_val)
+				while (scan < m.size() && (a[scan] == M_val||b[scan]==N_val)) {  // repeat scan of same M or N
+					if (a[scan] == M_val)
+						scan = m[scan].second + 1;
+					else if ( b[scan] == N_val)
 						scan = n[scan].second + 1;
 				}
 			}
@@ -67,7 +68,7 @@ pair<int, int> road_signs(vector<int> A, vector<int> B)
 				uniq_seq.emplace(start, scan);
 			if (scan == m.size())
 				break;
-			start = m[start].second + 1;
+			start++;// = m[start].second + 1;
 		}
 	};
 	scan_max(M, N, A, B);
