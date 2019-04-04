@@ -41,34 +41,29 @@ pair<int, int> road_signs(vector<int> A, vector<int> B)
 	// n=-10 -5 7 -1 -1 -1 -1  2
 	auto scan_max = [&max_seq, &uniq_seq](const vector<pair<int, int>>& m, const vector<pair<int, int>>& n, 
 		const vector<int>& a, const vector<int>& b) {
-		int start = 0;
+		size_t start = 0;
 		while (start < m.size()) {
-			size_t scan = start;  // scan sequence from start
-			int len = m[scan].second - m[scan].first + 1;  // len of same distance
-			int M_val = a[scan];
-			scan = m[scan].second+1;
+			int M_val = a[start];  // fix M value
+			size_t scan = m[start].second+1;  // scan east bound until val!=M
 			if (scan < m.size()) {
-				int N_val = b[scan];
-				scan = n[scan].second + 1;
-				while (scan < m.size() && (a[scan] == M_val||b[scan]==N_val)) {  // repeat scan of same M or N
+				int N_val = b[scan];  // fix N value
+				while (scan < m.size() && (a[scan] == M_val||b[scan]==N_val)) {  // repeat scan of sign that is same as M or N
 					if (a[scan] == M_val)
 						scan = m[scan].second + 1;
 					else if ( b[scan] == N_val)
 						scan = n[scan].second + 1;
 				}
 			}
-			//check next seq after
 			int new_len = scan-start;
-			if (new_len > max_seq) {
+			if (new_len >= max_seq) {
+				if (new_len > max_seq)
+					uniq_seq.clear();
 				max_seq = new_len;
-				uniq_seq.clear();
 				uniq_seq.emplace(start, scan);
 			}
-			else if (new_len == max_seq)
-				uniq_seq.emplace(start, scan);
-			if (scan == m.size())
+			if (scan == m.size())  // done as next round won't find longer sequence
 				break;
-			start++;// = m[start].second + 1;
+			start= m[start].second+1;
 		}
 	};
 	scan_max(M, N, A, B);
