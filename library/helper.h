@@ -184,7 +184,8 @@ inline vector<set<int>> connectedComponents(std::vector<vector<int>>& matrix, st
 	return components;
 }
 
-inline int gcd(int p, int q)
+template<typename T>
+T gcd(T p, T q)  // P>=q
 {
 	return q == 0 ? p : gcd(q, p%q);
 }

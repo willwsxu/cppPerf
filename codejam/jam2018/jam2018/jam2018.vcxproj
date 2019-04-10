@@ -120,6 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="jam1B.cpp" />
+    <ClCompile Include="qualify2019.cpp" />
     <ClCompile Include="wafflechoppercpp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

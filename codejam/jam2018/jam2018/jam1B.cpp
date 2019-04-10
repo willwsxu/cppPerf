@@ -1,6 +1,10 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <string>
+#include <algorithm>
+#include <map>
+
 using namespace std;
 using pii = pair<int, int>;
 namespace std {
@@ -98,8 +102,9 @@ void test_onlineB2()
 		cout << ": " << road_signs(A, B) << "\n";
 	}
 }
-#include "catch.hpp"
 
+
+#include "catch.hpp"
 TEST_CASE("No 2. road sign numbering", "[J1B2]")
 {
 	CHECK(road_signs(vector<int>{9,9,8,22,22}, vector<int>{-10,-5,7,-1,-1}) == pair<int,int>{3, 2});

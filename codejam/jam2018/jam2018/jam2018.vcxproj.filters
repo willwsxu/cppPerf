@@ -21,5 +21,8 @@
     <ClCompile Include="jam1B.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="qualify2019.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
