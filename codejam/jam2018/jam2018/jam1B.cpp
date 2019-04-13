@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <map>
+#include <numeric>
 
 using namespace std;
 using pii = pair<int, int>;
@@ -103,8 +104,81 @@ void test_onlineB2()
 	}
 }
 
+// 1 gram of metal i can be created from 1 gram of metal j and 1 gram of metal k
+// j and k are different, but one of them can same as i
+long long make_metal(int i, vector<pair<int, int>>& metals, vector<int>& grams, vector<int>& visited) {
+	if (visited[i])
+		return 0;
+	long long total = grams[i];
+	visited.push_back(i);
+	long long j = make_metal(metals[i].first, metals, grams, visited);
+	long long k = make_metal(metals[i].second, metals, grams, visited);
+	long long created = min(j, k);
+	return total + created;
+}
+bool valid(const vector<pair<int, int>>& metals, vector<long long>& grams, int idx, set<int>&parent)
+{
+	if (grams[idx] >= 0)
+		return true;
+	if (parent.find(idx) != end(parent))
+		return false;
+	parent.insert(idx);
+	grams[metals[idx].first-1] += grams[idx];  // convert metal id to 0 based
+	grams[metals[idx].second-1] += grams[idx];
+	bool res= valid(metals, grams, metals[idx].first-1, parent) && valid(metals, grams, metals[idx].second-1, parent);
+	parent.erase(idx);
+	return res;
+}
 
+long long transmutation(vpii metals, vector<long long> grams)
+{
+	long long high = accumulate(begin(grams), end(grams), 0LL);  // metal 0 is the traget to maximize
+	long long low = 0;
+	while (low < high) {
+		// low=0, high=1, mid=1 if valid, [1,1] else [0,0]
+		long long mid = (high + low+1) / 2;  // binary search, choose mid so loo will end properly
+		vector<long long> trial = grams;
+		trial[0] -= mid;  // if top node is negative, propate down to see if become none negative
+		set<int> parent;
+		if (valid(metals, trial, 0, parent))
+			low = mid;
+		else
+			high = mid - 1;
+	}
+	return low;
+}
+void test_onlineB3()
+{
+	int T;
+	cin >> T;
+	for (int t = 1; t <= T; t++) {
+		int M;
+		cin >> M;
+		vpii metals;
+		metals.reserve(M);
+		for (int i = 0; i < M; i++) {
+			int a, b;
+			cin >> a >> b;
+			metals.emplace_back(a, b);
+		}
+		vector<long long> grams;
+		grams.reserve(M);
+		for (int i = 0; i < M; i++) {
+			int g;
+			cin >> g;
+			grams.push_back(g);
+		}
+		cout << "Case #" << t;
+		cout << ": " << transmutation(metals, grams) << "\n";
+	}
+}
 #include "catch.hpp"
+TEST_CASE("No 3. transmutation", "[J1B3]")
+{
+	test_onlineB3();
+	CHECK(transmutation(vpii{ {3,4}, {3,4},{4,5},{3,5},{1,3} }, vector<long long>{0, 8, 6, 2, 4}) == 4);
+}
+
 TEST_CASE("No 2. road sign numbering", "[J1B2]")
 {
 	CHECK(road_signs(vector<int>{9,9,8,22,22}, vector<int>{-10,-5,7,-1,-1}) == pair<int,int>{3, 2});
