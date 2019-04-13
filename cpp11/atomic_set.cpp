@@ -172,12 +172,12 @@ TEST_CASE("Akuna interview", "[INTERVIEW]")
 }
 
 #include <random>
-vector<int> randdom_seq(int n, int gap_freq) {
+vector<int> randdom_seq(int num, int gap_freq) {
 	std::random_device rd;
-	thread_local std::mt19937 engine(rd());
+	static std::mt19937 engine(rd());
 	uniform_int_distribution<> dis(1, gap_freq);  // 
 	vector<int> seq_num;
-	generate_n(back_inserter(seq_num), n, [n = 0,&dis,&rd]() mutable {
+	generate_n(back_inserter(seq_num), num, [n = 0,&dis]() mutable {
 		++n;
 		if (dis(engine) == 1)
 			return 0;

@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectEuler", "ProjectEule
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HackerRank", "HackerRank\HackerRank.vcxproj", "{557BAF1E-5D07-435F-9909-ABF6E10CC6FA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "codeforces", "codeforces\codeforces.vcxproj", "{BD0C601E-6CB7-401D-8363-CFB1560990E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -59,6 +61,14 @@ Global
 		{557BAF1E-5D07-435F-9909-ABF6E10CC6FA}.Release|x64.Build.0 = Release|x64
 		{557BAF1E-5D07-435F-9909-ABF6E10CC6FA}.Release|x86.ActiveCfg = Release|Win32
 		{557BAF1E-5D07-435F-9909-ABF6E10CC6FA}.Release|x86.Build.0 = Release|Win32
+		{BD0C601E-6CB7-401D-8363-CFB1560990E4}.Debug|x64.ActiveCfg = Debug|x64
+		{BD0C601E-6CB7-401D-8363-CFB1560990E4}.Debug|x64.Build.0 = Debug|x64
+		{BD0C601E-6CB7-401D-8363-CFB1560990E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{BD0C601E-6CB7-401D-8363-CFB1560990E4}.Debug|x86.Build.0 = Debug|Win32
+		{BD0C601E-6CB7-401D-8363-CFB1560990E4}.Release|x64.ActiveCfg = Release|x64
+		{BD0C601E-6CB7-401D-8363-CFB1560990E4}.Release|x64.Build.0 = Release|x64
+		{BD0C601E-6CB7-401D-8363-CFB1560990E4}.Release|x86.ActiveCfg = Release|Win32
+		{BD0C601E-6CB7-401D-8363-CFB1560990E4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

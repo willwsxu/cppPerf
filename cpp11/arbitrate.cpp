@@ -66,3 +66,5 @@ TEST_CASE("Trading Technology unique char test", "[TEST]")
 	CHECK(unique_char("abcdefghijklmnopqrstu1234A") == true);
 	CHECK(unique_char("abcdefghijklmnopqrstu1234Azi") == false);
 }
+// CME book
+// polynomial add
