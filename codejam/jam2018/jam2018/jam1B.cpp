@@ -105,31 +105,27 @@ void test_onlineB2()
 }
 
 // 1 gram of metal i can be created from 1 gram of metal j and 1 gram of metal k
-// j and k are different, but one of them can same as i
-long long make_metal(int i, vector<pair<int, int>>& metals, vector<int>& grams, vector<int>& visited) {
-	if (visited[i])
-		return 0;
-	long long total = grams[i];
-	visited.push_back(i);
-	long long j = make_metal(metals[i].first, metals, grams, visited);
-	long long k = make_metal(metals[i].second, metals, grams, visited);
-	long long created = min(j, k);
-	return total + created;
-}
+// j and k are different, but one of them can be same as i
 bool valid(const vector<pair<int, int>>& metals, vector<long long>& grams, int idx, set<int>&parent)
 {
 	if (grams[idx] >= 0)
 		return true;
-	if (parent.find(idx) != end(parent))
+	if (idx>= metals.size() || parent.find(idx) != end(parent))
 		return false;
 	parent.insert(idx);
+	if (idx == metals[idx].first - 1 || idx == metals[idx].second - 1) {  // a+b->a, if a<0, a will never be >=0
+		parent.erase(idx);
+		return false;
+	}
 	grams[metals[idx].first-1] += grams[idx];  // convert metal id to 0 based
 	grams[metals[idx].second-1] += grams[idx];
+	grams[idx] = 0;
 	bool res= valid(metals, grams, metals[idx].first-1, parent) && valid(metals, grams, metals[idx].second-1, parent);
 	parent.erase(idx);
 	return res;
 }
 
+using vpii = std::vector<pair<int, int>>;
 long long transmutation(vpii metals, vector<long long> grams)
 {
 	long long high = accumulate(begin(grams), end(grams), 0LL);  // metal 0 is the traget to maximize
@@ -175,7 +171,11 @@ void test_onlineB3()
 #include "catch.hpp"
 TEST_CASE("No 3. transmutation", "[J1B3]")
 {
-	test_onlineB3();
+	//test_onlineB3();
+	CHECK(transmutation(vpii{ {2,3}, {5,4},{4,2} }, vector<long long>{0, 4, 9, 20, 20}) == 14);
+	CHECK(transmutation(vpii{ {2,3}, {5,4},{4,3} }, vector<long long>{0, 4, 9, 20, 20}) == 9);
+	CHECK(transmutation(vpii{ {2,3}, {3,4},{4,2} }, vector<long long>{0, 4, 15, 20}) == 9);
+	CHECK(transmutation(vpii{ {2,3}, {3,4},{4,2}}, vector<long long>{0, 5, 15, 20}) == 10);
 	CHECK(transmutation(vpii{ {3,4}, {3,4},{4,5},{3,5},{1,3} }, vector<long long>{0, 8, 6, 2, 4}) == 4);
 }
 
