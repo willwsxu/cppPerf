@@ -43,8 +43,6 @@ temp.cpp
 *.opendb
 *.vc.db*
 *.suo
-leetcode/leetcode2015.vcxproj.user
+*.vcxproj.user
 benchmark4.txt
-ProjectEuler/ProjectEuler.vcxproj.user
-HackerRank/HackerRank.vcxproj.user
-cpp11/cpp11.vcxproj.user
+.vs/
