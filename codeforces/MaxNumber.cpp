@@ -19,10 +19,12 @@ std::string maxNum(int sections)
 	return str;
 }
 
-int main()
+int main_()
 {
 	int s;
 	cin >> s;
 	cout << maxNum(s) << endl;
 	return 0;
 }
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "..\catch.hpp"
