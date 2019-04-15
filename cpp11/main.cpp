@@ -121,7 +121,7 @@ TEST_CASE("Matrix 2", "[MATRIX]")
 	CHECK(vii[0][1] == 3);
 
 	WXU::shuffle(vii.begin(1), vii.end(1));
-	sort(vii.begin(1), vii.end(1));
+	stable_sort(vii.begin(1), vii.end(1));
 	CHECK(vii[1][1] == 4);
 	CHECK(is_sorted(vii.begin(1), vii.end(1)) == true);
 }
