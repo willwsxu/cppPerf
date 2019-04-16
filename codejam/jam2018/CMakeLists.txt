@@ -3,7 +3,6 @@ project(jam)
 Message("${CMAKE_CURRENT_LIST_DIR}")
 set(jam_source_files
 			jam1B.cpp
-			qualify2019.cpp
 			wafflechoppercpp.cpp
 )
 add_executable(jam ${jam_source_files})
