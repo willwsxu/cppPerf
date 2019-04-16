@@ -15,7 +15,7 @@ struct greater_size {
 	};
 };
 // Given a list of unique words, find pair of words that rhyme (share same suffix), but not with any other pairs choosen
-// e.g. ABC BBC CBC DBC are valid 2 pairs, one pai rhyme on BC, other pair rhyme on C
+// e.g. ABC BBC CBC DBC are valid 2 pairs, one pair rhyme on BC, other pair rhyme on C
 // ABC BBC CBC DBC EBC FBC only have 2 valid pairs. a third pair will conflict with other two pairs 
 int pair_rhyme(vector<string>& words) {
 	size_t pos = 1;
