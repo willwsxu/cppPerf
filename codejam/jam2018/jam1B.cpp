@@ -16,7 +16,7 @@ namespace std {
 }
 pair<int, int> road_signs(vector<int> A, vector<int> B)
 {
-	int S = A.size();
+	int S = static_cast<int>(A.size());
 	if (S<2)
 		return { S, S };
 
@@ -32,9 +32,9 @@ pair<int, int> road_signs(vector<int> A, vector<int> B)
 				start = end;
 			}
 		}
-		int end = a.size();
-		for (int i = start; i < end; i++) {
-			m.emplace_back(start, end - 1);
+		size_t end = a.size();
+		for (size_t i = start; i < end; i++) {
+			m.emplace_back(start, static_cast<int>(end - 1));
 		}
 		return m;
 	};
@@ -59,12 +59,12 @@ pair<int, int> road_signs(vector<int> A, vector<int> B)
 						scan = n[scan].second + 1;
 				}
 			}
-			int new_len = scan-start;
+			int new_len = static_cast<int>(scan-start);
 			if (new_len >= max_seq) {
 				if (new_len > max_seq)
 					uniq_seq.clear();
 				max_seq = new_len;
-				uniq_seq.emplace(start, scan);
+				uniq_seq.emplace(static_cast<int>(start), static_cast<int>(scan));
 			}
 			if (scan == m.size())  // done as next round won't find longer sequence
 				break;
@@ -73,7 +73,7 @@ pair<int, int> road_signs(vector<int> A, vector<int> B)
 	};
 	scan_max(M, N, A, B);
 	scan_max(N, M, B, A);
-	return { max_seq , uniq_seq.size() };
+	return { max_seq , static_cast<int>(uniq_seq.size()) };
 }
 
 void test_onlineB2()
@@ -168,6 +168,7 @@ void test_onlineB3()
 		cout << ": " << transmutation(metals, grams) << "\n";
 	}
 }
+
 #include "catch.hpp"
 TEST_CASE("No 3. transmutation", "[J1B3]")
 {
