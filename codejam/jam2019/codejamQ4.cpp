@@ -93,7 +93,7 @@ int main()
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"
 
-TEST_CASE("jam2019 qualify #1", "[Q4]")
+TEST_CASE("jam2019 qualify #4", "[Q4]")
 {
 	//interactive();
 

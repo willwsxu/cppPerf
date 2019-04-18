@@ -14,41 +14,43 @@ struct greater_size {
 		return s1.size() > s2.size(); 
 	};
 };
-// Given a list of unique words, find pair of words that rhyme (share same suffix), but not with any other pairs choosen
+// Given a list of unique words, find pair of words that rhyme (share same suffix), but not with any other pairs chosen
 // e.g. ABC BBC CBC DBC are valid 2 pairs, one pair rhyme on BC, other pair rhyme on C
 // ABC BBC CBC DBC EBC FBC only have 2 valid pairs. a third pair will conflict with other two pairs 
 int pair_rhyme(vector<string>& words) {
-	size_t pos = 1;
-	map<string, int> suffix_count;
-	map<string, set<string>> rhymes;
+	map<string, set<string>> rhymes;  // words group by same lenof suffix
 	for (string& w : words) {
 		rhymes[w.substr(w.size() - 1)].insert(move(w)); // group by last letter
 	}
-	for (auto iter = begin(rhymes); iter != end(rhymes); ) {  //remove all word that share no suffix, no rhymes at all
-		if (iter->second.size() < 2)
-			rhymes.erase(iter++);
-		else
-			++iter;
-	}
+	auto erase_no_rhyme = [](map<string, set<string>>& rhy) {
+		int count = 0;
+		for (auto iter = begin(rhy); iter != end(rhy); ) {  //remove all word that share no suffix
+			if (iter->second.size() < 2) {
+				rhy.erase(iter++);
+				count++;
+			}
+			else
+				++iter;
+		}
+		return count;
+	};
+	erase_no_rhyme(rhymes);  // erased words with no rhymes at all
+	size_t pos = 1;  //suffix len from back
+	map<string, int> suffix_count;  // word count of same suffix
 	while(!rhymes.empty()) {
 		map<string, set<string>> rhymes2;
 		pos++;  // increase suffix by one, each loop
 		for (auto& p : rhymes) {
 			int no_advance = 0;  // word cannot make longer suffix
 			for (const string& w : p.second) {
-				if (w.size() >= pos)
+				if (w.size() > pos)
 					rhymes2[ w.substr(w.size() - pos) ].insert(w);
+				else if (w.size() == pos)
+					rhymes2[w].insert(w);
 				else
 					no_advance++;
 			}
-			for (auto iter = begin(rhymes2); iter != end(rhymes2); ) {  // no rhymes at all
-				if (iter->second.size() < 2) {
-					rhymes2.erase(iter++);
-					no_advance++;
-				}
-				else
-					++iter;
-			}
+			no_advance += erase_no_rhyme(rhymes2);
 			suffix_count[p.first] = no_advance;  // store suffix even if count is 0
 		}
 		rhymes.swap(rhymes2);
@@ -106,7 +108,7 @@ void online()
 	}
 }
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
-#include "..\catch.hpp"
+#include "catch.hpp"
 
 TEST_CASE("jam2019 1A", "[R1A]")
 {
