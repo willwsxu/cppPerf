@@ -9,3 +9,4 @@ set(jam_source_files
 add_executable(jam ${jam_source_files})
 target_include_directories(jam
 							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../)
+install(TARGETS jam DESTINATION ${CMAKE_CURRENT_LIST_DIR}/bin)

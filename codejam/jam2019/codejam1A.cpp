@@ -107,10 +107,78 @@ void online()
 		cout << ": " << pair_rhyme(words) << "\n";
 	}
 }
+
+// Given a grid RxC, find sequence of moves that visit each cell exactly once
+// and consecutive moves don't share row, column, or diagonal
+// if [r1,c1], [r2,c2] are two consecitive moves, then
+// r1!=r2, c1!=c2, r1-c1!=r2-c2, r1+c1!=r2+c2
+bool dfs_path(int R, int C, vector<pair<int, int>>& moves)
+{
+	if (moves.size() == R * C)
+		return true;
+	auto good_move = [&moves](int r, int c) {
+		if (moves.empty())
+			return true;
+		int r2 = moves.back().first;
+		int c2 = moves.back().second;
+		if (r == r2 || c == c2 || r - c == r2 - c2 || r + c == r2 + c2)
+			return false;
+
+		return find(begin(moves), end(moves), pair<int, int>{r, c})==end(moves);
+	};
+	for (int r = 0; r < R; r++) {
+		for (int c = 0; c < C; c++) {
+			if (good_move(r, c)) {
+				moves.emplace_back(r, c);
+				if (dfs_path(R, C, moves))
+					return true;
+				moves.pop_back();
+			}
+		}
+	}
+	return false;
+}
+
+using vii = vector<pair<int, int>>;
+pair<bool, vii> jump_path(int R, int C)
+{
+	vector<pair<int, int>> moves;
+	bool good = dfs_path(R, C, moves);
+	return { good, moves };
+}
+
+void online1()
+{
+	int T;
+	cin >> T;
+	for (int t = 1; t <= T; t++) {
+		int R,C;
+		cin >> R >> C;
+		cin.ignore();
+		auto result = jump_path(R, C);
+		cout << "Case #" << t;
+		cout << ": " << (result.first?"POSSIBLE":"IMPOSSIBLE") << "\n";
+		if (result.first) {
+			for (const auto& xx : result.second)
+				cout << xx.first+1 << " " << xx.second+1 << "\n";
+		}
+	}
+}
+
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
 
 TEST_CASE("jam2019 1A", "[R1A]")
+{
+	online1();
+	auto t1 = jump_path(2, 2);
+	CHECK(t1.first == false);
+	auto t2 = jump_path(2, 5);
+	CHECK(t2.first == true);
+	CHECK(t2.second == vii{ {0,0},{1,2},{0,4},{1,1},{0,3},{1,0},{0,2},{1,4},{0,1},{1,3} });
+}
+
+TEST_CASE("jam2019 1C", "[R1C]")
 {
 	//online();
 	CHECK(pair_rhyme(vector<string>{"1YXA", "2YXA", "3YXA", "1ZXA", "2ZXA", "3ZXA","1WXA","2WXA","3WXA","A"}) == 10);
