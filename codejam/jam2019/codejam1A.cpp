@@ -4,6 +4,7 @@
 #include <set>
 #include <algorithm>
 #include <iostream>
+#include <random>
 using namespace std;
 
 template<typename T>
@@ -112,7 +113,8 @@ void online()
 // and consecutive moves don't share row, column, or diagonal
 // if [r1,c1], [r2,c2] are two consecitive moves, then
 // r1!=r2, c1!=c2, r1-c1!=r2-c2, r1+c1!=r2+c2
-bool dfs_path(int R, int C, vector<pair<int, int>>& moves)
+using vii = vector<pair<int, int>>;
+bool dfs_path(int R, int C, vii& moves)
 {
 	if (moves.size() == R * C)
 		return true;
@@ -139,11 +141,54 @@ bool dfs_path(int R, int C, vector<pair<int, int>>& moves)
 	return false;
 }
 
-using vii = vector<pair<int, int>>;
+
+bool dfs_path_random(int R, int C, vii& moves, std::mt19937& engine)
+{
+	if (moves.size() == R * C)
+		return true;
+	auto good_move = [&moves](int r, int c) {
+		if (moves.empty())
+			return true;
+		int r2 = moves.back().first;
+		int c2 = moves.back().second;
+		if (r == r2 || c == c2 || r - c == r2 - c2 || r + c == r2 + c2)
+			return false;
+
+		return find(begin(moves), end(moves), pair<int, int>{r, c}) == end(moves);
+	};
+	vii candidate_moves;
+	for (int r = 0; r < R; r++) {
+		for (int c = 0; c < C; c++) {
+			if (good_move(r, c)) {
+				candidate_moves.emplace_back(r, c);
+			}
+		}
+	}
+	while (!candidate_moves.empty()) {
+		uniform_int_distribution<> dis(0, candidate_moves.size()-1);
+		int pick = dis(engine);
+		moves.emplace_back(candidate_moves[pick].first, candidate_moves[pick].second);
+		if (dfs_path(R, C, moves))
+			return true;
+		moves.pop_back();
+		candidate_moves.erase(begin(candidate_moves) + pick);
+	}
+	return false;
+}
+
+bool dfs_path_greedy(int R, int C, vector<vector<int>>& neighbors, vector<pair<int, int>>& moves)
+{
+	if (moves.size() == R * C)
+		return true;
+	return false;
+}
+
 pair<bool, vii> jump_path(int R, int C)
 {
 	vector<pair<int, int>> moves;
-	bool good = dfs_path(R, C, moves);
+	std::random_device rd;
+	std::mt19937 engine(rd());
+	bool good = dfs_path_random(R, C, moves, engine);
 	return { good, moves };
 }
 
