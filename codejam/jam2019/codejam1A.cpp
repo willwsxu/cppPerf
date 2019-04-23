@@ -141,20 +141,22 @@ bool dfs_path(int R, int C, vii& moves)
 	return false;
 }
 
-
-bool dfs_path_random(int R, int C, vii& moves, std::mt19937& engine)
+// My first successful application of randomization
+// Compute all valid moves based on last move
+// Randomly pick a move among all candidates, recursively try next move
+// remove tried move from candidate list, and try again if last pick failed
+// when grid is large, it takes one try at each move
+bool dfs_path_random(int R, int C, vector<vector<int>>& moves, pair<int,int> last, int count, std::mt19937& engine)
 {
-	if (moves.size() == R * C)
+	if (count == R * C)
 		return true;
-	auto good_move = [&moves](int r, int c) {
-		if (moves.empty())
+	auto good_move = [&moves, count, last](int r, int c) {  // rules of a valid move
+		if (count==0)
 			return true;
-		int r2 = moves.back().first;
-		int c2 = moves.back().second;
-		if (r == r2 || c == c2 || r - c == r2 - c2 || r + c == r2 + c2)
+		if (r == last.first || c == last.second || r - c == last.first - last.second || r + c == last.first + last.second)
 			return false;
 
-		return find(begin(moves), end(moves), pair<int, int>{r, c}) == end(moves);
+		return moves[r][c]<0;
 	};
 	vii candidate_moves;
 	for (int r = 0; r < R; r++) {
@@ -164,32 +166,39 @@ bool dfs_path_random(int R, int C, vii& moves, std::mt19937& engine)
 			}
 		}
 	}
+	//int random_tries = 0;
 	while (!candidate_moves.empty()) {
+		//random_tries++;
 		uniform_int_distribution<> dis(0, candidate_moves.size()-1);
 		int pick = dis(engine);
-		moves.emplace_back(candidate_moves[pick].first, candidate_moves[pick].second);
-		if (dfs_path(R, C, moves))
+		int r = candidate_moves[pick].first;
+		int c = candidate_moves[pick].second;
+		moves[r][c] = count;
+		if (dfs_path_random(R, C, moves, { r,c }, count + 1, engine)) {
+			//cout << " random try " << random_tries << " at round " << count << "\n";
 			return true;
-		moves.pop_back();
+		}
+		moves[r][c] = -1;  // mark for not used
 		candidate_moves.erase(begin(candidate_moves) + pick);
 	}
 	return false;
 }
 
-bool dfs_path_greedy(int R, int C, vector<vector<int>>& neighbors, vector<pair<int, int>>& moves)
-{
-	if (moves.size() == R * C)
-		return true;
-	return false;
-}
-
 pair<bool, vii> jump_path(int R, int C)
 {
-	vector<pair<int, int>> moves;
 	std::random_device rd;
 	std::mt19937 engine(rd());
-	bool good = dfs_path_random(R, C, moves, engine);
-	return { good, moves };
+	vector<vector<int>> grid(R, vector<int>(C,-1));  // grid value is the the ordering, 0 based
+	bool good = dfs_path_random(R, C, grid, {0,0}, 0, engine);  // using grid to spped up search, avoid TLE!!!
+	if (!good)
+		return { false, vii{} };
+	vii moves(R*C);
+	for (int r = 0; r < R; r++) {
+		for (int c = 0; c < C; c++) {
+			moves[grid[r][c]] = { r,c };
+		}
+	}
+	return { true, moves };
 }
 
 void online1()
@@ -215,12 +224,15 @@ void online1()
 
 TEST_CASE("jam2019 1A", "[R1A]")
 {
-	online1();
+	//online1();
 	auto t1 = jump_path(2, 2);
 	CHECK(t1.first == false);
 	auto t2 = jump_path(2, 5);
 	CHECK(t2.first == true);
-	CHECK(t2.second == vii{ {0,0},{1,2},{0,4},{1,1},{0,3},{1,0},{0,2},{1,4},{0,1},{1,3} });
+	//CHECK(t2.second == vii{ {0,0},{1,2},{0,4},{1,1},{0,3},{1,0},{0,2},{1,4},{0,1},{1,3} });  fail due to randomness
+	CHECK(t2.second.size() == 10);
+	auto t3 = jump_path(20, 20);
+	CHECK(t3.first == true);
 }
 
 TEST_CASE("jam2019 1C", "[R1C]")
