@@ -325,3 +325,22 @@ public:
 		return ans;
 	}
 };
+
+#include <random>
+class RandomHelper
+{
+	std::random_device rd;
+	std::mt19937 engine;
+	std::uniform_int_distribution<int> dis;
+public:
+	RandomHelper(int range_start = 0, int range_end = 1) :engine(rd()), dis(range_start, range_end) {
+	}
+	int getNext()
+	{
+		return dis(engine);
+	}
+	int getNext(int range_start, int range_end) {
+		std::uniform_int_distribution<> dis2(range_start, range_end);
+		return dis2(engine);
+	}
+};
