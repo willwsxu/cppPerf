@@ -1,7 +1,6 @@
-
 #include <vector>
 #include <numeric>
-#include "../../library/helper.h"
+#include "library/helper.h"
 
 using namespace std;
 
@@ -31,7 +30,7 @@ public:
 	vector<int> query(vector<int>&& blades) {
 		if (online_test)
 			return query_online(move(blades));
-		int n = blades.size();
+		int n = static_cast<int>(blades.size());
 		RandomHelper rand(0, n - 1);
 		vector<int> result(n, 0);
 		for (int i = 0; i < num_gophers; i++) {  // randomly distribute gophers to one of the 18 holes

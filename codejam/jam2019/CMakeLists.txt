@@ -8,5 +8,7 @@ set(jam_source_files
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 add_executable(jam ${jam_source_files})
 target_include_directories(jam
-							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../)
+							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../
+							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../../
+							)
 install(TARGETS jam DESTINATION ${CMAKE_CURRENT_LIST_DIR}/bin)

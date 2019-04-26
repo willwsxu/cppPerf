@@ -150,10 +150,10 @@ inline int ceiling_int(int divdend, int divisor)
 // matrix of value 0 or 1, 1 - land, 0 - water
 inline vector<set<int>> connectedComponents(std::vector<vector<int>>& matrix, std::vector<vector<int>>& dir)
 {
-	int rows = matrix.size();
+	int rows = static_cast<int>(matrix.size());
 	if (rows == 0)
 		return{};
-	int cols = matrix[0].size();
+	int cols = static_cast<int>(matrix[0].size());
 	auto empty_cell = [](int val) { return val == 0; };
 	vector<set<int>> components;
 	set<int>		visited;
