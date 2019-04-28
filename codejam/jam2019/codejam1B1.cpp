@@ -31,21 +31,21 @@ pair<int,int> find_food_cart(vector<int> x, vector<int> y, vector<char> d, int P
 		y_line[i] += y_line[i - 1];
 	}
 	int max_people = 0;
-	vector<pair<int, int>> ans;
+	pair<int, int> ans;
 	for (int i = 0; i <= Q; i++) {
 		for (int j = 0; j <= Q; j++) {
 			int total = x_line[i] + y_line[j];
 			if (total > max_people) {
 				max_people = total;
-				ans.clear();
-				ans.emplace_back(i, j);
+				ans = { i, j };
 			}
-			else if (total == max_people)
-				ans.emplace_back(i, j);
+			else if (total == max_people) {
+				if (i < ans.first || j < ans.second)
+					ans = { i, j };
+			}
 		}
 	}
-	sort(begin(ans), end(ans));
-	return ans[0];
+	return ans;
 }
 
 void online1() {
@@ -72,13 +72,14 @@ void online1() {
 		cout << ": " << ans.first << " " << ans.second << "\n";
 	}
 }
+/*
 int main(int argc, char *argv[])
 {
 	online1();
 	return 0;
 }
+*/
 
-/*
 #include "catch.hpp"
 TEST_CASE("jam2019 1B #1", "[1B1]")
 {
@@ -94,4 +95,3 @@ TEST_CASE("jam2019 1B #1", "[1B1]")
 	CHECK(t3.first == 0);
 	CHECK(t3.second == 4);
 }
-*/
