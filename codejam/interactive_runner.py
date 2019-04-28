@@ -24,10 +24,12 @@ import sys, subprocess, threading
 class SubprocessThread(threading.Thread):
   def __init__(self,
                args,
+               name,
                stdin_pipe=subprocess.PIPE,
                stdout_pipe=subprocess.PIPE,
-               stderr_pipe=subprocess.PIPE):
+               stderr_pipe=sys.stderr): #subprocess.PIPE):
     threading.Thread.__init__(self)
+    self.name = name
     self.p = subprocess.Popen(
         args,
         stdin=stdin_pipe,
@@ -36,9 +38,11 @@ class SubprocessThread(threading.Thread):
 
   def run(self):
     try:
+      print(self.name+" start", file=sys.stderr);
       self.return_code = self.p.wait()
       self.stdout = "" if self.p.stdout is None else self.p.stdout.read()
-      self.stderr = "" if self.p.stderr is None else self.p.stderr.read()
+ #     self.stderr = "" if self.p.stderr is None else self.p.stderr.read()
+      print(self.name+" end", file=sys.stderr);      
     except (SystemError, OSError):
       self.return_code = -1
       self.stdout = ""
@@ -50,14 +54,14 @@ sep_index = sys.argv.index("--")
 judge_args = sys.argv[1:sep_index]
 sol_args = sys.argv[sep_index + 1:]
 
-t_sol = SubprocessThread(sol_args)
-t_judge = SubprocessThread(judge_args, stdin_pipe=t_sol.p.stdout,
+t_sol = SubprocessThread(sol_args, "solution",)
+t_judge = SubprocessThread(judge_args, "judge", stdin_pipe=t_sol.p.stdout,
                            stdout_pipe=t_sol.p.stdin)
 t_sol.start()
 t_judge.start()
 t_sol.join()
 t_judge.join()
 print("Judge return code:", t_judge.return_code)
-print("Judge standard error:", t_judge.stderr.decode())
+#print("Judge standard error:", t_judge.stderr.decode())
 print("Solution return code:", t_sol.return_code)
-print("Solution standard error:", t_sol.stderr.decode())
+#print("Solution standard error:", t_sol.stderr.decode())
