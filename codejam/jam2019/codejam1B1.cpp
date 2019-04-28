@@ -26,26 +26,13 @@ pair<int,int> find_food_cart(vector<int> x, vector<int> y, vector<char> d, int P
 			break;
 		}
 	}
-	for (int i = 1; i <= Q; i++) {
+	for (int i = 1; i <= Q; i++) {  // calculate count from delta values
 		x_line[i] += x_line[i - 1];
 		y_line[i] += y_line[i - 1];
 	}
-	int max_people = 0;
-	pair<int, int> ans;
-	for (int i = 0; i <= Q; i++) {
-		for (int j = 0; j <= Q; j++) {
-			int total = x_line[i] + y_line[j];
-			if (total > max_people) {
-				max_people = total;
-				ans = { i, j };
-			}
-			else if (total == max_people) {
-				if (i < ans.first || j < ans.second)
-					ans = { i, j };
-			}
-		}
-	}
-	return ans;
+	auto max_x = max_element(begin(x_line), end(x_line));
+	auto max_y = max_element(begin(y_line), end(y_line));
+	return {distance(begin(x_line), max_x), distance(begin(y_line), max_y) };
 }
 
 void online1() {
