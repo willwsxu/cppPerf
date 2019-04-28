@@ -1,12 +1,13 @@
 #include <vector>
 #include <numeric>
+#include <set>
 #include "library/helper.h"
 
 using namespace std;
 
 class GoptherTest
 {
-	int num_gophers;
+	int num_gophers=0;
 	bool online_test = true;
 	vector<int> query_online(vector<int>&& blades) {
 		vector<int> result(blades.size(), 0);
@@ -36,8 +37,11 @@ public:
 		for (int i = 0; i < num_gophers; i++) {  // randomly distribute gophers to one of the 18 holes
 			result[rand.getNext()]++;
 		}
-		for (int& mod : result)
+		for (int& mod : result) {
 			mod %= blades[0];
+			cout << mod << " ";
+		}
+		cout << endl;
 		return result;
 	}
 	static GoptherTest& instance() {
@@ -82,26 +86,30 @@ int find_gophers() {
 
 void online2()
 {
-	int T;
-	cin >> T;
+	int T, N, M;
+	cin >> T >> N >> M;
 	for (int t = 1; t <= T; t++) {
-		int N, M;
-		cin >> N >> M;
-		cin.ignore();
-		cout << find_gophers() << endl;
+		int gophers = find_gophers();
+		cout << gophers << endl;
 		int result;
 		cin >> result;
+		cerr << "cpp test #" << t << ": success=" << result << " gophers=" << gophers << "\n";
 		if (result < 0) {  // wrong answer
 			exit(0);
 		}
 	}
 }
-
+/*
+int main(int argc, char *argv[])
+{
+	online2();
+	return 0;
+}
+*/
 #include "catch.hpp"
 
 TEST_CASE("jam2019 1A #2", "[1A2]")
 {
-	online2();
 	GoptherTest::instance().set_tests(100);
 	CHECK(find_gophers() == 100);
 	GoptherTest::instance().set_tests(1000000);
