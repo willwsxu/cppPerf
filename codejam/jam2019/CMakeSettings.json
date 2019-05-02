@@ -7,8 +7,8 @@
       "inheritEnvironments": [
         "msvc_x64_x64"
       ],
-      "buildRoot": "${projectDir}/build",
-      "installRoot": "${projectDir}/bin",
+      "buildRoot": "${projectDir}/build/${name}",
+      "installRoot": "${WorkSpaceRoot}/bin",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": ""
