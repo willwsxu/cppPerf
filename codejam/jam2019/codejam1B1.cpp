@@ -4,15 +4,21 @@
 
 using namespace std;
 
+// in a Q by Q grid of streets, people are all walking toward to tasty food cart
+// given initial location ( they can only walk on grid lines) and direction
+// find the location of food cart, (0,0) is at southwest corner
+// A person is moving toward a street intersection if their current movement 
+//  is on a shortest path to that street intersection within the Manhattan grid
+// when there is tie, it is more likely closer to origin (smallest x or y)
 pair<int,int> find_food_cart(vector<int> x, vector<int> y, vector<char> d, int P, int Q)
 {
 	vector<int> x_line(Q+1, 0);
 	vector<int> y_line(Q + 1, 0);
 	for (int i = 0; i < P; i++) {
 		switch (d[i]) {
-		case 'W':
-			x_line[0]++;
-			x_line[x[i]]--;
+		case 'W':  // cart is at west of x[i]
+			x_line[0]++;   // this person could at any x from 0 to x[i]-1
+			x_line[x[i]]--;// trick is add delta +1 at begining of interval, -1 at 1 past end of interval
 			break;
 		case 'E':
 			x_line[x[i]+1]++;
@@ -30,8 +36,8 @@ pair<int,int> find_food_cart(vector<int> x, vector<int> y, vector<char> d, int P
 		x_line[i] += x_line[i - 1];
 		y_line[i] += y_line[i - 1];
 	}
-	auto max_x = max_element(begin(x_line), end(x_line));
-	auto max_y = max_element(begin(y_line), end(y_line));
+	auto max_x = max_element(begin(x_line), end(x_line));  // max at smallest x
+	auto max_y = max_element(begin(y_line), end(y_line));  // max at smallest y
 	return {distance(begin(x_line), max_x), distance(begin(y_line), max_y) };
 }
 

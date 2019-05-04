@@ -3,6 +3,9 @@
 #include <iostream>
 
 using namespace std;
+// Give N swords, and skill level for C and D on each 
+// game is fair if max difference of skill is no greater than, for swords from L to R.
+// Find all possible [L,R]
 long long fair_game_brute(const vector<int>& C, const vector<int>& D, int K)
 {
 	int N = C.size();
