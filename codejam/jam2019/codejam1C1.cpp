@@ -7,15 +7,22 @@
 
 using namespace std;
 
+// No assumption, not all string of same lenght
+// wrap around if string is too short
+// observation: tie will eventually be broken, with win or lose
+// eliminate lost players if there are different hands (RS, SP or PR)
 string RSP(vector<string> others)
 {
-	int C = (int)others[0].size();
+	auto max_elem = max_element(begin(others), end(others), [](const string& s1, const string& s2) { return s1.size() < s2.size(); });
 	string result;
-	result.reserve(C);
-	for (int c = 0; c < C; c++) {
+	result.reserve(max_elem->size());
+	int c = -1;
+	while (!others.empty()) {
+		c++;
 		map<char,int> rsp;
 		for (int i = 0; i < (int)others.size(); i++) {
-			rsp[(others[i][c])]++;
+			const string& s = others[i];
+			rsp[(s[c%s.size()])]++;  // wrap around shorter string
 		}
 		if (rsp.size() > 2)
 			return "IMPOSSIBLE";
@@ -36,46 +43,10 @@ string RSP(vector<string> others)
 				result.push_back(first);
 			else
 				result.push_back(second);
-			//if (rsp[result.back()] == others.size() - 1) {
-			//	auto eliminate = remove_if(begin(others), end(others), [winner = result.back(), c](const string& s) { return s[c] != winner; });
-			//	others.erase(eliminate, end(others));
-			//}
+			auto eliminate = remove_if(begin(others), end(others), [winner = result.back(), c](const string& s) { return s[c%s.size()] != winner; });
+			others.erase(eliminate, end(others));
 		}
 	}
-	int A = (int)others.size() + 1;
-	auto lose_match = [](const string s1, const string& s2) {  // s1 lose to s2
-		if (s1 == s2)
-			return false;
-		for (int i = 0; i < (int)s1.size(); i++) {
-			if (s1[i] == 'R' && s2[i] == 'P')
-				return true;
-			if (s1[i] == 'S' && s2[i] == 'R')
-				return true;
-			if (s1[i] == 'P' && s2[i] == 'S')
-				return true;
-		}
-		return false;
-	};
-	auto lose_all = [lose_match](const string s, vector<string>& team) {
-		for (const string& s2 : team)
-			if (!lose_match(s, s2))
-				return false;
-		return true;
-	};
-	while (A > 1) {
-		A /= 2;
-		// eliminate losers
-		set<string> eliminate;
-		for (const string s : others)
-			if (lose_all(s, others) && lose_match(s, result))
-				eliminate.insert(s);
-		if (eliminate.empty())
-			break;
-		others.erase(remove_if(begin(others), end(others), [&eliminate](const string& s) { return eliminate.count(s) > 0; }), end(others));
-	}
-	for (const string s : others)
-		if (!lose_match(s, result))
-			return "IMPOSSIBLE";
 	return result;
 }
 void online1() {
@@ -97,21 +68,18 @@ void online1() {
 	}
 }
 
-
+/*
 int main(int argc, char *argv[])
 {
 	online1();
 	return 0;
 }
+*/
 
-/*
 #include "catch.hpp"
 TEST_CASE("jam2019 1C #1", "[1C1]")
 {
-	CHECK(RSP(vector<string>{"RSPR", "SSPR", "RPRR"}) == "RSPP");
-	CHECK(RSP(vector<string>{"RSPS", "SSPS", "RPRS"}) == "RSPR");
-	CHECK(RSP(vector<string>{"RSPP", "SSPP", "RPRP"}) == "RSPS");
+	CHECK(RSP(vector<string>{"RSPR", "SSPR", "RPRR"}) == "RSS");
 	CHECK(RSP(vector<string>{"R","S","P"}) == "IMPOSSIBLE");
-	CHECK(RSP(vector<string>{"RSP", "SSP", "RPR"}) == "IMPOSSIBLE");
+	CHECK(RSP(vector<string>{"RS","RSRSR","RSRSS","RSRPR","RSSR","RPP","S"}) == "RSRSRRR");
 }
-*/
