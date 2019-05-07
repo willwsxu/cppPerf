@@ -273,7 +273,6 @@ void test1A3() {
 	cout << EdgyBaking(vii{ {10,20}, {20,30},{30,10} }, 240) << ", expect 240\n";
 }
 
-#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
 
 TEST_CASE("No 3. Edge Baking", "[J1A3]") 
