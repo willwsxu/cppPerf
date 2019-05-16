@@ -26,9 +26,10 @@ public:
 		return result;
 	}
 };
-int main()
+
+#include "catch.hpp"
+TEST_CASE("leetcode", "[DFS]")
 {
 	vector<vector<int>> grid{ {1,1},{1,2} };
-	auto x = Solution().colorBorder(grid, 0, 0, 3);
-	return 0;
+	CHECK(Solution().colorBorder(grid, 0, 0, 3) == vector<vector<int>>{ {3, 3}, { 3,2 }});
 }
