@@ -6,13 +6,13 @@ using namespace std;
 // G move a step, L turn left, R turn right
 // if the instruction is repeated, is robot bounded
 bool isRobotBounded(string instructions) {
-	int L = 0, R = 0, U = 0, D = 0;
-	int x = 0, y = 0;
+	int L = 0, R = 0, U = 0, D = 0;  // bounds
+	int x = 0, y = 0;  // location
 	char dir = 'N';
 	map<char, char> turns_L{ {'N','W'},{'W','S'},{'S','E'},{'E','N'} };
 	map<char, char> turns_R{ {'N','E'},{'W','N'},{'S','W'},{'E','S'} };
 	for (int r = 0; r < 20; r++) {
-		bool no_change = true;
+		bool no_change = true;  // compute bounds in each round and check if bound is changing
 		auto update = [&no_change](int& max_val, int new_val) {
 			if (new_val > max_val) {
 				max_val = new_val;
