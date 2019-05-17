@@ -37,7 +37,7 @@ vector<int> gardenNoAdj(int N, vector<vector<int>>& paths) {
 }
 
 #include "catch.hpp"
-TEST_CASE("flower garden", "[DFS]")
+TEST_CASE("1042 flower garden", "[DFS]")
 {
 	CHECK(gardenNoAdj(4, vector<vector<int>>{ {1, 2}, { 3,4 }}) == vector<int>{1,2,1,2});
 	CHECK(gardenNoAdj(4, vector<vector<int>>{ {1, 2}, { 2,3 }, { 3, 4 }, { 4,1 }, { 1,3 }, { 2,4 }}) == vector<int>{1, 2, 3, 4});

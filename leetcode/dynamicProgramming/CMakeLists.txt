@@ -4,6 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(leetcode_source_files
 			${CMAKE_CURRENT_LIST_DIR}/../../catch_main.cpp
 			triangulation.cpp
+			ArrayPartition.cpp
 )
 add_executable(leetcode ${leetcode_source_files})
 target_include_directories(leetcode
