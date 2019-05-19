@@ -15,12 +15,14 @@ int dfs(const vector < vector<int>>& adj_list, vector<int>& chains, int u) {
 	return max_len;
 }
 
+// word a is predecessor of word b if and only if insert a letter to a so it equals b
+// find longest such predecessor chain
 int longestStrChain(vector<string>& words) {
 	vector < vector<int>> adj_list(words.size(), vector<int>());
 	for (int i = 0; i < words.size() - 1; i++) {
 		for (int j = i + 1; j < words.size(); j++) {
 			int diff = static_cast<int>(words[i].size() - words[j].size());
-			if (abs(diff) != 1)
+			if (abs(diff) != 1) // check len diff is 1
 				continue;
 			string & a = diff < 0 ? words[i] : words[j];
 			string & b = diff < 0 ? words[j] : words[i];
@@ -30,7 +32,25 @@ int longestStrChain(vector<string>& words) {
 			for (char c : a)
 				count[c - 'a']--;
 			bool good = all_of(begin(count), end(count), [](int c) { return c >= 0; });
-			if (good) {
+			if (!good)
+				continue;  //check if b-a is one letter
+			auto match = [](const string & a, const string & b) {
+				bool skipped_one = false;
+				for (int i = 0; i < a.size(); i++) {
+					if (skipped_one) {
+						if (a[i] != b[i+1])
+							return false;
+					}
+					else {
+						if (a[i] != b[i]) {
+							skipped_one = true;
+							i--;  // try again to compare a[i] with b[i+1]
+						}
+					}
+				}
+				return true;
+			};
+			if (match(a,b)) {
 				if (diff < 0)
 					adj_list[i].push_back(j);
 				else
@@ -49,4 +69,5 @@ int longestStrChain(vector<string>& words) {
 TEST_CASE("1048. Longest String Chain", "[DYN]")
 {
 	CHECK(longestStrChain(vector<string>{"a", "b", "ba", "bca", "bda", "bdca"}) == 4);
+	CHECK(longestStrChain(vector<string>{"a", "b", "ba", "bca", "bda", "abcd"}) == 3);
 }
