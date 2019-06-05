@@ -66,6 +66,34 @@ vector<int> prevPermOpt1(vector<int>& A) {
 	}
 	return A;
 }
+
+vector<int> addNegabinary(vector<int>& arr1, vector<int>& arr2) {
+	reverse(begin(arr1), end(arr1));
+	reverse(begin(arr2), end(arr2));
+	size_t size=max(arr1.size(), arr2.size());
+	arr1.resize(size);
+	arr2.resize(size);
+	vector<int> result;
+	result.reserve(size + 1);
+	int carry = 0;  // in decimal, for human brain
+	for (int i = 0; i < size; i++) {
+		carry = arr1[i] + arr2[i] + carry;
+		result.push_back(carry & 1);
+		carry = -(carry >> 1);
+	}
+	while (carry != 0) {
+		result.push_back(carry & 1);
+		carry = -(carry >> 1);
+	}
+	auto last = end(result) - 1;
+	while (last > begin(result) && *last == 0)
+		--last;
+	++last;
+	result.erase(last, end(result));
+	reverse(begin(result), end(result));
+	return result;
+}
+
 #include "catch.hpp"
 TEST_CASE("1041 robot bounded", "[MATH]")
 {
@@ -79,4 +107,10 @@ TEST_CASE("1053. Previous Permutation With One Swap", "[MATH]")
 	CHECK(prevPermOpt1(vector<int>{3, 3,1}) == vector<int>{3, 1, 3});  // 
 	CHECK(prevPermOpt1(vector<int>{3,1,1,3}) == vector<int>{1,3,1,3});
 	CHECK(prevPermOpt1(vector<int>{1,9,4,6,7}) == vector<int>{1,7,4,6,9});
+}
+TEST_CASE("1073. Adding Two Negabinary Numbers", "[MATH]")
+{
+	CHECK(addNegabinary(vector<int>{1,0,1}, vector<int>{1,0,1}) == vector<int>{1,1,1,1,0});
+	CHECK(addNegabinary(vector<int>{1, 1, 1, 1}, vector<int>{1, 1, 1, 1}) == vector<int>{1, 0, 1, 0});
+	CHECK(addNegabinary(vector<int>{1, 1}, vector<int>{1}) == vector<int>{0});  // corner case, leading 0
 }
