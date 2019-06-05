@@ -45,8 +45,38 @@ bool isRobotBounded(string instructions) {
 	return false;
 }
 
+#include <vector>
+#include <iostream>
+#include <algorithm>
+// swap two numbers to generate largest permutation that is smaller than current
+// numbers in array may not be unique
+// if no swap is possible, return original
+// idea: search from back and find the first number that is increasing, say it is target1
+//       search left-to-right increasing sequence after target1, find target2<target1 (gurranteed if target1 exists)
+//       swap(target1, target2)
+vector<int> prevPermOpt1(vector<int>& A) {
+	auto increasing_from_back = adjacent_find(rbegin(A), rend(A), [](int a, int b) { return a < b; });
+	if (increasing_from_back != rend(A)) {
+		auto start = increasing_from_back.base()-1;  // base point to to right, find start of increasing sequence
+		auto target1 = start - 1;  // target1>start, *target1>0
+		auto target2 = lower_bound(start, end(A), *target1 - 1);  // find largest digit smaller than target1
+		if (target2==end(A) || *target2 >= *target1)  // did not find the exact value (*target1-1)
+			target2 = lower_bound(start, end(A), *(target2 - 1)); // search for first of value target2
+		iter_swap(target1, target2);
+	}
+	return A;
+}
 #include "catch.hpp"
 TEST_CASE("1041 robot bounded", "[MATH]")
 {
 	CHECK(isRobotBounded("LLGLR") == true);
+}
+
+TEST_CASE("pre permutation", "[MATH]")
+{
+	CHECK(prevPermOpt1(vector<int>{1,2,3}) == vector<int>{1,2,3});
+	CHECK(prevPermOpt1(vector<int>{3, 2, 1}) == vector<int>{3, 1,2});
+	CHECK(prevPermOpt1(vector<int>{3, 3,1}) == vector<int>{3, 1, 3});  // 
+	CHECK(prevPermOpt1(vector<int>{3,1,1,3}) == vector<int>{1,3,1,3});
+	CHECK(prevPermOpt1(vector<int>{1,9,4,6,7}) == vector<int>{1,7,4,6,9});
 }
