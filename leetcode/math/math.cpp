@@ -72,7 +72,7 @@ TEST_CASE("1041 robot bounded", "[MATH]")
 	CHECK(isRobotBounded("LLGLR") == true);
 }
 
-TEST_CASE("pre permutation", "[MATH]")
+TEST_CASE("1053. Previous Permutation With One Swap", "[MATH]")
 {
 	CHECK(prevPermOpt1(vector<int>{1,2,3}) == vector<int>{1,2,3});
 	CHECK(prevPermOpt1(vector<int>{3, 2, 1}) == vector<int>{3, 1,2});

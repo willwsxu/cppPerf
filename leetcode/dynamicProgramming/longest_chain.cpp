@@ -17,6 +17,8 @@ int dfs(const vector < vector<int>>& adj_list, vector<int>& chains, int u) {
 
 // word a is predecessor of word b if and only if insert a letter to a so it equals b
 // find longest such predecessor chain
+// IDEA: create a directed Graph, two words have an edge if they differ by 1 letter
+// dfs to compute max len of all its connected words
 int longestStrChain(vector<string>& words) {
 	vector < vector<int>> adj_list(words.size(), vector<int>());
 	for (int i = 0; i < words.size() - 1; i++) {
@@ -26,14 +28,6 @@ int longestStrChain(vector<string>& words) {
 				continue;
 			string & a = diff < 0 ? words[i] : words[j];
 			string & b = diff < 0 ? words[j] : words[i];
-			vector<int> count(26, 0);
-			for (char c : b)
-				count[c - 'a']++;
-			for (char c : a)
-				count[c - 'a']--;
-			bool good = all_of(begin(count), end(count), [](int c) { return c >= 0; });
-			if (!good)
-				continue;  //check if b-a is one letter
 			auto match = [](const string & a, const string & b) {
 				bool skipped_one = false;
 				for (int i = 0; i < a.size(); i++) {
