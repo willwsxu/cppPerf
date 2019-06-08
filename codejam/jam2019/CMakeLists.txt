@@ -4,6 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(jam_source_files
 			${CMAKE_CURRENT_LIST_DIR}/../../catch_main.cpp
 			codejam1B3.cpp
+			codejam1C1.cpp
 )
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 add_executable(jam ${jam_source_files})
