@@ -7,8 +7,8 @@ set(leetcode_source_files
 			associative.cpp
 )
 add_executable(leetcode ${leetcode_source_files})
-target_compile_options(leetcode PRIVATE /Zi)
-target_link_options(leetcode PRIVATE "/DEBUG")
+target_compile_options(leetcode PRIVATE $<$<CONFIG:Debug>:/ZI> $<$<CONFIG:Release>:/Zi>)
+target_link_options(leetcode PRIVATE $<$<CONFIG:Release>:/DEBUG /OPT:REF /OPT:ICF>)
 target_include_directories(leetcode
 							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../
 							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../../
