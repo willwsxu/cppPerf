@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "..\catch.hpp"  // don't put this file in stdafx.h
+#include "catch.hpp"  // don't put this file in stdafx.h
 
 using namespace std;
 #include "TreeNode.h"

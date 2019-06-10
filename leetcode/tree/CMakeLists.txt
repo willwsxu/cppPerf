@@ -5,6 +5,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(leetcode_source_files
 			${CMAKE_CURRENT_LIST_DIR}/../../catch_main.cpp
 			binary_tree.cpp
+			BinaryTree.cpp
 )
 add_executable(leetcode ${leetcode_source_files})
 if (MSVC)
@@ -22,5 +23,6 @@ target_link_options(leetcode PRIVATE $<$<CONFIG:Release>:/DEBUG /OPT:REF /OPT:IC
 target_include_directories(leetcode
 							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../
 							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../../
+							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../../library
 							)
 install(TARGETS leetcode DESTINATION ${CMAKE_CURRENT_LIST_DIR}/bin)

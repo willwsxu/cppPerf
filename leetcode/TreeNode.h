@@ -4,9 +4,12 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <vector>
 
 using std::deque;
 using std::cout;
+using std::vector;
+using std::string;
 
 struct TreeNode {
 	int val;
