@@ -8,18 +8,17 @@ set(leetcode_source_files
 			BinaryTree.cpp
 )
 add_executable(leetcode ${leetcode_source_files})
-if (MSVC)
-    # remove default debug info from CMAKE_CXX_FLAGS_INIT
-    string (REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS_INIT ${CMAKE_CXX_FLAGS_INIT})
-    string (REGEX REPLACE "/Zi" "" CMAKE_CXX_FLAGS_DEBUG_INIT ${CMAKE_CXX_FLAGS_DEBUG_INIT})
+#must apprear after target is created such as add_executable
+#PRE_BUILD did not work as expected: not done before build, not triggered by build
+add_custom_command(TARGET leetcode 
+	PRE_BUILD
+	COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_LIST_DIR}/../pre_built_command.cmake"
+)
+add_custom_target(pre_build_target 
+	COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_LIST_DIR}/../pre_built_command2.cmake"
+)
+add_dependencies(leetcode pre_build_target)
 
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} /W4")
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG_INIT} /ZI")
-endif()
-Message(STATUS "CMAKE_CXX_FLAGS_DEBUG=${CMAKE_CXX_FLAGS_DEBUG}")
-Message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
-#target_compile_options(leetcode PRIVATE $<$<CONFIG:Debug>:/ZI> $<$<CONFIG:Release>:/Zi>)  // did not replace Zi with ZI
-target_link_options(leetcode PRIVATE $<$<CONFIG:Release>:/DEBUG /OPT:REF /OPT:ICF>)
 target_include_directories(leetcode
 							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../
 							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../../
