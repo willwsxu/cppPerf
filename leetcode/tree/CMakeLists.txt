@@ -21,9 +21,10 @@ add_custom_target(pre_build_target
 add_dependencies(leetcode pre_build_target)
 
 target_include_directories(leetcode
-							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../
-							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../../
-							PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../../library
+							PUBLIC ${CMAKE_CURRENT_LIST_DIR}
 							)
-target_link_libraries(leetcode catch_test)
+target_link_libraries(leetcode 
+		PRIVATE catch_test
+		PRIVATE library
+		PRIVATE leetcode_common)
 install(TARGETS leetcode DESTINATION bin)
