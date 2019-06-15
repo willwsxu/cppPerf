@@ -46,3 +46,5 @@ temp.cpp
 *.vcxproj.user
 benchmark4.txt
 .vs/
+x64
+build
