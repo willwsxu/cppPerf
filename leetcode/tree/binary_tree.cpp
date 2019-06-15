@@ -19,7 +19,43 @@ TreeNode* sufficientSubset(TreeNode* root, long long limit) {
     return !root->left && !root->right ? nullptr : root; // if none of it children is valid, root is invalid
 }
 
+int max_sum = INT_MIN;
+int maxPathSum_helper(TreeNode* root) {
+    if (!root)
+        return 0;
+    if (!root->left && !root->right) {
+        max_sum = max(max_sum, root->val);
+        return root->val;
+    }
+    int left = maxPathSum_helper(root->left);
+    int right = maxPathSum_helper(root->right);
+    // two cases: this root is the best subtree
+    // or this root is part of other bigger subtree. in this case, only use left ot right part
+    int ret = max(left + root->val, right + root->val);
+    ret = max(ret, root->val);
+    max_sum = max(max_sum, max(ret, left + root->val + right));
+    return  ret;
+}
+
+int maxPathSum(TreeNode* root) {
+    max_sum = INT_MIN;
+    maxPathSum_helper(root);
+    return max_sum;
+}
+
 #include "catch.hpp"  // don't put this file in stdafx.h
+TEST_CASE("124. Binary Tree Maximum Path Sum", "[TREE]")
+{
+    SECTION("edge case: best path is not through root") {
+        auto t = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"-10", "9", "20", "null", "null", "15", "7"});
+        CHECK(maxPathSum(t) == 42);
+    }
+
+    SECTION("edge case: single node") {
+        auto t = TreeNode::ConstructBinaryTreePerLevel(vector<string>{"0"});
+        CHECK(maxPathSum(t) == 0);
+    }
+}
 TEST_CASE("1080	Insufficient Nodes in Root to Leaf Paths", "[TREE]")
 {
     SECTION("edge case: sum==limit is OK") {
