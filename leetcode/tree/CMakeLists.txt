@@ -5,8 +5,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(leetcode_source_files
 			BinaryTree.cpp
 			binary_tree.cpp
-			backtracking.cpp
-			stack.cpp
 )
 add_executable(leetcode ${leetcode_source_files})
 #must apprear after target is created such as add_executable
@@ -25,6 +23,5 @@ target_include_directories(leetcode
 							)
 target_link_libraries(leetcode 
 		PRIVATE catch_test
-		PRIVATE library
 		PRIVATE leetcode_common)
 install(TARGETS leetcode DESTINATION bin)
