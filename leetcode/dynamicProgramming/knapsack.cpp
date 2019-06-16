@@ -10,7 +10,7 @@ using namespace std;
 // find the smallest weight of last stone
 // N [1,30], weight [1,100]
 using mvi=map<vector<int>, int>;
-int lastStoneWeightII(vector<int>& stones, mvi& memo) {
+int lastStoneWeightII(vector<int>& stones, mvi& memo) { //*********
 	sort(begin(stones), end(stones), greater<int>());
 	while (stones.back() == 0)
 		stones.erase(end(stones) - 1);
