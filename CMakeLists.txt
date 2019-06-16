@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.12.1)
+set(CMAKE_TOOLCHAIN_FILE "c:\\dev\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake" CACHE STRING "")
 set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_CURRENT_LIST_DIR}/leetcode/CompilerOptions.cmake")
 project(all_cpp_projetcs VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_VERBOSE_MAKEFILE ON)
