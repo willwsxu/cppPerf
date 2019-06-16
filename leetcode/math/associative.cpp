@@ -46,8 +46,39 @@ int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {
 	}
 	return res;
 }
-//1074. Number of Submatrices That Sum to Target
+
+// pick K values, value picked from same label do not exceed limit
+// find max sum
+// sort values from high to low, keep track of its labels
+// pick numbers from highest, as long as label limit is obeyed
+int largestValsFromLabels(vector<int>& values, vector<int>& labels, int num_wanted, int use_limit) {
+    vector<pair<int, int>> labeled_values;
+    labeled_values.reserve(values.size());
+    for (size_t i = 0; i < values.size(); i++)
+        labeled_values.emplace_back(values[i], labels[i]);
+    sort(begin(labeled_values), end(labeled_values), [](const auto& p1, const auto& p2) { return p1.first > p2.first; });
+    int picked = 0;
+    map<int, int> labels_used;
+    int ans = 0;
+    for (const auto& p : labeled_values) {
+        if (labels_used[p.second] == use_limit)
+            continue;
+        labels_used[p.second]++;
+        ans += p.first;
+        if (++picked == num_wanted)
+            break;
+    }
+    return ans;
+}
+
 #include "catch.hpp"
+TEST_CASE("1090. Largest Values From Labels", "[MAP]")
+{
+    CHECK(largestValsFromLabels(vector<int>{5, 4, 3, 2, 1}, vector<int>{1, 1, 2, 2, 3}, 3, 1) == 9);
+    CHECK(largestValsFromLabels(vector<int>{5, 4, 3, 2, 1}, vector<int>{1, 3, 3, 3, 2}, 3, 2) == 12);
+    CHECK(largestValsFromLabels(vector<int>{9, 8, 8, 7, 6}, vector<int>{0, 0, 0, 1, 1}, 3, 1) == 16);
+    CHECK(largestValsFromLabels(vector<int>{9, 8, 8, 7, 6}, vector<int>{0, 0, 0, 1, 1}, 3, 2) == 24);
+}
 TEST_CASE("1072. Flip Columns For Maximum Number of Equal Rows", "[MAP]")
 {
 	CHECK(maxEqualRowsAfterFlips(vector<vector<int>>{ {0,1}, {1,0}}) == 2);
