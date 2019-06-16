@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <numeric>
 #include <iostream>
 using namespace std;
 
@@ -47,9 +48,19 @@ int lastStoneWeightII(vector<int>& stones, mvi& memo) { //*********
 	return result;
 }
 int lastStoneWeightII(vector<int>& stones) {
-	mvi memo;
-	memo[vector<int>{}] = 0;
-	return lastStoneWeightII(stones, memo);
+    int weights = accumulate(begin(stones), end(stones), 0);  // at most 30*100=3000
+    // out of all available stones, which weight sum is achieveable
+    vector<bool> sack_memo(weights / 2 + 1, 0);
+    sack_memo[0] = true;  // base case
+    for (int s : stones) {
+        // coin change allow multiple use so order is reversed!!
+        for (int w = sack_memo.size()-1; w >=s; w--)  // reverse order as each weight used once
+            sack_memo[w] = sack_memo[w] | sack_memo[w-s];
+    }
+    for (int w = weights / 2; w >= 0; w--)
+        if (sack_memo[w])
+            return weights - w - w;
+    return 0;
 }
 
 // clash 2 heaviest stones at each round
@@ -68,15 +79,15 @@ int lastStoneWeight(vector<int>& stones) {
 }
 
 #include "catch.hpp"
-TEST_CASE("contest 1", "[1B3]")
+TEST_CASE("contest 1", "[MATH]")
 {
 	CHECK(lastStoneWeight(vector<int>{2, 7, 4, 1, 8, 1}) == 1);
 }
-TEST_CASE("last stone weight II", "[DYN]")
+TEST_CASE("1049. Last Stone Weight II", "[DYN]")
 {
+    CHECK(lastStoneWeightII(vector<int>{31, 26, 33, 21, 40}) == 5);
 	CHECK(lastStoneWeightII(vector<int>{2, 7, 4, 1, 8, 1}) == 1);
 }
-
 /*
 int main(int argc, char* argv[])
 {
