@@ -14,3 +14,4 @@ install(TARGETS catch_test DESTINATION bin)
 
 add_subdirectory(leetcode)
 add_subdirectory(library)
+add_subdirectory(devtest)
