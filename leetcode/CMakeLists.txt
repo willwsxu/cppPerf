@@ -10,4 +10,8 @@ target_include_directories(leetcode_common
 
 target_link_libraries(leetcode_common 
 		INTERFACE library)
+
 add_subdirectory(tree)
+add_subdirectory(dynamicProgramming)
+add_subdirectory(stack)
+add_subdirectory(backtracking)
