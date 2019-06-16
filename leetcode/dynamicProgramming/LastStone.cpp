@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <iostream>
 using namespace std;
 
 // given N stones, pick any two, smash them. if weight x==y, both destroyed
@@ -75,3 +76,10 @@ TEST_CASE("last stone weight II", "[DYN]")
 {
 	CHECK(lastStoneWeightII(vector<int>{2, 7, 4, 1, 8, 1}) == 1);
 }
+
+/*
+int main(int argc, char* argv[])
+{
+	cout << argc << endl;
+}
+*/
