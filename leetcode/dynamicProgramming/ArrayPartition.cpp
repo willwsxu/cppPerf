@@ -24,7 +24,7 @@ int maxSumAfterPartitioning(vector<int>& A, int K) {
 	//vector<int> memo(A.size(), -1);
 	//return maxSumAfterPartitioning(A, K, 0, memo);  top down
 	vector<int> memo(A.size()+1, 0);  // additional space for clean code later
-	for (int i = (int)A.size() - 1; i >= 0; i--) {
+	for (int i = (int)A.size() - 1; i >= 0; i--) { // bottom up
 		int idx = i;
 		int max_subarray = 0;
 		int result = 0;
