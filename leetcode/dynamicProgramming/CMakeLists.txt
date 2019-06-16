@@ -4,7 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(leetcode_source_files
 			triangulation.cpp
 			longest_chain.cpp
-			lastStone.cpp
+			knapsack.cpp
 )
 add_executable(leetcode_dp ${leetcode_source_files})
 target_link_libraries(leetcode_dp 
