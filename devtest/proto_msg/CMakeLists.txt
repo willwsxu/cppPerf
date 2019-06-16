@@ -5,7 +5,7 @@ set( CMAKE_VERBOSE_MAKEFILE on )
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(Protobuf_USE_STATIC_LIBS ON)
+set(Protobuf_USE_STATIC_LIBS ON)
 find_package(Protobuf REQUIRED)
 
 message("   --> PROTOBUF LIB: ${Protobuf_LIBRARY}")

@@ -11,7 +11,6 @@ message Person {
     MOBILE = 0;
     HOME = 1;
     WORK = 2;
-    IPHONE = 4;
   }
 
   message PhoneNumber {
