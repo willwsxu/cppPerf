@@ -19,13 +19,21 @@ set(PROTO_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/source)
 file(GLOB_RECURSE all_messages_PROTOS "${PROTO_SOURCE_DIR}/*.proto")
 
 foreach(PROTO_FILE ${all_messages_PROTOS})
-	add_custom_command (
-		OUTPUT ${PROJECT_BINARY_DIR}/generated/addressbook.pb.cc
-		DEPENDS ${PROTO_FILE}
-		COMMAND ${Protobuf_PROTOC_EXECUTABLE} 
-		ARGS "--cpp_out=${PROJECT_BINARY_DIR}/generated" "--proto_path=${PROTO_SOURCE_DIR}" ${PROTO_FILE}
+	string(REGEX REPLACE "${PROTO_SOURCE_DIR}" "" proto_name ${PROTO_FILE})
+	string(REGEX REPLACE ".proto" ".pb.cc" proto_source_file ${proto_name})
+	set(proto_source_file ${PROJECT_BINARY_DIR}/generated/${proto_source_file})
+	set(PROROC_COMMAND_ARGS
+		"--cpp_out=${PROJECT_BINARY_DIR}/generated"
+		"--proto_path=${PROTO_SOURCE_DIR}"
+		"-I${Protobuf_INCLUDE_DIRS}"
+		${PROTO_FILE}
 	)
-	set(PROTO_SOURCE_FILES ${PROTO_SOURCE_FILES} ${PROJECT_BINARY_DIR}/generated/addressbook.pb.cc)
+	add_custom_command (
+		OUTPUT ${proto_source_file}
+		DEPENDS ${PROTO_FILE}
+		COMMAND ${Protobuf_PROTOC_EXECUTABLE} ARGS ${PROROC_COMMAND_ARGS}
+	)
+	set(PROTO_SOURCE_FILES ${PROTO_SOURCE_FILES} ${proto_source_file})
 endforeach()
 
 add_custom_target(proto_msg_gen ALL
@@ -41,4 +49,4 @@ add_library(proto_msg ${PROTO_SOURCE_FILES}
 				)
 target_link_libraries(proto_msg ${Protobuf_LIBRARIES})
 
-add_dependencies(proto_msg proto_msg_gen)
+#add_dependencies(proto_msg proto_msg_gen)
