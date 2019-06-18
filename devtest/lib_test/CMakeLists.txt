@@ -40,6 +40,7 @@ add_dependencies(libc libc_gen)
 set_target_properties(libc
 	PROPERTIES IMPORTED_LOCATION ${lib_combo_static}
 )
+add_dependencies(libtest libc)
 message(STATUS "lib_combo_static=${lib_combo_static}")
 target_link_libraries(libtest liba libb)
 target_include_directories(libtest 
