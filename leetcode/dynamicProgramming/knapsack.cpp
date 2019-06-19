@@ -47,6 +47,7 @@ int lastStoneWeightII(vector<int>& stones, mvi& memo) { //*********
 	memo[stones] = result;
 	return result;
 }
+// transform problem into: devide stones into 2 groups, find the smallest difference
 int lastStoneWeightII(vector<int>& stones) {
     int weights = accumulate(begin(stones), end(stones), 0);  // at most 30*100=3000
     // out of all available stones, which weight sum is achieveable
@@ -90,11 +91,11 @@ class Knapsack
             int max_val = max({ tallestBillboard(rods, idx + 1, memo, b1 + rods[idx], b2, max_h),
                 tallestBillboard(rods, idx + 1, memo, b1, b2 + rods[idx], max_h),
                 tallestBillboard(rods, idx + 1, memo, b1, b2, max_h) });
-            memo[idx][delta] = max(-1, max_val - max(b1, b2));  // adjust to store value onward
+            memo[idx][delta] = max(-1, max_val - min(b1, b2));  // adjust to store value onward
             return max_val;
         }
-        else
-            return memo[idx][delta] >= 0 ? memo[idx][delta] + max(b1, b2) : -1;  // add back previous value
+        else // different b1, b2, but same |b1-b2|, would add on same height
+            return memo[idx][delta] >= 0 ? memo[idx][delta] + min(b1, b2) : -1;  // add back previous value
     }
 public:
     // 956. Tallest Billboard, rods equal size
@@ -105,6 +106,24 @@ public:
         return tallestBillboard(rods, 0, memo, 0, 0, total / 2);
     }
     // transform into knapsack, hint from: The sum of rods is at most 5000.
+
+    int tallestBillboard_bottomup(vector<int>& rods) { // slower than tallestBillboard above
+        map<int, int> dp;  // key=difference of 2 billboards, value= max height of the shorter
+        dp[0] = 0;
+        for (int r : rods) {
+            map<int, int> old_dp=dp;
+            for (const auto entry : old_dp) {
+                int delta = entry.first;
+                // add rod to the longer side
+                dp[delta + r] = max(dp[delta + r], entry.second);
+                // add rod to the shorter side
+                int addition = min(delta, r);
+                delta = abs(delta - r);
+                dp[delta] = max(dp[delta], addition + entry.second);
+            }
+        }
+        return dp[0];
+    }
 };
 #include "catch.hpp"
 TEST_CASE("956. Tallest Billboard", "[DP]")
@@ -114,6 +133,12 @@ TEST_CASE("956. Tallest Billboard", "[DP]")
     CHECK(Knapsack().tallestBillboard(vector<int>{2, 4, 8, 16}) == 0);
     CHECK(Knapsack().tallestBillboard(vector<int>{1, 2, 3, 4, 5, 6}) == 10);
     CHECK(Knapsack().tallestBillboard(vector<int>{1, 2, 3, 6}) == 6);
+
+    CHECK(Knapsack().tallestBillboard_bottomup(vector<int>{1, 2}) == 0);
+    CHECK(Knapsack().tallestBillboard_bottomup(vector<int>{96, 112, 101, 100, 104, 93, 106, 99, 114, 81, 94}) == 503);
+    CHECK(Knapsack().tallestBillboard_bottomup(vector<int>{2, 4, 8, 16}) == 0);
+    CHECK(Knapsack().tallestBillboard_bottomup(vector<int>{1, 2, 3, 4, 5, 6}) == 10);
+    CHECK(Knapsack().tallestBillboard_bottomup(vector<int>{1, 2, 3, 6}) == 6);
 }
 TEST_CASE("1046. Last Stone Weight", "[MATH]")
 {
