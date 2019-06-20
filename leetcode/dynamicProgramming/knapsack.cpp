@@ -81,6 +81,7 @@ int lastStoneWeight(vector<int>& stones) {
 
 class Knapsack
 {
+    // transform into knapsack, hint from: The sum of rods is at most 5000.
     int tallestBillboard(const vector<int>& rods, int idx, vector<vector<int>>& memo, int b1, int b2, int max_h) {
         if (b1 > max_h || b2 > max_h)
             return -1;  // 0 is valid memo as relative value is stored
@@ -105,8 +106,6 @@ public:
         vector<vector<int>> memo(rods.size(), vector<int>(total / 2 + 1, INT32_MIN));
         return tallestBillboard(rods, 0, memo, 0, 0, total / 2);
     }
-    // transform into knapsack, hint from: The sum of rods is at most 5000.
-
     int tallestBillboard_bottomup(vector<int>& rods) { // slower than tallestBillboard above
         map<int, int> dp;  // key=difference of 2 billboards, value= max height of the shorter
         dp[0] = 0;
@@ -116,6 +115,8 @@ public:
                 int delta = entry.first;
                 // add rod to the longer side
                 dp[delta + r] = max(dp[delta + r], entry.second);
+                if (delta == 0)
+                    continue;
                 // add rod to the shorter side
                 int addition = min(delta, r);
                 delta = abs(delta - r);
