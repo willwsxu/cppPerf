@@ -28,12 +28,14 @@ foreach(PROTO_FILE ${all_messages_PROTOS})
 		"-I${Protobuf_INCLUDE_DIRS}"
 		${PROTO_FILE}
 	)
-	add_custom_command (
+	add_custom_command ( # files are generated at build time, not make time
 		OUTPUT ${proto_source_file}
 		DEPENDS ${PROTO_FILE}
 		COMMAND ${Protobuf_PROTOC_EXECUTABLE} ARGS ${PROROC_COMMAND_ARGS}
+		COMMENT("custom command ${proto_source_file}")
 	)
 	set(PROTO_SOURCE_FILES ${PROTO_SOURCE_FILES} ${proto_source_file})
+	message(STATUS "add proto source ${proto_source_file}") # make time
 endforeach()
 
 add_custom_target(proto_msg_gen ALL
@@ -49,4 +51,4 @@ add_library(proto_msg ${PROTO_SOURCE_FILES}
 				)
 target_link_libraries(proto_msg ${Protobuf_LIBRARIES})
 
-#add_dependencies(proto_msg proto_msg_gen)
+add_dependencies(proto_msg proto_msg_gen)
