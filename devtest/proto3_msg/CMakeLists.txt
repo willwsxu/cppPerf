@@ -16,7 +16,7 @@ message(STATUS "Discovered Protobuf v${Protobuf_VERSION}")
 message(STATUS "Using protoc ${Protobuf_PROTOC_EXECUTABLE}")
 
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
-# protobuf_generate_cpp did not produce source files
+# protobuf_generate_cpp can only work properly within same directory
 
 file(GLOB_RECURSE all_messages_PROTOS "${CMAKE_CURRENT_LIST_DIR}/*.proto")
 
@@ -30,12 +30,13 @@ foreach(PROTO_FILE ${all_messages_PROTOS})
 		"-I${Protobuf_INCLUDE_DIRS}"
 		${PROTO_FILE}
 	)
-	add_custom_command (
+	add_custom_command ( #build time
 		OUTPUT ${proto_source_file}
 		DEPENDS ${PROTO_FILE}
 		COMMAND ${Protobuf_PROTOC_EXECUTABLE} ARGS ${PROROC_COMMAND_ARGS}
 	)
 	set(PROTO_SOURCE_FILES ${PROTO_SOURCE_FILES} ${proto_source_file})
+	message(STATUS "add proto source ${proto_source_file}") # make time
 endforeach()
 
 add_custom_target(proto_msg3_gen ALL
