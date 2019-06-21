@@ -30,15 +30,15 @@ add_custom_target(libc_gen ALL
 	DEPENDS ${lib_combo_static}
 )
 add_library(libc STATIC IMPORTED GLOBAL)
-add_dependencies(libc libc_gen)
+#add_dependencies(libc libc_gen)
 set_target_properties(libc
 	PROPERTIES IMPORTED_LOCATION ${lib_combo_static}
 )
-add_dependencies(libtest libc)  #critical step
+#add_dependencies(libtest libc)
 message(STATUS "lib_combo_static=${lib_combo_static}")
 target_link_libraries(libtest libc)
 target_include_directories(libtest 
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../liba/include>
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../libb/include>
 	)
-target_link_directories(libtest PRIVATE ${generated_lib})
+#target_link_directories(libtest PRIVATE ${generated_lib})
