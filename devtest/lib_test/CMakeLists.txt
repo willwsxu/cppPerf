@@ -9,38 +9,24 @@ add_executable(libtest main.cpp)
 add_custom_target(build_lib ALL
 	DEPENDS liba libb
 )
-add_dependencies(libtest build_lib)
 
-set(static_lib_projs liba libb)
-foreach(lib_proj ${static_lib_projs})
-	set(out_obj "${CMAKE_BINARY_DIR}/devtest/${lib_proj}/CMakeFiles/${lib_proj}.dir/*.obj")
-	add_custom_command(
-		OUTPUT  ${out_obj}
-		COMMAND ar -x $<TARGET_FILE:${lib_proj}>
-		DEPENDS ${lib_proj}
-		COMMENT "extract ${lib_proj}"
-	)
-	file(GLOB _lib_objs ${out_obj})
-	message(STATUS "_lib_objs=${_lib_objs} from ${out_obj}")
-	set(all_lib_objs ${all_lib_objs} ${_lib_objs})
-endforeach()
-
-set(lib_combo_static ${CMAKE_BINARY_DIR}/lib_combo_static.lib)
-message(STATUS "all_lib_objs=${all_lib_objs}")
+set(generated_lib "${CMAKE_BINARY_DIR}")
+set(lib_combo_static ${generated_lib}/lib_combo_static.lib)
 set(all_lib_objs 
 	"C:/dev/cppPerf/build/x64-Debug/devtest/liba/CMakeFiles/liba.dir/a.cpp.obj"
 	"C:/dev/cppPerf/build/x64-Debug/devtest/libb/CMakeFiles/libb.dir/b.cpp.obj"
 	)
 add_custom_command(
 	OUTPUT ${lib_combo_static}
-	DEPENDS ${all_lib_objs}
+	depends liba libb
 	COMMAND ar -x $<TARGET_FILE:liba>
 	COMMAND ar -x $<TARGET_FILE:libb>
 	COMMAND ar -qcs ${lib_combo_static} ${all_lib_objs}
-	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	WORKING_DIRECTORY ${generated_lib}
 	COMMENT "archive ${all_lib_objs}"
+	VERBATIM
 )
-add_custom_target(libc_gen
+add_custom_target(libc_gen ALL
 	DEPENDS ${lib_combo_static}
 )
 add_library(libc STATIC IMPORTED GLOBAL)
@@ -55,4 +41,4 @@ target_include_directories(libtest
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../liba/include>
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../libb/include>
 	)
-target_link_directories(libtest PRIVATE ${CMAKE_BINARY_DIR})
+target_link_directories(libtest PRIVATE ${generated_lib})
