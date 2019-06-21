@@ -18,6 +18,7 @@ foreach(lib_proj ${static_lib_projs})
 		OUTPUT  ${out_obj}
 		COMMAND ar -x $<TARGET_FILE:${lib_proj}>
 		DEPENDS ${lib_proj}
+		COMMENT "extract ${lib_proj}"
 	)
 	file(GLOB _lib_objs ${out_obj})
 	message(STATUS "_lib_objs=${_lib_objs} from ${out_obj}")
@@ -26,11 +27,18 @@ endforeach()
 
 set(lib_combo_static ${CMAKE_BINARY_DIR}/lib_combo_static.lib)
 message(STATUS "all_lib_objs=${all_lib_objs}")
+set(all_lib_objs 
+	"C:/dev/cppPerf/build/x64-Debug/devtest/liba/CMakeFiles/liba.dir/a.cpp.obj"
+	"C:/dev/cppPerf/build/x64-Debug/devtest/libb/CMakeFiles/libb.dir/b.cpp.obj"
+	)
 add_custom_command(
 	OUTPUT ${lib_combo_static}
 	DEPENDS ${all_lib_objs}
+	COMMAND ar -x $<TARGET_FILE:liba>
+	COMMAND ar -x $<TARGET_FILE:libb>
 	COMMAND ar -qcs ${lib_combo_static} ${all_lib_objs}
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	COMMENT "archive ${all_lib_objs}"
 )
 add_custom_target(libc_gen
 	DEPENDS ${lib_combo_static}
@@ -40,10 +48,11 @@ add_dependencies(libc libc_gen)
 set_target_properties(libc
 	PROPERTIES IMPORTED_LOCATION ${lib_combo_static}
 )
-add_dependencies(libtest libc)
+add_dependencies(libtest libc)  #critical step
 message(STATUS "lib_combo_static=${lib_combo_static}")
-target_link_libraries(libtest liba libb)
+target_link_libraries(libtest libc)
 target_include_directories(libtest 
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../liba/include>
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../libb/include>
 	)
+target_link_directories(libtest PRIVATE ${CMAKE_BINARY_DIR})
