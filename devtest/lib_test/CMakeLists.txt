@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(generated_lib "${CMAKE_BINARY_DIR}")
 set(lib_combo_static ${generated_lib}/lib_combo_static.lib)
 set(all_lib_objs 
-	"${CMAKE_BINARY_DIR}/devtest/liba/CMakeFiles/liba.dir/a.cpp.obj"
-	"${CMAKE_BINARY_DIR}/devtest/libb/CMakeFiles/libb.dir/b.cpp.obj"
+	"${CMAKE_CURRENT_BINARY_DIR}/../liba/CMakeFiles/liba.dir/*.obj"
+	"${CMAKE_CURRENT_BINARY_DIR}/../libb/CMakeFiles/libb.dir/*.obj"
 	)
 add_custom_command(
 	OUTPUT ${lib_combo_static}
