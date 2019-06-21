@@ -5,16 +5,11 @@ set( CMAKE_VERBOSE_MAKEFILE on )
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(libtest main.cpp)
-add_custom_target(build_lib ALL
-	DEPENDS liba libb
-)
-
 set(generated_lib "${CMAKE_BINARY_DIR}")
 set(lib_combo_static ${generated_lib}/lib_combo_static.lib)
 set(all_lib_objs 
-	"C:/dev/cppPerf/build/x64-Debug/devtest/liba/CMakeFiles/liba.dir/a.cpp.obj"
-	"C:/dev/cppPerf/build/x64-Debug/devtest/libb/CMakeFiles/libb.dir/b.cpp.obj"
+	"${CMAKE_BINARY_DIR}/devtest/liba/CMakeFiles/liba.dir/a.cpp.obj"
+	"${CMAKE_BINARY_DIR}/devtest/libb/CMakeFiles/libb.dir/b.cpp.obj"
 	)
 add_custom_command(
 	OUTPUT ${lib_combo_static}
@@ -35,7 +30,8 @@ set_target_properties(libc
 	PROPERTIES IMPORTED_LOCATION ${lib_combo_static}
 )
 #add_dependencies(libtest libc)
-message(STATUS "lib_combo_static=${lib_combo_static}")
+
+add_executable(libtest main.cpp)
 target_link_libraries(libtest libc)
 target_include_directories(libtest 
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../liba/include>
