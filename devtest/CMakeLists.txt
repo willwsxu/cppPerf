@@ -3,6 +3,7 @@ project(hello_socket)
 add_subdirectory(socket_client)
 add_subdirectory(socket_server)
 add_subdirectory(proto_msg)
+#add_subdirectory(proto3_msg)   #protobuf generated header has an error
 
 
 add_subdirectory(liba)
