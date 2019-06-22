@@ -15,12 +15,19 @@ const string& shortestSuperseq_dp(const string& str1, const string& str2, int i,
         else if (j == str2.size())
             memo[i][j] = str1.substr(i, str1.size() - i);
         else {
-            if (str1[i] == str2[j])
-                memo[i][j] = str1[i] + shortestSuperseq_dp(str1, str2, i + 1, j + 1, memo);
+            if (str1[i] == str2[j]) {
+                const string& ans = shortestSuperseq_dp(str1, str2, i + 1, j + 1, memo);
+                memo[i][j].reserve(ans.size() + 1);
+                memo[i][j].append(1, str1[i]).append(begin(ans), end(ans));
+            }
             else {
                 const string& ans1 = shortestSuperseq_dp(str1, str2, i + 1, j, memo);
                 const string& ans2 = shortestSuperseq_dp(str1, str2, i, j + 1, memo);
-                memo[i][j] = ans1.size() < ans2.size() ? str1[i] + move(ans1) : str2[j] + ans2;
+                memo[i][j].reserve(min(ans1.size(), ans2.size()));
+                if (ans1.size() < ans2.size())
+                    memo[i][j].append(1, str1[i]).append(begin(ans1), end(ans1));
+                else
+                    memo[i][j].append(1, str2[j]).append(begin(ans2), end(ans2));
             }
         }
     }
