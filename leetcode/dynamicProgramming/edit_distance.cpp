@@ -3,7 +3,7 @@
 #include <algorithm>
 using namespace std;
 
-string shortestSuperseq_dp(string& str1, string& str2, int i, int j, vector<vector<string>>& memo)
+string shortestSuperseq_dp(const string& str1, const string& str2, int i, int j, vector<vector<string>>& memo)
 {
     if (i == str1.size() && j == str2.size())
         return "";
@@ -15,9 +15,9 @@ string shortestSuperseq_dp(string& str1, string& str2, int i, int j, vector<vect
         if (str1[i] == str2[j])
             memo[i][j] = str1[i] + shortestSuperseq_dp(str1, str2, i + 1, j + 1, memo);
         else {
-            string ans1 = str1[i] + shortestSuperseq_dp(str1, str2, i + 1, j, memo);
-            string ans2 = str2[j] + shortestSuperseq_dp(str1, str2, i, j + 1, memo);
-            memo[i][j] = ans1.size() < ans2.size() ? ans1 : ans2;
+            string ans1 = shortestSuperseq_dp(str1, str2, i + 1, j, memo);
+            string ans2 = shortestSuperseq_dp(str1, str2, i, j + 1, memo);
+            memo[i][j] = ans1.size() < ans2.size() ? str1[i]+move(ans1) : str2[j] + ans2;
         }
     }
     return memo[i][j];
@@ -37,16 +37,37 @@ string lcs_str_bottomup(const string& str1, const string& str2) {
     return dp[n][m];
 }
 string shortestCommonSupersequence(string str1, string str2) {
-    vector<vector<string>> memo(str1.size(), vector<string>(str2.size()));
-    return shortestSuperseq_dp(str1, str2, 0, 0, memo);
+    //vector<vector<string>> memo(str1.size(), vector<string>(str2.size()));
+    //return shortestSuperseq_dp(str1, str2, 0, 0, memo);
+    int n = str1.size(), m = str2.size();
+    int i = 0, j = 0;
+    string ans;
+    for (char c : lcs_str_bottomup(str1, str2)) {
+        while (str1[i]!=c)
+            ans.append(1, str1[i++]);
+        while (str2[j]!=c)
+            ans.append(1, str2[j++]);
+        ans.append(1, c);
+        i++, j++;
+    }
+    if (i < n)
+        ans.append(begin(str1) + i, end(str1));
+    if (j<m)
+        ans.append(begin(str2) + j, end(str2));
+    return ans;
 }
 
 
 // 960. Delete Columns to Make Sorted III
-int minDeletionSize(vector<string>& A) {
+// give array of string of equal length, find minimum columns need to be deleted
+// to make each sorted in lexicographic order
+int minDeletionSize(vector<string>& A) {  // O(N^3)
     int cols = A[0].size();
     vector<int> lcs(cols, 1);  // longest increasing sequence for all rows
+    // base case, c=0, LCS is 1
     for (int c = 1; c < cols; c++) {  // compute LCS ends at c
+        // for each previous column i, if every cell on that column is <= cell 
+        // on column c of same row, extend LCS[i] by 1
         for (int i = 0; i < c; i++) {
             int increasing = 1;
             for (int r = 0; r < (int)A.size(); r++) {
