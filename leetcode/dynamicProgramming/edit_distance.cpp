@@ -91,6 +91,7 @@ string shortestCommonSupersequence(string str1, string str2) {
     int r = lcs.size() - 1;
     int c = lcs[0].size()-1;
     string res;
+    res.reserve(str1.size() + str2.size() - lcs[r][c]);  // optimize memory alloc
     while (r > 0 && c > 0) {
         if (lcs[r][c] == lcs[r][c - 1]) { // move left, no change of lcs
             res.append(1, str2[--c]);
@@ -103,11 +104,12 @@ string shortestCommonSupersequence(string str1, string str2) {
             --r;
         }
     }
+    res.resize(res.size() + max(r, c));
     reverse(begin(res), end(res));
     if (r > 0)
-        return str1.substr(0, r) + res;
+        copy(begin(str1), begin(str1)+r, begin(res));
     if (c>0)
-        return str2.substr(0, c) + res;
+        copy(begin(str2), begin(str2) + c, begin(res));
     return res;
 }
 
@@ -140,7 +142,7 @@ int minDeletionSize(vector<string>& A) {  // O(N^3)
 #include "catch.hpp"
 TEST_CASE("1092. Shortest Common Supersequence", "[DP]")
 {
-    CHECK(shortestCommonSupersequence("bbbaaaba", "bbababbb") == "bbabaaababb");
+    CHECK(shortestCommonSupersequence("bbbaaaba", "bbababbb") == "bbbaaababbb"); //"bbabaaababb"
     CHECK(shortestCommonSupersequence("abac", "cab") == "cabac");
     CHECK(lcs_str_bottomup("abac", "cab") == "ab");
     CHECK(shortestCommonSupersequence_LCS("abac", "cab") == "cabac");
