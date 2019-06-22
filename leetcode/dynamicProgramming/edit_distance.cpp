@@ -1,6 +1,8 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <iterator>
+#include <iostream>
 using namespace std;
 
 const string& shortestSuperseq_dp(const string& str1, const string& str2, int i, int j, vector<vector<string>>& memo)
@@ -23,6 +25,11 @@ const string& shortestSuperseq_dp(const string& str1, const string& str2, int i,
         }
     }
     return memo[i][j];
+}
+
+string shortestCommonSupersequence_topdown(string str1, string str2) {
+    vector<vector<string>> memo(str1.size()+1, vector<string>(str2.size()+1));
+    return shortestSuperseq_dp(str1, str2, 0, 0, memo);
 }
 
 string lcs_str_bottomup(const string& str1, const string& str2) {
@@ -58,9 +65,43 @@ string shortestCommonSupersequence_LCS(string str1, string str2) {
     return ans;
 }
 
+vector<vector<int>> lcs_matrix(const string& str1, const string& str2) {
+    int n = str1.size(), m = str2.size();
+    vector < vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) { // compute common sequence up to i,j, store in dp[i+1][j+1]
+            if (str1[i] == str2[j])
+                dp[i + 1][j + 1] = dp[i][j] + 1;
+            else
+                dp[i + 1][j + 1] = max(dp[i + 1][j], dp[i][j + 1]);
+        }
+    }
+    return dp;
+}
 string shortestCommonSupersequence(string str1, string str2) {
-    vector<vector<string>> memo(str1.size()+1, vector<string>(str2.size()+1));
-    return shortestSuperseq_dp(str1, str2, 0, 0, memo);
+    auto lcs = lcs_matrix(str1, str2);
+    for (const auto& r : lcs) { copy(cbegin(r), cend(r), ostream_iterator<int>(cout, " ")); cout << endl;}
+    int r = lcs.size() - 1;
+    int c = lcs[0].size()-1;
+    string res;
+    while (r > 0 && c > 0) {
+        if (lcs[r][c] == lcs[r][c - 1]) { // move left, no change of lcs
+            res.append(1, str2[--c]);
+        }
+        else if (lcs[r][c] == lcs[r - 1][c]) { // move up, no change of lcs
+            res.append(1, str1[--r]);
+        }
+        else {  // move diagonal,  reduce lcs by 1
+            res.append(1, str2[--c]);
+            --r;
+        }
+    }
+    reverse(begin(res), end(res));
+    if (r > 0)
+        return str1.substr(0, r) + res;
+    if (c>0)
+        return str2.substr(0, c) + res;
+    return res;
 }
 
 
@@ -92,9 +133,11 @@ int minDeletionSize(vector<string>& A) {  // O(N^3)
 #include "catch.hpp"
 TEST_CASE("1092. Shortest Common Supersequence", "[DP]")
 {
+    CHECK(shortestCommonSupersequence("bbbaaaba", "bbababbb") == "bbabaaababb");
     CHECK(shortestCommonSupersequence("abac", "cab") == "cabac");
     CHECK(lcs_str_bottomup("abac", "cab") == "ab");
     CHECK(shortestCommonSupersequence_LCS("abac", "cab") == "cabac");
+    CHECK(shortestCommonSupersequence_topdown("abac", "cab") == "cabac");  // MLE
 }
 
 TEST_CASE("960. Delete Columns to Make Sorted III", "[DP]")
