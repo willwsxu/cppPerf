@@ -22,6 +22,20 @@ string shortestSuperseq_dp(string& str1, string& str2, int i, int j, vector<vect
     }
     return memo[i][j];
 }
+
+string lcs_str_bottomup(const string& str1, const string& str2) {
+    int n = str1.size(), m = str2.size();
+    vector<vector<string>> dp(n + 1, vector<string>(m + 1));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) { // compute common sequence up to i,j, store in dp[i+1][j+1]
+            if (str1[i] == str2[j])
+                dp[i + 1][j + 1] = dp[i][j] + str1[i];
+            else
+                dp[i + 1][j + 1] = dp[i + 1][j].size()> dp[i][j + 1].size()? dp[i + 1][j]: dp[i][j + 1];
+        }
+    }
+    return dp[n][m];
+}
 string shortestCommonSupersequence(string str1, string str2) {
     vector<vector<string>> memo(str1.size(), vector<string>(str2.size()));
     return shortestSuperseq_dp(str1, str2, 0, 0, memo);
@@ -52,6 +66,7 @@ int minDeletionSize(vector<string>& A) {
 TEST_CASE("1092. Shortest Common Supersequence", "[DP]")
 {
     CHECK(shortestCommonSupersequence("abac", "cab") == "cabac");
+    CHECK(lcs_str_bottomup("abac", "cab") == "ab");
 }
 
 TEST_CASE("960. Delete Columns to Make Sorted III", "[DP]")
