@@ -1,5 +1,7 @@
 #include <string>
 #include <map>
+#include <numeric>
+#include <iostream>
 
 using namespace std;
 //1041 robot started at origin, facing N. Given instructions
@@ -93,8 +95,45 @@ vector<int> addNegabinary(vector<int>& arr1, vector<int>& arr2) {
 	reverse(begin(result), end(result));
 	return result;
 }
+vector<double> sampleStats(vector<int>& count) {
+    int mode = distance(begin(count), max_element(begin(count), end(count)));
+    int total_count = accumulate(begin(count), end(count), 0);
+    int min_val = -1, max_val = -1;
+    double total_val = 0;
+    int running_count = 0;
+    bool odd = total_count % 2 > 0;
+    int mid = total_count / 2;
+    if (odd)
+        mid++;
+    double median = -1;
+    bool median2 = false;
+    for (int i = 0; i < count.size(); i++) {
+        if (count[i] == 0)
+            continue;
+        if (min_val < 0)
+            min_val = i;
+        max_val = i;
+        total_val += (double)count[i] * i;
+        running_count += count[i];
+        if (median2) {
+            median2 = false;
+            median = (median + i) / 2;
+        }
+        if (median < 0 && running_count >= mid) {
+            median = i;
+            if (!odd && running_count == mid)
+                median2 = true;
+        }
+    }
+    return vector<double>{(double)min_val, (double)max_val, total_val / total_count, median, (double)mode};
+}
 
 #include "catch.hpp"
+TEST_CASE("1093. Statistics from a Large Sample", "[MATH]")
+{
+    CHECK(sampleStats(vector<int>{0, 1, 3, 4}) == vector<double>{1.0, 3.0, 2.375, 2.5, 3.0});
+}
+
 TEST_CASE("1041 robot bounded", "[MATH]")
 {
 	CHECK(isRobotBounded("LLGLR") == true);
