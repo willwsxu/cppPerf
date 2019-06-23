@@ -3,6 +3,20 @@
 #include <iostream>
 using namespace std;
 
+int peakIndexInMountainArray(vector<int>& A, int lo, int hi) {
+    int mid = (lo + hi) / 2;
+    if (mid == lo)
+        return hi;
+    if (A[mid] > A[mid - 1] && A[mid] > A[mid + 1])
+        return mid;
+    if (A[mid] > A[mid - 1] && A[mid] < A[mid + 1])
+        return peakIndexInMountainArray(A, mid, hi);
+    return peakIndexInMountainArray(A, lo, mid);
+}
+// 852. Peak Index in a Mountain Array
+int peakIndexInMountainArray(vector<int>& A) {  // beat 98%
+    return peakIndexInMountainArray(A, 0, A.size() - 1);
+}
 class MountainArray {
     vector<int> _mountain;
 public:
@@ -87,4 +101,9 @@ TEST_CASE("1095. Find in Mountain Array", "[INTERACTIVE]")
 {
     MountainArray ma({ 1,2,3,4,5,3,1 });
     CHECK(MountainArrayQuery().findInMountainArray(3, ma) == 2);
+}
+
+TEST_CASE("852. Peak Index in a Mountain Array", "[BS]")
+{
+    CHECK(peakIndexInMountainArray(vector<int>{24, 69, 100, 99, 79, 78, 67, 36, 26, 19}) == 2);
 }

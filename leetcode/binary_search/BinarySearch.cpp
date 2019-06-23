@@ -1,6 +1,8 @@
-#include "stdafx.h"
 #include <cassert>
-#include "..\catch.hpp"  // don't put this file in stdafx.h
+#include <numeric>
+#include <algorithm>
+#include <map>
+#include "catch.hpp"  // don't put this file in stdafx.h
 
 #include "myalgo.h"
 
@@ -88,20 +90,6 @@ public:
 		return lo;
 	}
 
-	int peakIndexInMountainArray(vector<int>& A, int lo, int hi) {
-		int mid = (lo + hi) / 2;
-		if (mid == lo)
-			return hi;
-		if (A[mid] > A[mid - 1] && A[mid] > A[mid + 1])
-			return mid;
-		if (A[mid] > A[mid - 1] && A[mid] < A[mid + 1])
-			return peakIndexInMountainArray(A, mid, hi);
-		return peakIndexInMountainArray(A, lo, mid);
-	}
-	// 852. Peak Index in a Mountain Array
-	int peakIndexInMountainArray(vector<int>& A) {  // beat 98%
-		return peakIndexInMountainArray(A, 0, A.size() - 1);
-	}
 	// 744. Find Smallest Letter Greater Than Target
 	char nextGreatestLetter(vector<char>& letters, char target) {  // beat 96% on 3rd submit
 		auto ans = upper_bound(begin(letters), end(letters), target);
@@ -227,10 +215,6 @@ TEST_CASE("475. Heaters", "[NEW]")
 	CHECK(BinarySearch().findRadius(vector<int>{1, 2, 3}, vector<int>{1}) == 2);
 	CHECK(BinarySearch().findRadius(vector<int>{1, 2, 3}, vector<int>{3}) == 2);
 	CHECK(BinarySearch().findRadius(vector<int>{1, 2, 3, 4}, vector<int>{1, 4}) == 1);
-}
-TEST_CASE("852. Peak Index in a Mountain Array", "[NEW]")
-{
-	CHECK(BinarySearch().peakIndexInMountainArray(vector<int>{24, 69, 100, 99, 79, 78, 67, 36, 26, 19}) == 2);
 }
 
 TEST_CASE("69. Sqrt(x)", "[BS]")
