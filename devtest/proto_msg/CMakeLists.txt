@@ -38,10 +38,7 @@ foreach(PROTO_FILE ${all_messages_PROTOS})
 	message(STATUS "add proto source ${proto_source_file}") # make time
 endforeach()
 
-add_custom_target(proto_msg_gen ALL
-	DEPENDS ${PROTO_SOURCE_FILES}
-)
-
+#add_custom_target(proto_msg_gen ALL DEPENDS ${PROTO_SOURCE_FILES} )
 include_directories(proto_msg
                            PUBLIC $<BUILD_INTERFACE:${PROTOBUF_INCLUDE_DIRS}>
                            PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated>
@@ -51,4 +48,4 @@ add_library(proto_msg ${PROTO_SOURCE_FILES}
 				)
 target_link_libraries(proto_msg ${Protobuf_LIBRARIES})
 
-add_dependencies(proto_msg proto_msg_gen)
+#add_dependencies(proto_msg proto_msg_gen)
