@@ -56,6 +56,24 @@ class MountainArrayQuery {
             return find_top(mountainArr, low, mid - 1);
         return mid;
     }
+    int find_top_loop(MountainArray& mountainArr, int low, int high) {
+        while (low < high) {
+            if (high - low == 1) {
+                if (mountain[high] > mountain[low])
+                    return high;
+                return low;
+            }
+            int mid = (low + high) / 2;
+            query(mountainArr, mid);
+            query(mountainArr, mid - 1);
+            query(mountainArr, mid + 1);
+            if (mountain[mid - 1] < mountain[mid] && mountain[mid] < mountain[mid + 1])
+                low = mid + 1;
+            if (mountain[mid - 1] > mountain[mid] && mountain[mid] > mountain[mid + 1])
+                high = mid - 1;
+        }
+        return low;
+    }
     int findInMountainArrayInc(int target, MountainArray& mountainArr, int low, int high) {  // inclusive
         if (low >= high)
             return low;
@@ -84,7 +102,7 @@ public:
         int size = mountainArr.length();
         mountain.resize(size);
         fill(begin(mountain), end(mountain), -1);
-        int top = find_top(mountainArr, 0, size - 1);
+        int top = find_top_loop(mountainArr, 0, size - 1);
         int found = findInMountainArrayInc(target, mountainArr, 0, top);
         query(mountainArr, found);
         if (mountain[found] == target)
