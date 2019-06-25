@@ -4,6 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE on )
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+find_package(Boost REQUIRED COMPONENTS date_time system)
 
 set(generated_lib "${CMAKE_BINARY_DIR}")
 set(lib_combo_static ${generated_lib}/lib_combo_static.lib)
@@ -32,6 +33,11 @@ set_target_properties(lib_combo_s
 target_include_directories(lib_combo_s 
 	INTERFACE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 	)
+set_target_properties(lib_combo_s
+	PROPERTIES
+	INTERFACE_LINK_LIBRARIES Boost::boost 
+	INTERFACE_LINK_LIBRARIES Boost::date_time
+)
 add_executable(libtest main.cpp)
 target_link_libraries(libtest lib_combo_s)
 #target_link_directories(libtest PRIVATE ${generated_lib})
