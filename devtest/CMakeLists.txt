@@ -27,6 +27,8 @@ install(TARGETS liba libb EXPORT lib_ab
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-install(DIRECTORY lib/include/ DESTINATION share/lib_ab/cmake)
+install(DIRECTORY libb/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES liba/liba.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+install(EXPORT lib_ab DESTINATION share/lib_ab/cmake)
 export(TARGETS liba libb FILE lib_ab.cmake)
