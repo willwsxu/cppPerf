@@ -32,4 +32,4 @@ install(TARGETS catch_test DESTINATION bin)
 
 add_subdirectory(leetcode)
 add_subdirectory(library)
-add_subdirectory(devtest)
+#add_subdirectory(devtest)  make it a stand alone cmake project to test install, lib merging, and code generation script

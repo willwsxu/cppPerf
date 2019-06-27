@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.12.1)
-project(hello_socket)
+project(cmake_demo VERSION 0.1 LANGUAGES CXX)
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 add_subdirectory(socket_client)
 add_subdirectory(socket_server)
 add_subdirectory(proto_msg)
@@ -8,4 +10,23 @@ add_subdirectory(proto_msg)
 
 add_subdirectory(liba)
 add_subdirectory(libb)
+add_subdirectory(lib_combo_dll)
+add_subdirectory(lib_test_dll)
+#add_subdirectory(lib_combo_static2)
 add_subdirectory(lib_test)
+
+
+include(GNUInstallDirs) #need to define CMAKE_INSTALL_XXX
+message(STATUS "install_lib=${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+
+install(TARGETS liba libb EXPORT lib_ab
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(DIRECTORY include/ DESTINATION share/lib_ab/cmake)
+
+export(TARGETS liba libb FILE lib_ab.cmake)
