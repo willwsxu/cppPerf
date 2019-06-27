@@ -15,18 +15,18 @@ add_subdirectory(lib_test_dll)
 #add_subdirectory(lib_combo_static2)
 add_subdirectory(lib_test)
 
-
-include(GNUInstallDirs) #need to define CMAKE_INSTALL_XXX
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
+include(GNUInstallDirs) #needed for CMAKE_INSTALL_XXX def
 message(STATUS "install_lib=${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 
 install(TARGETS liba libb EXPORT lib_ab
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}  #relative to CMAKE_INSTALL_PREFIX
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-install(DIRECTORY include/ DESTINATION share/lib_ab/cmake)
+install(DIRECTORY lib/include/ DESTINATION share/lib_ab/cmake)
 
 export(TARGETS liba libb FILE lib_ab.cmake)
