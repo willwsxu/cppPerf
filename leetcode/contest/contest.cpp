@@ -3,27 +3,28 @@
 #include <deque>
 #include <string>
 #include <numeric>
+#include <set>
 #include <iostream>
+#include <iterator>
 using namespace std;
 
 
-vector<string> braceExpansionII(const string& expression, int& idx) {
-    vector<string> group;
+set<string> braceExpansionII(const string& expression, int& idx) {
+    set<string> group;
     string current;
     auto add_current = [&] {
         if (current.empty())
             return;
-        group.push_back(current);
+        group.insert(move(current));
         current.clear();
     };
-    auto dot_product = [](vector<string>&& a, vector<string>&&b) {
+    auto dot_product = [](set<string>&& a, set<string>&&b) {
         if (a.empty())
             return b;
-        vector<string> p;
-        p.reserve(a.size() * b.size());
+        set<string> p;
         for (const string& s1 : a) {
             for (const string& s2 : b)
-                p.push_back(s1 + s2);
+                p.insert(s1 + s2);
         }
         return p;
     };
@@ -33,7 +34,7 @@ vector<string> braceExpansionII(const string& expression, int& idx) {
         case '{':
         {
             add_current();
-            vector<string> next_group = braceExpansionII(expression, ++idx);
+            set<string> next_group = braceExpansionII(expression, ++idx);
             group = dot_product(move(group), move(next_group));
             product = true;
             break;
@@ -42,30 +43,33 @@ vector<string> braceExpansionII(const string& expression, int& idx) {
             // case a{b{f,g}{m.n},c{d,e}}}
             add_current();
             idx++;
-            sort(begin(group), end(group));
             return group;
         case ',':
-            idx++;
+        {
             add_current();
+            set<string> next_group = braceExpansionII(expression, ++idx);
+            move(begin(next_group), end(next_group), inserter(group, begin(group)));
             product = false;
-            break;
+            return group;
+        }
         default: //a,b   {a,b}c
             current.push_back(expression[idx++]);
             break;
         }
     }
-    sort(begin(group), end(group));
     return group;
 }
 vector<string> braceExpansionII(const string& expression)
 {
     int idx = 0;
-    return braceExpansionII(expression, idx);
+    auto res = braceExpansionII(expression, idx);
+    return vector<string>(begin(res), end(res));
 }
 #include <catch.hpp>
 
 TEST_CASE("1096. Brace Expansion II", "[BS]")
 {
-    CHECK(braceExpansionII("{a,b}{c{d,e}}") == vector<string>{"acd", "ace", "bcd", "bce"});
+    CHECK(braceExpansionII("{a,b}c{d,e}f") == vector<string>{"acdf", "acef", "bcdf", "bcef"});
     CHECK(braceExpansionII("{{a,z},a{b,c},{ab,z}}") == vector<string>{"a", "ab", "ac", "z"});
+    CHECK(braceExpansionII("{a,b}{c{d,e}}") == vector<string>{"acd", "ace", "bcd", "bce"});
 }
