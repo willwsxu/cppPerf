@@ -7,10 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Boost REQUIRED COMPONENTS date_time system)
 
 set(generated_lib "${CMAKE_BINARY_DIR}")
-set(lib_combo_static ${generated_lib}/lib_combo_static.lib)
+set(lib_combo_static ${generated_lib}/lib_combo_static${CMAKE_STATIC_LIBRARY_SUFFIX})
 set(all_lib_objs 
-	"${CMAKE_CURRENT_BINARY_DIR}/../liba/CMakeFiles/liba.dir/*.obj"
-	"${CMAKE_CURRENT_BINARY_DIR}/../libb/CMakeFiles/libb.dir/*.obj"
+	"${CMAKE_CURRENT_BINARY_DIR}/../liba/CMakeFiles/liba.dir/*${CMAKE_CXX_OUTPUT_EXTENSION}"
+	"${CMAKE_CURRENT_BINARY_DIR}/../libb/CMakeFiles/libb.dir/*${CMAKE_CXX_OUTPUT_EXTENSION}"
 	)
 add_custom_command(
 	OUTPUT ${lib_combo_static}
@@ -38,6 +38,7 @@ set_target_properties(lib_combo_s
 	INTERFACE_LINK_LIBRARIES Boost::boost 
 	INTERFACE_LINK_LIBRARIES Boost::date_time
 )
+#or use target_link_libraries
 add_executable(libtest main.cpp)
 target_link_libraries(libtest lib_combo_s)
 #target_link_directories(libtest PRIVATE ${generated_lib})
