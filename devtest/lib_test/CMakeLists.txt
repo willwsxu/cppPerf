@@ -15,9 +15,12 @@ set(all_lib_objs
 add_custom_command(
 	OUTPUT ${lib_combo_static}
 	depends liba libb
+	COMMAND rm ARGS -f ${all_lib_objs}
 	COMMAND ar -x $<TARGET_FILE:liba>
 	COMMAND ar -x $<TARGET_FILE:libb>
 	COMMAND ar -qcs ${lib_combo_static} ${all_lib_objs}
+	COMMAND ar ARGS -r test.lib ${all_lib_objs}  # -r works as well as -q
+	COMMAND rm ARGS -f ${all_lib_objs}
 	WORKING_DIRECTORY ${generated_lib}
 	COMMENT "archive ${all_lib_objs}"
 	VERBATIM
