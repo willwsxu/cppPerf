@@ -6,15 +6,11 @@
 #include <iterator>
 using namespace std;
 
+// store string in group (using set so it is sorted)
+// recursively process one {} at a time, do product with previous group, and then continue processing (no return)
+// recursively process next group when next char is comma, do union, and return result 
 set<string> braceExpansionII(const string& expression, int& idx) {
     set<string> group;
-    string current;
-    auto add_current = [&] {
-        if (current.empty())
-            return;
-        group.insert(move(current));
-        current.clear();
-    };
     auto dot_product = [](set<string>&& a, set<string>&& b) {
         if (a.empty())
             return b;
@@ -25,33 +21,47 @@ set<string> braceExpansionII(const string& expression, int& idx) {
         }
         return p;
     };
-    bool product = false;
     while (idx < expression.size()) {
         switch (expression[idx]) {
         case '{':
         {
-            add_current();
             set<string> next_group = braceExpansionII(expression, ++idx);
             group = dot_product(move(group), move(next_group));
-            product = true;
             break;
         }
         case '}':
             // case a{b{f,g}{m.n},c{d,e}}}
-            add_current();
             idx++;
             return group;
         case ',':
         {
-            add_current();
             set<string> next_group = braceExpansionII(expression, ++idx);
-            move(begin(next_group), end(next_group), inserter(group, begin(group)));
-            product = false;
+            move(begin(next_group), end(next_group), inserter(group, begin(group))); // union
             return group;
         }
-        default: //a,b   {a,b}c
-            current.push_back(expression[idx++]);
+        default: //a,b   
+        {
+            size_t last = idx + 1;
+            auto special_char = [](char c) {
+                switch (c) {
+                case '{':
+                case '}':
+                case ',':
+                    return true;
+                default:
+                    return false;
+                }
+            };
+            while (last < expression.size() && !special_char(expression[last]))
+                last++;
+            if (idx > 0 && expression[idx - 1] == '}') { // special case {a,b}c
+                group = dot_product(move(group), set<string>{expression.substr(idx, last - idx)});
+            }
+            else
+                group.insert(expression.substr(idx, last - idx));
+            idx = last;
             break;
+        }
         }
     }
     return group;
