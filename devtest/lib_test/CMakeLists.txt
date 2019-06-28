@@ -45,3 +45,10 @@ set_target_properties(lib_combo_s
 add_executable(libtest main.cpp)
 target_link_libraries(libtest lib_combo_s)
 #target_link_directories(libtest PRIVATE ${generated_lib})
+
+add_executable(libtest2 main.cpp)
+target_link_libraries(libtest2 
+	PRIVATE lib_combo_static2
+	PRIVATE Boost::boost
+	PRIVATE Boost::date_time
+)

@@ -12,7 +12,7 @@ add_subdirectory(liba)
 add_subdirectory(libb)
 add_subdirectory(lib_combo_dll)
 add_subdirectory(lib_test_dll)
-#add_subdirectory(lib_combo_static2)
+add_subdirectory(lib_combo_static2)
 add_subdirectory(lib_test)
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/installed)
