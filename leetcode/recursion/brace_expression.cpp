@@ -30,7 +30,6 @@ set<string> braceExpansionII(const string& expression, int& idx) {
             break;
         }
         case '}':
-            // case a{b{f,g}{m.n},c{d,e}}}
             idx++;
             return group;
         case ',':
@@ -39,7 +38,7 @@ set<string> braceExpansionII(const string& expression, int& idx) {
             move(begin(next_group), end(next_group), inserter(group, begin(group))); // union
             return group;
         }
-        default: //a,b   
+        default:  // extract all contiguous letters
         {
             size_t last = idx + 1;
             auto special_char = [](char c) {
