@@ -11,9 +11,9 @@ add_subdirectory(proto_msg)
 add_subdirectory(liba)
 add_subdirectory(libb)
 add_subdirectory(lib_combo_dll)
-add_subdirectory(lib_test_dll)
+add_subdirectory(test_dll)
 add_subdirectory(lib_combo_static2)
-add_subdirectory(lib_test)
+add_subdirectory(test_static)
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/installed)
 include(GNUInstallDirs) #needed for CMAKE_INSTALL_XXX def

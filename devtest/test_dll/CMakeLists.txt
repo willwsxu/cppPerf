@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Boost REQUIRED COMPONENTS date_time system)
 add_executable(test_dll main.cpp)
 target_link_libraries(test_dll 
-	PUBLIC libcombo_dll  #cannot use PRIVATE
+	PRIVATE libcombo_dll
 	PRIVATE Boost::boost 
 	PRIVATE Boost::date_time
 )
