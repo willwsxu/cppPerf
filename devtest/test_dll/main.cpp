@@ -16,5 +16,7 @@ int main(int argc, char* argv[])
     using namespace boost::gregorian;
     cout << day_clock::local_day()  << endl;
     dummy();
+    DummyClass dum;
+    dum.dummy_test();
     return 0;
 }
