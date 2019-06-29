@@ -13,6 +13,7 @@ add_library(libcombo_dll SHARED dummy.cpp)
 include(GenerateExportHeader)
 generate_export_header(libcombo_dll)
 
+target_include_directories(libcombo_dll PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(libcombo_dll 
 	PRIVATE liba
 	PRIVATE libb
@@ -28,4 +29,8 @@ set_target_properties(libcombo_dll PROPERTIES LINK_FLAGS ${DLL_LINK_FLAGS})
 if(WIN32)
 set_target_properties(libcombo_dll PROPERTIES LINK_FLAGS "/FORCE:MULTIPLE")
 endif()
-target_include_directories(libcombo_dll INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+set_target_properties(libcombo_dll PROPERTIES 
+	POSITION_INDEPENDENT_CODE 1
+	DEBUG_POSTFIX "-d"
+	PUBLIC_HEADER "dummy.h;${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DIR}/libcombo_dll_export.h"
+)

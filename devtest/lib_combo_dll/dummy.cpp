@@ -1,4 +1,7 @@
-void dummy() {};
+#include <iostream>
 #include <string>
-extern std::string testA();
-extern std::string testB();
+using namespace std;
+
+void dummy() {
+    cout << "dummy dll" << endl;
+};
