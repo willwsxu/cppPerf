@@ -43,9 +43,7 @@ set<string> braceExpansionII(const string& expression, int& idx) {
             size_t last = idx + 1;
             auto special_char = [](char c) {
                 switch (c) {
-                case '{':
-                case '}':
-                case ',':
+                case '{':       case '}':       case ',':
                     return true;
                 default:
                     return false;
