@@ -69,9 +69,58 @@ vector<string> braceExpansionII(const string& expression)
     auto res = braceExpansionII(expression, idx);
     return vector<string>(begin(res), end(res));
 }
+
+
+vector<bool> parseBoolExpr(const string& expression, int& pos) {
+    vector<bool> group;
+    while (pos < expression.size()) {
+        switch (expression[pos]) {
+        case '&':
+        case '|':
+        case '!':
+        {
+            int op = expression[pos];
+            vector<bool> next_group = parseBoolExpr(expression, ++pos);
+            if (op == '&')
+                group.push_back(all_of(begin(next_group), end(next_group), [](bool x) { return x == true; }));
+            else if (op == '|')
+                group.push_back(any_of(begin(next_group), end(next_group), [](bool x) { return x == true; }));
+            else
+                group.push_back(!next_group[0]);
+            break;
+        }
+        case '(':
+        case ',':
+            ++pos;
+            break;
+        case ')':
+            ++pos;
+            return group;
+        case 't':
+            ++pos;
+            group.push_back(true);
+            break;
+        case 'f':
+            ++pos;
+            group.push_back(false);
+            break;
+        }
+    }
+    return group;
+}
+bool parseBoolExpr(string expression) {
+    int idx = 0;
+    auto x = parseBoolExpr(expression, idx);
+    return x[0];
+}
+
 #include <catch.hpp>
 
-TEST_CASE("1096. Brace Expansion II", "[BS]")
+TEST_CASE("1106. Parsing A Boolean Expression", "[RECUR]")
+{
+    CHECK(parseBoolExpr("|(&(t,f,t),!(t))") == false);
+}
+TEST_CASE("1096. Brace Expansion II", "[RECUR]")
 {
     CHECK(braceExpansionII("{a,b}c{d,e}f") == vector<string>{"acdf", "acef", "bcdf", "bcef"});
     CHECK(braceExpansionII("{{a,z},a{b,c},{ab,z}}") == vector<string>{"a", "ab", "ac", "z"});
