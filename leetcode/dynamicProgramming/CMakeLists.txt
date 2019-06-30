@@ -7,6 +7,7 @@ set(leetcode_source_files
 			knapsack.cpp
 			edit_distance.cpp
 			coin_change.cpp
+			prefix-suffix.cpp
 )
 add_executable(leetcode_dp ${leetcode_source_files})
 target_link_libraries(leetcode_dp 
