@@ -128,7 +128,43 @@ vector<double> sampleStats(vector<int>& count) {
     return vector<double>{(double)min_val, (double)max_val, total_val / total_count, median, (double)mode};
 }
 
+vector<int> pathInZigZagTree(int label) {
+    vector<int> power2(21, 1);
+    for (int i = 1; i < power2.size(); i++) {
+        power2[i] = 2 * power2[i - 1];
+    }
+    int depth;
+    for (int i = power2.size() - 1; i >= 0; i--) {
+        if (label >= power2[i]) {
+            depth = i + 1;
+            break;
+        }
+    }
+    vector<int> ans{ label };
+    int leaf_count = label - power2[depth - 1] + 1;
+    int left2right_pos = depth % 2 == 0 ? (power2[depth - 1] - leaf_count) : leaf_count - 1;
+    while (depth > 1) {
+        left2right_pos /= 2;
+        depth--;
+        int count = power2[depth - 1];
+        if (depth % 2 > 0)
+            count += left2right_pos;
+        else
+            count = power2[depth] - left2right_pos - 1;
+        ans.push_back(count);
+    }
+    reverse(begin(ans), end(ans));
+    return ans;
+}
+
+
 #include "catch.hpp"
+TEST_CASE("1104. Path In Zigzag Labelled Binary Tree", "[MATH]")
+{
+    CHECK(pathInZigZagTree(14) == vector<int>{1, 3, 4, 14});
+    CHECK(pathInZigZagTree(26) == vector<int>{1, 2, 6, 10, 26});
+}
+
 TEST_CASE("1093. Statistics from a Large Sample", "[MATH]")
 {
     CHECK(sampleStats(vector<int>{0, 1, 3, 4}) == vector<double>{1.0, 3.0, 2.375, 2.5, 3.0});
