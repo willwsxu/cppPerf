@@ -4,11 +4,25 @@
 
 #include "libcombo_dll_export.h"
 
-void dummy();
-class DummyClass
+DLL_IMPORT_EXPORT void dummy();
+void dummy2();
+
+class DLL_IMPORT_EXPORT DummyClass
 {
 public:
     DummyClass();
     std::string dummy_test();
     void dummy_test(std::string&);
+};
+
+class DummyClass2
+{
+public:
+    std::string dummy_test() { return "DummyClass2"; }
+};
+
+class DummyClass3
+{
+public:
+    std::string dummy_test();
 };

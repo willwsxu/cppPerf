@@ -22,5 +22,12 @@ int main(int argc, char* argv[])
     string test("test");
     dum.dummy_test(test);
     cout << "dll test2 " << test << endl;
+
+    // not exported, cannot compile
+    //dummy2();
+    DummyClass2 dm2;
+    cout << "dll test 2 " << dm2.dummy_test() << endl;  // inline function seems exported by default
+    DummyClass3 dm3;
+    //cout << "dll test 3 " << dm3.dummy_test() << endl;
     return 0;
 }
