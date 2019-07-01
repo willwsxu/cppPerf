@@ -3,17 +3,19 @@ project(libcombo_dll LANGUAGES CXX)
 set( CMAKE_VERBOSE_MAKEFILE on )
 
 IF(MSVC)
-	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+#	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 ENDIF()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(libcombo_dll SHARED dummy.cpp)
-include(GenerateExportHeader)
-generate_export_header(libcombo_dll)
 
-target_include_directories(libcombo_dll PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_include_directories(libcombo_dll
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # copied headers from liba libb
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}>
+)
 target_link_libraries(libcombo_dll 
 	PRIVATE liba
 	PRIVATE libb
@@ -29,8 +31,22 @@ set_target_properties(libcombo_dll PROPERTIES LINK_FLAGS ${DLL_LINK_FLAGS})
 if(WIN32)
 set_target_properties(libcombo_dll PROPERTIES LINK_FLAGS "/FORCE:MULTIPLE")
 endif()
+
+set(EXPORT_HEADER ${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/libcombo_dll_export.h)
+message(STATUS "EXPORT_HEADER=${EXPORT_HEADER}")
 set_target_properties(libcombo_dll PROPERTIES 
 	POSITION_INDEPENDENT_CODE 1
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN 1
 	DEBUG_POSTFIX "-d"
-	PUBLIC_HEADER "dummy.h;${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DIR}/libcombo_dll_export.h"
+    OUTPUT_NAME "libcombo"
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+	PUBLIC_HEADER "dummy.h;${EXPORT_HEADER}"
+)
+
+include(GenerateExportHeader)
+generate_export_header(libcombo_dll
+    BASE_NAME "libcombo"
+    EXPORT_MACRO_NAME "DLL_IMPORT_EXPORT"
+    EXPORT_FILE_NAME "${EXPORT_HEADER}"
 )

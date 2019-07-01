@@ -12,7 +12,8 @@ target_link_libraries(test_dll
 	PRIVATE Boost::boost 
 	PRIVATE Boost::date_time
 )
-target_include_directories(test_dll PRIVATE ${CMAKE_BINARY_DIR}/include)
+# libcombo_dll took care of all include dependecy
+#target_include_directories(test_dll PRIVATE ${CMAKE_BINARY_DIR}/include)
 
 # OUTPUT_DIRECTORY in root folder should work if there are placed ahead of adding this target
 set_target_properties(test_dll
