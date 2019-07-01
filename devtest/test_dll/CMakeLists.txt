@@ -13,3 +13,11 @@ target_link_libraries(test_dll
 	PRIVATE Boost::date_time
 )
 target_include_directories(test_dll PRIVATE ${CMAKE_BINARY_DIR}/include)
+
+# OUTPUT_DIRECTORY in root folder should work if there are placed ahead of adding this target
+set_target_properties(test_dll
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
