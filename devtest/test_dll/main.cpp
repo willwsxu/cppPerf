@@ -17,6 +17,6 @@ int main(int argc, char* argv[])
     cout << day_clock::local_day()  << endl;
     dummy();
     DummyClass dum;
-    dum.dummy_test();
+    cout << "dll test " << dum.dummy_test() << endl;
     return 0;
 }

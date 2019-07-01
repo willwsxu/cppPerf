@@ -1,7 +1,9 @@
+#include <string>
+
 void dummy();
 class DummyClass
 {
 public:
     DummyClass();
-    void dummy_test();
+    std::string dummy_test();
 };

@@ -11,7 +11,8 @@ DummyClass::DummyClass()
 {
     cout << "DummyClass constructed" << endl;
 }
-void DummyClass::dummy_test()
+string DummyClass::dummy_test()
 {
     cout << "DummyClass dummy_test" << endl;
+    return "dummy_test";
 }
