@@ -4,6 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(leetcode_source_files
 			MountainArray.cpp
 			BinarySearch.cpp
+			sliding_window.cpp
 )
 add_executable(leetcode_bs ${leetcode_source_files})
 target_link_libraries(leetcode_bs 
