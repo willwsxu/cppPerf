@@ -18,5 +18,9 @@ int main(int argc, char* argv[])
     dummy();
     DummyClass dum;
     cout << "dll test " << dum.dummy_test() << endl;
+
+    string test("test");
+    dum.dummy_test(test);
+    cout << "dll test2 " << test << endl;
     return 0;
 }

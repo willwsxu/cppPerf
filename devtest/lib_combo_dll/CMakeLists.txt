@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12.1)
-project(proto_msg LANGUAGES CXX)
+project(libcombo_dll LANGUAGES CXX)
 set( CMAKE_VERBOSE_MAKEFILE on )
 
 IF(MSVC)
