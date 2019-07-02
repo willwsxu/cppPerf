@@ -22,3 +22,10 @@ set_target_properties(test_dll
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+add_executable(test_dummy_s main.cpp)
+target_link_libraries(test_dummy_s 
+	PRIVATE libcombo_static
+	PRIVATE Boost::boost 
+	PRIVATE Boost::date_time
+)

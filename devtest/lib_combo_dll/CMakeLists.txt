@@ -20,6 +20,7 @@ target_link_libraries(libcombo_dll
 	PRIVATE liba
 	PRIVATE libb
 	)
+target_compile_definitions(libcombo_dll PUBLIC CMAKE_DLL)
 if (WIN32)
 	set(DLL_LINK_FLAGS "/WHOLEARCHIVE")
 elseif(APPLE)
@@ -49,4 +50,22 @@ generate_export_header(libcombo_dll
     BASE_NAME "libcombo"
     EXPORT_MACRO_NAME "DLL_IMPORT_EXPORT"
     EXPORT_FILE_NAME "${EXPORT_HEADER}"
+)
+
+
+add_library(libcombo_static STATIC dummy.cpp)
+
+target_include_directories(libcombo_static
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # copied headers from liba libb
+)
+target_link_libraries(libcombo_static 
+	PRIVATE liba
+	PRIVATE libb
+	)
+set_target_properties(libcombo_static PROPERTIES 
+	POSITION_INDEPENDENT_CODE 1
+	DEBUG_POSTFIX "-sd"
+	RELEASE_POSTFIX "-s"
+    ARCHIVE_OUTPUT_NAME "libcombo"
 )
