@@ -42,7 +42,7 @@ set_target_properties(libcombo_dll PROPERTIES
 	DEBUG_POSTFIX "-d"
     OUTPUT_NAME "libcombo"
     WINDOWS_EXPORT_ALL_SYMBOLS OFF
-	PUBLIC_HEADER "dummy.h;${EXPORT_HEADER}"
+	PUBLIC_HEADER "dummy.h;../liba/liba.h;../libb/include/libb.h;${EXPORT_HEADER}"
 )
 
 include(GenerateExportHeader)
@@ -68,4 +68,12 @@ set_target_properties(libcombo_static PROPERTIES
 	DEBUG_POSTFIX "-sd"
 	RELEASE_POSTFIX "-s"
     ARCHIVE_OUTPUT_NAME "libcombo"
+)
+
+#install lib and headers. depend on PUBLIC_HEADER target property
+install(TARGETS libcombo_static libcombo_dll EXPORT lib_ab
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}  #relative to CMAKE_INSTALL_PREFIX
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	PUBLIC_HEADER DESTINATION ${INSTALL_INCLUDEDIR}/dummy
 )

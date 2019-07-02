@@ -6,7 +6,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 find_toolchain()  #needed on vc2017
 Message(STATUS "CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}. set it in env or we will try to find it")
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/installed)
 # for these settings to apply to all projects, must place them here, before targets are created
 include(GNUInstallDirs) #needed for CMAKE_INSTALL_XXX def
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
@@ -27,6 +26,14 @@ message(STATUS "INSTALL_LIBDIR=${INSTALL_LIBDIR}")
 message(STATUS "INSTALL_BINDIR=${INSTALL_BINDIR}")
 message(STATUS "INSTALL_INCLUDEDIR=${INSTALL_INCLUDEDIR}")
 message(STATUS "INSTALL_CMAKEDIR=${INSTALL_CMAKEDIR}")
+
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/installed)  #better pass in as CMAKE varibale
+#report where components will be installed
+foreach(p LIB BIN INCLUDE CMAKE)
+	file(TO_NATIVE_PATH ${CMAKE_INSTALL_PREFIX}/${INSTALL_${p}DIR} _path)
+	message(STATUS "Installing ${p} to ${_path}")
+	unset(_path)
+endforeach()
 
 add_subdirectory(socket_client)
 add_subdirectory(socket_server)
