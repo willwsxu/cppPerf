@@ -20,7 +20,7 @@ target_link_libraries(libcombo_dll
 	PRIVATE liba
 	PRIVATE libb
 	)
-target_compile_definitions(libcombo_dll PUBLIC CMAKE_DLL)
+target_compile_definitions(libcombo_dll PUBLIC CMAKE_DLL) #CMAKE_DLL is used for none CMAKE build
 if (WIN32)
 	set(DLL_LINK_FLAGS "/WHOLEARCHIVE")
 elseif(APPLE)
@@ -45,15 +45,18 @@ set_target_properties(libcombo_dll PROPERTIES
 	PUBLIC_HEADER "dummy.h;../liba/liba.h;../libb/include/libb.h;${EXPORT_HEADER}"
 )
 
+#export header file is generated at CMAKE time, only needed for for dll target
 include(GenerateExportHeader)
 generate_export_header(libcombo_dll
     BASE_NAME "libcombo"
     EXPORT_MACRO_NAME "DLL_IMPORT_EXPORT"
     EXPORT_FILE_NAME "${EXPORT_HEADER}"
+	STATIC_DEFINE "DUMMY_STATIC_DEFINE"  #use this to indicate building static lib
 )
 
 
 add_library(libcombo_static STATIC dummy.cpp)
+target_compile_definitions(libcombo_static PUBLIC DUMMY_STATIC_DEFINE)
 
 target_include_directories(libcombo_static
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

@@ -2,7 +2,7 @@
 // dll symbols are hidden unless WINDOWS_EXPORT_ALL_SYMBOLS=ON
 // generate_export_header is needed to produce export header before compile
 
-#ifdef CMAKE_DLL
+#if (defined(CMAKE_DLL) || defined(DUMMY_STATIC_DEFINE))
 #include "libcombo_dll_export.h"
 #else
 #define DLL_IMPORT_EXPORT
