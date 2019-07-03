@@ -4,6 +4,14 @@
 #include <iostream>
 
 using namespace std;
+// length of dup substr is ever increasing, so it can be modeled as binary search problem
+// use position dependent hash algorithm, hash[i+1]=hash[i]*31+s[i], hash [0]=0 for easy computing of window substr hash
+// hash of window [left, right] = hash[right+1]-hash[left]*pow31(right-left+1)
+// apply MOD to keep all values within long long
+// create a window_view inner class to allow hash collision, using std unordered_set
+// when there is hash collision (rare), sequential compare two window substr
+// find if there exist dup substr of length L, take O(N)
+// overall runtime O(NlogN)
 class LongestDupSubStr
 {
     const static long MOD = 1000000007; // llimited so multiple 2 numbers does not overflow
@@ -56,7 +64,7 @@ public:
     }
     string longestDupSubstring(string S) {
         poly_sum.resize(S.size() + 1);
-        for (int i = 0; i < S.size(); i++) {
+        for (int i = 0; i < S.size(); i++) { // position dependent hash, cumulative for whole string
             poly_sum[i + 1] = (poly_sum[i] * 31 + S[i] - 'a') % MOD;
         }
         int low = 0, hi = S.size() - 1;
@@ -92,13 +100,11 @@ int LongestDupSubStr::longestDupSubstring_helper(const string& s, int L)
 {
     if (L == 0)
         return -1;
-    unordered_set<LongestDupSubStr::string_window_view> substr_hash;
+    unordered_set<string_window_view> substr_hash;
     substr_hash.reserve((s.size() - L) * 2);
     for (int right = L - 1; right < s.size(); right++) {  // string s window [left, right] 
         int left_char = right - L + 1;  // correspond to poly_sum window [left+1, right+1]
-        LongestDupSubStr::string_window_view wv(s, left_char, right, pow31, poly_sum);
-        //long long left_sum = poly_sum[left_char] * pow31[L] % MOD;
-        //long long window_hash = (poly_sum[right + 1] - left_sum + MOD) % MOD;
+        string_window_view wv(s, left_char, right, pow31, poly_sum);
         if (substr_hash.count(wv))
             return right;
         substr_hash.insert(wv);
