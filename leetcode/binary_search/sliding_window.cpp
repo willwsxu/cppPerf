@@ -9,6 +9,9 @@ class LongestDupSubStr
     const static long MOD = 10000000000000007;
     vector<long long> pow31;
     vector<long long> poly_sum;  // pre-compute polynomial sum, e.g. 26 chars: a*31^25+b*31^24+...+y*31+z
+
+    // finding dup string of length L, using hash
+    int longestDupSubstring_helper(const string& s, int L);
 public:
     class string_window_view
     {
@@ -30,16 +33,13 @@ public:
         friend bool operator==(const LongestDupSubStr::string_window_view& lhs, const LongestDupSubStr::string_window_view& rhs) noexcept{
             if (lhs.hash() !=rhs.hash())
                 return false;
-            return lhs.data_equal(rhs);
+            return lhs.data_equal(rhs);  // resolve hash collision
         }
         long hash() const {
             return hash_val;
         }
     };
 
-    // finding dup string of length L, using hash
-    int longestDupSubstring_helper(const string& s, int L);
-public:
     LongestDupSubStr() {
         const int max_size = 100001;
         pow31.reserve(max_size);
