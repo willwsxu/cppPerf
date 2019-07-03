@@ -88,3 +88,21 @@ install(EXPORT DummyTargets
 	DESTINATION ${INSTALL_CMAKEDIR}
 )
 message(STATUS "PROJECT_VERSION=${PROJECT_VERSION}")
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+	${CMAKE_CURRENT_BINARY_DIR}/dummyConfigVersion.cmake
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
+configure_package_config_file(
+	${CMAKE_SOURCE_DIR}/cmake/DummyConfig.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/DummyConfig.cmake
+	INSTALL_DESTINATION ${INSTALL_CMAKEDIR}
+)
+install(
+	FILES
+		${CMAKE_CURRENT_BINARY_DIR}/DummyConfig.cmake
+		${CMAKE_CURRENT_BINARY_DIR}/dummyConfigVersion.cmake
+	DESTINATION
+		${INSTALL_CMAKEDIR}
+)
