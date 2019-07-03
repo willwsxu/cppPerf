@@ -6,7 +6,7 @@
 using namespace std;
 class LongestDupSubStr
 {
-    const static long MOD = 10000000000000007;
+    const static long MOD = 1000000007; // llimited so multiple 2 numbers does not overflow
     vector<long long> pow31;
     vector<long long> poly_sum;  // pre-compute polynomial sum, e.g. 26 chars: a*31^25+b*31^24+...+y*31+z
 
@@ -15,18 +15,18 @@ class LongestDupSubStr
 public:
     class string_window_view
     {
-        const string* data;
-        int left, right;
+        const string& data;  // reference won't compile without copy constructor
+        int left, right;     // [left,right]
         long hash_val;
         bool data_equal(const LongestDupSubStr::string_window_view& rhs) const {
             for (int i = left, j = rhs.left; i <= right; i++, j++) {
-                if ((*data)[i] != (*rhs.data)[j])
+                if (data[i] != rhs.data[j])
                     return false;
             }
             return true;
         }
     public:
-        string_window_view(const string& d, int l, int r, const vector<long long>& pow31, const vector<long long>& poly_sum) :data(&d), left(l), right(r) {
+        string_window_view(const string& d, int l, int r, const vector<long long>& pow31, const vector<long long>& poly_sum) :data(d), left(l), right(r) {
             hash_val = (poly_sum[right + 1] - poly_sum[left] * pow31[right - left + 1] % MOD + MOD) % MOD;
         }
         // must be friend, not member?
