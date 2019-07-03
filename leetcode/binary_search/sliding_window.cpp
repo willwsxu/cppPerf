@@ -17,8 +17,8 @@ public:
     {
         const string& data;  // reference won't compile without copy constructor
         int left, right;     // [left,right]
-        long hash_val;
-        bool data_equal(const LongestDupSubStr::string_window_view& rhs) const {
+        const long hash_val;
+        bool data_equal(const string_window_view& rhs) const {
             for (int i = left, j = rhs.left; i <= right; i++, j++) {
                 if (data[i] != rhs.data[j])
                     return false;
@@ -26,15 +26,20 @@ public:
             return true;
         }
     public:
-        string_window_view(const string& d, int l, int r, const vector<long long>& pow31, const vector<long long>& poly_sum) :data(d), left(l), right(r) {
-            hash_val = (poly_sum[right + 1] - poly_sum[left] * pow31[right - left + 1] % MOD + MOD) % MOD;
-        }
-        // must be friend, not member?
-        friend bool operator==(const LongestDupSubStr::string_window_view& lhs, const LongestDupSubStr::string_window_view& rhs) noexcept{
-            if (lhs.hash() !=rhs.hash())
+        string_window_view(const string& d, int l, int r, const vector<long long>& pow31, const vector<long long>& poly_sum) :data(d), left(l), right(r),
+            hash_val ( (poly_sum[right + 1] - poly_sum[left] * pow31[right - left + 1] % MOD + MOD) % MOD ) { }
+
+        friend bool operator==(const string_window_view& lhs, const string_window_view& rhs) noexcept{
+            if (lhs.hash() != rhs.hash())
                 return false;
             return lhs.data_equal(rhs);  // resolve hash collision
         }
+        // member operator overload won't compile
+        //bool operator==(const string_window_view& rhs) noexcept {
+        //    if (hash() != rhs.hash())
+        //        return false;
+        //    return data_equal(rhs);  // resolve hash collision
+        //}
         long hash() const {
             return hash_val;
         }
