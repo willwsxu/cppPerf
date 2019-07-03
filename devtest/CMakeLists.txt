@@ -48,16 +48,8 @@ add_subdirectory(test_dll)
 add_subdirectory(lib_combo_static2)
 add_subdirectory(test_static)
 
-
-#install(TARGETS liba libb libcombo_dll EXPORT lib_ab
-#	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}  #relative to CMAKE_INSTALL_PREFIX
-#	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-#	PUBLIC_HEADER DESTINATION ${INSTALL_INCLUDEDIR}
-#)
 #install(DIRECTORY libb/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 #install(FILES liba/liba.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 #install(FILES lib_combo_dll/dummy.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-#install(EXPORT lib_ab DESTINATION share/lib_ab/cmake)
 #export(TARGETS liba libb libcombo_dll FILE lib_ab.cmake)

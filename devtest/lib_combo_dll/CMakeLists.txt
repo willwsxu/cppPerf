@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12.1)
-project(libcombo_dll LANGUAGES CXX)
+project(libcombo_dll VERSION "1.0" LANGUAGES CXX)
 set( CMAKE_VERBOSE_MAKEFILE on )
 
 IF(MSVC)
@@ -74,9 +74,17 @@ set_target_properties(libcombo_static PROPERTIES
 )
 
 #install lib and headers. depend on PUBLIC_HEADER target property
-install(TARGETS libcombo_static libcombo_dll EXPORT lib_ab
+# libcombo_static depdends on liba and libb. libcombo_dll canbe installed alone as it is linked with liba and libb
+install(TARGETS  liba libb libcombo_static libcombo_dll
+	EXPORT DummyTargets  #referred later
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}  #relative to CMAKE_INSTALL_PREFIX
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	PUBLIC_HEADER DESTINATION ${INSTALL_INCLUDEDIR}/dummy
 )
+
+install(EXPORT DummyTargets
+	NAMESPACE DUMMY_NS::
+	DESTINATION ${INSTALL_CMAKEDIR}
+)
+message(STATUS "PROJECT_VERSION=${PROJECT_VERSION}")
