@@ -74,7 +74,7 @@ set_target_properties(libcombo_static PROPERTIES
 )
 
 #install lib and headers. depend on PUBLIC_HEADER target property
-# libcombo_static depdends on liba and libb. libcombo_dll canbe installed alone as it is linked with liba and libb
+# libcombo_static depdends on liba and libb. libcombo_dll can be installed alone as it is linked with liba and libb
 install(TARGETS  liba libb libcombo_static libcombo_dll
 	EXPORT DummyTargets  #referred later
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}  #relative to CMAKE_INSTALL_PREFIX
@@ -88,6 +88,7 @@ install(EXPORT DummyTargets
 	DESTINATION ${INSTALL_CMAKEDIR}
 )
 message(STATUS "PROJECT_VERSION=${PROJECT_VERSION}")
+#generate cmake files to find package and version
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
 	${CMAKE_CURRENT_BINARY_DIR}/dummyConfigVersion.cmake
