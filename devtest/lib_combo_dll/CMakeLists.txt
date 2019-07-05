@@ -11,10 +11,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(libcombo_dll SHARED dummy.cpp)
 
+#add heirarchy to header file, maintain consistency with installed folder structure
+FILE(COPY ${CMAKE_CURRENT_LIST_DIR}/dummy.h
+	DESTINATION ${CMAKE_BINARY_DIR}/include/dummy
+	FILES_MATCHING PATTERN *.h )
+
 target_include_directories(libcombo_dll
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # copied headers from liba libb
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}>  #contain all necessary headers
+    INTERFACE $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}>  #include for installed package
 )
 target_link_libraries(libcombo_dll 
 	PRIVATE liba
@@ -33,7 +37,7 @@ if(WIN32)
 set_target_properties(libcombo_dll PROPERTIES LINK_FLAGS "/FORCE:MULTIPLE")
 endif()
 
-set(EXPORT_HEADER ${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/libcombo_dll_export.h)
+set(EXPORT_HEADER ${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/dummy/libcombo_dll_export.h)
 message(STATUS "EXPORT_HEADER=${EXPORT_HEADER}")
 set_target_properties(libcombo_dll PROPERTIES 
 	POSITION_INDEPENDENT_CODE 1
@@ -42,7 +46,7 @@ set_target_properties(libcombo_dll PROPERTIES
 	DEBUG_POSTFIX "-d"
     OUTPUT_NAME "libcombo"
     WINDOWS_EXPORT_ALL_SYMBOLS OFF
-	PUBLIC_HEADER "dummy.h;../liba/liba.h;../libb/include/libb.h;${EXPORT_HEADER}"
+	PUBLIC_HEADER "dummy.h;${EXPORT_HEADER}"  #header files to install, destination is specified in install target below
 )
 
 #export header file is generated at CMAKE time, only needed for for dll target
@@ -60,7 +64,8 @@ target_compile_definitions(libcombo_static PUBLIC DUMMY_STATIC_DEFINE)
 
 target_include_directories(libcombo_static
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # copied headers from liba libb
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # copied all necessary headers here
+    INTERFACE $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}>  #include for installed package
 )
 target_link_libraries(libcombo_static 
 	PRIVATE liba
@@ -73,6 +78,11 @@ set_target_properties(libcombo_static PROPERTIES
     ARCHIVE_OUTPUT_NAME "libcombo"
 )
 
+#SUMMARY
+#export header is generated at cmake config time
+#use FILE copy to structure header file heirarchy
+#all commands above are for building targets, except INSTALL_INTERFACE and PUBLIC_HEADER setting
+#below is installed commands
 #install lib and headers. depend on PUBLIC_HEADER target property
 # libcombo_static depdends on liba and libb. libcombo_dll can be installed alone as it is linked with liba and libb
 install(TARGETS  liba libb libcombo_static libcombo_dll
@@ -106,4 +116,13 @@ install(
 		${CMAKE_CURRENT_BINARY_DIR}/dummyConfigVersion.cmake
 	DESTINATION
 		${INSTALL_CMAKEDIR}
+)
+
+#PUBLIC_HEADER can only specifify one dest dir, not suited for heirarchy
+install(
+	DIRECTORY
+		${CMAKE_BINARY_DIR}/include/liba
+		${CMAKE_BINARY_DIR}/include/libb
+	DESTINATION
+		${INSTALL_INCLUDEDIR}
 )

@@ -1,8 +1,8 @@
 //#include "libcombo_dll_export.h"
 
-#include "liba.h"
-#include "libb.h"
-#include "dummy.h"
+#include "liba/liba.h"
+#include "libb/libb.h"
+#include "dummy/dummy.h"
 
 #include "boost/date_time.hpp"
 #include <iostream>

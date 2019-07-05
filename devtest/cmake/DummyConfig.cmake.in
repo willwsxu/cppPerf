@@ -1,6 +1,6 @@
 #config file needed to export dummy dll and lib (lib_combo_dll folder)
 @PACKAGE_INIT@
-include("${CMAKE_CURRENT_LIST_DIR}/dummyTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/DummyTargets.cmake")
 check_required_components(
 	"libcombo_static"
 	"libcombo_dll"

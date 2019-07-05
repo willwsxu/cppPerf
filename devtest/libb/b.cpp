@@ -1,4 +1,4 @@
-#include "libb.h"
+#include "libb/libb.h"
 std::string testB()
 {
     return "test B";
