@@ -45,6 +45,7 @@ add_subdirectory(liba)
 add_subdirectory(libb)
 add_subdirectory(lib_combo_dll)
 add_subdirectory(test_dll)
+add_subdirectory(lib_combo_static)
 add_subdirectory(lib_combo_static2)
 add_subdirectory(test_static)
 
