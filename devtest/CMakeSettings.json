@@ -11,6 +11,13 @@
       "installRoot": "${projectDir}/bin",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
+      "variables": [
+        {
+          "name": "CMAKE_INSTALL_PREFIX_CUSTOM",
+          "value": "${projectDir}/build/${name}/installed",
+          "type": "STRING"
+        }
+      ],
       "ctestCommandArgs": ""
     },
     {

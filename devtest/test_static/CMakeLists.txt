@@ -28,23 +28,28 @@ add_custom_command(
 add_custom_target(libc_gen ALL
 	DEPENDS ${lib_combo_static}
 )
+
 add_library(lib_combo_s STATIC IMPORTED GLOBAL)
-#add_dependencies(lib_combo_s libc_gen)
+add_dependencies(lib_combo_s libc_gen)
 set_target_properties(lib_combo_s
 	PROPERTIES IMPORTED_LOCATION ${lib_combo_static}
 )
 target_include_directories(lib_combo_s 
 	INTERFACE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 	)
+
+#or use target_link_libraries
 set_target_properties(lib_combo_s
 	PROPERTIES
 	INTERFACE_LINK_LIBRARIES Boost::boost 
 	INTERFACE_LINK_LIBRARIES Boost::date_time
 )
-#or use target_link_libraries
+
 add_executable(libtest main.cpp)
-target_link_libraries(libtest lib_combo_s)
-#target_link_directories(libtest PRIVATE ${generated_lib})
+target_link_libraries(libtest
+	PRIVATE lib_combo_s
+)
+#target_include_directories(libtest PRIVATE ${CMAKE_BINARY_DIR}/include)
 
 add_executable(libtest2 main.cpp)
 target_link_libraries(libtest2 
