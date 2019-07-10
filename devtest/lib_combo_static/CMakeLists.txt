@@ -47,6 +47,7 @@ set_target_properties(lib_combo_s
 
 #camke does not support install imported lib lib_combo_s, try out using interface
 add_library(lib_combo_s_interface INTERFACE)
+add_dependencies(lib_combo_s_interface libc_gen)
 set_target_properties(lib_combo_s_interface
 	PROPERTIES
 #	INTERFACE_LINK_LIBRARIES Boost::boost 
@@ -54,11 +55,13 @@ set_target_properties(lib_combo_s_interface
 #	INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 	INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${Boost_INCLUDE_DIR}>
 	INTERFACE_LINK_LIBRARIES lib_combo_static${CMAKE_STATIC_LIBRARY_SUFFIX}
+	INTERFACE_LINK_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/lib>
+    INTERFACE_LINK_DIRECTORIES $<INSTALL_INTERFACE:${INSTALL_LIBDIR}>  #for installed package
 )
-target_link_directories(lib_combo_s_interface 
-	INTERFACE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/lib>
-    INTERFACE $<INSTALL_INTERFACE:${INSTALL_LIBDIR}>  #for installed package
-)
+#target_link_directories(lib_combo_s_interface   does not work in vc2017
+#	INTERFACE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/lib>
+#    INTERFACE $<INSTALL_INTERFACE:${INSTALL_LIBDIR}>  #for installed package
+#)
 target_include_directories(lib_combo_s_interface 
 	INTERFACE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
     INTERFACE $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}>  #include for installed package
