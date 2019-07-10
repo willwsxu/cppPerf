@@ -18,3 +18,8 @@ target_link_libraries(libtest2
 	PRIVATE Boost::boost
 	PRIVATE Boost::date_time
 )
+
+add_executable(libtest_interface main.cpp)
+target_link_libraries(libtest_interface
+	PRIVATE lib_combo_s_interface
+)

@@ -44,3 +44,33 @@ set_target_properties(lib_combo_s
 	INTERFACE_LINK_LIBRARIES Boost::boost 
 	INTERFACE_LINK_LIBRARIES Boost::date_time
 )
+
+#camke does not support install imported lib lib_combo_s, try out using interface
+add_library(lib_combo_s_interface INTERFACE)
+set_target_properties(lib_combo_s_interface
+	PROPERTIES
+#	INTERFACE_LINK_LIBRARIES Boost::boost 
+#	INTERFACE_LINK_LIBRARIES Boost::date_time
+#	INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+	INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${Boost_INCLUDE_DIR}>
+	INTERFACE_LINK_LIBRARIES ${lib_combo_static}
+)
+target_include_directories(lib_combo_s_interface 
+	INTERFACE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+)
+target_link_libraries(lib_combo_s_interface 
+	INTERFACE Boost::boost
+	INTERFACE Boost::date_time
+)
+install(TARGETS  lib_combo_s_interface
+	EXPORT ImplibTargets  #referred later
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}  #relative to CMAKE_INSTALL_PREFIX
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(
+	FILES
+		${lib_combo_static}
+	DESTINATION
+		${INSTALL_LIBDIR}
+)
