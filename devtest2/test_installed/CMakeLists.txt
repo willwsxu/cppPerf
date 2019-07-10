@@ -9,7 +9,7 @@ set(TEST_SOURCE_FILES ${CPP_PERF_DIR}/devtest/test_dll/main.cpp)
 
 message(STATUS "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
 #instruct find_package where to find Dummy, Capitalize D is necessary. Or set CMAKE_PREFIX_PATH
-set(Dummy_DIR "C:\\dev\\cppPerf\\devtest\\build\\x64-Debug\\installed\\cmake")
+set(Dummy_DIR "${CMAKE_SOURCE_DIR}\\..\\devtest\\build\\x64-Debug\\installed\\cmake")
 find_package(Dummy 1 REQUIRED)  #package name is case sensitive
 find_package(Boost REQUIRED COMPONENTS date_time system)
 add_executable(test_installed ${TEST_SOURCE_FILES})
