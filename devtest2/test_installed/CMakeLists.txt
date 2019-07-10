@@ -12,7 +12,6 @@ message(STATUS "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
 set(Dummy_DIR "C:\\dev\\cppPerf\\devtest\\build\\x64-Debug\\installed\\cmake")
 find_package(Dummy 1 REQUIRED)  #package name is case sensitive
 find_package(Boost REQUIRED COMPONENTS date_time system)
-find_package(Dummy REQUIRED)
 add_executable(test_installed ${TEST_SOURCE_FILES})
 target_link_libraries(test_installed 
 	PRIVATE DUMMY_NS::libcombo_dll

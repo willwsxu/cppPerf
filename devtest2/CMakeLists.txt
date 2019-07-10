@@ -6,3 +6,4 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 find_toolchain()  #needed on vc2017
 
 add_subdirectory(test_installed)
+add_subdirectory(test_installed_import)

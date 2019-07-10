@@ -53,10 +53,15 @@ set_target_properties(lib_combo_s_interface
 #	INTERFACE_LINK_LIBRARIES Boost::date_time
 #	INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 	INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${Boost_INCLUDE_DIR}>
-	INTERFACE_LINK_LIBRARIES ${lib_combo_static}
+	INTERFACE_LINK_LIBRARIES lib_combo_static${CMAKE_STATIC_LIBRARY_SUFFIX}
+)
+target_link_directories(lib_combo_s_interface 
+	INTERFACE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/lib>
+    INTERFACE $<INSTALL_INTERFACE:${INSTALL_LIBDIR}>  #for installed package
 )
 target_include_directories(lib_combo_s_interface 
 	INTERFACE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+    INTERFACE $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}>  #include for installed package
 )
 target_link_libraries(lib_combo_s_interface 
 	INTERFACE Boost::boost
@@ -73,4 +78,38 @@ install(
 		${lib_combo_static}
 	DESTINATION
 		${INSTALL_LIBDIR}
+)
+
+install(EXPORT ImplibTargets
+	NAMESPACE Implib_NS::
+	DESTINATION ${INSTALL_CMAKEDIR}
+)
+message(STATUS "PROJECT_VERSION=${PROJECT_VERSION}")
+#generate cmake files to find package and version
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+	${CMAKE_CURRENT_BINARY_DIR}/ImplibConfigVersion.cmake
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
+configure_package_config_file(
+	${CMAKE_SOURCE_DIR}/cmake/ImplibConfig.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/ImplibConfig.cmake
+	INSTALL_DESTINATION ${INSTALL_CMAKEDIR}
+)
+install(
+	FILES
+		${CMAKE_CURRENT_BINARY_DIR}/ImplibConfig.cmake
+		${CMAKE_CURRENT_BINARY_DIR}/ImplibConfigVersion.cmake
+	DESTINATION
+		${INSTALL_CMAKEDIR}
+)
+
+#PUBLIC_HEADER can only specifify one dest dir, not suited for heirarchy
+install(
+	DIRECTORY
+		${CMAKE_BINARY_DIR}/include/liba
+		${CMAKE_BINARY_DIR}/include/libb
+	DESTINATION
+		${INSTALL_INCLUDEDIR}
 )

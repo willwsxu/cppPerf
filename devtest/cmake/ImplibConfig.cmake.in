@@ -1,0 +1,6 @@
+#config file needed to export combo static lib as interface
+@PACKAGE_INIT@
+include("${CMAKE_CURRENT_LIST_DIR}/ImplibTargets.cmake")
+check_required_components(
+	"lib_combo_s_interface"
+)
