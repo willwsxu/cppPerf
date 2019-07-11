@@ -40,7 +40,7 @@ string shortestCommonSupersequence_topdown(string str1, string str2) {
 }
 
 string lcs_str_bottomup(const string& str1, const string& str2) {
-    int n = str1.size(), m = str2.size();
+    size_t n = str1.size(), m = str2.size();
     vector<vector<string>> dp(n + 1, vector<string>(m + 1));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) { // compute common sequence up to i,j, store in dp[i+1][j+1]
@@ -54,7 +54,7 @@ string lcs_str_bottomup(const string& str1, const string& str2) {
 }
 
 string shortestCommonSupersequence_LCS(string str1, string str2) {
-    int n = str1.size(), m = str2.size();
+    size_t n = str1.size(), m = str2.size();
     int i = 0, j = 0;
     string ans;
     for (char c : lcs_str_bottomup(str1, str2)) {
@@ -73,7 +73,7 @@ string shortestCommonSupersequence_LCS(string str1, string str2) {
 }
 
 vector<vector<int>> lcs_matrix(const string& str1, const string& str2) {
-    int n = str1.size(), m = str2.size();
+    size_t n = str1.size(), m = str2.size();
     vector < vector<int>> dp(n + 1, vector<int>(m + 1, 0));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) { // compute common sequence up to i,j, store in dp[i+1][j+1]
@@ -88,8 +88,8 @@ vector<vector<int>> lcs_matrix(const string& str1, const string& str2) {
 string shortestCommonSupersequence(string str1, string str2) {
     auto lcs = lcs_matrix(str1, str2);
     for (const auto& r : lcs) { copy(cbegin(r), cend(r), ostream_iterator<int>(cout, " ")); cout << endl;}
-    int r = lcs.size() - 1;
-    int c = lcs[0].size()-1;
+    int r = static_cast<int>(lcs.size() - 1);
+    int c = static_cast<int>(lcs[0].size()-1);
     string res;
     res.reserve(str1.size() + str2.size() - lcs[r][c]);  // optimize memory alloc
     while (r > 0 && c > 0) {
@@ -139,7 +139,29 @@ int minDeletionSize(vector<string>& A) {  // O(N^3)
     }
     return cols - *max_element(begin(lcs), end(lcs));
 }
+
+int maxUncrossedLines(vector<int>& A, vector<int>& B, int a, int b, vector<vector<int>>& memo) {
+    if (a == A.size() || b == B.size())
+        return 0;
+    if (memo[a][b] < 0) {
+        memo[a][b] = maxUncrossedLines(A, B, a, b + 1, memo);
+        memo[a][b] = max(memo[a][b], maxUncrossedLines(A, B, a + 1, b, memo));
+        if (A[a] == B[b])
+            memo[a][b] = max(memo[a][b], 1 + maxUncrossedLines(A, B, a + 1, b + 1, memo));
+    }
+    return memo[a][b];
+}
+int maxUncrossedLines(vector<int>& A, vector<int>& B) {
+    vector<vector<int>> memo(A.size(), vector<int>(B.size(), -1));
+    return maxUncrossedLines(A, B, 0, 0, memo);
+}
 #include "catch.hpp"
+TEST_CASE("1035. Uncrossed Lines", "[DP]")
+{
+    CHECK(maxUncrossedLines(vector<int>{2, 5, 1, 2, 5}, vector<int>{10, 5, 2, 1, 5, 2}) == 3);
+    CHECK(maxUncrossedLines(vector<int>{1, 3, 7, 1, 7, 5}, vector<int>{1, 9, 2, 5, 1}) == 2);
+}
+
 TEST_CASE("1092. Shortest Common Supersequence", "[DP]")
 {
     CHECK(shortestCommonSupersequence("bbbaaaba", "bbababbb") == "bbbaaababbb"); //"bbabaaababb"
