@@ -8,10 +8,10 @@ set(leetcode_source_files
 			edit_distance.cpp
 			coin_change.cpp
 			prefix-suffix.cpp
+			mergeStones.cpp
 )
 add_executable(leetcode_dp ${leetcode_source_files})
 target_link_libraries(leetcode_dp 
 		PRIVATE catch_test
 #		PRIVATE leetcode_common
 		)
-install(TARGETS leetcode_dp DESTINATION bin)
