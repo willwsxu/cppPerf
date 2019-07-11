@@ -72,6 +72,19 @@ string shortestCommonSupersequence_LCS(string str1, string str2) {
     return ans;
 }
 
+template<typename RandIter>
+vector<vector<int>> lcs_bottomup(RandIter start1, RandIter start2, size_t n, size_t m) {
+    vector < vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) { // compute common sequence up to i,j, store in dp[i+1][j+1]
+            if (*(start1+i) == *(start2+j))
+                dp[i + 1][j + 1] = dp[i][j] + 1;
+            else
+                dp[i + 1][j + 1] = max(dp[i + 1][j], dp[i][j + 1]);
+        }
+    }
+    return dp;
+}
 vector<vector<int>> lcs_matrix(const string& str1, const string& str2) {
     size_t n = str1.size(), m = str2.size();
     vector < vector<int>> dp(n + 1, vector<int>(m + 1, 0));
@@ -152,8 +165,10 @@ int maxUncrossedLines(vector<int>& A, vector<int>& B, int a, int b, vector<vecto
     return memo[a][b];
 }
 int maxUncrossedLines(vector<int>& A, vector<int>& B) {
-    vector<vector<int>> memo(A.size(), vector<int>(B.size(), -1));
-    return maxUncrossedLines(A, B, 0, 0, memo);
+    //vector<vector<int>> memo(A.size(), vector<int>(B.size(), -1));
+    //return maxUncrossedLines(A, B, 0, 0, memo);
+    auto memo = lcs_bottomup(begin(A), begin(B), A.size(), B.size());  // 3x faster than top down
+    return memo[A.size()][B.size()];
 }
 #include "catch.hpp"
 TEST_CASE("1035. Uncrossed Lines", "[DP]")
