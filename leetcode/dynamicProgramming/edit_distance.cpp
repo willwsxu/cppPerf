@@ -85,6 +85,23 @@ vector<vector<int>> lcs_bottomup(RandIter start1, RandIter start2, size_t n, siz
     }
     return dp;
 }
+template<typename RandIter>
+vector<vector<int>> edit_distance_bottomup(RandIter start1, RandIter start2, size_t n, size_t m) {
+    vector < vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+    for (int j = 1; j <= m; j++)
+        dp[0][j] = j;  // base case, delete all string 2 to match empty string 1
+    for (int i = 0; i < n; i++) {
+        dp[i + 1][0] = i + 1; // base case, delete all string 1 to match empty string 2
+        for (int j = 0; j < m; j++) { // compute common sequence up to i,j, store in dp[i+1][j+1]
+            if (*(start1 + i) == *(start2 + j))
+                dp[i + 1][j + 1] = dp[i][j];  // no edit
+            else
+                dp[i + 1][j + 1] = 1+ dp[i][j]; // replace
+            dp[i + 1][j + 1] = min(dp[i + 1][j + 1], 1+min(dp[i + 1][j], dp[i][j + 1]));  // delete, insert
+        }
+    }
+    return dp;
+}
 vector<vector<int>> lcs_matrix(const string& str1, const string& str2) {
     size_t n = str1.size(), m = str2.size();
     vector < vector<int>> dp(n + 1, vector<int>(m + 1, 0));
@@ -170,7 +187,19 @@ int maxUncrossedLines(vector<int>& A, vector<int>& B) {
     auto memo = lcs_bottomup(begin(A), begin(B), A.size(), B.size());  // 3x faster than top down
     return memo[A.size()][B.size()];
 }
+
+int minDistance(string word1, string word2) {
+    auto memo = edit_distance_bottomup(begin(word1), begin(word2), word1.size(), word2.size());
+    return memo[word1.size()][word2.size()];
+}
+
 #include "catch.hpp"
+TEST_CASE("72. Edit Distance", "[DP]")
+{
+    CHECK(minDistance("intention", "execution") ==5);
+    CHECK(minDistance("", "executions") == 10);
+    CHECK(minDistance("intention", "") == 9);
+}
 TEST_CASE("1035. Uncrossed Lines", "[DP]")
 {
     CHECK(maxUncrossedLines(vector<int>{2, 5, 1, 2, 5}, vector<int>{10, 5, 2, 1, 5, 2}) == 3);
