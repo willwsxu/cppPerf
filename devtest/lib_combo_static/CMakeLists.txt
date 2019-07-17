@@ -50,8 +50,6 @@ add_library(lib_combo_s_interface INTERFACE)
 add_dependencies(lib_combo_s_interface libc_gen)
 set_target_properties(lib_combo_s_interface
 	PROPERTIES
-#	INTERFACE_LINK_LIBRARIES Boost::boost 
-#	INTERFACE_LINK_LIBRARIES Boost::date_time
 #	INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 	INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${Boost_INCLUDE_DIR}>
 	INTERFACE_LINK_LIBRARIES lib_combo_static${CMAKE_STATIC_LIBRARY_SUFFIX}

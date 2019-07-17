@@ -75,7 +75,7 @@ set_target_properties(libcombo_static PROPERTIES
 	POSITION_INDEPENDENT_CODE 1
 	DEBUG_POSTFIX "-sd"
 	RELEASE_POSTFIX "-s"
-    ARCHIVE_OUTPUT_NAME "libcombo"
+    ARCHIVE_OUTPUT_NAME "libcombo_dummy"
 )
 
 #SUMMARY

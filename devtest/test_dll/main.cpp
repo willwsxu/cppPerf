@@ -11,8 +11,11 @@ using namespace std;
 int main(int argc, char* argv[])
 {
     // functions are not exported when merging 2 static lib into a dynamic lib
-    //cout << testA() << endl;
-    //cout << testB() << endl;
+    // but works with static lib
+#ifdef DUMMY_STATIC_DEFINE
+    cout << testA() << endl; 
+    cout << testB() << endl;
+#endif
     using namespace boost::gregorian;
     cout << day_clock::local_day()  << endl;
     dummy();
