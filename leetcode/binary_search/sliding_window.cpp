@@ -67,7 +67,7 @@ public:
         for (int i = 0; i < S.size(); i++) { // position dependent hash, cumulative for whole string
             poly_sum[i + 1] = (poly_sum[i] * 31 + S[i] - 'a') % MOD;
         }
-        int low = 0, hi = S.size() - 1;
+        int low = 0, hi = static_cast<int>(S.size()) - 1;
         int dup_pos = -1;
         while (low < hi) {
             int mid = (low + hi) / 2;

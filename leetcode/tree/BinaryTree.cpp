@@ -50,9 +50,9 @@ public:
 		if (root == nullptr)
 			return vector<vector<string>>{};
 		size_t h = TreeNode::getHeight(root);  // rows
-		size_t w = size_t(pow(2, h) - 1);
+        size_t w = static_cast<size_t>(pow(2, h) - 1);
 		vector<vector<string>> ans{ h, vector<string>{w, ""} };
-		printTree(root, 0, ans, 0, w - 1);
+		printTree(root, 0, ans, 0, static_cast<int>(w) - 1);
 		return ans;
 	}
 
@@ -236,7 +236,7 @@ public:
 				nodes[inUse].pop_back();
 			maxW = max(maxW, nodes[inUse].size());
 		}
-		return maxW;
+		return static_cast<int>(maxW);
 	}
 
 	// 450. Delete Node in a BST
@@ -459,7 +459,7 @@ public:
 		deque<TreeNode*> q{ root };
 		while (!q.empty()) {
 			ans.push_back((*max_element(begin(q), end(q), [](TreeNode *r1, TreeNode* r2) {return r1->val < r2->val; }))->val);
-			int oldSize = q.size();
+			int oldSize = static_cast<int>(q.size());
 			while (oldSize--) {
 				TreeNode *tn = q.front();
 				q.pop_front();
@@ -613,7 +613,7 @@ public:
 	TreeNode* deserialize(string data) {
 		istringstream iss(data);
 		vector<int> vi{ istream_iterator<int>(iss), istream_iterator<int>() };
-		return TreeNode::preorder(vi, 0, vi.size() - 1);
+		return TreeNode::preorder(vi, 0, static_cast<int>(vi.size()) - 1);
 	}
 };
 
@@ -909,7 +909,7 @@ public:
 	// All of the nodes' values will be unique
 	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {  // beat 86%
 		LcaHelp(root, p, q);
-		int minSize = min(lca[0].size(), lca[1].size());
+		int minSize = (int)min(lca[0].size(), lca[1].size());
 		int i = 0;
 		for (; i < minSize; i++) {
 			if (lca[0][i] != lca[1][i])
@@ -1432,9 +1432,9 @@ public:
 	tuple<int, int> treePartition(int rootVal, InIt InFirst, InIt InStart, InIt InEnd, const unordered_map<int, int>& pos_map)
 	{
 		auto pos = pos_map.find(rootVal)->second;
-		int left_size = distance(InStart, InFirst + pos);
-		int right_size = distance(InFirst + pos + 1, InEnd);
-		return{ left_size , right_size };
+		auto left_size = distance(InStart, InFirst + pos);
+		auto right_size = distance(InFirst + pos + 1, InEnd);
+		return{ static_cast<int>(left_size), static_cast<int>(right_size) };
 	}
 	template<typename PreIt, typename InIt>
 	TreeNode* buildTree(PreIt preStart, PreIt preEnd, InIt InFirst, InIt InStart, InIt InEnd, const unordered_map<int, int>& pos_map)

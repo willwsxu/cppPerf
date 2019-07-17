@@ -42,7 +42,7 @@ public:
     }
 
     // 518. Coin Change 2, ways to make change
-    int change(int amount, vector<int>& coins, int coin, vector<vector<int>>& dp) {
+    int change(int amount, vector<int>& coins, size_t coin, vector<vector<int>>& dp) {
         if (amount == 0)
             return 1;
         if (coin == coins.size())

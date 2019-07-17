@@ -35,7 +35,7 @@ public:
 	}
 	int singleNonDuplicate(vector<int>& nums) {
 		assert(nums.size() % 2 == 1);// odd size
-		return binary_search(nums, 0, nums.size() - 1);
+		return binary_search(nums, 0, static_cast<int>(nums.size()) - 1);
 	}
 
 	int mySqrt_bs(int x, int lo, int hi) {
@@ -102,11 +102,11 @@ public:
 		auto found = lower_bound(nums.begin(), nums.end(), target);
 		if (found == nums.end() || *found != target)
 			return -1;
-		return distance(nums.begin(), found);
+		return (int)distance(nums.begin(), found);
 	}
 	// 35. Search Insert Position. return the index if the target is found. If not, return the index where it would be if it were inserted in order
 	int searchInsert(vector<int>& nums, int target) {  // beat 98%
-		return distance(nums.begin(), lower_bound(nums.begin(), nums.end(), target));
+		return (int)distance(nums.begin(), lower_bound(nums.begin(), nums.end(), target));
 	}
 
 	// 475. Heaters, given positions of houses and heaters, find the min heating radius to warm all houses
@@ -116,7 +116,7 @@ public:
 			return 0;
 		sort(begin(heaters), end(heaters)); // question did not mention sorted, don't assume
 		int maxDist = 0;
-		int h_size = heaters.size();
+		int h_size = static_cast<int>(heaters.size());
 		for (int h : houses) {
 			auto R_H = lower_bound(begin(heaters), end(heaters), h);
 			if (R_H == end(heaters))
@@ -162,12 +162,12 @@ public:
 		// special case for first
 		auto start = equal_range(begin(A), end(A), 0); // start from 0
 		auto sum_end= equal_range(begin(A), end(A), S);
-		total += (distance(start.first, start.second) + 1)*(distance(sum_end.first, sum_end.second));
+		total += ((int)distance(start.first, start.second) + 1)*((int)distance(sum_end.first, sum_end.second));
 		while (sum_end.second != end(A)) {
 			int target = *start.second + S;
 			start = equal_range(start.second, end(A), *start.second);
 			sum_end = equal_range(sum_end.second, end(A), target);
-			total += (distance(start.first, start.second))*(distance(sum_end.first, sum_end.second));
+			total += ((int)distance(start.first, start.second))*((int)distance(sum_end.first, sum_end.second));
 		}
 		return total;
 	}
@@ -245,7 +245,7 @@ public:
 		auto found = lower_bound(begin(times_), end(times_), t);
 		if (found ==end(times_) || *found > t)
 			--found;
-		int pos = distance(begin(times_), found);
+		size_t pos = distance(begin(times_), found);
 		return winners[pos];
 	}
 };

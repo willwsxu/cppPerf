@@ -96,7 +96,7 @@ vector<int> addNegabinary(vector<int>& arr1, vector<int>& arr2) {
 	return result;
 }
 vector<double> sampleStats(vector<int>& count) {
-    int mode = distance(begin(count), max_element(begin(count), end(count)));
+    int mode = (int)distance(begin(count), max_element(begin(count), end(count)));
     int total_count = accumulate(begin(count), end(count), 0);
     int min_val = -1, max_val = -1;
     double total_val = 0;

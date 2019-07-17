@@ -40,7 +40,7 @@ set<string> braceExpansionII(const string& expression, int& idx) {
         }
         default:  // extract all contiguous letters
         {
-            size_t last = idx + 1;
+            int last = idx + 1;
             auto special_char = [](char c) {
                 switch (c) {
                 case '{':       case '}':       case ',':

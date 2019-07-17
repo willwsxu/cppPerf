@@ -8,7 +8,7 @@ using namespace std;
 // each cell on path is connected and has value 0
 // easy BFS, time pressure ( took 10 min, but shound in less than 5)
 int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
-    int N = grid.size();
+    int N = static_cast<int>(grid.size());
     if (grid[0][0] > 0 || grid[N - 1][N - 1] > 0)  // edge case
         return -1;
     vector<vector<bool>> visited(N, vector<bool>(N, false));
@@ -16,7 +16,7 @@ int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
     deque<pair<int, int>> bfs_q{ {0, 0} };
     visited[0][0] = true;
     while (!bfs_q.empty()) {
-        int old_size = bfs_q.size();
+        size_t old_size = bfs_q.size();
         for (int i = 0; i < old_size; i++) {
             auto& front = bfs_q.front();
             const static vector<vector<int>> dir{ {0,1},{0,-1},{1,0},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1} };

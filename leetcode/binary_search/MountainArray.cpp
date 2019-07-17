@@ -15,7 +15,7 @@ int peakIndexInMountainArray(vector<int>& A, int lo, int hi) {
 }
 // 852. Peak Index in a Mountain Array
 int peakIndexInMountainArray(vector<int>& A) {  // beat 98%
-    return peakIndexInMountainArray(A, 0, A.size() - 1);
+    return peakIndexInMountainArray(A, 0, static_cast<int>(A.size() - 1));
 }
 class MountainArray {
     vector<int> _mountain;
@@ -29,7 +29,7 @@ public:
         return _mountain[k];
     }
     int length() const {
-        return _mountain.size();
+        return (int)_mountain.size();
     }
 };
 class MountainArrayQuery {

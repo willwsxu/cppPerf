@@ -54,7 +54,7 @@ int minScoreTriangulation(vector<int>& points)
 {
 	//map<vi, int> memo;
 	//return minScoreTriangulation(points, memo);
-	size_t N = points.size();
+	int N = static_cast<int>(points.size());
 	vector<vector<int>> memo(N, vector<int>(N,0));
 	return minScoreTriangulation(points, memo, 0, N - 1);
 }

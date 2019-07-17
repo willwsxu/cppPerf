@@ -32,7 +32,7 @@ struct TreeNode {
 	}
 	static TreeNode * createBST(const vector<int>& nodes, int order)
 	{
-		return preorder(nodes, 0, nodes.size() - 1);
+		return preorder(nodes, 0, static_cast<int>(nodes.size()) - 1);
 	}
 	static void preorderPrint(TreeNode *r)
 	{
@@ -81,7 +81,7 @@ struct TreeNode {
 			}
 		};
 		while (!level.empty() && node_val!=end(nodes)) {
-			int old_size = level.size();
+			int old_size = static_cast<int>(level.size());
 			while (old_size--  && node_val != end(nodes) ) {
 				create_node(*node_val, level.front()->left);		// left child
 				if (++node_val != end(nodes)) {
@@ -102,8 +102,8 @@ struct TreeNode {
 		deque<TreeNode*> level{ root }; // nodes from last level
 		size_t idx = 1;
 		while (!level.empty() && idx<nodes.size()) {
-			int old_size = level.size();
-			for (int i=0; i<old_size && idx<nodes.size(); i++) {
+			size_t old_size = level.size();
+			for (size_t i=0; i<old_size && idx<nodes.size(); i++) {
 				TreeNode * r = level.front();
 				level.pop_front();
 				if (nodes[idx++] != INT32_MIN) {

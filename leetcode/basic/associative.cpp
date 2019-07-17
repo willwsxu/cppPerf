@@ -25,7 +25,7 @@ int maxEqualRowsAfterFlips(vector<vector<int>>& matrix) {
 // idea:for each pairs of columns, find all matrix that sharing bottom right corner, row by row
 //  to speed up computing, calculate prefix sum of eash row
 int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {
-	int m = matrix.size(), n = matrix[0].size();
+	int m = (int)matrix.size(), n = (int)matrix[0].size();
 	for (int i = 0; i < m; i++) {
 		partial_sum(begin(matrix[i]), end(matrix[i]), begin(matrix[i]));
 	}

@@ -55,7 +55,7 @@ int lastStoneWeightII(vector<int>& stones) {
     sack_memo[0] = true;  // base case
     for (int s : stones) {
         // coin change allow multiple use so order is reversed!!
-        for (int w = sack_memo.size()-1; w >=s; w--)  // reverse order as each weight used once
+        for (int w = static_cast<int>(sack_memo.size()-1); w >=s; w--)  // reverse order as each weight used once
             sack_memo[w] = sack_memo[w] | sack_memo[w-s];
     }
     for (int w = weights / 2; w >= 0; w--)
@@ -66,7 +66,7 @@ int lastStoneWeightII(vector<int>& stones) {
 
 // clash 2 heaviest stones at each round
 int lastStoneWeight(vector<int>& stones) {
-	int size = stones.size();
+	int size = static_cast<int>(stones.size());
 	while (size > 1) {
 		sort(begin(stones), end(stones), greater<int>());
 		stones[0] -= stones[1];
