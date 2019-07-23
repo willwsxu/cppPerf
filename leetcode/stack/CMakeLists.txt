@@ -4,6 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(leetcode_source_files
 			stack.cpp
 			stack_easy.cpp
+			monotone.cpp
 )
 add_executable(leetcode_stack ${leetcode_source_files})
 
