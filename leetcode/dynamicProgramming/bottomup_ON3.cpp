@@ -19,9 +19,21 @@ int mctFromLeafValues(vector<int>& arr, int i, int j, vector<vector<int>> memo) 
     }
     return memo[i][j];
 }
-int mctFromLeafValues(vector<int>& arr) {
+int mctFromLeafValues(vector<int>& arr) { //O(N^4)
     vector<vector<int>> memo(arr.size(), vector<int>(arr.size(), 0));
-    return mctFromLeafValues(arr, 0, (int)arr.size()-1, memo);
+    //return mctFromLeafValues(arr, 0, (int)arr.size()-1, memo);  // top down dp TLE
+    for (int len = 2; len <= (int)arr.size(); len++) {
+        for (int i = 0; i <= (int)arr.size() - len; i++) {
+            int j = i + len-1;
+            memo[len-1][i] = INT32_MAX;
+            for (int k = i; k < j; k++) {
+                int left_max = *max_element(begin(arr) + i, begin(arr) + k + 1);
+                int right_max = *max_element(begin(arr) + k + 1, begin(arr) + j + 1);
+                memo[len-1][i] = min(memo[len-1][i], left_max * right_max + memo[k-i][i] + memo[j-k-1][k+1]);
+            }
+        }
+    }
+    return memo[arr.size() - 1][0];
 }
 
 #include <catch.hpp>

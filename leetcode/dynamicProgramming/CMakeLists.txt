@@ -9,7 +9,7 @@ set(leetcode_source_files
 			coin_change.cpp
 			prefix-suffix.cpp
 			mergeStones.cpp
-			binary_dp.cpp
+			bottomup_ON3.cpp
 )
 add_executable(leetcode_dp ${leetcode_source_files})
 target_link_libraries(leetcode_dp 
