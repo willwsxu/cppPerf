@@ -102,21 +102,8 @@ vector<vector<int>> edit_distance_bottomup(RandIter start1, RandIter start2, siz
     }
     return dp;
 }
-vector<vector<int>> lcs_matrix(const string& str1, const string& str2) {
-    size_t n = str1.size(), m = str2.size();
-    vector < vector<int>> dp(n + 1, vector<int>(m + 1, 0));
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) { // compute common sequence up to i,j, store in dp[i+1][j+1]
-            if (str1[i] == str2[j])
-                dp[i + 1][j + 1] = dp[i][j] + 1;
-            else
-                dp[i + 1][j + 1] = max(dp[i + 1][j], dp[i][j + 1]);
-        }
-    }
-    return dp;
-}
 string shortestCommonSupersequence(string str1, string str2) {
-    auto lcs = lcs_matrix(str1, str2);
+    auto lcs = lcs_bottomup(begin(str1), begin(str2), str1.size(), str2.size());
     for (const auto& r : lcs) { copy(cbegin(r), cend(r), ostream_iterator<int>(cout, " ")); cout << endl;}
     int r = static_cast<int>(lcs.size() - 1);
     int c = static_cast<int>(lcs[0].size()-1);
