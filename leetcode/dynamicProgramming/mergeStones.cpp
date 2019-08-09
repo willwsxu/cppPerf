@@ -45,7 +45,10 @@ int mergeStones_topdown(vector<int> stones, int K) {
         copy(begin(stones)+i+K-1, end(stones), back_inserter(acopy));
         acopy[i] = sum[i + K - 1] - (i > 0 ? sum[i - 1] : 0);
         int merge_sum = acopy[i];
-        ans = min(ans, merge_sum + mergeStones_topdown(move(acopy), K));
+        int next = mergeStones_topdown(move(acopy), K);
+        if (next < 0)
+            return next;
+        ans = min(ans, merge_sum + next);
     }
     return ans;
 }
@@ -115,6 +118,8 @@ TEST_CASE("1000. Minimum Cost to Merge Stones", "[DP]")
 {
     CHECK(mergeStones2(vector<int>{4,1,3,2}, 2) == 20);
     CHECK(mergeStones_topdown(vector<int>{4, 1, 3, 2}, 2) == 20);
+    CHECK(mergeStones_topdown(vector<int>{4, 1, 3, 2}, 3) == -1);
+    CHECK(mergeStones_topdown(vector<int>{3, 5, 1, 2, 6}, 3) == 25);
 }
 // K=4, k=1,2,3; len = j-i
 // 3 4 2 6 9 1 5
