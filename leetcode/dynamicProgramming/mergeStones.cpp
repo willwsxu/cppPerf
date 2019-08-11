@@ -49,7 +49,7 @@ int mergeStones_topdown(vector<int>& stones, int K, int piles2merge,  int first,
         int ans = INT32_MAX;
         if (piles2merge == 1) {  // len> 1, K piles to 1 pile
             int pile = mergeStones_topdown(stones, K, K, first, last, memo);
-            ans  = pile == INT32_MAX ? pile : pile + total; // add value as it is 1 of K piles
+            ans = pile == INT32_MAX ? pile : pile + total; // add value as it is 1 of K piles
         }
         else {
             for (int k = first; k <= last - piles2merge + 1; k++) {  // separate into 2 groups
