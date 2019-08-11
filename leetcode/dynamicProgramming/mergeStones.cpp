@@ -28,63 +28,49 @@ int mergeStones2(vector<int>& stones, int K) {
     return memo[0][n - 1];
 }
 
-int mergeStones_topdown_brute(vector<int> stones, int K) { //try all merges, merge into new vector and repeat
-    int n = (int)stones.size();
-    if (n == 1)
-        return 0;
-    if (n < K)
-        return -1;
-    vector<int> sum(begin(stones), end(stones));
-    partial_sum(begin(sum), end(sum), begin(sum));
-    int ans = INT32_MAX;
-    for (int i = 0; i <= n - K; i++) {
-        vector<int> acopy;
-        acopy.reserve(n - K + 1);
-        if (i)
-            copy(begin(stones), begin(stones) + i, back_inserter(acopy));
-        copy(begin(stones)+i+K-1, end(stones), back_inserter(acopy));
-        acopy[i] = sum[i + K - 1] - (i > 0 ? sum[i - 1] : 0);
-        int merge_sum = acopy[i];
-        int next = mergeStones_topdown_brute(move(acopy), K);
-        if (next < 0)
-            return next;
-        ans = min(ans, merge_sum + next);
-    }
-    return ans;
-}
-
+// brute force: try all possilbe K piles merges in each step
 // another top down, but think reverse order
 // last move is from K piles to 1, each pile is formed recursively backwards
-int mergeStones_topdown(vector<int>& stones, int K, int piles2merge,  int first, int last)
+int mergeStones_topdown(vector<int>& stones, int K, int piles2merge,  int first, int last, vector<vector<vector<int>>>& memo)
 {
     int len = last - first + 1;
+    int total = stones[last] - (first > 0 ? stones[first - 1] : 0);
+    if (len == 1) {
+        if (piles2merge == 1)
+            return 0 + total; //  add value as it is part of K piles
+        if (K == piles2merge)
+            return 0;
+    }        
     if (len < piles2merge)  // not enough piles, invalid
         return INT32_MAX;
-    int total = stones[last] - (first > 0 ? stones[first - 1] : 0);
-    if (len == 1)
-        return 0+ total; // piles2merge==1 true, add value as it is part of K piles
     if (len == piles2merge)  // exactly # piles to merge
         return total;  // add value as it is part of K piles
-    if (piles2merge == 1) {  // len> 1, K piles to 1 pile
-        int pile = mergeStones_topdown(stones, K, K, first, last);
-        return pile==INT32_MAX?pile:pile+total; // add value as it is 1 of K piles
+    if (memo[first][last][piles2merge - 1] < 0) {
+        int ans = INT32_MAX;
+        if (piles2merge == 1) {  // len> 1, K piles to 1 pile
+            int pile = mergeStones_topdown(stones, K, K, first, last, memo);
+            ans  = pile == INT32_MAX ? pile : pile + total; // add value as it is 1 of K piles
+        }
+        else {
+            for (int k = first; k <= last - piles2merge + 1; k++) {  // separate into 2 groups
+                int pile1 = mergeStones_topdown(stones, K, 1, first, k, memo);  // 1 pile
+                if (pile1 == INT32_MAX)
+                    continue;
+                int pile2 = mergeStones_topdown(stones, K, piles2merge - 1, k + 1, last, memo);  // piles2merge - 1 piles
+                if (pile2 == INT32_MAX)
+                    continue;
+                ans = min(ans, pile1 + pile2);  // don't add value as we add only when piles2merge==1
+            }
+        }
+        memo[first][last][piles2merge-1] = ans;
     }
-    int ans = INT32_MAX;
-    for (int k = first; k <= last- piles2merge+1; k++) {  // separate into 2 groups
-        int pile1 = mergeStones_topdown(stones, K, 1, first, k);  // 1 pile
-        if ( pile1 == INT32_MAX)
-            continue;
-        int pile2 = mergeStones_topdown(stones, K, piles2merge - 1, k + 1, last);  // piles2merge - 1 piles
-        if (pile2 == INT32_MAX)
-            continue;
-        ans = min(ans, pile1 + pile2);  // don't add value as we add only when piles2merge==1
-    }
-    return ans;
+    return memo[first][last][piles2merge-1];
 }
 int mergeStones_topdown(vector<int>& stones, int K)
 {
     partial_sum(begin(stones), end(stones), begin(stones));
-    int ans = mergeStones_topdown(stones, K, K, 0, (int)stones.size() - 1);
+    vector<vector<vector<int>>> memo(stones.size(), vector<vector<int>>(stones.size(), vector<int>(K,-1)));
+    int ans = mergeStones_topdown(stones, K, K, 0, (int)stones.size() - 1, memo);
     return ans == INT32_MAX ? -1 : ans;
 }
 
