@@ -11,7 +11,7 @@ using namespace std;
 // in general, pile(i,j) = min[pile(i,x)+pile(x+1,j)]+total(i,j)
 // base case: pile(i,i)=0
 int mergeStones2(vector<int>& stones, int K) {
-    int n = stones.size();
+    int n = (int)stones.size();
     partial_sum(begin(stones), end(stones), begin(stones));
     vector<vector<int>> memo(n,vector<int>(n,0));  // merge result between [i, j]
     // special case merge stone i,i, result 0
@@ -28,7 +28,7 @@ int mergeStones2(vector<int>& stones, int K) {
     return memo[0][n - 1];
 }
 
-int mergeStones_topdown(vector<int> stones, int K) {
+int mergeStones_topdown_brute(vector<int> stones, int K) { //try all merges, merge into new vector and repeat
     int n = (int)stones.size();
     if (n == 1)
         return 0;
@@ -45,7 +45,7 @@ int mergeStones_topdown(vector<int> stones, int K) {
         copy(begin(stones)+i+K-1, end(stones), back_inserter(acopy));
         acopy[i] = sum[i + K - 1] - (i > 0 ? sum[i - 1] : 0);
         int merge_sum = acopy[i];
-        int next = mergeStones_topdown(move(acopy), K);
+        int next = mergeStones_topdown_brute(move(acopy), K);
         if (next < 0)
             return next;
         ans = min(ans, merge_sum + next);
@@ -53,11 +53,46 @@ int mergeStones_topdown(vector<int> stones, int K) {
     return ans;
 }
 
+// another top down, but think reverse order
+// last move is from K piles to 1, each pile is formed recursively backwards
+int mergeStones_topdown(vector<int>& stones, int K, int piles2merge,  int first, int last)
+{
+    int len = last - first + 1;
+    if (len < piles2merge)  // not enough piles, invalid
+        return INT32_MAX;
+    int total = stones[last] - (first > 0 ? stones[first - 1] : 0);
+    if (len == 1)
+        return 0+ total; // piles2merge==1 true, add value as it is part of K piles
+    if (len == piles2merge)  // exactly # piles to merge
+        return total;  // add value as it is part of K piles
+    if (piles2merge == 1) {  // len> 1, K piles to 1 pile
+        int pile = mergeStones_topdown(stones, K, K, first, last);
+        return pile==INT32_MAX?pile:pile+total; // add value as it is 1 of K piles
+    }
+    int ans = INT32_MAX;
+    for (int k = first; k <= last- piles2merge+1; k++) {  // separate into 2 groups
+        int pile1 = mergeStones_topdown(stones, K, 1, first, k);  // 1 pile
+        if ( pile1 == INT32_MAX)
+            continue;
+        int pile2 = mergeStones_topdown(stones, K, piles2merge - 1, k + 1, last);  // piles2merge - 1 piles
+        if (pile2 == INT32_MAX)
+            continue;
+        ans = min(ans, pile1 + pile2);  // don't add value as we add only when piles2merge==1
+    }
+    return ans;
+}
+int mergeStones_topdown(vector<int>& stones, int K)
+{
+    partial_sum(begin(stones), end(stones), begin(stones));
+    int ans = mergeStones_topdown(stones, K, K, 0, (int)stones.size() - 1);
+    return ans == INT32_MAX ? -1 : ans;
+}
+
 // for K>2, it can be expressed as pile(i,j, K)=min[pile(1,i,x)+pile(K-1,x+1,j)]
 // base case j-i<=k-1: pile(k,i,j)=j-i==k-1?0:-1
 // to save space, reduce K by 1. base case j-i<=k:  pile(k,i,j)=j-i==k?0:-1
 int mergeStones(vector<int>& stones, int K) {
-    int n = stones.size();
+    int n = (int)stones.size();
     partial_sum(begin(stones), end(stones), begin(stones));
     vector<vector<vector<int>>> memo(K,vector<vector<int>>(n, vector<int>(n, 0)));  // merge result between [i, j]
     // special case merge stone i,i, result 0
@@ -117,12 +152,13 @@ TEST_CASE("1140. Stone Game II", "[DP]")
 TEST_CASE("1000. Minimum Cost to Merge Stones", "[DP]")
 {
     CHECK(mergeStones2(vector<int>{4,1,3,2}, 2) == 20);
+    CHECK(mergeStones_topdown(vector<int>{1}, 2) == 0);
     CHECK(mergeStones_topdown(vector<int>{4, 1, 3, 2}, 2) == 20);
     CHECK(mergeStones_topdown(vector<int>{4, 1, 3, 2}, 3) == -1);
     CHECK(mergeStones_topdown(vector<int>{3, 5, 1, 2, 6}, 3) == 25);
 }
-// K=4, k=1,2,3; len = j-i
-// 3 4 2 6 9 1 5
-// k=1, len=[1,6] at least 2 piles, i=[0,5],[0,4],..., [0,0]
-// k=2, len=[2,6] at least 3 piles, i=[0,4],...,[0,0]
-// k=3, len=[3,6] at least 4 piles, i=[0,3], ..., [0,0]
+// 3 5 1 2 6 K=3
+// 3 - 5 1 2 6 = 3 + 22 = 25, 3 5 - 1 2 6 X, 3 5 1 - 2 6 = 9 + 9 + 8 = 26  K = 3
+// 5 - 1 2 6 = 23, 5 1 - 2 6X, 5 2 1 - 6 = 22   K = 2
+// 1 2 6 K = 3
+// 5 2 1 K = 3
