@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 // dll symbols are hidden unless WINDOWS_EXPORT_ALL_SYMBOLS=ON
 // generate_export_header is needed to produce export header before compile
@@ -35,7 +36,7 @@ public:
         return dm2;
     }
     std::string dummy_test() {
-        dummys.push_back((int)dummys.size() + 1);
+        dummys.push_back(std::make_unique<int>((int)dummys.size() + 1));
         return "DummyClass2"; 
     }
 
@@ -46,7 +47,7 @@ public:
     }
 private:
     DummyClass2() = default;
-    std::vector<int> dummys;
+    std::vector<std::unique_ptr<int>> dummys;
 };
 
 // no export, method is not inline, not usable
