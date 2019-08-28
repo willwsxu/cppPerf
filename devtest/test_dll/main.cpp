@@ -5,7 +5,6 @@
 #include "dummy/dummy.h"
 
 #include "boost/date_time.hpp"
-#include <iostream>
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -19,18 +18,18 @@ int main(int argc, char* argv[])
     using namespace boost::gregorian;
     cout << day_clock::local_day()  << endl;
     dummy();
+    //dummy_no_export();  // cannot compile
+
     DummyClass dum;
-    cout << "dll test " << dum.dummy_test() << endl;
+    cout << "export class test " << dum.dummy_test() << endl;
 
     string test("test");
     dum.dummy_test(test);
-    cout << "dll test2 " << test << endl;
+    cout << "export class test2 " << test << endl;
 
-    // not exported, cannot compile
-    //dummy2();
-    DummyClass2 dm2;
-    cout << "dll test 2 " << dm2.dummy_test() << endl;  // inline function seems exported by default
+    cout << "no export test " << DummyClass2::Instance().dummy_test() << endl;  // inline function seems exported by default
     DummyClass3 dm3;
+    dm3.dummy_noop();  // silence compiler
     //cout << "dll test 3 " << dm3.dummy_test() << endl;
     return 0;
 }

@@ -1,13 +1,11 @@
 #include "dummy/dummy.h"
-#include <iostream>
-#include <string>
 using namespace std;
 
 void dummy() {
     cout << "dummy dll" << endl;
 };
 
-void dummy2() {
+void dummy_no_export() {
     cout << "dummy 2 no export" << endl;
 };
 
@@ -18,6 +16,7 @@ DummyClass::DummyClass()
 string DummyClass::dummy_test()
 {
     cout << "DummyClass dummy_test" << endl;
+    cout << DummyClass2::Instance().dummy_test() << endl;
     return "dummy_test";
 }
 

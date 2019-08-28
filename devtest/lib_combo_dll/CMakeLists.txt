@@ -12,17 +12,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(libcombo_dll SHARED dummy.cpp)
 
 #add heirarchy to header file, maintain consistency with installed folder structure
-FILE(COPY ${CMAKE_CURRENT_LIST_DIR}/dummy.h
+FILE(COPY ${CMAKE_CURRENT_LIST_DIR}/dummy/dummy.h
 	DESTINATION ${CMAKE_BINARY_DIR}/include/dummy
 	FILES_MATCHING PATTERN *.h )
 
 target_include_directories(libcombo_dll
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}>  #contain all necessary headers
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/export>
     INTERFACE $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}>  #include for installed package
+    INTERFACE $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}/export>
 )
 target_link_libraries(libcombo_dll 
-	PRIVATE liba
-	PRIVATE libb
+	PUBLIC liba
+	PUBLIC libb
 	)
 target_compile_definitions(libcombo_dll PUBLIC CMAKE_DLL) #CMAKE_DLL is used for none CMAKE build
 if (WIN32)
@@ -37,7 +39,7 @@ if(WIN32)
 set_target_properties(libcombo_dll PROPERTIES LINK_FLAGS "/FORCE:MULTIPLE")
 endif()
 
-set(EXPORT_HEADER ${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/dummy/libcombo_dll_export.h)
+set(EXPORT_HEADER ${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/export/libcombo_dll_export.h)
 message(STATUS "EXPORT_HEADER=${EXPORT_HEADER}")
 set_target_properties(libcombo_dll PROPERTIES 
 	POSITION_INDEPENDENT_CODE 1
@@ -64,12 +66,13 @@ target_compile_definitions(libcombo_static PUBLIC DUMMY_STATIC_DEFINE)
 
 target_include_directories(libcombo_static
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>  # copied all necessary headers here
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/export>
     INTERFACE $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}>  #include for installed package
+    INTERFACE $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}/export>
 )
 target_link_libraries(libcombo_static 
-	PRIVATE liba
-	PRIVATE libb
+	PUBLIC liba
+	PUBLIC libb
 	)
 set_target_properties(libcombo_static PROPERTIES 
 	POSITION_INDEPENDENT_CODE 1

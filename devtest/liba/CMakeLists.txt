@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON) #useful if headers are in cmake folder
 add_library(liba STATIC a.cpp)
-target_include_directories(liba PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+target_include_directories(liba PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
 	INTERFACE $<INSTALL_INTERFACE:include>
 )
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
