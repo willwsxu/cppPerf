@@ -35,11 +35,12 @@ foreach(p LIB BIN INCLUDE CMAKE)
 	unset(_path)
 endforeach()
 
+if (WIN32)  # todo: figure out protobuf missing in linux later
 add_subdirectory(socket_client)
 add_subdirectory(socket_server)
 add_subdirectory(proto_msg)
 #add_subdirectory(proto3_msg)   #protobuf generated header has an error
-
+endif()
 
 add_subdirectory(liba)
 add_subdirectory(libb)
