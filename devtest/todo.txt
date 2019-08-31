@@ -1,2 +1,4 @@
 
 build under linux: protobuf and boost are missing
+lib_combo_static2 build failed
+proto_msg try to dynamically glob files, not working yet. failed to pass back the proto files
