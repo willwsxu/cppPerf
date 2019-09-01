@@ -13,26 +13,4 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 message(STATUS "make output=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}, ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
-set(INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "you may change installation lib dir here")
-set(INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR} CACHE PATH "you may change installation bin dir here")
-set(INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "you may change installation include dir here")
-if(WIN32)
-    set(DEF_INSTALL_CMAKEDIR CMake)
-else()
-    set(DEF_INSTALL_CMAKEDIR share/cmake/${PROJECT_NAME})
-endif()
-set(INSTALL_CMAKEDIR ${DEF_INSTALL_CMAKEDIR} CACHE PATH "you may change installation cmake dir here")
-message(STATUS "INSTALL_LIBDIR=${INSTALL_LIBDIR}")
-message(STATUS "INSTALL_BINDIR=${INSTALL_BINDIR}")
-message(STATUS "INSTALL_INCLUDEDIR=${INSTALL_INCLUDEDIR}")
-message(STATUS "INSTALL_CMAKEDIR=${INSTALL_CMAKEDIR}")
-
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/installed)  #better pass in as CMAKE varibale
-#report where components will be installed
-foreach(p LIB BIN INCLUDE CMAKE)
-	file(TO_NATIVE_PATH ${CMAKE_INSTALL_PREFIX}/${INSTALL_${p}DIR} _path)
-	message(STATUS "Installing ${p} to ${_path}")
-	unset(_path)
-endforeach()
-
 add_subdirectory(singleton)

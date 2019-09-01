@@ -1,6 +1,8 @@
 #include "singleton.h"
+#include <iostream>
+using namespace std;
 
 void use_singleton()
 {
-    Singleton::instance().do_nothing();
+    cout << "dll call:" << Singleton::instance().get_name() << endl;
 }
