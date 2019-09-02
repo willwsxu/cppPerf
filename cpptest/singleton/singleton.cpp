@@ -1,5 +1,4 @@
 #include "singleton.h"
-#include <iostream>
 using namespace std;
 
 void use_singleton()

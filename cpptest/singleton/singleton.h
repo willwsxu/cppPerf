@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
+#include <iostream>
 #include "singleton_dll_export.h"
 
-static int count = 0;
 class DLL_IMPORT_EXPORT Singleton {  // DLL_IMPORT_EXPORT is needed to export .lib file
 public:
     static Singleton& instance() {
@@ -14,8 +14,9 @@ public:
 
 private:
     Singleton() {
-        _name.append(1, '0' + count++);
+        _name.append(begin(_name), end(_name));
+        std::cout << "\nname addr " << &_name << std::endl;
     }
-    std::string _name = "singleton";
+    std::string _name = "singleton_";
 };
 DLL_IMPORT_EXPORT void use_singleton();
