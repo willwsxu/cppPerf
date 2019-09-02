@@ -32,7 +32,12 @@ generate_export_header(singleton_dll
 	STATIC_DEFINE "SINGLETON_STATIC_DEFINE"  #use this to indicate building static lib
 )
 
+add_library(singleton_static STATIC static_lib.cpp)
+target_include_directories(singleton_static
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/export>
+)
 add_executable(singleton_test main.cpp)
 target_link_libraries(singleton_test 
+	PRIVATE singleton_static
 	PRIVATE singleton_dll
 	)

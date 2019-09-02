@@ -1,13 +1,10 @@
 #include "singleton.h"
-#include <iostream>
-using namespace std;
+#include "static_lib.h"
 
 int main(int argc, char* argv[])
 {
+    static_call();
     use_singleton();
-    cout << "main call:" << Singleton::instance().get_name() << endl;
-
-    cout << Singleton2::instance().dummy_test() << endl;
 
     return 0;
 }

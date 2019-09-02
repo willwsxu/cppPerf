@@ -1,8 +1,9 @@
 #include "singleton.h"
 using namespace std;
 
-void use_singleton()
+void static_call ()
 {
-    cout << "dll call:" << Singleton::instance().get_name() << endl;
+    cout << "main call:" << Singleton::instance().get_name() << endl;
+
     cout << Singleton2::instance().get_name() << endl;
 }
