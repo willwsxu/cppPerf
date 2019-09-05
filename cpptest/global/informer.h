@@ -1,13 +1,16 @@
 #pragma once
 #include <iostream>
+#include <string>
 
 class Informer
 {
 public:
-    Informer() {
-        std::cout << "Informer ctor " << this << std::endl;
+    Informer(const char *n):name(n) {
+        std::cout << "Informer ctor " << this << " name=" << name << std::endl;
     }
     ~Informer() {
-        std::cout << "Informer dtor " << this << std::endl;
+        std::cout << "Informer dtor " << this << " name=" << name << std::endl;
     }
+private:
+    std::string name;
 };

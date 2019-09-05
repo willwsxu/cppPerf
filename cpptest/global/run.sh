@@ -1,4 +1,5 @@
-g++ -std=c++14 -c -fpic static.cpp
+#!/bin/bash
+g++ -std=c++14 -c -fpic ./static.cpp
 ar rcs libstatic.a static.o
 g++ -std=c++14 -c -fpic dynamic.cpp
 g++ -shared -o libdynamic.so dynamic.o -L./ -lstatic
