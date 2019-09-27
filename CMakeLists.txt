@@ -16,6 +16,7 @@ target_include_directories(catch_test
 install(TARGETS catch_test DESTINATION bin)
 
 add_subdirectory(leetcode)
+add_subdirectory(cppcon)
 add_subdirectory(library)
 add_subdirectory(cpp11/threading_model)
 
