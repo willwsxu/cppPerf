@@ -27,13 +27,22 @@ struct thread_pool {
 
     void submit(task_type t)
     {
-        std::lock_guard<std::mutex> g(m);
-        tasks.push_back(t);
+        {
+            std::lock_guard<std::mutex> g(m);
+            tasks.push_back(t);
+        }
+        cv.notify_one();
     }
 
     ~thread_pool()
     {
         stop_token = true;
+        {
+            std::lock_guard<std::mutex> g(m);
+            for (size_t i=0; i<pool.size(); i++)
+                tasks.push_back([]() {});  // empty task to terminate thread in waiting
+        }
+        cv.notify_all();
         for (auto& th : pool)
             th.join();
     }
@@ -43,24 +52,17 @@ private:
         static int call_count = 0;
         while (!stop_token) {
             auto task = get_task();
-            if (!task) {
-                std::this_thread::yield();
-                continue;
-            }
             auto start = sys_clock::now();
             std::cout << ++call_count << " basic_executor task start\n";
-            (*task)();
+            task();
             auto end = sys_clock::now();
             std::cout << call_count << " basic_executor task end. time took " << duration_cast<microseconds>(end - start).count() << "\n";
         }
     }
-    std::optional<task_type> get_task() {
-        std::optional<task_type> task;
-        std::lock_guard<std::mutex> g(m);
-        if (tasks.empty()) {
-            return task;
-        }
-        task = std::move(tasks.front());
+    task_type get_task() {
+        std::unique_lock<std::mutex> g(m);
+        cv.wait(g, [this]() { return !tasks.empty();  });
+        task_type task = std::move(tasks.front());
         tasks.pop_front();
         return task;
     }
@@ -68,6 +70,7 @@ private:
     std::vector <std::thread> pool;
     std::deque< task_type > tasks;
     std::mutex m;
+    std::condition_variable cv;
 };
 struct basic_executor {
     void submit(task_type task) {
