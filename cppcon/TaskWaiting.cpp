@@ -19,8 +19,21 @@ using task_type = std::function<void()>;
 struct thread_pool {
     thread_pool() : pool(4)
     {
-        for (auto& th : pool)
-            th = std::thread(&thread_pool::thread_loop, this);  // cannot use initilizer list
+        int id = 0;
+        for (auto& th : pool) {
+            id++;
+            th = std::thread([this, id]() {
+                int call_count = 0;
+                while (!stop_token) {
+                    auto task = get_task();
+                    auto start = sys_clock::now();
+                    std::cout << id << " " << ++call_count << " basic_executor task start\n";
+                    task();
+                    auto end = sys_clock::now();
+                    std::cout << id << " " << call_count << " basic_executor task end. time took " << duration_cast<microseconds>(end - start).count() << "\n";
+                }
+                });  // cannot use initilizer list
+        }
     }
     thread_pool(thread_pool const&) = delete;
     thread_pool& operator=(thread_pool const&) = delete;
