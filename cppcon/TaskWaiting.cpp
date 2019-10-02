@@ -9,10 +9,7 @@
 #include <vector>
 #include <deque>
 #include <optional>
-
-using sys_clock = std::chrono::system_clock;
-using std::chrono::duration_cast;
-using std::chrono::microseconds;
+#include <sstream>
 
 using task_type = std::function<void()>;
 
@@ -25,12 +22,19 @@ struct thread_pool {  // single queue, locking
             th = std::thread([this, id]() {
                 int call_count = 0;
                 while (!stop_token) {
+                    using sys_clock = std::chrono::system_clock;
+                    using std::chrono::duration_cast;
+                    using std::chrono::microseconds;
                     auto task = get_task();
                     auto start = sys_clock::now();
-                    std::cout << id << " " << ++call_count << " basic_executor task start\n";
+                    std::stringstream istr;
+                    istr << id << " " << ++call_count << " basic_executor task start\n";
+                    std::cout << istr.str();
                     task();
                     auto end = sys_clock::now();
-                    std::cout << id << " " << call_count << " basic_executor task end. time took " << duration_cast<microseconds>(end - start).count() << "\n";
+                    std::stringstream istr2;
+                    istr2 << id << " " << call_count << " basic_executor task end. time took " << duration_cast<microseconds>(end - start).count() << "\n";
+                    std::cout << istr2.str();
                 }
                 });  // cannot use initilizer list
         }
