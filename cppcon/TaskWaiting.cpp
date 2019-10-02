@@ -16,8 +16,8 @@ using std::chrono::microseconds;
 
 using task_type = std::function<void()>;
 
-struct thread_pool {
-    thread_pool() : pool(4)
+struct thread_pool {  // single queue, locking
+    thread_pool(int num) : pool(num)
     {
         int id = 0;
         for (auto& th : pool) {
@@ -53,25 +53,15 @@ struct thread_pool {
         {
             std::lock_guard<std::mutex> g(m);
             for (size_t i=0; i<pool.size(); i++)
-                tasks.push_back([]() {});  // empty task to terminate thread in waiting
+                tasks.push_back([]() { std::cout << "stop task\n"; });  // empty task to terminate thread in waiting
         }
         cv.notify_all();
-        for (auto& th : pool)
-            th.join();
-    }
-private:
-    void thread_loop()
-    {
-        static int call_count = 0;
-        while (!stop_token) {
-            auto task = get_task();
-            auto start = sys_clock::now();
-            std::cout << ++call_count << " basic_executor task start\n";
-            task();
-            auto end = sys_clock::now();
-            std::cout << call_count << " basic_executor task end. time took " << duration_cast<microseconds>(end - start).count() << "\n";
+        for (auto& th : pool) {
+            if (th.joinable())
+                th.join();
         }
     }
+private:
     task_type get_task() {
         std::unique_lock<std::mutex> g(m);
         cv.wait(g, [this]() { return !tasks.empty();  });
@@ -89,29 +79,26 @@ struct basic_executor {
     void submit(task_type task) {
         pool->submit(task);
     }
-
-    std::shared_ptr<thread_pool> pool = std::make_shared<thread_pool>(); // so class is default constructible and movable
+private:
+    std::shared_ptr<thread_pool> pool = std::make_shared<thread_pool>(4); // so class is default constructible and movable
 };
 
 struct wrapper_executor { 
     wrapper_executor(basic_executor& ex):exec(ex)
     {
     }
-    std::future<void> submit2(std::function<void()> task)
-    {
-        return std::async(std::launch::async, [this,&task] { exec.submit(move(task)); });
-    }
 
+    // allow caller wait for result, implemented with basic executor
     std::future<void> submit(std::function<void()> task)
     {
-        auto wrapper = std::make_shared<std::packaged_task< void() >>(task);
+        auto wrapper = std::make_shared<std::packaged_task< void() >>(std::move(task));
         exec.submit( [wrapper]() { (*wrapper)(); });
         return wrapper->get_future();  // get a future
     }
 
     struct Task_Handle;
-
-    Task_Handle submit_cont(std::function<void()> task);
+    // support continuation
+    Task_Handle submit_and_continue(std::function<void()> task);
 
 private:
     struct Chaining_internals {
@@ -123,15 +110,15 @@ private:
             std::lock_guard<std::mutex> g(m);
             complete = true;
             if (continuation)
-                continuation->run();
+                wex.submit(continuation);
         }
         void chain_next(std::shared_ptr<Chaining_internals> cont)
         {
             std::lock_guard<std::mutex> g(m);
             if (complete)
-                cont->run();
+                wex.submit(cont);
             else
-                continuation = cont;
+                continuation = std::move(cont);
         }
     private:
         friend struct Task_Handle; // need to access wex
@@ -141,30 +128,36 @@ private:
         std::mutex m;
         bool complete = false;
     };
-    basic_executor exec;
+
+    void submit(const std::shared_ptr<Chaining_internals>& task_internal)
+    {
+        exec.submit([task_internal]() { task_internal->run(); });
+    }
+    basic_executor& exec;
 };
 
 struct wrapper_executor::Task_Handle
 {
-    Task_Handle(std::shared_ptr<Chaining_internals> _internals) : m_internals(_internals) {}
+    Task_Handle(std::shared_ptr<Chaining_internals>&& _internals) : m_internals(std::move(_internals)) {
+    }  // force called to use move, need explicitly call m_internals move constructor
 
-    Task_Handle then(std::function<void()> task)
+    Task_Handle then(std::function<void()>&& task)
     {
-        auto next_internals = std::make_shared<Chaining_internals>(m_internals->wex, task);
+        auto next_internals = std::make_shared<Chaining_internals>(m_internals->wex, std::move(task));
         m_internals->chain_next(next_internals);
-        std::cout << "Task_Handle then done\n";
-        return Task_Handle(next_internals);
+        //std::cout << "Task_Handle then done\n";
+        return Task_Handle(std::move(next_internals));
     }
 private:
     std::shared_ptr<Chaining_internals> m_internals;
 };
 
-wrapper_executor::Task_Handle wrapper_executor::submit_cont(task_type task)
+wrapper_executor::Task_Handle wrapper_executor::submit_and_continue(task_type task)
 {
-    auto internals = std::make_shared<Chaining_internals>(*this, task);
-    exec.submit([internals]() { internals->run(); });
+    auto internals = std::make_shared<Chaining_internals>(*this, std::move(task));
+    submit(internals);
 
-    std::cout << "submit_cont done\n";
+    //std::cout << "submit_cont done\n";
     return Task_Handle(std::move(internals));  // Task_Handle and exec both own same internal obj
 }
 
@@ -180,7 +173,7 @@ int main()
     
     basic_executor b;
     wrapper_executor we(b);
-    we.submit_cont(task1).then(task2).then(task3);
+    we.submit_and_continue(task1).then(task2).then(task3);
 
     std::cout << "main complete test 1\n";
 
@@ -188,7 +181,7 @@ int main()
     auto task5 = []() { std::cout << "Task5\n";  };
     auto task6 = []() { std::cout << "Task6\n";  };
 
-    we.submit_cont(task4).then(task5).then(task6);
+    we.submit_and_continue(task4).then(task5).then(task6);
 
     std::cout << "main complete\n";
     std::this_thread::sleep_for(std::chrono::milliseconds(10000));
