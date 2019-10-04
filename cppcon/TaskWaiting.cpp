@@ -50,7 +50,7 @@ struct thread_pool {  // single queue, locking
     {
         {
             std::lock_guard<std::mutex> g(m);
-            tasks.push_back(t);
+            tasks.push_back(std::move(t));
         }
         cv.notify_one();
     }
@@ -153,7 +153,6 @@ struct wrapper_executor::Task_Handle
     {
         auto next_internals = std::make_shared<Chaining_internals>(m_internals->wex, std::move(task));
         m_internals->chain_next(next_internals);
-        //std::cout << "Task_Handle then done\n";
         return Task_Handle(std::move(next_internals));
     }
 private:
@@ -165,7 +164,6 @@ wrapper_executor::Task_Handle wrapper_executor::submit_and_continue(task_type ta
     auto internals = std::make_shared<Chaining_internals>(*this, std::move(task));
     submit(internals);
 
-    //std::cout << "submit_cont done\n";
     return Task_Handle(std::move(internals));  // Task_Handle and exec both own same internal obj
 }
 
