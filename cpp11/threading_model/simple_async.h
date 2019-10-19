@@ -81,6 +81,22 @@ void test2(int p1, int p2)
     std::this_thread::sleep_for(100ms);
     logger("test function with 2 param (", p1, ",", p2, ")");
 }
+void test_const_ref(const int& p) {
+    std::this_thread::sleep_for(10ms);
+    logger("test function with const ref param (", p, ")");
+}
+void test_ref(int& p) {
+    std::this_thread::sleep_for(10ms);
+    logger("test function with ref param (", p, ")");
+}
+void test_ref_share_ptr(std::shared_ptr<std::string>& p) {
+    std::this_thread::sleep_for(10ms);
+    logger("test function with ref shared_ptr param (", (p?*p:"nullptr"), ")");
+}
+void test_share_ptr(std::shared_ptr<std::string> p) {
+    std::this_thread::sleep_for(10ms);
+    logger("test function with shared_ptr param (", *p, ")");
+}
 struct TestClass
 {
     void test(int p1, int p2) const
@@ -93,9 +109,9 @@ struct TestClass
 void async_unit_test()
 {
     {
-        std::async(std::launch::async, test);
+        (void)std::async(std::launch::async, test);
         std::cout << "destructor of returned std::future will wait till task complete\n" << std::flush;
-        std::async(std::launch::async, test2, 0, 1);
+        (void)std::async(std::launch::async, test2, 0, 1);
     }
 
     SimpleAsync async;
@@ -108,7 +124,27 @@ void async_unit_test()
     async.submit([t](int p1, int p2) { t.test(p1, p2); }, 6, 7);
 
     async.submit([t](int p1, int p2) { t.test(p1, p2); }, 8, 9);  // prove async use thread_pool
+
     async.submit([t](int p1, int p2) { t.test(p1, p2); }, 10, 11);
+    {
+        auto x = [t](std::shared_ptr<int> p1, std::shared_ptr<int> p2) {
+            t.test(*p1, *p2);
+        };
+        auto p1 = std::make_shared<int>(12);
+        auto p2 = std::make_shared<int>(13);
+        async.submit(x, p1, p2);
+    }
+    {
+        int j = 14, k = 15;
+        async.submit(test_const_ref, j);
+        async.submit(test_ref, std::ref(k));  // undefined behavior, show 150
+        j = 140;
+        k = 150;
+        auto str = std::make_shared<std::string>("shared_ptr string");
+        async.submit(test_ref_share_ptr, std::ref(str));
+        auto str2 = std::make_shared<std::string>("shared_ptr string");
+        async.submit(test_share_ptr, str2);  // str2 is out of scope in asyc, invalid state, crash
+    }
 
     std::this_thread::sleep_for(250ms);  // wait to delay async destructor
 }
