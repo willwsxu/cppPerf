@@ -136,6 +136,7 @@ void async_unit_test()
     }
     {
         int j = 14, k = 15;
+        // task 8 to 12
         async.submit(test_const_ref, std::cref(j));       // show 140, surprising to me
         async.submit(test_ref, std::ref(k));            // undefined behavior, show 150
         j = 140;
