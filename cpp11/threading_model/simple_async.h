@@ -138,7 +138,7 @@ void async_unit_test()
         int j = 14, k = 15;
         // task 8 to 12
         async.submit(test_const_ref, std::cref(j));       // show 140, surprising to me
-        async.submit(test_ref, std::ref(k));            // undefined behavior, show 150
+        async.submit(test_ref, std::ref(k));              // undefined behavior, show 150
         j = 140;
         k = 150;
 
@@ -146,7 +146,7 @@ void async_unit_test()
         async.submit(test_share_ptr, str);
 
         auto str2 = std::make_shared<std::string>("shared_ptr ref string");
-        async.submit(test_ref_share_ptr, std::ref(str2));  // str2 is out of scope in asyc, invalid state, crash
+        async.submit(test_ref_share_ptr, std::ref(str2));  // str2 is out of scope in async, invalid state, crash
 
         auto str3 = std::make_shared<std::string>("shared_ptr ref string with lambda");
         async.submit([str3]() mutable { test_ref_share_ptr(str3); }); // use lambda to keep shared_ptr alive
