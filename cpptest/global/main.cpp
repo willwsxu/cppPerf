@@ -14,9 +14,12 @@ int main(int argc, char* argv[])
     std::cout << &get_instance() << std::endl;
     std::cout << &get_global_lazy() << std::endl;
 
-    std::cout << "test singleton with pre-initialization, , construct/destruct once\n";
+    std::cout << "test singleton with pre-initialization, construct/destruct once\n";
     std::cout << &g_not_lazy << std::endl;
     std::cout << &get_global_not_lazy() << std::endl;
 
+    std::cout << "test singleton with fast template, construct/destruct once\n";
+    std::cout << &g_fast << std::endl;
+    std::cout << &get_global_fast() << std::endl;
     return 0;
 }

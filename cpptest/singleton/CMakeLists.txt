@@ -6,10 +6,18 @@ set( CMAKE_VERBOSE_MAKEFILE on )
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_library(singleton_static STATIC static_lib.cpp)
+target_include_directories(singleton_static
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/export>
+)
+
 add_library(singleton_dll SHARED singleton.cpp)
 target_include_directories(singleton_dll
     PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/export>
 )
+target_link_libraries(singleton_dll 
+	PRIVATE singleton_static
+	)
 
 set(EXPORT_HEADER ${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/export/singleton_dll_export.h)
 message(STATUS "EXPORT_HEADER=${EXPORT_HEADER}")
@@ -32,10 +40,6 @@ generate_export_header(singleton_dll
 	STATIC_DEFINE "SINGLETON_STATIC_DEFINE"  #use this to indicate building static lib
 )
 
-add_library(singleton_static STATIC static_lib.cpp)
-target_include_directories(singleton_static
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/${INSTALL_INCLUDEDIR}/export>
-)
 add_executable(singleton_test main.cpp)
 target_link_libraries(singleton_test 
 	PRIVATE singleton_static

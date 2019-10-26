@@ -16,3 +16,9 @@ Informer& get_global_not_lazy()
 {
     return g_not_lazy;
 }
+
+
+Informer& get_global_fast()
+{
+    return g_fast;
+}

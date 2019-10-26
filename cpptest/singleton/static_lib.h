@@ -1,1 +1,4 @@
-void static_call();
+#pragma once
+
+#include <string>
+extern std::string global;

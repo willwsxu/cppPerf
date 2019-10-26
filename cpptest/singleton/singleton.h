@@ -49,6 +49,6 @@ private:
     }
     std::string _name = "singleton2_";
 };
-static std::string global = "global";
+DLL_IMPORT_EXPORT std::string& get_global();
 
 DLL_IMPORT_EXPORT void use_singleton();
