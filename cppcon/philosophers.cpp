@@ -6,12 +6,25 @@
 #include <map>
 #include <variant>
 #include <chrono>
+#include <iostream>
+#include <iomanip>
+
+template<typename...ARGS>
+void log(ARGS ... args) {
+
+}
+
+template<>
+void log() {
+
+}
 
 // FORK=Chopstick
 struct FORK_REQUEST
 {
     int fork;
-    FORK_REQUEST(int f) : fork(f) {}
+    int philo;
+    FORK_REQUEST(int f, int p) : fork(f), philo(p) {}
 };
 struct FORK_RESPONSE
 {
@@ -23,13 +36,14 @@ struct FORK_RELEASE
 {
     int fork1;
     int fork2;
+    FORK_RELEASE(int f1, int f2) : fork1(f1), fork2(f2) {}
 };
 using ActorMessages = std::variant<FORK_REQUEST, FORK_RESPONSE, FORK_RELEASE>;
 
 class Actor
 {
 public:
-    void start()
+    Actor()
     {
         t = std::thread([this]() { run(); });
     }
@@ -38,6 +52,7 @@ public:
     //rule of five
     ~Actor()
     {
+        shutdown();
         if (t.joinable())
             t.join();
     }
@@ -47,16 +62,20 @@ public:
     Actor& operator=(const Actor&) = delete;
     Actor& operator=(Actor&&) = default;
 
-    Actor() = default;
-
-    void send(ActorMessages&& msg, Actor&) {}
-    virtual void receive(const ActorMessages& msg) {}
+    void send(ActorMessages&& msg, Actor& receiver) {
+        receiver.enqueue(msg);
+    }
+    virtual void receive(const ActorMessages& msg) = 0;
+    void shutdown() {
+        terminate = true;
+    }
 
 private:
     std::thread t;
 protected:
     std::deque<ActorMessages>  messages;
     std::mutex m;
+    bool terminate = false;
 
     void enqueue(ActorMessages&& msg) {
         std::lock_guard<std::mutex> g(m);
@@ -79,8 +98,9 @@ public:
         right.chop_id = (id + 1) % N;
     }
     Philosopher() = default;
+
     void run() override {
-        while (true) {
+        while (!terminate) {
             {
                 std::lock_guard<std::mutex> lg(m);
                 while (!messages.empty()) {
@@ -92,24 +112,49 @@ public:
             if (left.is_acquired && right.is_acquired) {
                 eat();
             }
-            else if (left.is_acquired)
-                request_fork(right.chop_id);
-            else
-                request_fork(left.chop_id);
+            else {
+                bool req_left = true;
+                if (left.is_acquired)
+                    req_left = false;
+                else if (!right.is_acquired && left.chop_id % 2 != 0)  // reuqest left first if id is even
+                    req_left = false;
+                if (!req_left) {
+                    std::cout << "philosopher " << left.chop_id << " request right fork " << right.chop_id << "\n";
+                    request_fork(right.chop_id);
+                }
+                else {
+                    std::cout << "philosopher " << left.chop_id << " request left fork " << left.chop_id << "\n";
+                    request_fork(left.chop_id);
+                }
+            }
         }
-
     }
 
     void request_fork(int f) {
-        send(FORK_REQUEST(f), *the_table);
+        send(FORK_REQUEST(f, left.chop_id), *the_table);
     }
     void eat() {
-        send(FORK_RELEASE(), *the_table);
+        send(FORK_RELEASE(left.chop_id, right.chop_id), *the_table);
+        std::cout << "philosopher " << left.chop_id << " eat\n";
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1ms);
     }
     void receive(const ActorMessages& msg) override {
-        std::visit([](auto&& arg){
+        std::visit(overloaded{
+                [](auto arg) {; },
+                [this](FORK_RESPONSE arg)
+            {
+                if (!arg.granted)
+                    return;
+                if (left.chop_id == arg.fork) {
+                    left.is_acquired = true;
+                    std::cout << "philosopher " << left.chop_id << " got left fork " << left.chop_id << "\n";
+                }
+                else if (right.chop_id == arg.fork) {
+                    right.is_acquired = true;
+                    std::cout << "philosopher " << left.chop_id << " got right fork " << right.chop_id << "\n";
+                }
+            },
             }, msg);
     }
 
@@ -120,11 +165,11 @@ public:
 private:
     struct Chopstick_state
     {
-        int chop_id;
+        int chop_id=0;
         bool is_acquired = false;
     };
     Chopstick_state left, right;
-    Actor * the_table;
+    Actor * the_table=nullptr;
 };
 
 class DiningTable : public Actor
@@ -140,7 +185,20 @@ public:
     }
 
     void receive(const ActorMessages& msg) override {
-        std::visit([](auto&& arg) {
+        std::visit(overloaded{
+                [](auto arg) {; },
+                [this](FORK_REQUEST arg)
+            {
+                if (!chopsticks_state[arg.fork])
+                    return;
+                chopsticks_state[arg.fork] = false;
+                send(FORK_RESPONSE(arg.fork, true), philosophers[arg.philo]);
+            },
+                [this](FORK_RELEASE arg)
+            {
+                chopsticks_state[arg.fork1] = true;
+                chopsticks_state[arg.fork2] = true;
+            },
             }, msg);
     }
     
@@ -156,6 +214,8 @@ protected:
                 std::lock_guard<std::mutex> lg(m);
                 while (messages.empty()) {
                     const auto& msg = messages.front();
+                    receive(msg);
+                    messages.pop_front();
                 }
             }
         }
@@ -173,7 +233,12 @@ private:
     std::vector<std::deque<int>>  wait_listed;
 };
 
-
-void driver() {
-    DiningTable table(5);
+int main()
+{
+    using namespace std::chrono_literals;
+    {
+        DiningTable table(5);
+        std::this_thread::sleep_for(100ms);
+    }
+    std::this_thread::sleep_for(100ms);
 }
