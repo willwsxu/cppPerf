@@ -62,11 +62,9 @@ public:
     virtual void run() {};
 
     //rule of five
-    ~Actor()
+    virtual ~Actor()
     {
         shutdown();
-        if (t.joinable())
-            t.join();
     }
 
     Actor(const Actor& copy_construct) = delete;
@@ -80,6 +78,8 @@ public:
     virtual void receive(const ActorMessages& msg) = 0;
     void shutdown() {
         terminate = true;
+        if (t.joinable())
+            t.join();
     }
 
 private:
@@ -147,7 +147,7 @@ public:
     }
     void eat() {
         send(FORK_RELEASE(left.chop_id, right.chop_id), *the_table);
-        Logger l("philosopher", left.chop_id, "eat");
+        Logger l("philosopher", left.chop_id, "eat count", ++eat_count);
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1ms);
     }
@@ -174,6 +174,10 @@ public:
     Philosopher(Philosopher&& move_construct) = default;
     Philosopher& operator=(const Philosopher&) = delete;
     Philosopher& operator=(Philosopher&&) = default;
+    virtual ~Philosopher()
+    {
+        shutdown();
+    }
 private:
     struct Chopstick_state
     {
@@ -182,6 +186,7 @@ private:
     };
     Chopstick_state left, right;
     Actor * the_table=nullptr;
+    int eat_count = 0;
 };
 
 class DiningTable : public Actor
@@ -218,6 +223,10 @@ public:
     DiningTable(DiningTable&& move_construct) = default;
     DiningTable& operator=(const DiningTable&) = delete;
     DiningTable& operator=(DiningTable&&) = default;
+    virtual ~DiningTable()
+    {
+        shutdown();
+    }
 
 protected:
     void run() override {
