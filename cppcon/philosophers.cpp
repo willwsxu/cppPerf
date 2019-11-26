@@ -8,16 +8,28 @@
 #include <chrono>
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 
-template<typename...ARGS>
-void log(ARGS ... args) {
 
+void logger(std::stringstream& ss) {
+    ss << "\n";
+    std::cout << ss.str();
 }
 
-template<>
-void log() {
-
+template<typename FIRST, typename...ARGS>
+void logger(std::stringstream& ss, FIRST&& first, ARGS&& ... args) {
+    ss << first << " ";
+    logger(ss, args...);
 }
+struct Logger
+{
+    std::stringstream ss;
+    template<typename FIRST, typename...ARGS>
+    Logger(FIRST&& first, ARGS&& ... args) {
+        logger(ss, first, args...);
+    }
+};
+
 
 // FORK=Chopstick
 struct FORK_REQUEST
@@ -119,11 +131,11 @@ public:
                 else if (!right.is_acquired && left.chop_id % 2 != 0)  // reuqest left first if id is even
                     req_left = false;
                 if (!req_left) {
-                    std::cout << "philosopher " << left.chop_id << " request right fork " << right.chop_id << "\n";
+                    Logger l("philosopher", left.chop_id, "request right fork", right.chop_id);
                     request_fork(right.chop_id);
                 }
                 else {
-                    std::cout << "philosopher " << left.chop_id << " request left fork " << left.chop_id << "\n";
+                    Logger l("philosopher", left.chop_id, "request left fork", left.chop_id);
                     request_fork(left.chop_id);
                 }
             }
@@ -135,7 +147,7 @@ public:
     }
     void eat() {
         send(FORK_RELEASE(left.chop_id, right.chop_id), *the_table);
-        std::cout << "philosopher " << left.chop_id << " eat\n";
+        Logger l("philosopher", left.chop_id, "eat");
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1ms);
     }
@@ -148,11 +160,11 @@ public:
                     return;
                 if (left.chop_id == arg.fork) {
                     left.is_acquired = true;
-                    std::cout << "philosopher " << left.chop_id << " got left fork " << left.chop_id << "\n";
+                    Logger l( "philosopher", left.chop_id, "got left fork", left.chop_id);
                 }
                 else if (right.chop_id == arg.fork) {
                     right.is_acquired = true;
-                    std::cout << "philosopher " << left.chop_id << " got right fork " << right.chop_id << "\n";
+                    Logger l("philosopher", left.chop_id, "got right fork", right.chop_id);
                 }
             },
             }, msg);
@@ -209,10 +221,10 @@ public:
 
 protected:
     void run() override {
-        while (true) {
+        while (!terminate) {
             {
                 std::lock_guard<std::mutex> lg(m);
-                while (messages.empty()) {
+                while (!messages.empty()) {
                     const auto& msg = messages.front();
                     receive(msg);
                     messages.pop_front();
@@ -238,7 +250,7 @@ int main()
     using namespace std::chrono_literals;
     {
         DiningTable table(5);
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(1000ms);
     }
     std::this_thread::sleep_for(100ms);
 }
