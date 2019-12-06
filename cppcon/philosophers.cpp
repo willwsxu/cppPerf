@@ -9,6 +9,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include "thread_pool.h"
 
 
 void logger(std::stringstream& ss) {
