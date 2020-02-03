@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Boost REQUIRED)
 set(cpp11_source_files
+    simplified_alloc.cpp
     thread_loccal.cpp
     test_variant.cpp
 )
