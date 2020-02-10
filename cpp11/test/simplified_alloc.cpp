@@ -89,8 +89,38 @@ private:
     }
 };
 
+#include <thread>
+#include <random>
+#include <iostream>
+bool allocator_concurrency()
+{
+    auto alloc = std::make_shared<std::allocator<int>>();
+    auto n1 = alloc->allocate(1);   // new 4 bytes
+    *n1 = 100;
+    alloc->deallocate(n1, 1);       // delete 4 bytes
+    auto task = [alloc](int id) {
+        int count = 0;
+        std::random_device rd;
+        std::mt19937 g(rd());
+        while (count < 1000000) {
+            auto elem = std::uniform_int_distribution<>(1, 10)(g);
+            std::vector<int> v(elem, *alloc);
+            count += elem;
+        }
+        std::cout << id << " done\n";
+    };
+    auto t1 = std::thread(task, 1);
+    auto t2 = std::thread(task, 2);
+    t1.join();
+    t2.join();
+    return true;
+}
 
 #include "..\catch.hpp"
+TEST_CASE("allocator thread safety", "[CONCUR]") {
+    // std::allocator just check alignment and forward to new and delete, so it is thread safe
+    REQUIRE(allocator_concurrency());
+}
 TEST_CASE("simplified allocate storage tests", "[STORE]") {
     SECTION("constructor test: empty") {
         size_t size = 10;
