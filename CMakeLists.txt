@@ -20,5 +20,6 @@ add_subdirectory(cppcon)
 add_subdirectory(cpp11/test)
 add_subdirectory(library)
 add_subdirectory(cpp11/threading_model)
+add_subdirectory(profiling)
 
 #add_subdirectory(devtest)  make it a stand alone cmake project to test install, lib merging, and code generation script
