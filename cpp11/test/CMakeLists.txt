@@ -9,6 +9,8 @@ set(cpp11_source_files
     simplified_alloc.cpp
     thread_loccal.cpp
     test_variant.cpp
+    member_access.cpp
+    test_macro.cpp
 )
 
 
