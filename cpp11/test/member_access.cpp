@@ -5,15 +5,11 @@ private:
     int a = 0;
 public:
     int get() { return a; }
-    static void incement(static_member& m);
+    static void incement(static_member& m);  // equavalent to friend in term of accessing member
 };
 void static_member::incement(static_member& m)
 {
     m.a++;
-}
-
-void test()
-{
 }
 
 #include "..\catch.hpp"
