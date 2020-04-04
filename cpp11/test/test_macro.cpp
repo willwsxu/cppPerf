@@ -18,6 +18,10 @@
 #define MACRO_COND2(choose1, p1, p2) \
     MACRO_HELP(p1, ((choose1) ? TEST1_ : TEST2_), p2)
 
+// https://gcc.gnu.org/onlinedocs/gcc-3.4.3/cpp/Stringification.html
+#define TEST_STRINGIFY(ostr, STR) \
+    ostr << #STR << "=" << STR
+
 #include <sstream>
 #include <iostream>
 bool choose(bool a) {
@@ -36,6 +40,8 @@ void test_macro()
     std::ostringstream ostr3;
     //INVALID
     //MACRO_COND2(true, ostr3, 1) << " TEST 3";
+    TEST_STRINGIFY(ostr3, TEST1_1);
+    std::cout << ostr3.str() << "\n";
 }
 
 typedef enum{
