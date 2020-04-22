@@ -111,6 +111,9 @@ bool is_blacklist_on()
 {
     return true;
 }
+
+#define special_case(f1,f2) \
+    f1##f2
 #include "..\catch.hpp"
 TEST_CASE("test_macro", "[MACRO]")
 {
@@ -122,4 +125,8 @@ TEST_CASE("test_macro", "[MACRO]")
 
     TTLOG_BLACKLIST2((is_blacklist_on()), 999999) << " BLACKLIST2 ON";
     TTLOG_BLACKLIST2((!is_blacklist_on()), 999999) << " BLACKLIST2 OFF";
+
+    std::string x("test MACRO special char and empty param");
+    CHECK(special_case(x, .c_str()) == x);
+    CHECK(special_case(x, ) == x);
 }
