@@ -2,6 +2,16 @@
 
 #include <unordered_map>
 
+template<typename AbstractProduct, typename ProductIdType>
+class DefaultError
+{
+protected:
+	AbstractProduct* OnUnknownType(const ProductIdType& type)
+	{
+		return nullptr;
+	}
+};
+
 template<typename AbstractProduct,
 	typename ProductIdType,
 	typename ProductCreator = AbstractProduct *(*CALLBACK)(),
@@ -37,14 +47,4 @@ public:
 private:
 	using Mapper = std::unordered_map<ProductIdType, ProductCreator>;
 	Mapper factoryCallbacks;
-};
-
-template<typename AbstractProduct, typename ProductIdType>
-class DefaultError
-{
-protected:
-	AbstractProduct* OnUnknownType(const ProductIdType& type)
-	{
-		return nullptr;
-	}
 };
