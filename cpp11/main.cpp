@@ -11,14 +11,14 @@
 #include "ConsoleLogger.h"
 #include "dynBuffer.h"
 #include "DynMsg.h"
-//#include "matrix2D.h"
+#include "matrix2D.h"
 #include "myalgo.h"
 
 using namespace std;
 
 
-//typedef Matrix2D<int, vector> MatrixVii;
-//typedef Matrix2D<int, vector>::ColIterator vii_col_iter;
+typedef Matrix2D<int, vector> MatrixVii;
+typedef Matrix2D<int, vector>::ColIterator vii_col_iter;
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "..\catch.hpp"
@@ -84,7 +84,7 @@ TEST_CASE("Thread local", "THREAD")
 {
 	threadtest();
 }
-/*
+
 TEST_CASE("Matrix", "[MATRIX1]")
 {
 	MatrixVii vii;
@@ -112,6 +112,7 @@ TEST_CASE("Matrix", "[MATRIX1]")
 	auto x= lower_bound(vii.begin(2), vii.end(2), 6);
 	REQUIRE(*x == 6);
 }
+/* todo: iterator fails in stable_sort
 TEST_CASE("Matrix 2", "[MATRIX]")
 {
 	MatrixVii vii;
@@ -119,7 +120,6 @@ TEST_CASE("Matrix 2", "[MATRIX]")
 	vii.emplace_back(vector<int>{1, 3, 7});
 	stable_sort(vii.begin(1), vii.end(1));
 	CHECK(vii[0][1] == 3);
-
 	WXU::shuffle(vii.begin(1), vii.end(1));
 	stable_sort(vii.begin(1), vii.end(1));
 	CHECK(vii[1][1] == 4);

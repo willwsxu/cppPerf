@@ -108,7 +108,7 @@ struct TupleElement<idx, Tuple<First, Rest...>> : public TupleElement<idx - 1, T
 // use TupleElement to implement tuple get
 template<size_t idx, typename...ARGS>
 typename TupleElement<idx, Tuple<ARGS...>>::value_type& Get(Tuple<ARGS...>& t) {
-	using tuple_type = TupleElement<idx, Tuple<ARGS...>>::tuple_type;
+	using tuple_type = typename TupleElement<idx, Tuple<ARGS...>>::tuple_type;
 	return static_cast<tuple_type&>(t).value;
 }
 

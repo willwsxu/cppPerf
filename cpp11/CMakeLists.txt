@@ -6,7 +6,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Boost REQUIRED)
 set(cpp11_source_files
+	FactoryTest.cpp
+	FunctorTest.cpp
+	HashMockTest.cpp
+	HashTableBaseFileTest.cpp
+	HashTableBaseTest.cpp
+	HashTableBucketTest.cpp
     main.cpp
+	MessageTest.cpp
+	meta_test.cpp
+	SeanParentTest.cpp
+	testLargetInt.cpp
+	TestslistRingBuffer.cpp
 )
 
 
