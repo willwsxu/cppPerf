@@ -120,6 +120,7 @@ TEST_CASE("Matrix 2", "[MATRIX]")
 	vii.emplace_back(vector<int>{1, 3, 7});
 	stable_sort(vii.begin(1), vii.end(1));
 	CHECK(vii[0][1] == 3);
+
 	WXU::shuffle(vii.begin(1), vii.end(1));
 	stable_sort(vii.begin(1), vii.end(1));
 	CHECK(vii[1][1] == 4);
