@@ -13,4 +13,14 @@ namespace Singleton
 }
 static Informer& g_not_lazy = Singleton::get_instance();
 
+namespace Global
+{
+    template<class = void>
+    struct my_globals {
+        static Informer g_informer;  // declaration
+    };
+    template <>
+    Informer my_globals<>::g_informer("template global");
+}
+static auto& g_fast = Global::my_globals<>::g_informer;
 
