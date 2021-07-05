@@ -39,5 +39,6 @@ add_subdirectory(cpp11/design)
 add_subdirectory(cpp11/interview-examples)
 add_subdirectory(cpp11/my_interviews)
 add_subdirectory(profiling)
+add_subdirectory(codejam/jam2020)
 
 #add_subdirectory(devtest)  make it a stand alone cmake project to test install, lib merging, and code generation script
